@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_main"
+            android:title="@string/drawer_main"/>
+        <item
+            android:id="@+id/drawer_comic"
+            android:title="@string/drawer_comic"/>
+        <item
+            android:id="@+id/drawer_history"
+            android:title="@string/drawer_history"/>
+        <item
+            android:id="@+id/drawer_plug"
+            android:title="@string/drawer_plug"/>
+        <item
+            android:id="@+id/drawer_settings"
+            android:title="@string/drawer_settings"/>
+        <item
+            android:id="@+id/drawer_about"
+            android:title="@string/drawer_about"/>
+    </group>
+</menu>

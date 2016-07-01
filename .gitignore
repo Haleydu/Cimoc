@@ -1,0 +1,29 @@
+# Gradle files
+.gradle/
+build/
+
+# Built application files
+*.apk
+*.ap_
+
+# Intellij
+*.iml
+.idea/workspace.xml
+.idea/libraries
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Android Studio captures folder
+captures/
+
+# Keystore files
+*.jks
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Java class files
+*.class
+
+
