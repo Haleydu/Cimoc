@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 
 import java.util.List;
@@ -16,15 +17,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Hiroshi on 2016/7/1.
+ * Created by Hiroshi on 2016/7/2.
  */
-public class ComicAdapter extends BaseAdapter<Comic> {
+public class ChapterAdapter extends BaseAdapter<Chapter> {
 
     public class ViewHolder extends BaseViewHolder {
 
-        @BindView(R.id.item_comic_img) ImageView comicImg;
-        @BindView(R.id.item_comic_title) TextView comicTitle;
-        @BindView(R.id.item_comic_res) TextView comicRes;
+        @BindView(R.id.item_chapter_title) TextView chapterTitle;
 
         public ViewHolder(View view) {
             super(view);
@@ -32,23 +31,22 @@ public class ComicAdapter extends BaseAdapter<Comic> {
 
     }
 
-    public ComicAdapter(Context context, List<Comic> list) {
+    public ChapterAdapter(Context context, List<Chapter> list) {
         super(context, list);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_comic, parent, false);
+        View view = mInflater.inflate(R.layout.item_chapter, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Comic comic = mDataSet.get(position);
+        Chapter chapter = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.comicImg.setImageResource(comic.getImg());
-        viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicRes.setText(comic.getRes());
+        viewHolder.chapterTitle.setText(chapter.getTitle());
     }
+
 
 }

@@ -1,14 +1,16 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.ui.fragment.ComicFragment;
+import com.hiroshi.cimoc.presenter.MainPresenter;
 
 import butterknife.BindView;
 
@@ -20,13 +22,13 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.navigation_view) NavigationView mNavigationView;
 
+    private MainPresenter mPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initDrawer();
-        FragmentManager manager = getFragmentManager();
-        ComicFragment fragment = new ComicFragment();
-        manager.beginTransaction().replace(R.id.container_fragment, fragment).commit();
+        mPresenter = new MainPresenter(this);
     }
 
     private void initDrawer() {
@@ -43,6 +45,12 @@ public class MainActivity extends BaseActivity {
                 };
         drawerToggle.syncState();
         mDrawerLayout.setDrawerListener(drawerToggle);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                return mPresenter.onNavigationItemSelected(item);
+            }
+        });
     }
 
     @Override
@@ -54,4 +62,30 @@ public class MainActivity extends BaseActivity {
     protected String getDefaultTitle() {
         return "Cimoc";
     }
+
+    @Override
+    public void onBackPressed() {
+        mPresenter.onBackPressed();
+    }
+
+    public boolean isDrawerOpen() {
+        return mDrawerLayout.isDrawerOpen(GravityCompat.START);
+    }
+
+    public void closeDrawer() {
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+    }
+
+    public void setToolbarTitle(String title) {
+        mToolbar.setTitle(title);
+    }
+
+    public void setCheckedItem(int id) {
+        mNavigationView.setCheckedItem(id);
+    }
+
+    public void showSnackbar(String msg) {
+        Snackbar.make(mDrawerLayout, msg, Snackbar.LENGTH_SHORT).show();
+    }
+
 }

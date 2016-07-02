@@ -38,10 +38,7 @@ public class ComicFragment extends BaseFragment {
         mComicList.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.bottom = 24;
-                if (parent.getChildLayoutPosition(view) % 3 != 0) {
-                    outRect.left = 20;
-                }
+                outRect.set(10, 0, 10, 30);
             }
         });
     }

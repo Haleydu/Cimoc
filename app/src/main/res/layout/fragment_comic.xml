@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="6dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <include layout="@layout/custom_toolbar_shadow"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_comic"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:padding="4dp"/>
+</FrameLayout>

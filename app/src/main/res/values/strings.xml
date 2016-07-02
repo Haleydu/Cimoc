@@ -6,6 +6,7 @@
     <string name="drawer_comic">我的漫画</string>
     <string name="drawer_history">历史浏览</string>
     <string name="drawer_plug">插件管理</string>
+    <string name="drawer_system">系统选项</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 

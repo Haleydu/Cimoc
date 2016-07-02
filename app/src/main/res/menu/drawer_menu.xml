@@ -15,10 +15,17 @@
             android:id="@+id/drawer_plug"
             android:title="@string/drawer_plug"/>
         <item
-            android:id="@+id/drawer_settings"
-            android:title="@string/drawer_settings"/>
-        <item
-            android:id="@+id/drawer_about"
-            android:title="@string/drawer_about"/>
+            android:title="@string/drawer_system">
+            <menu>
+                <item
+                    android:id="@+id/drawer_settings"
+                    android:icon="@drawable/ic_settings_black_24dp"
+                    android:title="@string/drawer_settings"/>
+                <item
+                    android:id="@+id/drawer_about"
+                    android:icon="@drawable/ic_about_black_24dp"
+                    android:title="@string/drawer_about"/>
+            </menu>
+        </item>
     </group>
 </menu>
