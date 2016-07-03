@@ -5,6 +5,9 @@ package com.hiroshi.cimoc.utils;
  */
 public class EventMessage {
 
+    public static final int SEARCH_SUCCESS = 1;
+    public static final int SEARCH_EMPTY = 2;
+
     private int type;
     private Object data;
 

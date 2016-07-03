@@ -7,10 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -19,18 +20,13 @@ import butterknife.BindView;
  */
 public class ComicFragment extends BaseFragment {
 
-    @BindView(R.id.list_comic) RecyclerView mComicList;
+    @BindView(R.id.comic_list) RecyclerView mComicList;
 
     private ComicAdapter mComicAdapter;
 
     @Override
     protected void initView() {
-        LinkedList<Comic> list = new LinkedList<>();
-        list.add(new Comic(R.drawable.test1, "斗破苍穹", "看漫画"));
-        list.add(new Comic(R.drawable.test2, "七大罪", "吹雪漫画"));
-        list.add(new Comic(R.drawable.test3, "妃·夕妍雪", "汗汗漫画"));
-        list.add(new Comic(R.drawable.test4, "监狱学园", "极速漫画"));
-        list.add(new Comic(R.drawable.test5, "斗罗大陆", "看漫画"));
+        List<MiniComic> list = new LinkedList<>();
         mComicAdapter = new ComicAdapter(getActivity(), list);
         mComicList.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mComicList.setItemAnimator(new DefaultItemAnimator());

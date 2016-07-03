@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.presenter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;

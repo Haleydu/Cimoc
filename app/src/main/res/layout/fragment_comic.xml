@@ -5,8 +5,11 @@
     android:layout_height="match_parent">
     <include layout="@layout/custom_toolbar_shadow"/>
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/list_comic"
+        android:id="@+id/comic_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="4dp"/>
+        android:background="@color/white"
+        android:paddingTop="8dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"/>
 </FrameLayout>

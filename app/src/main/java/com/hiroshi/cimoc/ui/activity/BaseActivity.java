@@ -1,11 +1,14 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.app.usage.UsageEvents;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.hiroshi.cimoc.R;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,6 +26,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutView());
         ButterKnife.bind(this);
         initToolbar();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     protected void initToolbar() {

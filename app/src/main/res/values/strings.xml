@@ -10,4 +10,7 @@
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 
+    <string name="hint_for_search">请输入漫画名</string>
+    <string name="empty_for_search">关键字不能为空</string>
+
 </resources>

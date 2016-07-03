@@ -8,23 +8,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.core.Administrator;
+import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class ComicAdapter extends BaseAdapter<Comic> {
+public class ComicAdapter extends BaseAdapter<MiniComic> {
 
     public class ViewHolder extends BaseViewHolder {
 
-        @BindView(R.id.item_comic_img) ImageView comicImg;
+        @BindView(R.id.item_comic_image) ImageView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
-        @BindView(R.id.item_comic_res) TextView comicRes;
+        @BindView(R.id.item_comic_source) TextView comicSource;
 
         public ViewHolder(View view) {
             super(view);
@@ -32,7 +32,7 @@ public class ComicAdapter extends BaseAdapter<Comic> {
 
     }
 
-    public ComicAdapter(Context context, List<Comic> list) {
+    public ComicAdapter(Context context, List<MiniComic> list) {
         super(context, list);
     }
 
@@ -44,11 +44,11 @@ public class ComicAdapter extends BaseAdapter<Comic> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Comic comic = mDataSet.get(position);
+        MiniComic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.comicImg.setImageResource(comic.getImg());
+        viewHolder.comicImage.setImageResource(R.drawable.test1);
         viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicRes.setText(comic.getRes());
+        viewHolder.comicSource.setText(Administrator.getSourceById(comic.getSource()));
     }
 
 }

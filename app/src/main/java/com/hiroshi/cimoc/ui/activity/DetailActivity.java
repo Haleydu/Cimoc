@@ -11,9 +11,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
-import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 
 import java.util.LinkedList;
 
@@ -44,7 +42,7 @@ public class DetailActivity extends BaseActivity {
         mChapterList.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.set(20, 0, 20, 30);
+                outRect.set(20, 0, 20, 40);
             }
         });
     }

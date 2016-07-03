@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.hiroshi.cimoc.model.Comic;
-
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -36,6 +34,11 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public void add(T data) {
         mDataSet.add(data);
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<T> data) {
+        mDataSet.addAll(data);
         notifyDataSetChanged();
     }
 

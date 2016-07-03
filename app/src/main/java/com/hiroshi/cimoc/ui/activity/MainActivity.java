@@ -11,6 +11,10 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.MainPresenter;
+import com.hiroshi.cimoc.utils.EventMessage;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 
@@ -86,6 +90,11 @@ public class MainActivity extends BaseActivity {
 
     public void showSnackbar(String msg) {
         Snackbar.make(mDrawerLayout, msg, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessage(EventMessage msg) {
+
     }
 
 }
