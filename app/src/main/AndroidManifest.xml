@@ -21,6 +21,8 @@
 
         <activity android:name=".ui.activity.ResultActivity"/>
 
+        <activity android:name=".ui.activity.DetailActivity"/>
+
     </application>
 
 </manifest>

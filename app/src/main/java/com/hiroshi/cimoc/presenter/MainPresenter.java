@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.presenter;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
@@ -12,11 +11,15 @@ import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.MainFragment;
 import com.hiroshi.cimoc.ui.fragment.PlugFragment;
+import com.hiroshi.cimoc.utils.EventMessage;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainPresenter {
+public class MainPresenter extends BasePresenter {
 
     private MainActivity mMainActivity;
     private long mExitTime;
@@ -81,6 +84,11 @@ public class MainPresenter {
         transaction.show(mCurrentFragment).commit();
         mMainActivity.setToolbarTitle(menuItem.getTitle().toString());
         return true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessage(EventMessage msg) {
+
     }
 
 }

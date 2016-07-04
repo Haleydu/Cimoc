@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -10,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.utils.EventMessage;
 
@@ -29,13 +29,12 @@ public class MainActivity extends BaseActivity {
     private MainPresenter mPresenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        initDrawer();
+    protected void initPresenter() {
         mPresenter = new MainPresenter(this);
     }
 
-    private void initDrawer() {
+    @Override
+    protected void initView() {
         ActionBarDrawerToggle drawerToggle =
                 new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
                     @Override
@@ -68,6 +67,11 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected BasePresenter getPresenter() {
+        return mPresenter;
+    }
+
+    @Override
     public void onBackPressed() {
         mPresenter.onBackPressed();
     }
@@ -90,11 +94,6 @@ public class MainActivity extends BaseActivity {
 
     public void showSnackbar(String msg) {
         Snackbar.make(mDrawerLayout, msg, Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessage(EventMessage msg) {
-
     }
 
 }

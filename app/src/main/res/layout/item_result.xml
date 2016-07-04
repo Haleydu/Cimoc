@@ -8,52 +8,67 @@
     android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="0dp"
     app:cardElevation="0dp">
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="14dp">
+        android:padding="10dp">
         <ImageView
             android:id="@+id/result_comic_image"
             android:layout_width="80dp"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"/>
-        <LinearLayout
-            android:orientation="vertical"
+            android:layout_marginRight="10dp"
+            android:scaleType="centerCrop" />
+        <TextView
+            android:id="@+id/result_comic_source"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="14dp">
-            <TextView
-                android:id="@+id/result_comic_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:textSize="16sp"/>
-            <TextView
-                android:id="@+id/result_comic_author"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textSize="16sp"/>
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/result_comic_source"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="top|right"
-                android:textSize="14sp"/>
-            <TextView
-                android:id="@+id/result_comic_update"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="bottom|right"
-                android:textSize="14sp"/>
-        </LinearLayout>
-    </LinearLayout>
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/result_comic_source_lab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/result_comic_source"
+            android:layout_alignParentTop="true"
+            android:text="@string/result_source"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/result_comic_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:textSize="14sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/result_comic_update"
+            android:layout_alignParentBottom="true"
+            android:text="@string/result_update"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/result_comic_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/result_comic_image"
+            android:layout_toLeftOf="@id/result_comic_source_lab"
+            android:layout_marginRight="6dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/result_comic_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/result_comic_title"
+            android:layout_toLeftOf="@id/result_comic_source_lab"
+            android:layout_below="@id/result_comic_title"
+            android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="16sp"/>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

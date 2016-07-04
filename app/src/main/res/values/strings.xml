@@ -13,4 +13,7 @@
     <string name="hint_for_search">请输入漫画名</string>
     <string name="empty_for_search">关键字不能为空</string>
 
+    <string name="result_update">最后更新：</string>
+    <string name="result_source">来源：</string>
+
 </resources>

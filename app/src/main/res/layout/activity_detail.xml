@@ -8,64 +8,13 @@
     <include layout="@layout/custom_toolbar"/>
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="14dp"
-                app:layout_scrollFlags="scroll|enterAlways">
-                <ImageView
-                    android:id="@+id/detail_comic_img"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:maxHeight="160dp"
-                    android:maxWidth="100dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/test1"/>
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="14dp">
-                    <TextView
-                        android:id="@+id/detail_comic_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="斗破苍穹"
-                        android:textColor="@color/white"
-                        android:textSize="18sp"/>
-                    <TextView
-                        android:id="@+id/detail_comic_intro"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:maxLines="3"
-                        android:ellipsize="end"
-                        android:text="这里是属于斗气的世界，没有花俏艳丽的魔法，有的，仅仅是繁衍到巅峰的斗气！想要知道异界的斗气在发展到巅峰之后是何种境地吗？"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"/>
-                </LinearLayout>
-            </LinearLayout>
-        </android.support.design.widget.AppBarLayout>
-        <android.support.v4.widget.NestedScrollView
+        android:layout_height="match_parent"
+        android:background="@color/white">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/detail_chapter_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/list_chapter"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:overScrollMode="never"/>
-        </android.support.v4.widget.NestedScrollView>
+            android:overScrollMode="never"/>
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

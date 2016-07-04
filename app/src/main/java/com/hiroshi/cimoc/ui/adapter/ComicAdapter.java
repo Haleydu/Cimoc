@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Administrator;
+import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicImage.setImageResource(R.drawable.test1);
         viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicSource.setText(Administrator.getSourceById(comic.getSource()));
+        viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
     }
 
 }

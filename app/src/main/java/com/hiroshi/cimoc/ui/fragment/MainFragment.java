@@ -6,8 +6,7 @@ import android.text.TextWatcher;
 import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Administrator;
-import com.hiroshi.cimoc.core.IKanman;
+import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 
 import butterknife.BindView;
@@ -26,7 +25,7 @@ public class MainFragment extends BaseFragment {
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.empty_for_search));
         } else {
-            startActivity(ResultActivity.createIntent(getActivity(), keyword, Administrator.SOURCE_IKANMAN));
+            startActivity(ResultActivity.createIntent(getActivity(), keyword, Kami.SOURCE_IKANMAN));
         }
     }
 

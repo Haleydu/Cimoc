@@ -7,6 +7,7 @@ public class EventMessage {
 
     public static final int SEARCH_SUCCESS = 1;
     public static final int SEARCH_EMPTY = 2;
+    public static final int LOAD_COMIC_SUCCESS = 3;
 
     private int type;
     private Object data;

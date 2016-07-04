@@ -8,8 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Administrator;
+import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -50,11 +51,9 @@ public class ResultAdapter extends BaseAdapter<MiniComic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
-        String source = "来源于：" + Administrator.getSourceById(comic.getSource());
-        viewHolder.comicSource.setText(source);
-        String update = "最后更新：" + comic.getUpdate();
-        viewHolder.comicUpdate.setText(update);
-        viewHolder.comicImage.setImageResource(R.drawable.test1);
+        viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
+        viewHolder.comicUpdate.setText(comic.getUpdate());
+        Picasso.with(mContext).load(comic.getImage()).into(viewHolder.comicImage);
     }
 
 }

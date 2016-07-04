@@ -1,11 +1,11 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.base.BaseSearch;
 
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class Administrator {
+public class Kami {
 
     public static final int SOURCE_IKANMAN = 1;
 
@@ -27,10 +27,15 @@ public class Administrator {
         }
     }
 
-    public static Manga getMangaById(int id) {
+    private static IKanmanSearch mIKanmanSearch;
+
+    public static BaseSearch getSearchById(int id) {
         switch (id) {
             case SOURCE_IKANMAN:
-                return IKanman.getInstance();
+                if (mIKanmanSearch == null) {
+                    mIKanmanSearch = new IKanmanSearch();
+                }
+                return mIKanmanSearch;
             default:
                 return null;
         }

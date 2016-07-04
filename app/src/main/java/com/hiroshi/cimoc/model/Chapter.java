@@ -6,13 +6,19 @@ package com.hiroshi.cimoc.model;
 public class Chapter {
 
     String title;
+    String path;
 
-    public Chapter(String title, String url) {
+    public Chapter(String title, String path) {
         this.title = title;
+        this.path = path;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getPath() {
+        return path;
     }
 
 }
