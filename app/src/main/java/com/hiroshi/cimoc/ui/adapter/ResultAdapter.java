@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,7 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Comic;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultAdapter extends BaseAdapter<MiniComic> {
+public class ResultAdapter extends BaseAdapter<Comic> {
 
     public class ViewHolder extends BaseViewHolder {
 
@@ -35,7 +36,7 @@ public class ResultAdapter extends BaseAdapter<MiniComic> {
 
     }
 
-    public ResultAdapter(Context context, List<MiniComic> list) {
+    public ResultAdapter(Context context, List<Comic> list) {
         super(context, list);
     }
 
@@ -47,7 +48,7 @@ public class ResultAdapter extends BaseAdapter<MiniComic> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        MiniComic comic = mDataSet.get(position);
+        Comic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
@@ -56,4 +57,13 @@ public class ResultAdapter extends BaseAdapter<MiniComic> {
         Picasso.with(mContext).load(comic.getImage()).into(viewHolder.comicImage);
     }
 
+    @Override
+    public RecyclerView.ItemDecoration getItemDecoration() {
+        return new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                outRect.set(0, 0, 0, 10);
+            }
+        };
+    }
 }

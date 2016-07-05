@@ -16,4 +16,6 @@
     <string name="result_update">最后更新：</string>
     <string name="result_source">来源：</string>
 
+    <string name="detail_header_update">最后更新：</string>
+
 </resources>

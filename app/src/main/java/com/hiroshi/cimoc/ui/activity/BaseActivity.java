@@ -29,10 +29,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
         if (getPresenter() != null) {
-            getPresenter().onDestroy();
+            getPresenter().onStart();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (getPresenter() != null) {
+            getPresenter().onStop();
         }
     }
 

@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.core;
 
 import com.hiroshi.cimoc.core.base.BaseSearch;
-import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Comic;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,17 +18,18 @@ import java.util.Locale;
 public class IKanmanSearch extends BaseSearch {
 
     @Override
-    protected List<MiniComic> parseResult(String html) {
+    protected List<Comic> parse(String html) {
         Document doc = Jsoup.parse(html);
         Elements items = doc.select("#detail > li > a");
-        List<MiniComic> list = new LinkedList<>();
+        List<Comic> list = new LinkedList<>();
         for (Element item : items) {
-            String url = item.attr("href");
+            String path = item.attr("href");
             String image = item.select("div > img").first().attr("data-src");
+            String status = item.select("div > i").first().text();
             String title = item.select("h3").first().text();
-            String author = item.select("dl > dd").get(0).text();
-            String update = item.select("dl > dd").get(3).text();
-            list.add(new MiniComic(url, image, title, Kami.SOURCE_IKANMAN, author, update));
+            String author = item.select("dl:eq(2) > dd").first().text();
+            String update = item.select("dl:eq(5) > dd").first().text();
+            list.add(new Comic(Kami.SOURCE_IKANMAN, path, image, title, author, null, status, update));
         }
         return list;
     }

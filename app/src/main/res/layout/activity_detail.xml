@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
     <include layout="@layout/custom_toolbar"/>
     <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/detail_coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white">
@@ -16,11 +17,12 @@
             android:layout_height="match_parent"
             android:overScrollMode="never"/>
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/detail_star_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_gravity="bottom|end"
-            android:src="@drawable/ic_favorite_white_24dp"
+            android:visibility="invisible"
             app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

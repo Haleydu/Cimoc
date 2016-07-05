@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.core.base.BaseSearch;
-import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -52,8 +52,8 @@ public class ResultPresenter extends BasePresenter {
         return new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                MiniComic comic = mResultActivity.getItem(position);
-                Intent intent = DetailActivity.createIntent(mResultActivity, comic.getPath(), comic.getSource());
+                Comic comic = mResultActivity.getItem(position);
+                Intent intent = DetailActivity.createIntent(mResultActivity, comic);
                 mResultActivity.startActivity(intent);
             }
         };
@@ -65,10 +65,10 @@ public class ResultPresenter extends BasePresenter {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessage(EventMessage msg) {
+    public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.SEARCH_SUCCESS:
-                mResultActivity.addAll((List<MiniComic>) msg.getData());
+                mResultActivity.addAll((List<Comic>) msg.getData());
                 isLoading = false;
                 break;
             case EventMessage.SEARCH_EMPTY:

@@ -15,12 +15,12 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainFragment extends BaseFragment {
+public class CimocFragment extends BaseFragment {
 
     @BindView(R.id.main_text_layout) TextInputLayout mInputLayout;
     @BindView(R.id.main_keyword_input) EditText mEditText;
 
-    @OnClick(R.id.main_search_btn) void search() {
+    @OnClick(R.id.main_search_btn) void onClick() {
         String keyword = mEditText.getText().toString();
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.empty_for_search));
@@ -45,9 +45,8 @@ public class MainFragment extends BaseFragment {
 
     @Override
     protected int getLayoutView() {
-        return R.layout.fragment_main;
+        return R.layout.fragment_cimoc;
     }
-
 
 
 }

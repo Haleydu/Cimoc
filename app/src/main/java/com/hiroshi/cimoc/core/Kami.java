@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.core;
 
+import com.hiroshi.cimoc.core.base.BaseManga;
 import com.hiroshi.cimoc.core.base.BaseSearch;
 
 /**
@@ -28,6 +29,7 @@ public class Kami {
     }
 
     private static IKanmanSearch mIKanmanSearch;
+    private static IKanmanManga mIKanmanManga;
 
     public static BaseSearch getSearchById(int id) {
         switch (id) {
@@ -36,6 +38,18 @@ public class Kami {
                     mIKanmanSearch = new IKanmanSearch();
                 }
                 return mIKanmanSearch;
+            default:
+                return null;
+        }
+    }
+
+    public static BaseManga getMangaById(int id) {
+        switch (id) {
+            case SOURCE_IKANMAN:
+                if (mIKanmanManga == null) {
+                    mIKanmanManga = new IKanmanManga();
+                }
+                return mIKanmanManga;
             default:
                 return null;
         }

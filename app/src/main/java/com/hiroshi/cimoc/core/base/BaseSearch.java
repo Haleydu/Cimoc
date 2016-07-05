@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.core.base;
 
-import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.EventMessage;
 import com.hiroshi.cimoc.utils.YuriClient;
 
@@ -48,7 +48,7 @@ public abstract class BaseSearch {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String html = response.body().string();
-                    List<MiniComic> list = parseResult(html);
+                    List<Comic> list = parse(html);
                     if (list.isEmpty()) {
                         EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_EMPTY, null));
                     } else {
@@ -59,7 +59,7 @@ public abstract class BaseSearch {
         });
     }
 
-    protected abstract List<MiniComic> parseResult(String html);
+    protected abstract List<Comic> parse(String html);
 
     protected abstract String getUrl(String keyword, int page);
 

@@ -7,9 +7,9 @@ import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
-import com.hiroshi.cimoc.ui.fragment.ComicFragment;
+import com.hiroshi.cimoc.ui.fragment.CimocFragment;
+import com.hiroshi.cimoc.ui.fragment.StarFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.ui.fragment.MainFragment;
 import com.hiroshi.cimoc.ui.fragment.PlugFragment;
 import com.hiroshi.cimoc.utils.EventMessage;
 
@@ -26,8 +26,8 @@ public class MainPresenter extends BasePresenter {
 
     private int mCheckedItem;
     private FragmentManager mFragmentManager;
-    private MainFragment mMainFragment;
-    private ComicFragment mComicFragment;
+    private CimocFragment mMainFragment;
+    private StarFragment mComicFragment;
     private HistoryFragment mHistoryFragment;
     private PlugFragment mPlugFragment;
     private Fragment mCurrentFragment;
@@ -40,7 +40,7 @@ public class MainPresenter extends BasePresenter {
 
     private void initFragment() {
         mFragmentManager = mMainActivity.getFragmentManager();
-        mMainFragment = new MainFragment();
+        mMainFragment = new CimocFragment();
         mFragmentManager.beginTransaction().add(R.id.container_fragment, mMainFragment).commit();
         mCurrentFragment = mMainFragment;
         mCheckedItem = R.id.drawer_main;
@@ -68,14 +68,14 @@ public class MainPresenter extends BasePresenter {
         switch (mCheckedItem) {
             case R.id.drawer_main:
                 if (mMainFragment == null) {
-                    mMainFragment = new MainFragment();
+                    mMainFragment = new CimocFragment();
                     transaction.add(R.id.container_fragment, mMainFragment);
                 }
                 mCurrentFragment = mMainFragment;
                 break;
             case R.id.drawer_comic:
                 if (mComicFragment == null) {
-                    mComicFragment = new ComicFragment();
+                    mComicFragment = new StarFragment();
                     transaction.add(R.id.container_fragment, mComicFragment);
                 }
                 mCurrentFragment = mComicFragment;
@@ -87,7 +87,7 @@ public class MainPresenter extends BasePresenter {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessage(EventMessage msg) {
+    public void onEvent(EventMessage msg) {
 
     }
 

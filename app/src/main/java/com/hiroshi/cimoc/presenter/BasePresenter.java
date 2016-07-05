@@ -1,8 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.app.Activity;
-import android.util.Log;
-
 import org.greenrobot.eventbus.EventBus;
 
 /**
@@ -10,11 +7,11 @@ import org.greenrobot.eventbus.EventBus;
  */
 public abstract class BasePresenter {
 
-    public BasePresenter() {
+    public void onStart() {
         EventBus.getDefault().register(this);
     }
 
-    public void onDestroy() {
+    public void onStop() {
         EventBus.getDefault().unregister(this);
     }
 
