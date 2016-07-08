@@ -2,10 +2,11 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
@@ -26,7 +27,8 @@ public class ResultActivity extends BaseActivity {
     public static final String EXTRA_KEYWORD = "extra_keyword";
     public static final String EXTRA_SOURCE = "extra_source";
 
-    @BindView(R.id.result_list) RecyclerView mRecyclerView;
+    @BindView(R.id.result_comic_list) RecyclerView mResultList;
+    @BindView(R.id.result_progress_bar) ProgressBar mProgressBar;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -34,22 +36,22 @@ public class ResultActivity extends BaseActivity {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new ResultPresenter(this);
+        String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
+        mPresenter = new ResultPresenter(this, source, keyword);
     }
 
     @Override
     protected void initView() {
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mResultAdapter);
-        mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
-        mRecyclerView.setOnScrollListener(mPresenter.getScrollListener());
+        mResultList.setLayoutManager(mLayoutManager);
+        mResultList.setAdapter(mResultAdapter);
+        mResultList.addItemDecoration(mResultAdapter.getItemDecoration());
+        mResultList.setOnScrollListener(mPresenter.getScrollListener());
         mResultAdapter.setOnItemClickListener(mPresenter.getItemClickListener());
 
-        String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
-        mPresenter.initManga(keyword, source);
+        mPresenter.initManga();
     }
 
     @Override
@@ -65,6 +67,13 @@ public class ResultActivity extends BaseActivity {
     @Override
     protected BasePresenter getPresenter() {
         return mPresenter;
+    }
+
+    public void hideProgressBar() {
+        if (mProgressBar.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+            mResultList.setVisibility(View.VISIBLE);
+        }
     }
 
     public void addAll(List<Comic> list) {

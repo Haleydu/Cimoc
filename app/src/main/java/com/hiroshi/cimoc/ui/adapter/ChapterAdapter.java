@@ -91,6 +91,11 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     }
 
     @Override
+    public Chapter getItem(int position) {
+        return super.getItem(position + 1);
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0) {
             View view = mInflater.inflate(R.layout.item_chapter_header, parent, false);

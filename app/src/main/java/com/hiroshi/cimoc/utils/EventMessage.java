@@ -6,8 +6,12 @@ package com.hiroshi.cimoc.utils;
 public class EventMessage {
 
     public static final int SEARCH_SUCCESS = 1;
-    public static final int SEARCH_EMPTY = 2;
-    public static final int LOAD_COMIC_SUCCESS = 3;
+    public static final int LOAD_COMIC_SUCCESS = 2;
+    public static final int PARSE_PIC_SUCCESS = 3;
+    public static final int PARSE_PIC_FAIL = 4;
+    public static final int NETWORK_ERROR = 5;
+    public static final int FAVORITE_COMIC = 6;
+    public static final int UN_FAVORITE_COMIC = 7;
 
     private int type;
     private Object data;

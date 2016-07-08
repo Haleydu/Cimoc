@@ -4,13 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
     <include layout="@layout/custom_toolbar"/>
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/detail_coordinator_layout"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white">
+        android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
             android:id="@+id/detail_chapter_list"
             android:layout_width="match_parent"
@@ -25,4 +26,10 @@
             android:visibility="invisible"
             app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
     </android.support.design.widget.CoordinatorLayout>
+    <ProgressBar
+        android:id="@+id/detail_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:indeterminateDrawable="@drawable/progress_trans"/>
 </LinearLayout>

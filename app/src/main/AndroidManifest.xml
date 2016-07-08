@@ -24,6 +24,8 @@
 
         <activity android:name=".ui.activity.DetailActivity"/>
 
+        <activity android:name=".ui.activity.ReaderActivity"/>
+
     </application>
 
 </manifest>

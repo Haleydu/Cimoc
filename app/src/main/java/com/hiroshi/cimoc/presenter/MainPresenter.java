@@ -2,13 +2,12 @@ package com.hiroshi.cimoc.presenter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
-import com.hiroshi.cimoc.ui.fragment.StarFragment;
+import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.PlugFragment;
 import com.hiroshi.cimoc.utils.EventMessage;
@@ -26,8 +25,8 @@ public class MainPresenter extends BasePresenter {
 
     private int mCheckedItem;
     private FragmentManager mFragmentManager;
-    private CimocFragment mMainFragment;
-    private StarFragment mComicFragment;
+    private CimocFragment mCimocFragment;
+    private FavoriteFragment mFavoriteFragment;
     private HistoryFragment mHistoryFragment;
     private PlugFragment mPlugFragment;
     private Fragment mCurrentFragment;
@@ -40,9 +39,14 @@ public class MainPresenter extends BasePresenter {
 
     private void initFragment() {
         mFragmentManager = mMainActivity.getFragmentManager();
-        mMainFragment = new CimocFragment();
-        mFragmentManager.beginTransaction().add(R.id.container_fragment, mMainFragment).commit();
-        mCurrentFragment = mMainFragment;
+        mCimocFragment = new CimocFragment();
+        mFavoriteFragment = new FavoriteFragment();
+        mFragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, mCimocFragment)
+                .add(R.id.main_fragment_container, mFavoriteFragment)
+                .hide(mFavoriteFragment)
+                .commit();
+        mCurrentFragment = mCimocFragment;
         mCheckedItem = R.id.drawer_main;
         mMainActivity.setCheckedItem(mCheckedItem);
     }
@@ -58,31 +62,29 @@ public class MainPresenter extends BasePresenter {
         }
     }
 
+    public void transFragment() {
+        switch (mCheckedItem) {
+            default:
+            case R.id.drawer_main:
+                mCurrentFragment = mCimocFragment;
+                break;
+            case R.id.drawer_comic:
+                mCurrentFragment = mFavoriteFragment;
+                break;
+        }
+        mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
+        mMainActivity.hideProgressBar();
+    }
+
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        mMainActivity.closeDrawer();
         if (menuItem.getItemId() == mCheckedItem) {
             return false;
         }
-        FragmentTransaction transaction = mFragmentManager.beginTransaction().hide(mCurrentFragment);
         mCheckedItem = menuItem.getItemId();
-        switch (mCheckedItem) {
-            case R.id.drawer_main:
-                if (mMainFragment == null) {
-                    mMainFragment = new CimocFragment();
-                    transaction.add(R.id.container_fragment, mMainFragment);
-                }
-                mCurrentFragment = mMainFragment;
-                break;
-            case R.id.drawer_comic:
-                if (mComicFragment == null) {
-                    mComicFragment = new StarFragment();
-                    transaction.add(R.id.container_fragment, mComicFragment);
-                }
-                mCurrentFragment = mComicFragment;
-                break;
-        }
-        transaction.show(mCurrentFragment).commit();
+        mMainActivity.showProgressBar();
+        mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
         mMainActivity.setToolbarTitle(menuItem.getTitle().toString());
+        mMainActivity.closeDrawer();
         return true;
     }
 

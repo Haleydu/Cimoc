@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 
 import butterknife.BindView;
@@ -48,5 +49,13 @@ public class CimocFragment extends BaseFragment {
         return R.layout.fragment_cimoc;
     }
 
+    @Override
+    protected void initPresenter() {
 
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return null;
+    }
 }

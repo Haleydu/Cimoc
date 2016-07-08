@@ -25,22 +25,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
         initPresenter();
+        if (getPresenter() != null) {
+            getPresenter().register();
+        }
         initView();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onDestroy() {
+        super.onDestroy();
         if (getPresenter() != null) {
-            getPresenter().onStart();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (getPresenter() != null) {
-            getPresenter().onStop();
+            getPresenter().unregister();
         }
     }
 

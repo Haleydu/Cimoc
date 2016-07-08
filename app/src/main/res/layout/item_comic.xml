@@ -10,7 +10,7 @@
     app:cardElevation="0dp">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="160dp">
+        android:layout_height="140dp">
         <ImageView
             android:id="@+id/item_comic_image"
             android:layout_width="match_parent"
@@ -21,15 +21,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:padding="4dp"
+            android:padding="6dp"
             android:background="#AFFFFFFF">
             <TextView
                 android:id="@+id/item_comic_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:singleLine="true"
-                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/black"
                 android:textSize="12sp"/>
             <TextView
@@ -38,8 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="2dp"
-                android:singleLine="true"
-                android:ellipsize="end"
+                android:maxLines="1"
                 android:textSize="12sp"/>
         </LinearLayout>
     </RelativeLayout>

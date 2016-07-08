@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.core.base.BaseSearch;
+import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
@@ -23,12 +23,18 @@ import java.util.List;
 public class ResultPresenter extends BasePresenter {
 
     private ResultActivity mResultActivity;
-    private BaseSearch mMangaSearch;
+
+    private Manga mManga;
+    private String keyword;
+    private int page;
     private boolean isLoading;
 
-    public ResultPresenter(ResultActivity activity) {
-        mResultActivity = activity;
-        isLoading = false;
+    public ResultPresenter(ResultActivity activity, int source, String keyword) {
+        this.mResultActivity = activity;
+        this.mManga = Kami.getMangaById(source);
+        this.keyword = keyword;
+        this.page = 1;
+        this.isLoading = false;
     }
 
     public RecyclerView.OnScrollListener getScrollListener() {
@@ -41,7 +47,7 @@ public class ResultPresenter extends BasePresenter {
                 if (lastItem >= itemCount - 4 && dy > 0) {
                     if (!isLoading) {
                         isLoading = true;
-                        mMangaSearch.next();
+                        mManga.search(keyword, page++);
                     }
                 }
             }
@@ -59,19 +65,20 @@ public class ResultPresenter extends BasePresenter {
         };
     }
 
-    public void initManga(String keyword, int source) {
-        mMangaSearch = Kami.getSearchById(source);
-        mMangaSearch.first(keyword);
+    public void initManga() {
+        mManga.search(keyword, page++);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.SEARCH_SUCCESS:
-                mResultActivity.addAll((List<Comic>) msg.getData());
-                isLoading = false;
-                break;
-            case EventMessage.SEARCH_EMPTY:
+                List list = (List<Comic>) msg.getData();
+                if (!list.isEmpty()) {
+                    mResultActivity.addAll(list);
+                    mResultActivity.hideProgressBar();
+                    isLoading = false;
+                }
                 break;
         }
     }

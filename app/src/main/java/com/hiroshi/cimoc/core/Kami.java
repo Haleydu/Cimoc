@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.core.base.BaseManga;
-import com.hiroshi.cimoc.core.base.BaseSearch;
+import com.hiroshi.cimoc.core.base.Manga;
 
 /**
  * Created by Hiroshi on 2016/7/3.
@@ -28,28 +27,15 @@ public class Kami {
         }
     }
 
-    private static IKanmanSearch mIKanmanSearch;
-    private static IKanmanManga mIKanmanManga;
+    private static IKanman mIKanman;
 
-    public static BaseSearch getSearchById(int id) {
+    public static Manga getMangaById(int id) {
         switch (id) {
             case SOURCE_IKANMAN:
-                if (mIKanmanSearch == null) {
-                    mIKanmanSearch = new IKanmanSearch();
+                if (mIKanman == null) {
+                    mIKanman = new IKanman();
                 }
-                return mIKanmanSearch;
-            default:
-                return null;
-        }
-    }
-
-    public static BaseManga getMangaById(int id) {
-        switch (id) {
-            case SOURCE_IKANMAN:
-                if (mIKanmanManga == null) {
-                    mIKanmanManga = new IKanmanManga();
-                }
-                return mIKanmanManga;
+                return mIKanman;
             default:
                 return null;
         }

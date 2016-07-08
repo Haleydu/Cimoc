@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.db.entity.FavoriteComic;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class ComicAdapter extends BaseAdapter<Comic> {
+public class ComicAdapter extends BaseAdapter<FavoriteComic> {
 
     public class ViewHolder extends BaseViewHolder {
 
@@ -33,7 +35,7 @@ public class ComicAdapter extends BaseAdapter<Comic> {
 
     }
 
-    public ComicAdapter(Context context, List<Comic> list) {
+    public ComicAdapter(Context context, List<FavoriteComic> list) {
         super(context, list);
     }
 
@@ -45,10 +47,11 @@ public class ComicAdapter extends BaseAdapter<Comic> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Comic comic = mDataSet.get(position);
+        FavoriteComic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
+        Picasso.with(mContext).load(comic.getImage()).into(viewHolder.comicImage);
     }
 
     @Override
@@ -60,4 +63,13 @@ public class ComicAdapter extends BaseAdapter<Comic> {
             }
         };
     }
+
+    public void removeById(long id) {
+        for (FavoriteComic comic : mDataSet) {
+            if (comic.getId() == id) {
+                remove(comic);
+            }
+        }
+    }
+
 }

@@ -7,8 +7,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
@@ -16,7 +16,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
-import com.hiroshi.db.entity.StarComic;
+import com.hiroshi.db.entity.FavoriteComic;
 
 import java.util.List;
 
@@ -34,6 +34,7 @@ public class DetailActivity extends BaseActivity {
     @BindView(R.id.detail_chapter_list) RecyclerView mChapterList;
     @BindView(R.id.detail_coordinator_layout) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
+    @BindView(R.id.detail_progress_bar) ProgressBar mProgressBar;
 
     private ChapterAdapter mChapterAdapter;
     private DetailPresenter mPresenter;
@@ -80,6 +81,11 @@ public class DetailActivity extends BaseActivity {
         mStarButton.setVisibility(View.VISIBLE);
     }
 
+    public void hideProgressBar() {
+        mProgressBar.setVisibility(View.GONE);
+        mCoordinatorLayout.setVisibility(View.VISIBLE);
+    }
+
     public void showSnackbar(String msg) {
         Snackbar.make(mCoordinatorLayout, msg, Snackbar.LENGTH_SHORT).show();
     }
@@ -99,7 +105,7 @@ public class DetailActivity extends BaseActivity {
         return intent;
     }
 
-    public static Intent createIntent(Context context, StarComic comic) {
+    public static Intent createIntent(Context context, FavoriteComic comic) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(EXTRA_PATH, comic.getPath());
         intent.putExtra(EXTRA_SOURCE, comic.getSource());

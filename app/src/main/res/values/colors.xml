@@ -6,6 +6,7 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="default_grey">#E8E8E7</color>
     <color name="grey">#808080</color>
     <color name="light_grey">#BEBEBE</color>
 

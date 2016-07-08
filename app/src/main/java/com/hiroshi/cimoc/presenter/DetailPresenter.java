@@ -3,15 +3,16 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.core.base.BaseManga;
+import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.utils.EventMessage;
-import com.hiroshi.db.dao.StarComicDao;
-import com.hiroshi.db.dao.StarComicDao.Properties;
-import com.hiroshi.db.entity.StarComic;
+import com.hiroshi.db.dao.FavoriteComicDao;
+import com.hiroshi.db.dao.FavoriteComicDao.Properties;
+import com.hiroshi.db.entity.FavoriteComic;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -23,49 +24,51 @@ import java.util.List;
 public class DetailPresenter extends BasePresenter {
 
     private DetailActivity mDetailActivity;
-    private StarComicDao mComicDao;
+    private FavoriteComicDao mComicDao;
 
-    private StarComic mStarComic;
+    private FavoriteComic mFavoriteComic;
     private String last_path;
     private String last_page;
     private String title;
     private String update;
+    private String image;
 
     public DetailPresenter(DetailActivity activity) {
         mDetailActivity = activity;
-        mComicDao = CimocApplication.getDaoSession().getStarComicDao();
+        mComicDao = CimocApplication.getDaoSession().getFavoriteComicDao();
     }
 
     public void loadComic(String path, int source) {
-        BaseManga manga = Kami.getMangaById(source);
-        String url = Kami.getHostById(source) + path;
-        manga.get(url);
+        Manga manga = Kami.getMangaById(source);
+        manga.into(path);
         loopDatabase(source, path);
     }
 
     private void loopDatabase(int source, String path) {
-        List<StarComic> list = mComicDao.queryBuilder()
+        List<FavoriteComic> list = mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source), Properties.Path.eq(path))
                 .limit(1)
                 .list();
         if (!list.isEmpty()) {
-            mStarComic = list.get(0);
-            last_page = mStarComic.getLast_page();
-            last_path = mStarComic.getLast_path();
+            mFavoriteComic = list.get(0);
+            last_page = mFavoriteComic.getLast_page();
+            last_path = mFavoriteComic.getLast_path();
         }
     }
 
     public void onStarClick(int source, String path) {
-        if (mStarComic == null) {
+        if (mFavoriteComic == null) {
             long create = System.currentTimeMillis();
-            mStarComic = new StarComic(null, title, "", source, update, path, create, last_path, last_page);
-            long id = mComicDao.insert(mStarComic);
-            mStarComic.setId(id);
+            mFavoriteComic = new FavoriteComic(null, title, image, source, update, path, create, last_path, last_page);
+            long id = mComicDao.insert(mFavoriteComic);
+            mFavoriteComic.setId(id);
+            EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, mFavoriteComic));
             mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_white_24dp);
             mDetailActivity.showSnackbar("收藏成功 :)");
         } else {
-            mComicDao.delete(mStarComic);
-            mStarComic = null;
+            mComicDao.delete(mFavoriteComic);
+            EventBus.getDefault().post(new EventMessage(EventMessage.UN_FAVORITE_COMIC, mFavoriteComic));
+            mFavoriteComic = null;
             mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_border_white_24dp);
             mDetailActivity.showSnackbar("取消收藏成功 :)");
         }
@@ -79,6 +82,7 @@ public class DetailPresenter extends BasePresenter {
                 List<Chapter> list = (List<Chapter>) msg.getSecond();
                 title = comic.getTitle();
                 update = comic.getUpdate();
+                image = comic.getImage();
                 initView(comic, list);
                 break;
         }
@@ -86,9 +90,10 @@ public class DetailPresenter extends BasePresenter {
 
     private void initView(Comic comic, List<Chapter> list) {
         mDetailActivity.setChapterList(comic, list);
-        int resId = mStarComic != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
+        int resId = mFavoriteComic != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
         mDetailActivity.setStarButtonRes(resId);
         mDetailActivity.setStarButtonVisible();
+        mDetailActivity.hideProgressBar();
         if (list.isEmpty()) {
             mDetailActivity.showSnackbar("此漫画已被屏蔽 :(");
         }
