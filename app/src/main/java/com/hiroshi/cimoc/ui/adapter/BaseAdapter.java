@@ -63,6 +63,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         return mDataSet.get(position);
     }
 
+    public List<T> getDataSet() {
+        return mDataSet;
+    }
+
     @Override
     public int getItemCount() {
         return mDataSet.size();

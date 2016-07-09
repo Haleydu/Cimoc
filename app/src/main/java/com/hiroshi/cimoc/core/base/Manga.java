@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.core.base;
 
-import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.EventMessage;
@@ -50,7 +49,7 @@ public abstract class Manga {
         });
     }
 
-    public void browse(String path) {
+    public void browse(String path, final boolean isNext) {
         String url = parseBrowseUrl(path);
         enqueueClient(url, new OnResponseSuccessHandler() {
             @Override
@@ -58,8 +57,10 @@ public abstract class Manga {
                 String[] images = parseBrowse(html);
                 if (images == null) {
                     EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_FAIL, null));
+                } else if (isNext) {
+                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_NEXT, images));
                 } else {
-                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_SUCCESS, images));
+                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_PREV, images));
                 }
             }
         });

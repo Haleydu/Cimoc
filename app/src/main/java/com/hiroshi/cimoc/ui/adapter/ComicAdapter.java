@@ -5,14 +5,12 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.db.entity.FavoriteComic;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class ComicAdapter extends BaseAdapter<FavoriteComic> {
 
     public class ViewHolder extends BaseViewHolder {
 
-        @BindView(R.id.item_comic_image) ImageView comicImage;
+        @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
         @BindView(R.id.item_comic_source) TextView comicSource;
 
@@ -51,7 +49,7 @@ public class ComicAdapter extends BaseAdapter<FavoriteComic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
-        Picasso.with(mContext).load(comic.getImage()).into(viewHolder.comicImage);
+        viewHolder.comicImage.setImageURI(comic.getImage());
     }
 
     @Override

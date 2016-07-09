@@ -10,12 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
+import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
 import com.hiroshi.db.entity.FavoriteComic;
 
 import java.util.List;
@@ -44,14 +46,21 @@ public class DetailActivity extends BaseActivity {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new DetailPresenter(this);
+        source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
+        mPresenter = new DetailPresenter(this, source);
     }
 
     @Override
     protected void initView() {
+        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext(), source));
         path = getIntent().getStringExtra(EXTRA_PATH);
-        source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
-        mPresenter.loadComic(path, source);
+        mPresenter.loadComic(path);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext()));
     }
 
     @Override
@@ -93,9 +102,18 @@ public class DetailActivity extends BaseActivity {
     public void setChapterList(Comic comic, List<Chapter> list) {
         mChapterAdapter = new ChapterAdapter(this, list, comic.getImage(), comic.getTitle(),
                 comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate());
+        mChapterAdapter.setOnItemClickListener(mPresenter.getOnClickListener());
         mChapterList.setLayoutManager(new GridLayoutManager(this, 4));
         mChapterList.setAdapter(mChapterAdapter);
         mChapterList.addItemDecoration(mChapterAdapter.getItemDecoration());
+    }
+
+    public Chapter getItem(int position) {
+        return mChapterAdapter.getItem(position);
+    }
+
+    public List<Chapter> getChapter() {
+        return mChapterAdapter.getDataSet();
     }
 
     public static Intent createIntent(Context context, Comic comic) {

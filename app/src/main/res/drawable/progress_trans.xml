@@ -17,5 +17,8 @@
             android:startColor="@color/white"
             android:type="sweep"
             android:useLevel="false"/>
+        <size
+            android:width="40dp"
+            android:height="40dp"/>
     </shape>
 </rotate>

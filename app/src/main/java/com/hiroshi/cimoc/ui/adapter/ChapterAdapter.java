@@ -7,12 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
 
     public class HeaderHolder extends BaseViewHolder {
 
-        @BindView(R.id.item_header_comic_image) ImageView mComicImage;
+        @BindView(R.id.item_header_comic_image) SimpleDraweeView mComicImage;
         @BindView(R.id.item_header_comic_title) TextView mComicTitle;
         @BindView(R.id.item_header_comic_intro) TextView mComicIntro;
         @BindView(R.id.item_header_comic_status) TextView mComicStatus;
@@ -92,7 +91,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
 
     @Override
     public Chapter getItem(int position) {
-        return super.getItem(position + 1);
+        return super.getItem(position - 1);
     }
 
     @Override
@@ -109,7 +108,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            Picasso.with(mContext).load(image).into(headerHolder.mComicImage);
+            headerHolder.mComicImage.setImageURI(image);
             headerHolder.mComicTitle.setText(title);
             headerHolder.mComicIntro.setText(intro);
             headerHolder.mComicStatus.setText(status);

@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -16,7 +15,7 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @BindView(R.id.custom_toolbar) protected Toolbar mToolbar;
+    protected Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initToolbar() {
+        mToolbar = (Toolbar) findViewById(R.id.custom_toolbar);
         mToolbar.setTitle(getDefaultTitle());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {

@@ -100,7 +100,7 @@ public class IKanman extends Manga {
                 int count = info.getInt("count");
                 String[] images = new String[count];
                 for (int i = 0; i != count; ++i) {
-                    images[i] = array.getString(i);
+                    images[i] = "http://i.hamreus.com:8080" + array.getString(i);
                 }
                 return images;
             } catch (Exception e) {

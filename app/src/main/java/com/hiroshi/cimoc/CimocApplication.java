@@ -3,6 +3,8 @@ package com.hiroshi.cimoc;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
 import com.hiroshi.db.dao.DaoMaster;
 import com.hiroshi.db.dao.DaoSession;
 
@@ -17,6 +19,7 @@ public class CimocApplication extends Application {
     public void onCreate() {
         super.onCreate();
         initDatabase();
+        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext()));
     }
 
     private void initDatabase() {

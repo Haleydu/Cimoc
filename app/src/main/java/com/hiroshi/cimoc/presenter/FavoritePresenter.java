@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
@@ -24,7 +23,6 @@ public class FavoritePresenter extends BasePresenter {
 
     private FavoriteFragment mFavoriteFragment;
     private FavoriteComicDao mComicDao;
-
 
     public FavoritePresenter(FavoriteFragment fragment) {
         mFavoriteFragment = fragment;
