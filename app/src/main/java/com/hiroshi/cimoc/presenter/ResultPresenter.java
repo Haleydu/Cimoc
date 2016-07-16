@@ -59,7 +59,7 @@ public class ResultPresenter extends BasePresenter {
             @Override
             public void onItemClick(View view, int position) {
                 Comic comic = mResultActivity.getItem(position);
-                Intent intent = DetailActivity.createIntent(mResultActivity, comic);
+                Intent intent = DetailActivity.createIntent(mResultActivity, comic.getSource(), comic.getPath());
                 mResultActivity.startActivity(intent);
             }
         };

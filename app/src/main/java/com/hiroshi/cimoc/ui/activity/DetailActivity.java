@@ -12,13 +12,13 @@ import android.widget.ProgressBar;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
 import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
-import com.hiroshi.db.entity.FavoriteComic;
 
 import java.util.List;
 
@@ -30,35 +30,31 @@ import butterknife.OnClick;
  */
 public class DetailActivity extends BaseActivity {
 
-    public static final String EXTRA_SOURCE = "extra_source";
-    public static final String EXTRA_PATH = "extra_path";
-
     @BindView(R.id.detail_chapter_list) RecyclerView mChapterList;
     @BindView(R.id.detail_coordinator_layout) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
     @BindView(R.id.detail_progress_bar) ProgressBar mProgressBar;
 
     private ChapterAdapter mChapterAdapter;
+    private GridLayoutManager mLayoutManager;
     private DetailPresenter mPresenter;
 
-    private int source;
-    private String path;
+    private int lastChapter;
 
     @Override
     protected void initPresenter() {
-        source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
-        mPresenter = new DetailPresenter(this, source);
+        mPresenter = new DetailPresenter(this);
     }
 
     @Override
     protected void initView() {
-        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext(), source));
-        path = getIntent().getStringExtra(EXTRA_PATH);
-        mPresenter.loadComic(path);
+        mPresenter.loadComic();
+        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext(), mPresenter.getSource()));
     }
 
     @Override
     protected void onDestroy() {
+        mPresenter.saveComic();
         super.onDestroy();
         Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext()));
     }
@@ -79,7 +75,20 @@ public class DetailActivity extends BaseActivity {
     }
 
     @OnClick(R.id.detail_star_btn) void onClick() {
-        mPresenter.onStarClick(source, path);
+        mPresenter.onStarClick();
+    }
+
+    public void setLastChapter(String path) {
+        int nextChapter = mChapterAdapter.getPositionByPath(path);
+        if (lastChapter != nextChapter && nextChapter != -1) {
+            ChapterAdapter.ViewHolder viewHolder = (ChapterAdapter.ViewHolder) mChapterList.findViewHolderForLayoutPosition(nextChapter);
+            viewHolder.select();
+            if (lastChapter != -1) {
+                viewHolder = (ChapterAdapter.ViewHolder) mChapterList.findViewHolderForLayoutPosition(lastChapter);
+                viewHolder.clear();
+            }
+            lastChapter = nextChapter;
+        }
     }
 
     public void setStarButtonRes(int resId) {
@@ -99,35 +108,24 @@ public class DetailActivity extends BaseActivity {
         Snackbar.make(mCoordinatorLayout, msg, Snackbar.LENGTH_SHORT).show();
     }
 
-    public void setChapterList(Comic comic, List<Chapter> list) {
+    public void setChapterList(Comic comic, List<Chapter> list, String last) {
         mChapterAdapter = new ChapterAdapter(this, list, comic.getImage(), comic.getTitle(),
-                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate());
+                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), last);
         mChapterAdapter.setOnItemClickListener(mPresenter.getOnClickListener());
-        mChapterList.setLayoutManager(new GridLayoutManager(this, 4));
+        mLayoutManager = new GridLayoutManager(this, 4);
+        mChapterList.setLayoutManager(mLayoutManager);
         mChapterList.setAdapter(mChapterAdapter);
         mChapterList.addItemDecoration(mChapterAdapter.getItemDecoration());
-    }
-
-    public Chapter getItem(int position) {
-        return mChapterAdapter.getItem(position);
+        lastChapter = mChapterAdapter.getPositionByPath(last);
     }
 
     public List<Chapter> getChapter() {
         return mChapterAdapter.getDataSet();
     }
 
-    public static Intent createIntent(Context context, Comic comic) {
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(EXTRA_PATH, comic.getPath());
-        intent.putExtra(EXTRA_SOURCE, comic.getSource());
-        return intent;
-    }
-
-    public static Intent createIntent(Context context, FavoriteComic comic) {
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(EXTRA_PATH, comic.getPath());
-        intent.putExtra(EXTRA_SOURCE, comic.getSource());
-        return intent;
+    public static Intent createIntent(Context context, int source, String path) {
+        ComicManager.getInstance().initCurrentComic(source, path);
+        return new Intent(context, DetailActivity.class);
     }
 
 }

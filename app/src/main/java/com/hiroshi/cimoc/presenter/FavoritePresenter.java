@@ -30,15 +30,15 @@ public class FavoritePresenter extends BasePresenter {
     }
 
     public List<FavoriteComic> getFavoriteComic() {
-        List<FavoriteComic> list = mComicDao.queryBuilder().list();
-        return list;
+        return mComicDao.queryBuilder().list();
     }
 
     public BaseAdapter.OnItemClickListener getItemClickListener() {
         return new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), mFavoriteFragment.getItem(position));
+                FavoriteComic comic = mFavoriteFragment.getItem(position);
+                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic.getSource(), comic.getPath());
                 mFavoriteFragment.startActivity(intent);
             }
         };

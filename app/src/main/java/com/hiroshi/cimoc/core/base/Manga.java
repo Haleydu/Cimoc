@@ -49,7 +49,11 @@ public abstract class Manga {
         });
     }
 
-    public void browse(String path, final boolean isNext) {
+    public static int MODE_INIT = 1;
+    public static int MODE_NEXT = 2;
+    public static int MODE_PREV = 3;
+
+    public void browse(String path, final int mode) {
         String url = parseBrowseUrl(path);
         enqueueClient(url, new OnResponseSuccessHandler() {
             @Override
@@ -57,7 +61,9 @@ public abstract class Manga {
                 String[] images = parseBrowse(html);
                 if (images == null) {
                     EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_FAIL, null));
-                } else if (isNext) {
+                } else if (mode == MODE_INIT) {
+                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_INIT, images));
+                } else if (mode == MODE_NEXT) {
                     EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_NEXT, images));
                 } else {
                     EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_PREV, images));

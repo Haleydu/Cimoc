@@ -7,12 +7,14 @@ public class EventMessage {
 
     public static final int SEARCH_SUCCESS = 1;
     public static final int LOAD_COMIC_SUCCESS = 2;
-    public static final int PARSE_PIC_PREV = 3;
+    public static final int PARSE_PIC_INIT = 3;
     public static final int PARSE_PIC_NEXT = 4;
-    public static final int PARSE_PIC_FAIL = 5;
-    public static final int NETWORK_ERROR = 6;
-    public static final int FAVORITE_COMIC = 7;
-    public static final int UN_FAVORITE_COMIC = 8;
+    public static final int PARSE_PIC_PREV = 5;
+    public static final int PARSE_PIC_FAIL = 6;
+    public static final int NETWORK_ERROR = 7;
+    public static final int FAVORITE_COMIC = 8;
+    public static final int UN_FAVORITE_COMIC = 9;
+    public static final int LAST_READ = 10;
 
     private int type;
     private Object data;

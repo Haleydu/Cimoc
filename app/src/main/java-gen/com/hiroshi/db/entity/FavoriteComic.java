@@ -14,7 +14,7 @@ public class FavoriteComic {
     private String path;
     private Long create;
     private String last_path;
-    private String last_page;
+    private Integer last_page;
 
     public FavoriteComic() {
     }
@@ -23,7 +23,7 @@ public class FavoriteComic {
         this.id = id;
     }
 
-    public FavoriteComic(Long id, String title, String image, Integer source, String update, String path, Long create, String last_path, String last_page) {
+    public FavoriteComic(Long id, String title, String image, Integer source, String update, String path, Long create, String last_path, Integer last_page) {
         this.id = id;
         this.title = title;
         this.image = image;
@@ -99,11 +99,11 @@ public class FavoriteComic {
         this.last_path = last_path;
     }
 
-    public String getLast_page() {
+    public Integer getLast_page() {
         return last_page;
     }
 
-    public void setLast_page(String last_page) {
+    public void setLast_page(Integer last_page) {
         this.last_page = last_page;
     }
 

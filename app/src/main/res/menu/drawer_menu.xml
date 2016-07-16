@@ -13,7 +13,7 @@
             android:title="@string/drawer_history"/>
         <item
             android:id="@+id/drawer_plug"
-            android:title="@string/drawer_plug"/>
+            android:title="@string/drawer_source"/>
         <item
             android:title="@string/drawer_system">
             <menu>

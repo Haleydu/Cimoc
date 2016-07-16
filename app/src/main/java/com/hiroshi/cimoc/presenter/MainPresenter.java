@@ -9,7 +9,7 @@ import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.ui.fragment.PlugFragment;
+import com.hiroshi.cimoc.ui.fragment.SourceFragment;
 import com.hiroshi.cimoc.utils.EventMessage;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -28,7 +28,7 @@ public class MainPresenter extends BasePresenter {
     private CimocFragment mCimocFragment;
     private FavoriteFragment mFavoriteFragment;
     private HistoryFragment mHistoryFragment;
-    private PlugFragment mPlugFragment;
+    private SourceFragment mSourceFragment;
     private Fragment mCurrentFragment;
     
     public MainPresenter(MainActivity activity) {

@@ -24,7 +24,9 @@
 
         <activity android:name=".ui.activity.DetailActivity"/>
 
-        <activity android:name=".ui.activity.ReaderActivity"/>
+        <activity
+            android:name=".ui.activity.ReaderActivity"
+            android:theme="@style/ReaderTheme"/>
 
     </application>
 

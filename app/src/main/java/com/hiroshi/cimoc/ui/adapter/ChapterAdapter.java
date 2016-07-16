@@ -1,9 +1,11 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,12 +31,24 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     private String update;
     private String author;
 
+    private String last;
+
     public class ViewHolder extends BaseViewHolder {
 
         @BindView(R.id.item_chapter_button) Button chapterButton;
 
         public ViewHolder(View view) {
             super(view);
+        }
+
+        public void select() {
+            chapterButton.setBackgroundResource(R.drawable.button_chapter_checked);
+            chapterButton.setTextColor(Color.WHITE);
+        }
+
+        public void clear() {
+            chapterButton.setBackgroundResource(R.drawable.button_chapter);
+            chapterButton.setTextColor(Color.parseColor("#7F7F80"));
         }
 
     }
@@ -54,7 +68,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
 
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, String status, String update) {
+    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, String status, String update, String last) {
         super(context, list);
         this.image = image;
         this.title = title;
@@ -62,6 +76,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         this.status = status;
         this.update = update;
         this.author = author;
+        this.last = last;
     }
 
     @Override
@@ -77,6 +92,18 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
                 }
             }
         };
+    }
+
+    public int getPositionByPath(String path) {
+        if (path == null) {
+            return -1;
+        }
+        for (int i = 0; i != mDataSet.size(); ++i) {
+            if (mDataSet.get(i).getPath().equals(path)) {
+                return i + 1;
+            }
+        }
+        return -1;
     }
 
     @Override
@@ -117,6 +144,9 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         } else {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
+            if (last != null && last.equals(chapter.getPath())) {
+                viewHolder.select();
+            }
             viewHolder.chapterButton.setText(chapter.getTitle());
         }
     }
@@ -132,4 +162,5 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
             }
         });
     }
+
 }

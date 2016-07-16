@@ -25,7 +25,7 @@ public class FavoriteComicGenerator {
         entity.addStringProperty("path");
         entity.addLongProperty("create");
         entity.addStringProperty("last_path");
-        entity.addStringProperty("last_page");
+        entity.addIntProperty("last_page");
 
         new DaoGenerator().generateAll(schema, outDir);
     }

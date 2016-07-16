@@ -12,7 +12,6 @@
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
@@ -32,6 +31,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+        <com.hiroshi.cimoc.ui.custom.MiniClockText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:textSize="12sp"/>
     </LinearLayout>

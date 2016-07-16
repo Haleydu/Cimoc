@@ -24,7 +24,6 @@ public class ReaderActivity extends BaseActivity {
 
     public static final String EXTRA_CHAPTERS = "extra_chapters";
     public static final String EXTRA_POSITION = "extra_position";
-    public static final String EXTRA_SOURCE = "extra_source";
 
     @BindView(R.id.reader_view_pager) ViewPager mViewPager;
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
@@ -32,26 +31,16 @@ public class ReaderActivity extends BaseActivity {
 
     private PicturePagerAdapter mPagerAdapter;
     private ReaderPresenter mPresenter;
-    private ArrayList<Chapter> mChapterList;
-    private List<Information> mInformation;
-
-    private int prev;
-    private int next;
 
     @Override
     protected void initView() {
         mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater());
-        mInformation = new LinkedList<>();
         mViewPager.addOnPageChangeListener(mPresenter.getPageChangeListener());
         mViewPager.setOffscreenPageLimit(8);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(0);
 
-        int pos = getIntent().getIntExtra(EXTRA_POSITION, 1);
-        prev = pos + 1;
-        next = pos;
-        mChapterList = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTERS);
-        mPresenter.initPicture(mChapterList.get(pos).getPath());
+        mPresenter.initPicture();
     }
 
     @Override
@@ -59,8 +48,15 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     protected void initPresenter() {
-        int source =  getIntent().getIntExtra(EXTRA_SOURCE, 0);
-        mPresenter = new ReaderPresenter(this, source);
+        int position = getIntent().getIntExtra(EXTRA_POSITION, 1);
+        ArrayList<Chapter> list = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTERS);
+        mPresenter = new ReaderPresenter(this, list, position);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.setLastRead();
+        super.onDestroy();
     }
 
     @Override
@@ -78,70 +74,44 @@ public class ReaderActivity extends BaseActivity {
         return R.layout.activity_reader;
     }
 
-    public String getPrevPath() {
-        if (prev < mChapterList.size()) {
-            return mChapterList.get(prev).getPath();
-        }
-        return null;
-    }
-
-    public String getNextPath() {
-        if (next > 0) {
-            return mChapterList.get(next).getPath();
-        }
-        return null;
-    }
-
     public int getCount() {
         return mPagerAdapter.getCount();
     }
 
-    public void setPrevImage(String[] array) {
-        mPagerAdapter.setOffset(array.length);
+    public void setInitImage(String[] array, boolean absence) {
+        mPagerAdapter.setAbsence(absence);
+        mPagerAdapter.setNextImages(array);
+        mViewPager.setCurrentItem(1, false);
+    }
+
+    public void setPrevImage(String[] array, boolean absence) {
+        mPagerAdapter.setAbsence(absence);
         mPagerAdapter.setPrevImages(array);
-        mInformation.add(0, new Information(mChapterList.get(prev).getTitle(), array.length));
-        ++prev;
+        mViewPager.setCurrentItem(array.length, false);
     }
 
     public void setNextImage(String[] array) {
-        mPagerAdapter.setOffset(0);
         mPagerAdapter.setNextImages(array);
-        mInformation.add(new Information(mChapterList.get(next).getTitle(), array.length));
-        --next;
     }
 
-    public void setInformation(int position) {
-        int count = 0;
-        for (Information info : mInformation) {
-            if (count + info.page > position) {
-                int current = position - count + 1;
-                mChapterTitle.setText(info.title);
-                String page = current + "/" + info.page;
-                mChapterPage.setText(page);
-                break;
-            }
-            count += info.page;
-        }
+    public void clearInformation() {
+        mChapterTitle.setText(null);
+        mChapterPage.setText(null);
     }
 
-    public static Intent createIntent(Context context, ArrayList<Chapter> chapters, int position, int source) {
+    public void setInformation(String title, int cur, int page) {
+        mChapterTitle.setText(title);
+        String str = cur + "/" + page;
+        mChapterPage.setText(str);
+    }
+
+    public static Intent createIntent(Context context, ArrayList<Chapter> chapters, int position) {
         Intent intent = new Intent(context, ReaderActivity.class);
         intent.putExtra(EXTRA_CHAPTERS, chapters);
         intent.putExtra(EXTRA_POSITION, position);
-        intent.putExtra(EXTRA_SOURCE, source);
         return intent;
     }
 
-    private static class Information {
 
-        String title;
-        int page;
-
-        Information(String title, int page) {
-            this.title = title;
-            this.page = page;
-        }
-
-    }
 
 }

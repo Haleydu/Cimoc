@@ -15,7 +15,7 @@
             <corners android:radius="18dp"/>
             <stroke
                 android:color="@color/grey"
-                android:width="1dp"/>Z
+                android:width="1dp"/>
         </shape>
     </item>
 </selector>

@@ -5,7 +5,7 @@
     <string name="drawer_main">Cimoc</string>
     <string name="drawer_comic">我的漫画</string>
     <string name="drawer_history">历史浏览</string>
-    <string name="drawer_plug">插件管理</string>
+    <string name="drawer_source">图源管理</string>
     <string name="drawer_system">系统选项</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
@@ -17,5 +17,7 @@
     <string name="result_source">来源：</string>
 
     <string name="detail_header_update">最后更新：</string>
+
+    <string name="reader_absence">前面没有了 :(</string>
 
 </resources>

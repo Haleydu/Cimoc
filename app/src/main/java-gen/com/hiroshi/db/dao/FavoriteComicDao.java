@@ -31,7 +31,7 @@ public class FavoriteComicDao extends AbstractDao<FavoriteComic, Long> {
         public final static Property Path = new Property(5, String.class, "path", false, "PATH");
         public final static Property Create = new Property(6, Long.class, "create", false, "CREATE");
         public final static Property Last_path = new Property(7, String.class, "last_path", false, "LAST_PATH");
-        public final static Property Last_page = new Property(8, String.class, "last_page", false, "LAST_PAGE");
+        public final static Property Last_page = new Property(8, Integer.class, "last_page", false, "LAST_PAGE");
     };
 
 
@@ -55,7 +55,7 @@ public class FavoriteComicDao extends AbstractDao<FavoriteComic, Long> {
                 "\"PATH\" TEXT," + // 5: path
                 "\"CREATE\" INTEGER," + // 6: create
                 "\"LAST_PATH\" TEXT," + // 7: last_path
-                "\"LAST_PAGE\" TEXT);"); // 8: last_page
+                "\"LAST_PAGE\" INTEGER);"); // 8: last_page
     }
 
     /** Drops the underlying database table. */
@@ -109,9 +109,9 @@ public class FavoriteComicDao extends AbstractDao<FavoriteComic, Long> {
             stmt.bindString(8, last_path);
         }
  
-        String last_page = entity.getLast_page();
+        Integer last_page = entity.getLast_page();
         if (last_page != null) {
-            stmt.bindString(9, last_page);
+            stmt.bindLong(9, last_page);
         }
     }
 
@@ -133,7 +133,7 @@ public class FavoriteComicDao extends AbstractDao<FavoriteComic, Long> {
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // path
             cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // create
             cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // last_path
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // last_page
+            cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8) // last_page
         );
         return entity;
     }
@@ -149,7 +149,7 @@ public class FavoriteComicDao extends AbstractDao<FavoriteComic, Long> {
         entity.setPath(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setCreate(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
         entity.setLast_path(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
-        entity.setLast_page(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setLast_page(cursor.isNull(offset + 8) ? null : cursor.getInt(offset + 8));
      }
     
     /** @inheritdoc */
