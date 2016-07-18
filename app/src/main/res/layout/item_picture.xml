@@ -7,4 +7,8 @@
     android:layout_height="match_parent"
     fresco:actualImageScaleType="fitCenter"
     fresco:progressBarImage="@drawable/progress_trans"
-    fresco:progressBarImageScaleType="center"/>
+    fresco:progressBarImageScaleType="center"
+    fresco:retryImage="@drawable/ic_replay_white_24dp"
+    fresco:retryImageScaleType="center"
+    fresco:failureImage="@drawable/ic_clear_white_24dp"
+    fresco:failureImageScaleType="center"/>

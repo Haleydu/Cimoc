@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.db.entity.FavoriteComic;
+import com.hiroshi.db.entity.ComicRecord;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class ComicAdapter extends BaseAdapter<FavoriteComic> {
+public class ComicAdapter extends BaseAdapter<ComicRecord> {
 
     public class ViewHolder extends BaseViewHolder {
 
@@ -33,7 +33,7 @@ public class ComicAdapter extends BaseAdapter<FavoriteComic> {
 
     }
 
-    public ComicAdapter(Context context, List<FavoriteComic> list) {
+    public ComicAdapter(Context context, List<ComicRecord> list) {
         super(context, list);
     }
 
@@ -45,7 +45,7 @@ public class ComicAdapter extends BaseAdapter<FavoriteComic> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        FavoriteComic comic = mDataSet.get(position);
+        ComicRecord comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
@@ -63,11 +63,7 @@ public class ComicAdapter extends BaseAdapter<FavoriteComic> {
     }
 
     public void removeById(long id) {
-        for (FavoriteComic comic : mDataSet) {
-            if (comic.getId() == id) {
-                remove(comic);
-            }
-        }
+        remove(new ComicRecord(id));
     }
 
 }

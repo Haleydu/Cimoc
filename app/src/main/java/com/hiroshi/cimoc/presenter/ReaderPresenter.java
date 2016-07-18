@@ -30,6 +30,9 @@ public class ReaderPresenter extends BasePresenter {
     private int prev;
     private int next;
 
+    private int current;
+    private int index;
+
     public ReaderPresenter(ReaderActivity activity, ArrayList<Chapter> list, int position) {
         mReaderActivity = activity;
         mChapterList = list;
@@ -38,6 +41,8 @@ public class ReaderPresenter extends BasePresenter {
         mManga = Kami.getMangaById(mComicManager.getSource());
         prev = position + 1;
         next = position;
+        index = position;
+        current = 1;
     }
 
     public void initPicture() {
@@ -45,8 +50,6 @@ public class ReaderPresenter extends BasePresenter {
         mManga.browse(mChapterList.get(next).getPath(), Manga.MODE_INIT);
     }
 
-    private int current;
-    private int index;
 
     public OnPageChangeListener getPageChangeListener() {
         return new OnPageChangeListener() {
@@ -79,8 +82,8 @@ public class ReaderPresenter extends BasePresenter {
         };
     }
 
-    public void setLastRead() {
-        mComicManager.setLastRead(mChapterList.get(index).getPath(), current);
+    public void setLastPage() {
+        mComicManager.setLastPage(current);
     }
 
     private void setCurrent(int position) {
@@ -88,7 +91,10 @@ public class ReaderPresenter extends BasePresenter {
         for (int i = prev - 1; i > next; --i) {
             if (count + mPageArray[i] > position) {
                 current = position - count + 1;
-                index = i;
+                if (index != i) {
+                    mComicManager.setLastPath(mChapterList.get(i).getPath());
+                    index = i;
+                }
                 break;
             }
             count += mPageArray[i];
@@ -103,6 +109,7 @@ public class ReaderPresenter extends BasePresenter {
                 array = (String[]) msg.getData();
                 mReaderActivity.setInitImage(array, next == mChapterList.size() - 1);
                 mReaderActivity.setInformation(mChapterList.get(next).getTitle(), 1, array.length);
+                mComicManager.setLastPath(mChapterList.get(next).getPath());
                 mPageArray[next] = array.length;
                 current = 1;
                 index = next;

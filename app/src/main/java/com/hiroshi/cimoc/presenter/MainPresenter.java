@@ -41,10 +41,13 @@ public class MainPresenter extends BasePresenter {
         mFragmentManager = mMainActivity.getFragmentManager();
         mCimocFragment = new CimocFragment();
         mFavoriteFragment = new FavoriteFragment();
+        mHistoryFragment = new HistoryFragment();
         mFragmentManager.beginTransaction()
                 .add(R.id.main_fragment_container, mCimocFragment)
                 .add(R.id.main_fragment_container, mFavoriteFragment)
+                .add(R.id.main_fragment_container, mHistoryFragment)
                 .hide(mFavoriteFragment)
+                .hide(mHistoryFragment)
                 .commit();
         mCurrentFragment = mCimocFragment;
         mCheckedItem = R.id.drawer_main;
@@ -71,6 +74,8 @@ public class MainPresenter extends BasePresenter {
             case R.id.drawer_comic:
                 mCurrentFragment = mFavoriteFragment;
                 break;
+            case R.id.drawer_history:
+                mCurrentFragment = mHistoryFragment;
         }
         mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
         mMainActivity.hideProgressBar();

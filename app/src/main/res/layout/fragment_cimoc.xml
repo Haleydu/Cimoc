@@ -29,7 +29,8 @@
                     android:id="@+id/main_keyword_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
                     android:textSize="14sp"
                     android:textColor="@color/white"/>
             </android.support.design.widget.TextInputLayout>

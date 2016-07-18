@@ -42,6 +42,17 @@ public class DetailActivity extends BaseActivity {
     private int lastChapter;
 
     @Override
+    protected void initToolbar() {
+        super.initToolbar();
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    @Override
     protected void initPresenter() {
         mPresenter = new DetailPresenter(this);
     }
@@ -124,7 +135,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     public static Intent createIntent(Context context, int source, String path) {
-        ComicManager.getInstance().initCurrentComic(source, path);
+        ComicManager.getInstance().initComic(source, path);
         return new Intent(context, DetailActivity.class);
     }
 

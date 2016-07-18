@@ -6,7 +6,7 @@ import android.view.View;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
+import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.utils.EventMessage;
 import com.hiroshi.db.entity.ComicRecord;
 
@@ -16,29 +16,29 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 /**
- * Created by Hiroshi on 2016/7/6.
+ * Created by Hiroshi on 2016/7/18.
  */
-public class FavoritePresenter extends BasePresenter {
+public class HistoryPresenter extends BasePresenter {
 
-    private FavoriteFragment mFavoriteFragment;
+    private HistoryFragment mHistoryFragment;
     private ComicManager mComicManager;
 
-    public FavoritePresenter(FavoriteFragment fragment) {
-        mFavoriteFragment = fragment;
+    public HistoryPresenter(HistoryFragment fragment) {
+        mHistoryFragment = fragment;
         mComicManager = ComicManager.getInstance();
     }
 
     public List<ComicRecord> getComicRecord() {
-        return mComicManager.listFavorite();
+        return mComicManager.listHistory();
     }
 
     public BaseAdapter.OnItemClickListener getItemClickListener() {
         return new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                ComicRecord comic = mFavoriteFragment.getItem(position);
-                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic.getSource(), comic.getPath());
-                mFavoriteFragment.startActivity(intent);
+                ComicRecord comic = mHistoryFragment.getItem(position);
+                Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic.getSource(), comic.getPath());
+                mHistoryFragment.startActivity(intent);
             }
         };
     }
@@ -46,13 +46,9 @@ public class FavoritePresenter extends BasePresenter {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
-            case EventMessage.FAVORITE_COMIC:
+            case EventMessage.HISTORY_COMIC:
                 ComicRecord comic = (ComicRecord) msg.getData();
-                mFavoriteFragment.addItem(comic);
-                break;
-            case EventMessage.UN_FAVORITE_COMIC:
-                long id = (Long) msg.getData();
-                mFavoriteFragment.removeItem(id);
+                mHistoryFragment.updateItem(comic);
                 break;
         }
     }

@@ -13,7 +13,6 @@ import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -55,7 +54,7 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        mPresenter.setLastRead();
+        mPresenter.setLastPage();
         super.onDestroy();
     }
 

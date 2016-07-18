@@ -8,12 +8,15 @@ import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
 import com.hiroshi.db.dao.DaoMaster;
 import com.hiroshi.db.dao.DaoSession;
 
+import okhttp3.OkHttpClient;
+
 /**
  * Created by Hiroshi on 2016/7/5.
  */
 public class CimocApplication extends Application {
 
     private static DaoSession daoSession;
+    private static OkHttpClient httpClient;
 
     @Override
     public void onCreate() {
@@ -30,6 +33,13 @@ public class CimocApplication extends Application {
 
     public static DaoSession getDaoSession() {
         return daoSession;
+    }
+
+    public static OkHttpClient getHttpClient() {
+        if (httpClient == null) {
+            httpClient = new OkHttpClient();
+        }
+        return httpClient;
     }
 
 }

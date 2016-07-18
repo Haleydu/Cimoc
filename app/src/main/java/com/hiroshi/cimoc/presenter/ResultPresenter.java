@@ -28,6 +28,7 @@ public class ResultPresenter extends BasePresenter {
     private String keyword;
     private int page;
     private boolean isLoading;
+    private boolean isInit;
 
     public ResultPresenter(ResultActivity activity, int source, String keyword) {
         this.mResultActivity = activity;
@@ -35,6 +36,7 @@ public class ResultPresenter extends BasePresenter {
         this.keyword = keyword;
         this.page = 1;
         this.isLoading = false;
+        this.isInit = true;
     }
 
     public RecyclerView.OnScrollListener getScrollListener() {
@@ -74,11 +76,18 @@ public class ResultPresenter extends BasePresenter {
         switch (msg.getType()) {
             case EventMessage.SEARCH_SUCCESS:
                 List list = (List<Comic>) msg.getData();
+                mResultActivity.hideProgressBar();
                 if (!list.isEmpty()) {
                     mResultActivity.addAll(list);
-                    mResultActivity.hideProgressBar();
                     isLoading = false;
+                    isInit = false;
+                } else if (isInit) {
+                    mResultActivity.showSnackbar("搜索结果为空 :)");
                 }
+                break;
+            case EventMessage.NETWORK_ERROR:
+                mResultActivity.hideProgressBar();
+                mResultActivity.showSnackbar("网络错误 :(");
                 break;
         }
     }

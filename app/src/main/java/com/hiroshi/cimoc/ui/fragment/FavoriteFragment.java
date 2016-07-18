@@ -8,7 +8,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
-import com.hiroshi.db.entity.FavoriteComic;
+import com.hiroshi.db.entity.ComicRecord;
 
 import butterknife.BindView;
 
@@ -17,15 +17,16 @@ import butterknife.BindView;
  */
 public class FavoriteFragment extends BaseFragment {
 
-    @BindView(R.id.comic_list) RecyclerView mComicList;
+    @BindView(R.id.favorite_comic_list) RecyclerView mComicList;
 
     private ComicAdapter mComicAdapter;
     private FavoritePresenter mPresenter;
 
     @Override
     protected void initView() {
-        mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getFavoriteComic());
+        mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getComicRecord());
         mComicAdapter.setOnItemClickListener(mPresenter.getItemClickListener());
+        mComicList.setItemAnimator(null);
         mComicList.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mComicList.setItemAnimator(new DefaultItemAnimator());
         mComicList.setAdapter(mComicAdapter);
@@ -47,12 +48,12 @@ public class FavoriteFragment extends BaseFragment {
         mPresenter = new FavoritePresenter(this);
     }
 
-    public FavoriteComic getItem(int position) {
+    public ComicRecord getItem(int position) {
         return mComicAdapter.getItem(position);
     }
 
-    public void addItem(FavoriteComic comic) {
-        mComicAdapter.add(comic);
+    public void addItem(ComicRecord comic) {
+        mComicAdapter.add(0, comic);
     }
 
     public void removeItem(long id) {

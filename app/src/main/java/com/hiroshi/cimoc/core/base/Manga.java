@@ -1,9 +1,9 @@
 package com.hiroshi.cimoc.core.base;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.EventMessage;
-import com.hiroshi.cimoc.utils.YuriClient;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -13,6 +13,8 @@ import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 
 /**
@@ -20,10 +22,10 @@ import okhttp3.Response;
  */
 public abstract class Manga {
 
-    private YuriClient client;
+    private OkHttpClient client;
 
     public Manga() {
-        client = YuriClient.getInstance();
+        client = CimocApplication.getHttpClient();
     }
 
     public void search(String keyword, int page) {
@@ -73,7 +75,10 @@ public abstract class Manga {
     }
 
     public void enqueueClient(String url, final OnResponseSuccessHandler handler) {
-        client.enqueue(url, new Callback() {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 EventBus.getDefault().post(new EventMessage(EventMessage.NETWORK_ERROR, null));

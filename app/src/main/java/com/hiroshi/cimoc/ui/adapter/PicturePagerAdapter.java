@@ -4,6 +4,7 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.R;
@@ -72,16 +73,22 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        if (position == 0 && absence) {
-            View child = inflater.inflate(R.layout.item_absence, container, false);
-            container.addView(child, 0);
-            return child;
+        View child;
+        if (position == 0) {
+            child = inflater.inflate(R.layout.item_picture_msg, container, false);
+            TextView textView = (TextView) child.findViewById(R.id.picture_msg);
+            if (absence) {
+                textView.setText("前面没有了 :(");
+            } else {
+                textView.setText("等待加载中...");
+            }
+        } else {
+            child = inflater.inflate(R.layout.item_picture, container, false);
+            ZoomableDraweeView draweeView = (ZoomableDraweeView) child.findViewById(R.id.picture_image_view);
+            draweeView.setController(Fresco.newDraweeControllerBuilder().setUri(images.get(position)).setTapToRetryEnabled(true).build());
         }
-        View child = inflater.inflate(R.layout.item_picture, container, false);
-        ZoomableDraweeView draweeView = (ZoomableDraweeView) child.findViewById(R.id.picture_image_view);
         child.setTag(position);
-        draweeView.setController(Fresco.newDraweeControllerBuilder().setUri(images.get(position)).build());
-        container.addView(child, 0);
+        container.addView(child);
         return child;
     }
 

@@ -1,9 +1,13 @@
 package com.hiroshi.cimoc.ui.fragment;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
@@ -20,6 +24,7 @@ public class CimocFragment extends BaseFragment {
 
     @BindView(R.id.main_text_layout) TextInputLayout mInputLayout;
     @BindView(R.id.main_keyword_input) EditText mEditText;
+    @BindView(R.id.main_search_btn) FloatingActionButton mSearchBtn;
 
     @OnClick(R.id.main_search_btn) void onClick() {
         String keyword = mEditText.getText().toString();
@@ -41,6 +46,16 @@ public class CimocFragment extends BaseFragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    mSearchBtn.performClick();
+                    return true;
+                }
+                return false;
+            }
         });
     }
 

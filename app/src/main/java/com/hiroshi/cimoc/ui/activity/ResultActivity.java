@@ -2,11 +2,14 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
@@ -29,6 +32,7 @@ public class ResultActivity extends BaseActivity {
 
     @BindView(R.id.result_comic_list) RecyclerView mResultList;
     @BindView(R.id.result_progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.result_layout) LinearLayout mLinearLayout;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -39,6 +43,17 @@ public class ResultActivity extends BaseActivity {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
         mPresenter = new ResultPresenter(this, source, keyword);
+    }
+
+    @Override
+    protected void initToolbar() {
+        super.initToolbar();
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -74,6 +89,10 @@ public class ResultActivity extends BaseActivity {
             mProgressBar.setVisibility(View.GONE);
             mResultList.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void showSnackbar(String msg) {
+        Snackbar.make(mLinearLayout, msg, Snackbar.LENGTH_SHORT).show();
     }
 
     public void addAll(List<Comic> list) {

@@ -61,11 +61,11 @@ public class DetailPresenter extends BasePresenter {
 
     public void onStarClick() {
         if (mComicManager.isComicStar()) {
-            mComicManager.unstarCurrentComic();
+            mComicManager.unfavoriteComic();
             mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_border_white_24dp);
             mDetailActivity.showSnackbar("取消收藏成功 :)");
         } else {
-            mComicManager.starCurrentComic();
+            mComicManager.favoriteComic();
             mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_white_24dp);
             mDetailActivity.showSnackbar("收藏成功 :)");
         }
@@ -77,12 +77,16 @@ public class DetailPresenter extends BasePresenter {
             case EventMessage.LOAD_COMIC_SUCCESS:
                 Comic comic = (Comic) msg.getData();
                 List<Chapter> list = (List<Chapter>) msg.getSecond();
-                mComicManager.setBasicInfo(comic.getTitle(), comic.getTitle(), comic.getImage());
+                mComicManager.setBasicInfo(comic.getTitle(), comic.getImage(), comic.getUpdate());
                 initView(comic, list);
                 break;
-            case EventMessage.LAST_READ:
+            case EventMessage.CHANGE_LAST_PATH:
                 String path = (String) msg.getData();
                 mDetailActivity.setLastChapter(path);
+                break;
+            case EventMessage.NETWORK_ERROR:
+                mDetailActivity.hideProgressBar();
+                mDetailActivity.showSnackbar("网络错误 :(");
                 break;
         }
     }
