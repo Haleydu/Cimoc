@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.support.v4.view.PagerAdapter;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +21,16 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     private List<String> images;
     private LayoutInflater inflater;
+    private SimpleOnGestureListener listener;
     private int offset;
     private boolean absence;
 
-    public PicturePagerAdapter(List<String> images, LayoutInflater inflater) {
+    public PicturePagerAdapter(List<String> images, LayoutInflater inflater, SimpleOnGestureListener listener) {
         this.images = images;
         this.images.add("");
         this.offset = 0;
         this.inflater = inflater;
+        this.listener = listener;
     }
 
     public void setAbsence(boolean absence) {
@@ -86,6 +89,7 @@ public class PicturePagerAdapter extends PagerAdapter {
             child = inflater.inflate(R.layout.item_picture, container, false);
             ZoomableDraweeView draweeView = (ZoomableDraweeView) child.findViewById(R.id.picture_image_view);
             draweeView.setController(Fresco.newDraweeControllerBuilder().setUri(images.get(position)).setTapToRetryEnabled(true).build());
+            draweeView.setTapListener(listener);
         }
         child.setTag(position);
         container.addView(child);

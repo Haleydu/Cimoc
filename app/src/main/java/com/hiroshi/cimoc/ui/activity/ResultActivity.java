@@ -5,16 +5,15 @@ import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 
 import java.util.LinkedList;
@@ -63,10 +62,18 @@ public class ResultActivity extends BaseActivity {
         mResultList.setLayoutManager(mLayoutManager);
         mResultList.setAdapter(mResultAdapter);
         mResultList.addItemDecoration(mResultAdapter.getItemDecoration());
-        mResultList.setOnScrollListener(mPresenter.getScrollListener());
-        mResultAdapter.setOnItemClickListener(mPresenter.getItemClickListener());
-
-        mPresenter.initManga();
+        mResultList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                mPresenter.onScrolled(dy);
+            }
+        });
+        mResultAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                mPresenter.onItemClick(position);
+            }
+        });
     }
 
     @Override

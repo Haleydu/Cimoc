@@ -1,8 +1,9 @@
 package com.hiroshi.cimoc.presenter;
 
 import android.content.Intent;
-import android.view.View;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.core.Kami;
@@ -10,8 +11,8 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.activity.ReaderActivity;
-import com.hiroshi.cimoc.ui.adapter.BaseAdapter.OnItemClickListener;
 import com.hiroshi.cimoc.utils.EventMessage;
+import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -32,31 +33,28 @@ public class DetailPresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public void loadComic() {
-        int source = mComicManager.getSource();
-        String path = mComicManager.getPath();
-        Kami.getMangaById(source).into(path);
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Fresco.initialize(CimocApplication.getContext(),
+                ImagePipelineConfigFactory.getImagePipelineConfig(CimocApplication.getContext(), mComicManager.getSource()));
+        Kami.getMangaById(mComicManager.getSource()).into(mComicManager.getPath());
     }
 
-    public void saveComic() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         mComicManager.saveAndClearComic();
+        Fresco.initialize(CimocApplication.getContext(),
+                ImagePipelineConfigFactory.getImagePipelineConfig(CimocApplication.getContext()));
     }
 
-    public int getSource() {
-        return mComicManager.getSource();
-    }
-
-    public OnItemClickListener getOnClickListener() {
-        return new OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position != 0) {
-                    ArrayList<Chapter> chapters = new ArrayList<>(mDetailActivity.getChapter());
-                    Intent intent = ReaderActivity.createIntent(mDetailActivity, chapters, position - 1);
-                    mDetailActivity.startActivity(intent);
-                }
-            }
-        };
+    public void onItemClick(int position) {
+        if (position != 0) {
+            ArrayList<Chapter> chapters = new ArrayList<>(mDetailActivity.getChapter());
+            Intent intent = ReaderActivity.createIntent(mDetailActivity, chapters, position - 1);
+            mDetailActivity.startActivity(intent);
+        }
     }
 
     public void onStarClick() {

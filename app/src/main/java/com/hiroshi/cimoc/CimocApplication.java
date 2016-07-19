@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -17,18 +18,21 @@ public class CimocApplication extends Application {
 
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
+    private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initDatabase();
-        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext()));
+        context = getApplicationContext();
+        Fresco.initialize(context, ImagePipelineConfigFactory.getImagePipelineConfig(context));
     }
 
     private void initDatabase() {
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "cimoc.db", null);
         SQLiteDatabase db = helper.getWritableDatabase();
         daoSession = new DaoMaster(db).newSession();
+
     }
 
     public static DaoSession getDaoSession() {
@@ -40,6 +44,10 @@ public class CimocApplication extends Application {
             httpClient = new OkHttpClient();
         }
         return httpClient;
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
 }

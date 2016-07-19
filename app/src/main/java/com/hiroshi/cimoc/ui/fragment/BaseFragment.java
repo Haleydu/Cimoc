@@ -24,7 +24,7 @@ public abstract class BaseFragment extends Fragment {
         ButterKnife.bind(this, view);
         initPresenter();
         if (getPresenter() != null) {
-            getPresenter().register();
+            getPresenter().onCreate();
         }
         initView();
         return view;
@@ -34,7 +34,7 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         if (getPresenter() != null) {
-            getPresenter().unregister();
+            getPresenter().onDestroy();
         }
     }
 

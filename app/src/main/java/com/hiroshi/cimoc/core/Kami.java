@@ -8,36 +8,45 @@ import com.hiroshi.cimoc.core.base.Manga;
 public class Kami {
 
     public static final int SOURCE_IKANMAN = 1;
+    public static final int SOURCE_DMZJ = 2;
 
     public static String getSourceById(int id) {
         switch (id) {
             case SOURCE_IKANMAN:
                 return "看漫画";
+            case SOURCE_DMZJ:
+                return "动漫之家";
             default:
                 return "";
         }
     }
 
-    public static String getHostById(int id) {
+    public static String getRefererById(int id) {
         switch (id) {
+            default:
             case SOURCE_IKANMAN:
                 return "http://m.ikanman.com";
-            default:
-                return "";
+            case SOURCE_DMZJ:
+                return "http://manhua.dmzj.com/";
         }
     }
 
     private static IKanman mIKanman;
+    private static Dmzj mDmzj;
 
     public static Manga getMangaById(int id) {
         switch (id) {
+            default:
             case SOURCE_IKANMAN:
                 if (mIKanman == null) {
                     mIKanman = new IKanman();
                 }
                 return mIKanman;
-            default:
-                return null;
+            case SOURCE_DMZJ:
+                if (mDmzj == null) {
+                    mDmzj = new Dmzj();
+                }
+                return mDmzj;
         }
     }
 

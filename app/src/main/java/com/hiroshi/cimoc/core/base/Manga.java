@@ -30,13 +30,17 @@ public abstract class Manga {
 
     public void search(String keyword, int page) {
         String url = parseSearchUrl(keyword, page);
-        enqueueClient(url, new OnResponseSuccessHandler() {
-            @Override
-            public void onSuccess(String html) {
-                List<Comic> list = parseSearch(html);
-                EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, list));
-            }
-        });
+        if (url == null) {
+            EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, new LinkedList<>()));
+        } else {
+            enqueueClient(url, new OnResponseSuccessHandler() {
+                @Override
+                public void onSuccess(String html) {
+                    List<Comic> list = parseSearch(html);
+                    EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, list));
+                }
+            });
+        }
     }
 
     public void into(String path) {

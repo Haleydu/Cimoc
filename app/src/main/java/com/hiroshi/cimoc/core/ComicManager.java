@@ -60,6 +60,7 @@ public class ComicManager {
     }
 
     public void setLastPath(String path) {
+        mComicRecord.setHistory(System.currentTimeMillis());
         mComicRecord.setLast_path(path);
         if (!isComicExist()) {
             long id = mComicDao.insert(mComicRecord);
@@ -69,7 +70,6 @@ public class ComicManager {
     }
 
     public void setLastPage(int page) {
-        mComicRecord.setHistory(System.currentTimeMillis());
         mComicRecord.setLast_page(page);
         EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, mComicRecord));
     }

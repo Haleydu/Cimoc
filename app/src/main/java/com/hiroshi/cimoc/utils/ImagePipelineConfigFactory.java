@@ -21,6 +21,7 @@ public class ImagePipelineConfigFactory {
 
     private static ImagePipelineConfig defaultConfig;
     private static ImagePipelineConfig ikanmanConfig;
+    private static ImagePipelineConfig dmzjConfig;
 
     private ImagePipelineConfigFactory() {}
 
@@ -32,6 +33,12 @@ public class ImagePipelineConfigFactory {
                     ikanmanConfig = buildConfig(context, client);
                 }
                 return ikanmanConfig;
+            case Kami.SOURCE_DMZJ:
+                if (dmzjConfig == null) {
+                    OkHttpClient client = getHeaderClient(source);
+                    dmzjConfig = buildConfig(context, client);
+                }
+                return dmzjConfig;
             default:
                 return getImagePipelineConfig(context);
         }
@@ -55,7 +62,7 @@ public class ImagePipelineConfigFactory {
         return new OkHttpClient.Builder().addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-                String referer = Kami.getHostById(source);
+                String referer = Kami.getRefererById(source);
                 Request.Builder request = chain.request().newBuilder();
                 request.addHeader("Referer", referer);
                 return chain.proceed(request.build());

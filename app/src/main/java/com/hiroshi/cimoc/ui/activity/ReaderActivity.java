@@ -3,6 +3,10 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ViewPager;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
@@ -10,6 +14,8 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -27,17 +33,53 @@ public class ReaderActivity extends BaseActivity {
     @BindView(R.id.reader_view_pager) ViewPager mViewPager;
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
+    @BindView(R.id.reader_tool_bar) LinearLayout mToolLayout;
+    @BindView(R.id.reader_seek_bar) DiscreteSeekBar mSeekBar;
 
     private PicturePagerAdapter mPagerAdapter;
     private ReaderPresenter mPresenter;
 
     @Override
     protected void initView() {
-        mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater());
-        mViewPager.addOnPageChangeListener(mPresenter.getPageChangeListener());
-        mViewPager.setOffscreenPageLimit(8);
+        mToolLayout.getParent().requestDisallowInterceptTouchEvent(true);
+
+        mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onDoubleTap(MotionEvent e) {
+                        return mPresenter.onDoubleTap();
+                }
+                });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                mPresenter.onPageSelected(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+        mViewPager.setOffscreenPageLimit(6);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(0);
+
+        mSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                if (fromUser) {
+                    mViewPager.setCurrentItem(mPresenter.getOffset() + value, false);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {}
+        });
 
         mPresenter.initPicture();
     }
@@ -50,12 +92,6 @@ public class ReaderActivity extends BaseActivity {
         int position = getIntent().getIntExtra(EXTRA_POSITION, 1);
         ArrayList<Chapter> list = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTERS);
         mPresenter = new ReaderPresenter(this, list, position);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.setLastPage();
-        super.onDestroy();
     }
 
     @Override
@@ -104,13 +140,28 @@ public class ReaderActivity extends BaseActivity {
         mChapterPage.setText(str);
     }
 
+    public boolean isToolLayoutShown() {
+        return mToolLayout.isShown();
+    }
+
+    public void hideToolLayout() {
+        mToolLayout.setVisibility(View.GONE);
+    }
+
+    public void showToolLayout() {
+        mToolLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void setSeekBar(int progress, int max) {
+        mSeekBar.setProgress(progress);
+        mSeekBar.setMax(max);
+    }
+
     public static Intent createIntent(Context context, ArrayList<Chapter> chapters, int position) {
         Intent intent = new Intent(context, ReaderActivity.class);
         intent.putExtra(EXTRA_CHAPTERS, chapters);
         intent.putExtra(EXTRA_POSITION, position);
         return intent;
     }
-
-
 
 }

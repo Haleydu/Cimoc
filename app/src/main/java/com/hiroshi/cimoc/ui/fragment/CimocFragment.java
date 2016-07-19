@@ -31,7 +31,7 @@ public class CimocFragment extends BaseFragment {
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.empty_for_search));
         } else {
-            startActivity(ResultActivity.createIntent(getActivity(), keyword, Kami.SOURCE_IKANMAN));
+            startActivity(ResultActivity.createIntent(getActivity(), keyword, Kami.SOURCE_DMZJ));
         }
     }
 
@@ -65,9 +65,7 @@ public class CimocFragment extends BaseFragment {
     }
 
     @Override
-    protected void initPresenter() {
-
-    }
+    protected void initPresenter() {}
 
     @Override
     protected BasePresenter getPresenter() {

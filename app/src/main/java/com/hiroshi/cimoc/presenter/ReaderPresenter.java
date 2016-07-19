@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.core.base.Manga;
@@ -45,45 +43,56 @@ public class ReaderPresenter extends BasePresenter {
         current = 1;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mComicManager.setLastPage(current);
+    }
+
     public void initPicture() {
         isLoading = true;
         mManga.browse(mChapterList.get(next).getPath(), Manga.MODE_INIT);
     }
 
-
-    public OnPageChangeListener getPageChangeListener() {
-        return new OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
-            @Override
-            public void onPageSelected(int position) {
-                if (!isLoading) {
-                    if (position == 0 && prev < mChapterList.size()) {
-                        String path = mChapterList.get(prev).getPath();
-                        isLoading = true;
-                        mManga.browse(path, Manga.MODE_PREV);
-                    } else if (position == mReaderActivity.getCount() - 1 && next >= 0) {
-                        String path = mChapterList.get(next).getPath();
-                        isLoading = true;
-                        mManga.browse(path, Manga.MODE_NEXT);
-                    }
-                }
-                setCurrent(position);
-                if (position == 0) {
-                    mReaderActivity.clearInformation();
-                } else {
-                    mReaderActivity.setInformation(mChapterList.get(index).getTitle(), current, mPageArray[index]);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {}
-        };
+    public boolean onDoubleTap() {
+        mReaderActivity.setSeekBar(current, mPageArray[index]);
+        if (mReaderActivity.isToolLayoutShown()) {
+            mReaderActivity.hideToolLayout();
+        } else {
+            mReaderActivity.showToolLayout();
+        }
+        return true;
     }
 
-    public void setLastPage() {
-        mComicManager.setLastPage(current);
+    public void onPageSelected(int position) {
+        if (!isLoading) {
+            if (position == 0 && prev < mChapterList.size()) {
+                String path = mChapterList.get(prev).getPath();
+                isLoading = true;
+                mManga.browse(path, Manga.MODE_PREV);
+            } else if (position == mReaderActivity.getCount() - 1 && next >= 0) {
+                String path = mChapterList.get(next).getPath();
+                isLoading = true;
+                mManga.browse(path, Manga.MODE_NEXT);
+            }
+        }
+        setCurrent(position);
+        if (position == 0) {
+            mReaderActivity.clearInformation();
+        } else {
+            mReaderActivity.setInformation(mChapterList.get(index).getTitle(), current, mPageArray[index]);
+        }
+        if (mReaderActivity.isToolLayoutShown()) {
+            mReaderActivity.setSeekBar(current, mPageArray[index]);
+        }
+    }
+
+    public int getOffset() {
+        int ret = 0;
+        for (int i = prev - 1; i > index; --i) {
+            ret += mPageArray[i];
+        }
+        return ret;
     }
 
     private void setCurrent(int position) {

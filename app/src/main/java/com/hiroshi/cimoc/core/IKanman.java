@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 public class IKanman extends Manga {
 
-    private String host = Kami.getHostById(Kami.SOURCE_IKANMAN);
+    private String host = "http://m.ikanman.com";
 
     @Override
     protected String parseSearchUrl(String keyword, int page) {

@@ -24,17 +24,17 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initToolbar();
         initPresenter();
-        if (getPresenter() != null) {
-            getPresenter().register();
-        }
         initView();
+        if (getPresenter() != null) {
+            getPresenter().onCreate();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (getPresenter() != null) {
-            getPresenter().unregister();
+            getPresenter().onDestroy();
         }
     }
 

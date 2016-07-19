@@ -10,15 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
-import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
 
 import java.util.List;
 
@@ -36,7 +35,6 @@ public class DetailActivity extends BaseActivity {
     @BindView(R.id.detail_progress_bar) ProgressBar mProgressBar;
 
     private ChapterAdapter mChapterAdapter;
-    private GridLayoutManager mLayoutManager;
     private DetailPresenter mPresenter;
 
     private int lastChapter;
@@ -53,21 +51,11 @@ public class DetailActivity extends BaseActivity {
     }
 
     @Override
+    protected void initView() {}
+
+    @Override
     protected void initPresenter() {
         mPresenter = new DetailPresenter(this);
-    }
-
-    @Override
-    protected void initView() {
-        mPresenter.loadComic();
-        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext(), mPresenter.getSource()));
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.saveComic();
-        super.onDestroy();
-        Fresco.initialize(getApplicationContext(), ImagePipelineConfigFactory.getImagePipelineConfig(getApplicationContext()));
     }
 
     @Override
@@ -122,9 +110,13 @@ public class DetailActivity extends BaseActivity {
     public void setChapterList(Comic comic, List<Chapter> list, String last) {
         mChapterAdapter = new ChapterAdapter(this, list, comic.getImage(), comic.getTitle(),
                 comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), last);
-        mChapterAdapter.setOnItemClickListener(mPresenter.getOnClickListener());
-        mLayoutManager = new GridLayoutManager(this, 4);
-        mChapterList.setLayoutManager(mLayoutManager);
+        mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                mPresenter.onItemClick(position);
+            }
+        });
+        mChapterList.setLayoutManager(new GridLayoutManager(this, 4));
         mChapterList.setAdapter(mChapterAdapter);
         mChapterList.addItemDecoration(mChapterAdapter.getItemDecoration());
         lastChapter = mChapterAdapter.getPositionByPath(last);

@@ -7,11 +7,11 @@ import org.greenrobot.eventbus.EventBus;
  */
 public abstract class BasePresenter {
 
-    public void register() {
+    public void onCreate() {
         EventBus.getDefault().register(this);
     }
 
-    public void unregister() {
+    public void onDestroy() {
         EventBus.getDefault().unregister(this);
     }
 
