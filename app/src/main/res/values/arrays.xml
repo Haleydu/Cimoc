@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="source_items">
+        <item>看漫画 - IKanman</item>
+        <item>动漫之家 - Dmzj</item>
+    </string-array>
+</resources>

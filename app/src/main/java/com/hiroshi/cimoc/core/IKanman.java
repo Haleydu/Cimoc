@@ -22,7 +22,9 @@ import java.util.regex.Pattern;
  */
 public class IKanman extends Manga {
 
-    private String host = "http://m.ikanman.com";
+    public IKanman() {
+        super(Kami.SOURCE_IKANMAN, "http://m.ikanman.com");
+    }
 
     @Override
     protected String parseSearchUrl(String keyword, int page) {
@@ -36,12 +38,12 @@ public class IKanman extends Manga {
         List<Comic> list = new LinkedList<>();
         for (Element item : items) {
             String path = item.attr("href");
-            String image = item.select("div > img").first().attr("data-src");
-            String status = item.select("div > i").first().text();
             String title = item.select("h3").first().text();
-            String author = item.select("dl:eq(2) > dd").first().text();
+            String image = item.select("div > img").first().attr("data-src");
             String update = item.select("dl:eq(5) > dd").first().text();
-            list.add(new Comic(Kami.SOURCE_IKANMAN, path, image, title, author, null, status, update));
+            String author = item.select("dl:eq(2) > dd").first().text();
+            boolean status = !"连载中".equals(item.select("div > i").first().text());
+            list.add(build(path, title, image, update, author, null, status));
         }
         return list;
     }
@@ -52,7 +54,8 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected Comic parseInto(String html, List<Chapter> list) {
+    protected List<Chapter> parseInto(String html, Comic comic) {
+        List<Chapter> list = new LinkedList<>();
         Document doc = Jsoup.parse(html);
         Elements items = doc.select("#chapterList > ul > li > a");
         for (Element item : items) {
@@ -64,17 +67,13 @@ public class IKanman extends Manga {
         Element detail = doc.getElementsByClass("book-detail").first();
         Element cont = detail.getElementsByClass("cont-list").first();
         String image = cont.select(".thumb > img").first().attr("src");
-        String status = cont.select(".thumb > i").first().text();
         String update = cont.select("dl:eq(2) > dd").first().text();
         String author = cont.select("dl:eq(3) > dd > a").first().attr("title");
         Element node = detail.getElementById("bookIntro");
-        String intro;
-        if (node.select("p:eq(0)").isEmpty()) {
-            intro = node.text();
-        } else {
-            intro = node.select("p:eq(0)").first().text();
-        }
-        return new Comic(0, null, image, title, author, intro, status, update);
+        String intro = node.select("p:eq(0)").isEmpty() ? node.text() : node.select("p:eq(0)").first().text();
+        boolean status = !"连载中".equals(cont.select(".thumb > i").first().text());
+        fill(comic, title, image, update, author, intro, status);
+        return list;
     }
 
     @Override

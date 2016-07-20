@@ -24,12 +24,12 @@ import butterknife.BindView;
  */
 public class ChapterAdapter extends BaseAdapter<Chapter> {
 
-    private String image;
     private String title;
-    private String intro;
-    private String status;
+    private String image;
     private String update;
     private String author;
+    private String intro;
+    private boolean status;
 
     private String last;
 
@@ -68,7 +68,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
 
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, String status, String update, String last) {
+    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, boolean status, String update, String last) {
         super(context, list);
         this.image = image;
         this.title = title;
@@ -138,7 +138,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
             headerHolder.mComicImage.setImageURI(image);
             headerHolder.mComicTitle.setText(title);
             headerHolder.mComicIntro.setText(intro);
-            headerHolder.mComicStatus.setText(status);
+            headerHolder.mComicStatus.setText(status ? "完结" : "连载中");
             headerHolder.mComicUpdate.setText(update);
             headerHolder.mComicAuthor.setText(author);
         } else {

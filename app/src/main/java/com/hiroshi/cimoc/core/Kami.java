@@ -7,8 +7,8 @@ import com.hiroshi.cimoc.core.base.Manga;
  */
 public class Kami {
 
-    public static final int SOURCE_IKANMAN = 1;
-    public static final int SOURCE_DMZJ = 2;
+    public static final int SOURCE_IKANMAN = 0;
+    public static final int SOURCE_DMZJ = 1;
 
     public static String getSourceById(int id) {
         switch (id) {

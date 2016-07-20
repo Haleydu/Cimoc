@@ -17,4 +17,8 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 </resources>

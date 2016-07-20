@@ -38,7 +38,7 @@ public class DetailPresenter extends BasePresenter {
         super.onCreate();
         Fresco.initialize(CimocApplication.getContext(),
                 ImagePipelineConfigFactory.getImagePipelineConfig(CimocApplication.getContext(), mComicManager.getSource()));
-        Kami.getMangaById(mComicManager.getSource()).into(mComicManager.getPath());
+        Kami.getMangaById(mComicManager.getSource()).into(mComicManager.getComic());
     }
 
     @Override
@@ -73,10 +73,8 @@ public class DetailPresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.LOAD_COMIC_SUCCESS:
-                Comic comic = (Comic) msg.getData();
-                List<Chapter> list = (List<Chapter>) msg.getSecond();
-                mComicManager.setBasicInfo(comic.getTitle(), comic.getImage(), comic.getUpdate());
-                initView(comic, list);
+                List<Chapter> list = (List<Chapter>) msg.getData();
+                initView(list);
                 break;
             case EventMessage.CHANGE_LAST_PATH:
                 String path = (String) msg.getData();
@@ -89,9 +87,9 @@ public class DetailPresenter extends BasePresenter {
         }
     }
 
-    private void initView(Comic comic, List<Chapter> list) {
-        String last = mComicManager.getLastPath();
-        mDetailActivity.setChapterList(comic, list, last);
+    private void initView(List<Chapter> list) {
+        String last = mComicManager.getLast();
+        mDetailActivity.setChapterList(mComicManager.getComic(), list, last);
         int resId = mComicManager.isComicStar() ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
         mDetailActivity.setStarButtonRes(resId);
         mDetailActivity.setStarButtonVisible();

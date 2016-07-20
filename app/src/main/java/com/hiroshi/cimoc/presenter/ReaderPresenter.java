@@ -46,7 +46,7 @@ public class ReaderPresenter extends BasePresenter {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mComicManager.setLastPage(current);
+        mComicManager.setLast(current);
     }
 
     public void initPicture() {
@@ -55,10 +55,10 @@ public class ReaderPresenter extends BasePresenter {
     }
 
     public boolean onDoubleTap() {
-        mReaderActivity.setSeekBar(current, mPageArray[index]);
         if (mReaderActivity.isToolLayoutShown()) {
             mReaderActivity.hideToolLayout();
         } else {
+            mReaderActivity.setSeekBar(current, mPageArray[index]);
             mReaderActivity.showToolLayout();
         }
         return true;

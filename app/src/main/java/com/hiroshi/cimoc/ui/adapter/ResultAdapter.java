@@ -22,7 +22,6 @@ import butterknife.BindView;
 public class ResultAdapter extends BaseAdapter<Comic> {
 
     public class ViewHolder extends BaseViewHolder {
-
         @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.result_comic_title) TextView comicTitle;
         @BindView(R.id.result_comic_author) TextView comicAuthor;
@@ -32,7 +31,6 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         public ViewHolder(View view) {
             super(view);
         }
-
     }
 
     public ResultAdapter(Context context, List<Comic> list) {

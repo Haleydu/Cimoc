@@ -1,10 +1,10 @@
 package com.hiroshi.cimoc.core;
 
 import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDao;
+import com.hiroshi.cimoc.model.ComicDao.Properties;
 import com.hiroshi.cimoc.utils.EventMessage;
-import com.hiroshi.db.dao.ComicRecordDao;
-import com.hiroshi.db.dao.ComicRecordDao.Properties;
-import com.hiroshi.db.entity.ComicRecord;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -17,87 +17,86 @@ public class ComicManager {
 
     private static ComicManager mComicManager;
 
-    private ComicRecordDao mComicDao;
+    private ComicDao mComicDao;
 
     private ComicManager() {
-        mComicDao = CimocApplication.getDaoSession().getComicRecordDao();
+        mComicDao = CimocApplication.getDaoSession().getComicDao();
     }
 
-    public List<ComicRecord> listFavorite() {
+    public List<Comic> listFavorite() {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull())
+                .where(ComicDao.Properties.Favorite.isNotNull())
                 .orderDesc(Properties.Favorite)
                 .list();
     }
 
-    public List<ComicRecord> listHistory() {
+    public List<Comic> listHistory() {
         return mComicDao.queryBuilder()
                 .where(Properties.History.isNotNull())
                 .orderDesc(Properties.History)
                 .list();
     }
 
-    private ComicRecord mComicRecord;
+    private Comic comic;
 
     public void initComic(int source, String path) {
-        List<ComicRecord> list = mComicDao.queryBuilder()
+        List<Comic> list = mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source), Properties.Path.eq(path))
                 .limit(1)
                 .list();
         if (!list.isEmpty()) {
-            mComicRecord = list.get(0);
+            comic = list.get(0);
         } else {
-            mComicRecord = new ComicRecord(null);
-            mComicRecord.setSource(source);
-            mComicRecord.setPath(path);
+            comic = new Comic();
+            comic.setSource(source);
+            comic.setPath(path);
         }
     }
 
-    public void setBasicInfo(String title, String image, String update) {
-        mComicRecord.setTitle(title);
-        mComicRecord.setImage(image);
-        mComicRecord.setUpdate(update);
-    }
-
     public void setLastPath(String path) {
-        mComicRecord.setHistory(System.currentTimeMillis());
-        mComicRecord.setLast_path(path);
+        comic.setLast(path);
         if (!isComicExist()) {
-            long id = mComicDao.insert(mComicRecord);
-            mComicRecord.setId(id);
+            comic.setHistory(System.currentTimeMillis());
+            long id = mComicDao.insert(comic);
+            comic.setId(id);
         }
         EventBus.getDefault().post(new EventMessage(EventMessage.CHANGE_LAST_PATH, path));
     }
 
-    public void setLastPage(int page) {
-        mComicRecord.setLast_page(page);
-        EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, mComicRecord));
+    public void setLast(int page) {
+        comic.setHistory(System.currentTimeMillis());
+        comic.setPage(page);
+        EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, comic));
     }
 
     public void favoriteComic() {
-        mComicRecord.setFavorite(System.currentTimeMillis());
+        comic.setFavorite(System.currentTimeMillis());
         if (!isComicHistory()) {
-            long id = mComicDao.insert(mComicRecord);
-            mComicRecord.setId(id);
+            long id = mComicDao.insert(comic);
+            comic.setId(id);
         }
-        EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, mComicRecord));
+        EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, comic));
     }
 
     public void unfavoriteComic() {
-        long id = mComicRecord.getId();
-        mComicRecord.setFavorite(null);
+        long id = comic.getId();
+        comic.setFavorite(null);
         if (!isComicHistory()) {
-            mComicDao.delete(mComicRecord);
+            mComicDao.delete(comic);
         }
         EventBus.getDefault().post(new EventMessage(EventMessage.UN_FAVORITE_COMIC, id));
     }
 
+    public Comic getComic() {
+        return comic;
+    }
+
     public boolean isComicStar() {
-        return mComicRecord.getFavorite() != null;
+        return comic.getFavorite() != null;
     }
 
     public boolean isComicHistory() {
-        return mComicRecord.getHistory() != null;
+        return comic.getHistory() != null;
     }
 
     public boolean isComicExist() {
@@ -105,22 +104,22 @@ public class ComicManager {
     }
 
     public int getSource() {
-        return mComicRecord.getSource();
+        return comic.getSource();
     }
 
     public String getPath() {
-        return mComicRecord.getPath();
+        return comic.getPath();
     }
 
-    public String getLastPath() {
-        return mComicRecord.getLast_path();
+    public String getLast() {
+        return comic.getLast();
     }
 
     public void saveAndClearComic() {
         if (isComicExist()) {
-            mComicDao.update(mComicRecord);
+            mComicDao.update(comic);
         }
-        mComicRecord = null;
+        comic = null;
     }
 
     public static ComicManager getInstance() {

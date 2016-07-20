@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.view.View;
 
 import com.hiroshi.cimoc.core.ComicManager;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.utils.EventMessage;
-import com.hiroshi.db.entity.ComicRecord;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -28,7 +28,7 @@ public class FavoritePresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public List<ComicRecord> getComicRecord() {
+    public List<Comic> getComic() {
         return mComicManager.listFavorite();
     }
 
@@ -36,7 +36,7 @@ public class FavoritePresenter extends BasePresenter {
         return new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                ComicRecord comic = mFavoriteFragment.getItem(position);
+                Comic comic = mFavoriteFragment.getItem(position);
                 Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic.getSource(), comic.getPath());
                 mFavoriteFragment.startActivity(intent);
             }
@@ -47,7 +47,7 @@ public class FavoritePresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.FAVORITE_COMIC:
-                ComicRecord comic = (ComicRecord) msg.getData();
+                Comic comic = (Comic) msg.getData();
                 mFavoriteFragment.addItem(comic);
                 break;
             case EventMessage.UN_FAVORITE_COMIC:

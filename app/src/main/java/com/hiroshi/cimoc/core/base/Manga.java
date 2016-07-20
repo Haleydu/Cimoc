@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UnknownFormatConversionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -24,8 +25,13 @@ public abstract class Manga {
 
     private OkHttpClient client;
 
-    public Manga() {
-        client = CimocApplication.getHttpClient();
+    protected int source;
+    protected String host;
+
+    public Manga(int source, String host) {
+        this.source = source;
+        this.host = host;
+        this.client = CimocApplication.getHttpClient();
     }
 
     public void search(String keyword, int page) {
@@ -43,14 +49,13 @@ public abstract class Manga {
         }
     }
 
-    public void into(String path) {
-        String url = parseIntoUrl(path);
+    public void into(final Comic comic) {
+        String url = parseIntoUrl(comic.getPath());
         enqueueClient(url, new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
-                List<Chapter> list = new LinkedList<>();
-                Comic comic = parseInto(html, list);
-                EventBus.getDefault().post(new EventMessage(EventMessage.LOAD_COMIC_SUCCESS, comic, list));
+                List<Chapter> list = parseInto(html, comic);
+                EventBus.getDefault().post(new EventMessage(EventMessage.LOAD_COMIC_SUCCESS, list));
             }
         });
     }
@@ -104,7 +109,7 @@ public abstract class Manga {
 
     protected abstract String parseIntoUrl(String path);
 
-    protected abstract Comic parseInto(String html, List<Chapter> list);
+    protected abstract List<Chapter> parseInto(String html, Comic comic);
 
     protected abstract String parseBrowseUrl(String path);
 
@@ -112,6 +117,28 @@ public abstract class Manga {
 
     private interface OnResponseSuccessHandler {
         void onSuccess(String html);
+    }
+
+    protected Comic build(String path, String title, String image, String update, String author, String intro, boolean status) {
+        Comic comic = new Comic();
+        comic.setSource(source);
+        comic.setPath(path);
+        comic.setTitle(title);
+        comic.setImage(image);
+        comic.setUpdate(update);
+        comic.setAuthor(author);
+        comic.setIntro(intro);
+        comic.setStatus(status);
+        return comic;
+    }
+
+    protected void fill(Comic comic, String title, String image, String update, String author, String intro, boolean status) {
+        comic.setTitle(title);
+        comic.setImage(image);
+        comic.setUpdate(update);
+        comic.setAuthor(author);
+        comic.setIntro(intro);
+        comic.setStatus(status);
     }
 
 }

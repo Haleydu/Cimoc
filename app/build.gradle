@@ -1,3 +1,4 @@
+apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 
@@ -11,19 +12,19 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        resConfigs "en", "zh"
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main {
-            java.srcDirs = ['src/main/java', 'src/main/java-gen']
-        }
-    }
+}
 
+greendao {
+    schemaVersion 1
 }
 
 dependencies {
@@ -36,10 +37,10 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.squareup.okhttp3:okhttp:3.3.1'
+    compile 'org.greenrobot:greendao:3.0.1'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.facebook.fresco:fresco:0.11.0'
     compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
     compile 'org.jsoup:jsoup:1.9.2'
-    compile 'org.greenrobot:greendao:2.2.0'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
 }

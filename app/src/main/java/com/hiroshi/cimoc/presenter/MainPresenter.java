@@ -6,10 +6,10 @@ import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
+import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.ui.fragment.SourceFragment;
 import com.hiroshi.cimoc.utils.EventMessage;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -28,7 +28,7 @@ public class MainPresenter extends BasePresenter {
     private CimocFragment mCimocFragment;
     private FavoriteFragment mFavoriteFragment;
     private HistoryFragment mHistoryFragment;
-    private SourceFragment mSourceFragment;
+    private AboutFragment mAboutFragment;
     private Fragment mCurrentFragment;
     
     public MainPresenter(MainActivity activity) {
@@ -42,12 +42,15 @@ public class MainPresenter extends BasePresenter {
         mCimocFragment = new CimocFragment();
         mFavoriteFragment = new FavoriteFragment();
         mHistoryFragment = new HistoryFragment();
+        mAboutFragment = new AboutFragment();
         mFragmentManager.beginTransaction()
                 .add(R.id.main_fragment_container, mCimocFragment)
                 .add(R.id.main_fragment_container, mFavoriteFragment)
                 .add(R.id.main_fragment_container, mHistoryFragment)
+                .add(R.id.main_fragment_container, mAboutFragment)
                 .hide(mFavoriteFragment)
                 .hide(mHistoryFragment)
+                .hide(mAboutFragment)
                 .commit();
         mCurrentFragment = mCimocFragment;
         mCheckedItem = R.id.drawer_main;
@@ -76,6 +79,10 @@ public class MainPresenter extends BasePresenter {
                 break;
             case R.id.drawer_history:
                 mCurrentFragment = mHistoryFragment;
+                break;
+            case R.id.drawer_about:
+                mCurrentFragment = mAboutFragment;
+                break;
         }
         mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
         mMainActivity.hideProgressBar();
@@ -89,6 +96,7 @@ public class MainPresenter extends BasePresenter {
         mMainActivity.showProgressBar();
         mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
         mMainActivity.setToolbarTitle(menuItem.getTitle().toString());
+        mMainActivity.setCheckedItem(mCheckedItem);
         mMainActivity.closeDrawer();
         return true;
     }

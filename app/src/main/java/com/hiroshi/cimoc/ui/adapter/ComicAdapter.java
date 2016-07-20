@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.db.entity.ComicRecord;
+import com.hiroshi.cimoc.model.Comic;
 
 import java.util.List;
 
@@ -19,10 +19,9 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class ComicAdapter extends BaseAdapter<ComicRecord> {
+public class ComicAdapter extends BaseAdapter<Comic> {
 
     public class ViewHolder extends BaseViewHolder {
-
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
         @BindView(R.id.item_comic_source) TextView comicSource;
@@ -30,10 +29,9 @@ public class ComicAdapter extends BaseAdapter<ComicRecord> {
         public ViewHolder(View view) {
             super(view);
         }
-
     }
 
-    public ComicAdapter(Context context, List<ComicRecord> list) {
+    public ComicAdapter(Context context, List<Comic> list) {
         super(context, list);
     }
 
@@ -45,7 +43,7 @@ public class ComicAdapter extends BaseAdapter<ComicRecord> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ComicRecord comic = mDataSet.get(position);
+        Comic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
@@ -63,7 +61,12 @@ public class ComicAdapter extends BaseAdapter<ComicRecord> {
     }
 
     public void removeById(long id) {
-        remove(new ComicRecord(id));
+        for (Comic comic : mDataSet) {
+            if (id == comic.getId()) {
+                remove(comic);
+                break;
+            }
+        }
     }
 
 }

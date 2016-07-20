@@ -2,12 +2,14 @@ package com.hiroshi.cimoc;
 
 import android.app.Application;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.hiroshi.cimoc.model.DaoMaster;
+import com.hiroshi.cimoc.model.DaoMaster.DevOpenHelper;
+import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
-import com.hiroshi.db.dao.DaoMaster;
-import com.hiroshi.db.dao.DaoSession;
+
+import org.greenrobot.greendao.database.Database;
 
 import okhttp3.OkHttpClient;
 
@@ -29,10 +31,9 @@ public class CimocApplication extends Application {
     }
 
     private void initDatabase() {
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "cimoc.db", null);
-        SQLiteDatabase db = helper.getWritableDatabase();
+        DevOpenHelper helper = new DevOpenHelper(this, "cimoc.db");
+        Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
-
     }
 
     public static DaoSession getDaoSession() {
