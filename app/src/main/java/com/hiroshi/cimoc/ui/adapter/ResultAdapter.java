@@ -7,10 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.List;
 
@@ -51,7 +53,8 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
         viewHolder.comicUpdate.setText(comic.getUpdate());
-        viewHolder.comicImage.setImageURI(comic.getImage());
+        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource());
+        viewHolder.comicImage.setController(builder.setUri(comic.getImage()).build());
     }
 
     @Override

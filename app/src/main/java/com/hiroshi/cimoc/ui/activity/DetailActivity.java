@@ -126,8 +126,8 @@ public class DetailActivity extends BaseActivity {
         return mChapterAdapter.getDataSet();
     }
 
-    public static Intent createIntent(Context context, int source, String path) {
-        ComicManager.getInstance().initComic(source, path);
+    public static Intent createIntent(Context context, Comic comic) {
+        ComicManager.getInstance().setComic(comic);
         return new Intent(context, DetailActivity.class);
     }
 

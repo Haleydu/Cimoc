@@ -3,19 +3,19 @@ package com.hiroshi.cimoc.core.base;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.EventMessage;
+import com.hiroshi.cimoc.model.EventMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UnknownFormatConversionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -39,7 +39,8 @@ public abstract class Manga {
         if (url == null) {
             EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, new LinkedList<>()));
         } else {
-            enqueueClient(url, new OnResponseSuccessHandler() {
+            Request request = buildRequest(url, null);
+            enqueueClient(request, new OnResponseSuccessHandler() {
                 @Override
                 public void onSuccess(String html) {
                     List<Comic> list = parseSearch(html);
@@ -50,8 +51,8 @@ public abstract class Manga {
     }
 
     public void into(final Comic comic) {
-        String url = parseIntoUrl(comic.getPath());
-        enqueueClient(url, new OnResponseSuccessHandler() {
+        Request request = buildRequest(parseIntoUrl(comic.getPath()), null);
+        enqueueClient(request, new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
                 List<Chapter> list = parseInto(html, comic);
@@ -65,8 +66,8 @@ public abstract class Manga {
     public static int MODE_PREV = 3;
 
     public void browse(String path, final int mode) {
-        String url = parseBrowseUrl(path);
-        enqueueClient(url, new OnResponseSuccessHandler() {
+        Request request = buildRequest(parseBrowseUrl(path), null);
+        enqueueClient(request, new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
                 String[] images = parseBrowse(html);
@@ -83,10 +84,15 @@ public abstract class Manga {
         });
     }
 
-    public void enqueueClient(String url, final OnResponseSuccessHandler handler) {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+    private Request buildRequest(String url, RequestBody body) {
+        Request.Builder builder = new Request.Builder().url(url);
+        if (body != null) {
+            builder.post(body);
+        }
+        return builder.build();
+    }
+
+    public void enqueueClient(Request request, final OnResponseSuccessHandler handler) {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -132,13 +138,15 @@ public abstract class Manga {
         return comic;
     }
 
-    protected void fill(Comic comic, String title, String image, String update, String author, String intro, boolean status) {
+    protected void fill(Comic comic, String title, String image, String update, String author, String intro, Boolean status) {
         comic.setTitle(title);
         comic.setImage(image);
         comic.setUpdate(update);
         comic.setAuthor(author);
         comic.setIntro(intro);
-        comic.setStatus(status);
+        if (status != null) {
+            comic.setStatus(status);
+        }
     }
 
 }

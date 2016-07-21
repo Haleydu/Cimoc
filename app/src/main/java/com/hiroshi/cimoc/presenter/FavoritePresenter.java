@@ -8,7 +8,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
-import com.hiroshi.cimoc.utils.EventMessage;
+import com.hiroshi.cimoc.model.EventMessage;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -37,7 +37,7 @@ public class FavoritePresenter extends BasePresenter {
             @Override
             public void onItemClick(View view, int position) {
                 Comic comic = mFavoriteFragment.getItem(position);
-                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic.getSource(), comic.getPath());
+                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic);
                 mFavoriteFragment.startActivity(intent);
             }
         };

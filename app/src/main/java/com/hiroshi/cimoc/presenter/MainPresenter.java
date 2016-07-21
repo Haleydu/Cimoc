@@ -10,7 +10,7 @@ import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.utils.EventMessage;
+import com.hiroshi.cimoc.model.EventMessage;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;

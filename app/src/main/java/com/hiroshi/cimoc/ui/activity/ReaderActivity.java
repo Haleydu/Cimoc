@@ -10,14 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import butterknife.BindView;
@@ -27,7 +25,6 @@ import butterknife.BindView;
  */
 public class ReaderActivity extends BaseActivity {
 
-    public static final String EXTRA_CHAPTERS = "extra_chapters";
     public static final String EXTRA_POSITION = "extra_position";
 
     @BindView(R.id.reader_view_pager) ViewPager mViewPager;
@@ -41,14 +38,14 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        mToolLayout.getParent().requestDisallowInterceptTouchEvent(true);
-
         mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater(),
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onDoubleTap(MotionEvent e) {
-                        return mPresenter.onDoubleTap();
-                }
+                        int visibility = mToolLayout.isShown() ? View.GONE : View.VISIBLE;
+                        mToolLayout.setVisibility(visibility);
+                        return true;
+                    }
                 });
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -64,7 +61,6 @@ public class ReaderActivity extends BaseActivity {
         });
         mViewPager.setOffscreenPageLimit(6);
         mViewPager.setAdapter(mPagerAdapter);
-        mViewPager.setCurrentItem(0);
 
         mSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
@@ -80,8 +76,6 @@ public class ReaderActivity extends BaseActivity {
             @Override
             public void onStopTrackingTouch(DiscreteSeekBar seekBar) {}
         });
-
-        mPresenter.initPicture();
     }
 
     @Override
@@ -90,8 +84,7 @@ public class ReaderActivity extends BaseActivity {
     @Override
     protected void initPresenter() {
         int position = getIntent().getIntExtra(EXTRA_POSITION, 1);
-        ArrayList<Chapter> list = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTERS);
-        mPresenter = new ReaderPresenter(this, list, position);
+        mPresenter = new ReaderPresenter(this, position);
     }
 
     @Override
@@ -134,32 +127,29 @@ public class ReaderActivity extends BaseActivity {
         mChapterPage.setText(null);
     }
 
-    public void setInformation(String title, int cur, int page) {
-        mChapterTitle.setText(title);
-        String str = cur + "/" + page;
-        mChapterPage.setText(str);
-    }
-
-    public boolean isToolLayoutShown() {
-        return mToolLayout.isShown();
-    }
-
-    public void hideToolLayout() {
-        mToolLayout.setVisibility(View.GONE);
-    }
-
-    public void showToolLayout() {
-        mToolLayout.setVisibility(View.VISIBLE);
-    }
-
-    public void setSeekBar(int progress, int max) {
-        mSeekBar.setProgress(progress);
+    public void setReadMax(int max, int progress) {
         mSeekBar.setMax(max);
+        mSeekBar.setProgress(progress);
+        String pageString = progress + "/" + max;
+        mChapterPage.setText(pageString);
     }
 
-    public static Intent createIntent(Context context, ArrayList<Chapter> chapters, int position) {
+    public void setReadProgress(int progress) {
+        mSeekBar.setProgress(progress);
+        String pageString = progress + "/" + mSeekBar.getMax();
+        mChapterPage.setText(pageString);
+    }
+
+    public int getReadProgress() {
+        return mSeekBar.getProgress();
+    }
+
+    public void setTitle(String title) {
+        mChapterTitle.setText(title);
+    }
+
+    public static Intent createIntent(Context context, int position) {
         Intent intent = new Intent(context, ReaderActivity.class);
-        intent.putExtra(EXTRA_CHAPTERS, chapters);
         intent.putExtra(EXTRA_POSITION, position);
         return intent;
     }

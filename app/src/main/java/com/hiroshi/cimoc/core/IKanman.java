@@ -42,7 +42,7 @@ public class IKanman extends Manga {
             String image = item.select("div > img").first().attr("data-src");
             String update = item.select("dl:eq(5) > dd").first().text();
             String author = item.select("dl:eq(2) > dd").first().text();
-            boolean status = !"连载中".equals(item.select("div > i").first().text());
+            boolean status = "完结".equals(item.select("div > i").first().text());
             list.add(build(path, title, image, update, author, null, status));
         }
         return list;
@@ -71,7 +71,7 @@ public class IKanman extends Manga {
         String author = cont.select("dl:eq(3) > dd > a").first().attr("title");
         Element node = detail.getElementById("bookIntro");
         String intro = node.select("p:eq(0)").isEmpty() ? node.text() : node.select("p:eq(0)").first().text();
-        boolean status = !"连载中".equals(cont.select(".thumb > i").first().text());
+        boolean status = !"连载".equals(cont.select(".thumb > i").first().text());
         fill(comic, title, image, update, author, intro, status);
         return list;
     }

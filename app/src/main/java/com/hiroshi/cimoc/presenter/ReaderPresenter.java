@@ -5,12 +5,12 @@ import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.activity.ReaderActivity;
-import com.hiroshi.cimoc.utils.EventMessage;
+import com.hiroshi.cimoc.model.EventMessage;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/7/8.
@@ -21,47 +21,33 @@ public class ReaderPresenter extends BasePresenter {
     private ComicManager mComicManager;
     private Manga mManga;
 
-    private ArrayList<Chapter> mChapterList;
-    private int[] mPageArray;
+    private List<Chapter> mChapterList;
 
     private boolean isLoading;
     private int prev;
     private int next;
-
-    private int current;
     private int index;
 
-    public ReaderPresenter(ReaderActivity activity, ArrayList<Chapter> list, int position) {
+    public ReaderPresenter(ReaderActivity activity, int position) {
         mReaderActivity = activity;
-        mChapterList = list;
-        mPageArray = new int[list.size()];
         mComicManager = ComicManager.getInstance();
+        mChapterList = mComicManager.getChapters();
         mManga = Kami.getMangaById(mComicManager.getSource());
         prev = position + 1;
         next = position;
-        index = position;
-        current = 1;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        isLoading = true;
+        mManga.browse(mChapterList.get(next).getPath(), Manga.MODE_INIT);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mComicManager.setLast(current);
-    }
-
-    public void initPicture() {
-        isLoading = true;
-        mManga.browse(mChapterList.get(next).getPath(), Manga.MODE_INIT);
-    }
-
-    public boolean onDoubleTap() {
-        if (mReaderActivity.isToolLayoutShown()) {
-            mReaderActivity.hideToolLayout();
-        } else {
-            mReaderActivity.setSeekBar(current, mPageArray[index]);
-            mReaderActivity.showToolLayout();
-        }
-        return true;
+        mComicManager.setLast(mReaderActivity.getReadProgress());
     }
 
     public void onPageSelected(int position) {
@@ -76,38 +62,43 @@ public class ReaderPresenter extends BasePresenter {
                 mManga.browse(path, Manga.MODE_NEXT);
             }
         }
-        setCurrent(position);
-        if (position == 0) {
-            mReaderActivity.clearInformation();
-        } else {
-            mReaderActivity.setInformation(mChapterList.get(index).getTitle(), current, mPageArray[index]);
-        }
-        if (mReaderActivity.isToolLayoutShown()) {
-            mReaderActivity.setSeekBar(current, mPageArray[index]);
-        }
+        onPositionChange(position);
     }
 
     public int getOffset() {
-        int ret = 0;
+        int offset = 0;
         for (int i = prev - 1; i > index; --i) {
-            ret += mPageArray[i];
+            offset += mChapterList.get(i).getCount();
         }
-        return ret;
+        return offset;
     }
 
-    private void setCurrent(int position) {
-        int count = 1;
-        for (int i = prev - 1; i > next; --i) {
-            if (count + mPageArray[i] > position) {
-                current = position - count + 1;
-                if (index != i) {
-                    mComicManager.setLastPath(mChapterList.get(i).getPath());
-                    index = i;
+    private void onPositionChange(int position) {
+        if (position == 0) {
+            mReaderActivity.clearInformation();
+            return;
+        }
+        for (int i = prev - 1, total = 1; i > next; --i) {
+            Chapter chapter = mChapterList.get(i);
+            if (total + chapter.getCount() > position) {
+                int progress = position - total + 1;
+                if (index != i || position == 1) {
+                    switchChapter(i, progress);
+                } else {
+                    mReaderActivity.setReadProgress(progress);
                 }
                 break;
             }
-            count += mPageArray[i];
+            total += chapter.getCount();
         }
+    }
+
+    private void switchChapter(int which, int progress) {
+        Chapter chapter = mChapterList.get(which);
+        mReaderActivity.setReadMax(chapter.getCount(), progress);
+        mReaderActivity.setTitle(chapter.getTitle());
+        mComicManager.setLastPath(chapter.getPath());
+        index = which;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -117,26 +108,23 @@ public class ReaderPresenter extends BasePresenter {
             case EventMessage.PARSE_PIC_INIT:
                 array = (String[]) msg.getData();
                 mReaderActivity.setInitImage(array, next == mChapterList.size() - 1);
-                mReaderActivity.setInformation(mChapterList.get(next).getTitle(), 1, array.length);
-                mComicManager.setLastPath(mChapterList.get(next).getPath());
-                mPageArray[next] = array.length;
-                current = 1;
-                index = next;
+                mChapterList.get(next).setCount(array.length);
+                switchChapter(next, 1);
                 next = next - 1;
                 isLoading = false;
                 break;
             case EventMessage.PARSE_PIC_PREV:
                 array = (String[]) msg.getData();
                 mReaderActivity.setPrevImage(array, prev == mChapterList.size() - 1);
-                mReaderActivity.setInformation(mChapterList.get(prev).getTitle(), array.length, array.length);
-                mPageArray[prev] = array.length;
+                mChapterList.get(prev).setCount(array.length);
+                switchChapter(prev, array.length);
                 prev = prev + 1;
                 isLoading = false;
                 break;
             case EventMessage.PARSE_PIC_NEXT:
                 array = (String[]) msg.getData();
                 mReaderActivity.setNextImage(array);
-                mPageArray[next] = array.length;
+                mChapterList.get(next).setCount(array.length);
                 next = next - 1;
                 isLoading = false;
                 break;

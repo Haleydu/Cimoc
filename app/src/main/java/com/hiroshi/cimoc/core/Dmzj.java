@@ -50,7 +50,7 @@ public class Dmzj extends Manga {
                     if (object.getInt("zone_tag_id") == 2308) {
                         continue;
                     }
-                    String path = object.getString("comic_url").replace("http://manhua.dmzj.com", "");
+                    String path = object.getString("comic_url").replace(host, "");
                     String title = object.getString("name");
                     String image = object.getString("cover");
                     long time = object.getLong("last_updatetime") * 1000;

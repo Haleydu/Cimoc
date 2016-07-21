@@ -7,7 +7,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoMaster.DevOpenHelper;
 import com.hiroshi.cimoc.model.DaoSession;
-import com.hiroshi.cimoc.utils.ImagePipelineConfigFactory;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -27,13 +26,17 @@ public class CimocApplication extends Application {
         super.onCreate();
         initDatabase();
         context = getApplicationContext();
-        Fresco.initialize(context, ImagePipelineConfigFactory.getImagePipelineConfig(context));
+        Fresco.initialize(this);
     }
 
     private void initDatabase() {
         DevOpenHelper helper = new DevOpenHelper(this, "cimoc.db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
+    }
+
+    public static Context getContext() {
+        return context;
     }
 
     public static DaoSession getDaoSession() {
@@ -45,10 +48,6 @@ public class CimocApplication extends Application {
             httpClient = new OkHttpClient();
         }
         return httpClient;
-    }
-
-    public static Context getContext() {
-        return context;
     }
 
 }
