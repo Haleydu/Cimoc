@@ -108,7 +108,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     public void setChapterList(Comic comic, List<Chapter> list, String last) {
-        mChapterAdapter = new ChapterAdapter(this, list, comic.getImage(), comic.getTitle(),
+        mChapterAdapter = new ChapterAdapter(this, list, comic.getCover(), comic.getTitle(),
                 comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), last);
         mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
@@ -122,12 +122,8 @@ public class DetailActivity extends BaseActivity {
         lastChapter = mChapterAdapter.getPositionByPath(last);
     }
 
-    public List<Chapter> getChapter() {
-        return mChapterAdapter.getDataSet();
-    }
-
-    public static Intent createIntent(Context context, Comic comic) {
-        ComicManager.getInstance().setComic(comic);
+    public static Intent createIntent(Context context, Comic comic, boolean isResult) {
+        ComicManager.getInstance().setComic(comic, isResult);
         return new Intent(context, DetailActivity.class);
     }
 

@@ -37,7 +37,7 @@ public class HistoryPresenter extends BasePresenter {
             @Override
             public void onItemClick(View view, int position) {
                 Comic comic = mHistoryFragment.getItem(position);
-                Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic);
+                Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic, false);
                 mHistoryFragment.startActivity(intent);
             }
         };

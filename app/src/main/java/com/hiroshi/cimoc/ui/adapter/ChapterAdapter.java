@@ -34,27 +34,22 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     private String last;
 
     public class ViewHolder extends BaseViewHolder {
-
-        @BindView(R.id.item_chapter_button) Button chapterButton;
+        @BindView(R.id.item_chapter_button) TextView chapterButton;
 
         public ViewHolder(View view) {
             super(view);
         }
 
         public void select() {
-            chapterButton.setBackgroundResource(R.drawable.button_chapter_checked);
-            chapterButton.setTextColor(Color.WHITE);
+            chapterButton.setSelected(true);
         }
 
         public void clear() {
-            chapterButton.setBackgroundResource(R.drawable.button_chapter);
-            chapterButton.setTextColor(Color.parseColor("#7F7F80"));
+            chapterButton.setSelected(false);
         }
-
     }
 
     public class HeaderHolder extends BaseViewHolder {
-
         @BindView(R.id.item_header_comic_image) SimpleDraweeView mComicImage;
         @BindView(R.id.item_header_comic_title) TextView mComicTitle;
         @BindView(R.id.item_header_comic_intro) TextView mComicIntro;
@@ -65,7 +60,6 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         public HeaderHolder(View view) {
             super(view);
         }
-
     }
 
     public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, boolean status, String update, String last) {
@@ -145,7 +139,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
             if (last != null && last.equals(chapter.getPath())) {
-                viewHolder.select();
+                viewHolder.chapterButton.setSelected(true);
             }
             viewHolder.chapterButton.setText(chapter.getTitle());
         }

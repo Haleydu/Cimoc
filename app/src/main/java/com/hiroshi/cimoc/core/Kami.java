@@ -29,9 +29,9 @@ public class Kami {
             case SOURCE_IKANMAN:
                 return "http://m.ikanman.com";
             case SOURCE_DMZJ:
-                return "http://manhua.dmzj.com/";
+                return "http://m.dmzj.com/";
             case SOURCE_CHUIYAO:
-                return "http://www.chuiyao.com/";
+                return "http://m.chuiyao.com";
         }
     }
 

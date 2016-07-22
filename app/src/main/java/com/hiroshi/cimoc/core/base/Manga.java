@@ -8,14 +8,12 @@ import com.hiroshi.cimoc.model.EventMessage;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -37,62 +35,52 @@ public abstract class Manga {
     public void search(String keyword, int page) {
         String url = parseSearchUrl(keyword, page);
         if (url == null) {
-            EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, new LinkedList<>()));
+            EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_FAIL, null));
         } else {
-            Request request = buildRequest(url, null);
-            enqueueClient(request, new OnResponseSuccessHandler() {
+            enqueueClient(url, new OnResponseSuccessHandler() {
                 @Override
                 public void onSuccess(String html) {
                     List<Comic> list = parseSearch(html);
-                    EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, list));
+                    if (list == null || list.isEmpty()) {
+                        EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_FAIL, null));
+                    } else {
+                        EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_SUCCESS, list));
+                    }
                 }
             });
         }
     }
 
     public void into(final Comic comic) {
-        Request request = buildRequest(parseIntoUrl(comic.getPath()), null);
-        enqueueClient(request, new OnResponseSuccessHandler() {
+        enqueueClient(parseIntoUrl(comic.getCid()), new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
                 List<Chapter> list = parseInto(html, comic);
-                EventBus.getDefault().post(new EventMessage(EventMessage.LOAD_COMIC_SUCCESS, list));
-            }
-        });
-    }
-
-    public static int MODE_INIT = 1;
-    public static int MODE_NEXT = 2;
-    public static int MODE_PREV = 3;
-
-    public void browse(String path, final int mode) {
-        Request request = buildRequest(parseBrowseUrl(path), null);
-        enqueueClient(request, new OnResponseSuccessHandler() {
-            @Override
-            public void onSuccess(String html) {
-                String[] images = parseBrowse(html);
-                if (images == null) {
-                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_FAIL, null));
-                } else if (mode == MODE_INIT) {
-                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_INIT, images));
-                } else if (mode == MODE_NEXT) {
-                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_NEXT, images));
+                if (list == null || list.isEmpty()) {
+                    EventBus.getDefault().post(new EventMessage(EventMessage.LOAD_COMIC_FAIL, null));
                 } else {
-                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_PREV, images));
+                    EventBus.getDefault().post(new EventMessage(EventMessage.LOAD_COMIC_SUCCESS, list));
                 }
             }
         });
     }
 
-    private Request buildRequest(String url, RequestBody body) {
-        Request.Builder builder = new Request.Builder().url(url);
-        if (body != null) {
-            builder.post(body);
-        }
-        return builder.build();
+    public void browse(String cid, String path) {
+        enqueueClient(parseBrowseUrl(cid, path), new OnResponseSuccessHandler() {
+            @Override
+            public void onSuccess(String html) {
+                String[] images = parseBrowse(html);
+                if (images == null) {
+                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_FAIL, null));
+                } else {
+                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_SUCCESS, images));
+                }
+            }
+        });
     }
 
-    public void enqueueClient(Request request, final OnResponseSuccessHandler handler) {
+    public void enqueueClient(String url, final OnResponseSuccessHandler handler) {
+        Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -113,11 +101,11 @@ public abstract class Manga {
 
     protected abstract List<Comic> parseSearch(String html);
 
-    protected abstract String parseIntoUrl(String path);
+    protected abstract String parseIntoUrl(String cid);
 
     protected abstract List<Chapter> parseInto(String html, Comic comic);
 
-    protected abstract String parseBrowseUrl(String path);
+    protected abstract String parseBrowseUrl(String cid, String path);
 
     protected abstract String[] parseBrowse(String html);
 
@@ -125,28 +113,17 @@ public abstract class Manga {
         void onSuccess(String html);
     }
 
-    protected Comic build(String path, String title, String image, String update, String author, String intro, boolean status) {
+    protected Comic build(String path, String title, String cover, String update, String author, String intro, boolean status) {
         Comic comic = new Comic();
         comic.setSource(source);
-        comic.setPath(path);
+        comic.setCid(path);
         comic.setTitle(title);
-        comic.setImage(image);
+        comic.setCover(cover);
         comic.setUpdate(update);
         comic.setAuthor(author);
         comic.setIntro(intro);
         comic.setStatus(status);
         return comic;
-    }
-
-    protected void fill(Comic comic, String title, String image, String update, String author, String intro, Boolean status) {
-        comic.setTitle(title);
-        comic.setImage(image);
-        comic.setUpdate(update);
-        comic.setAuthor(author);
-        comic.setIntro(intro);
-        if (status != null) {
-            comic.setStatus(status);
-        }
     }
 
 }

@@ -14,9 +14,9 @@ public class Comic {
 
     @Id(autoincrement = true) private Long id;
     @NotNull private Integer source;
-    @NotNull private String path;
+    @NotNull private String cid;
     @NotNull private String title;
-    @NotNull private String image;
+    @NotNull private String cover;
     @NotNull private String update;
     private Long favorite;
     private Long history;
@@ -27,15 +27,15 @@ public class Comic {
     @Transient private String author;
     @Transient private Boolean status;
 
-    @Generated(hash = 1595116821)
-    public Comic(Long id, @NotNull Integer source, @NotNull String path,
-            @NotNull String title, @NotNull String image, @NotNull String update,
+    @Generated(hash = 1262295933)
+    public Comic(Long id, @NotNull Integer source, @NotNull String cid,
+            @NotNull String title, @NotNull String cover, @NotNull String update,
             Long favorite, Long history, String last, Integer page) {
         this.id = id;
         this.source = source;
-        this.path = path;
+        this.cid = cid;
         this.title = title;
-        this.image = image;
+        this.cover = cover;
         this.update = update;
         this.favorite = favorite;
         this.history = history;
@@ -116,12 +116,12 @@ public class Comic {
         this.update = update;
     }
 
-    public String getImage() {
-        return this.image;
+    public String getCover() {
+        return this.cover;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
     public String getTitle() {
@@ -132,12 +132,12 @@ public class Comic {
         this.title = title;
     }
 
-    public String getPath() {
-        return this.path;
+    public String getCid() {
+        return this.cid;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setCid(String cid) {
+        this.cid = cid;
     }
 
     public Integer getSource() {

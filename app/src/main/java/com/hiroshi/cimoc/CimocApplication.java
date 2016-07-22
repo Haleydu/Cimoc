@@ -7,6 +7,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoMaster.DevOpenHelper;
 import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.utils.ExLog;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -27,6 +28,7 @@ public class CimocApplication extends Application {
         initDatabase();
         context = getApplicationContext();
         Fresco.initialize(this);
+        ExLog.enable();
     }
 
     private void initDatabase() {

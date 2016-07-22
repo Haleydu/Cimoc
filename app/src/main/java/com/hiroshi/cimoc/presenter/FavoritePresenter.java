@@ -37,7 +37,7 @@ public class FavoritePresenter extends BasePresenter {
             @Override
             public void onItemClick(View view, int position) {
                 Comic comic = mFavoriteFragment.getItem(position);
-                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic);
+                Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic, false);
                 mFavoriteFragment.startActivity(intent);
             }
         };

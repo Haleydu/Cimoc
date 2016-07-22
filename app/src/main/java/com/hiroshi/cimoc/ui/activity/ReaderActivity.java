@@ -37,6 +37,12 @@ public class ReaderActivity extends BaseActivity {
     private ReaderPresenter mPresenter;
 
     @Override
+    public void onBackPressed() {
+        mPresenter.setPage(mSeekBar.getProgress());
+        super.onBackPressed();
+    }
+
+    @Override
     protected void initView() {
         mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater(),
                 new GestureDetector.SimpleOnGestureListener() {
@@ -138,10 +144,6 @@ public class ReaderActivity extends BaseActivity {
         mSeekBar.setProgress(progress);
         String pageString = progress + "/" + mSeekBar.getMax();
         mChapterPage.setText(pageString);
-    }
-
-    public int getReadProgress() {
-        return mSeekBar.getProgress();
     }
 
     public void setTitle(String title) {

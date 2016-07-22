@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.core;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -37,20 +39,20 @@ public class IKanman extends Manga {
         Elements items = doc.select("#detail > li > a");
         List<Comic> list = new LinkedList<>();
         for (Element item : items) {
-            String path = item.attr("href");
+            String cid = item.attr("href").split("/")[2];
             String title = item.select("h3").first().text();
-            String image = item.select("div > img").first().attr("data-src");
+            String cover = item.select("div > img").first().attr("data-src");
             String update = item.select("dl:eq(5) > dd").first().text();
             String author = item.select("dl:eq(2) > dd").first().text();
             boolean status = "完结".equals(item.select("div > i").first().text());
-            list.add(build(path, title, image, update, author, null, status));
+            list.add(build(cid, title, cover, update, author, null, status));
         }
         return list;
     }
 
     @Override
-    protected String parseIntoUrl(String path) {
-        return host + path;
+    protected String parseIntoUrl(String cid) {
+        return host + "/comic/" + cid;
     }
 
     @Override
@@ -60,25 +62,33 @@ public class IKanman extends Manga {
         Elements items = doc.select("#chapterList > ul > li > a");
         for (Element item : items) {
             String c_title = item.select("b").first().text();
-            String c_path = item.attr("href");
+            String c_path = item.attr("href").split("/|\\.")[3];
             list.add(new Chapter(c_title, c_path));
         }
+
         String title = doc.select(".main-bar > h1").first().text();
         Element detail = doc.getElementsByClass("book-detail").first();
         Element cont = detail.getElementsByClass("cont-list").first();
-        String image = cont.select(".thumb > img").first().attr("src");
+        String cover = cont.select(".thumb > img").first().attr("src");
         String update = cont.select("dl:eq(2) > dd").first().text();
         String author = cont.select("dl:eq(3) > dd > a").first().attr("title");
         Element node = detail.getElementById("bookIntro");
         String intro = node.select("p:eq(0)").isEmpty() ? node.text() : node.select("p:eq(0)").first().text();
-        boolean status = !"连载".equals(cont.select(".thumb > i").first().text());
-        fill(comic, title, image, update, author, intro, status);
+        boolean status = "完结".equals(cont.select(".thumb > i").first().text());
+
+        comic.setIntro(intro);
+        comic.setTitle(title);
+        comic.setCover(cover);
+        comic.setAuthor(author);
+        comic.setStatus(status);
+        comic.setUpdate(update);
+
         return list;
     }
 
     @Override
-    protected String parseBrowseUrl(String path) {
-        return host + path;
+    protected String parseBrowseUrl(String cid, String path) {
+        return host + "/comic/" + cid + "/" + path + ".html";
     }
 
     @Override
@@ -96,9 +106,8 @@ public class IKanman extends Manga {
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONObject info = new JSONObject(jsonString);
                 JSONArray array = info.getJSONArray("images");
-                int count = info.getInt("count");
-                String[] images = new String[count];
-                for (int i = 0; i != count; ++i) {
+                String[] images = new String[array.length()];
+                for (int i = 0; i != array.length(); ++i) {
                     images[i] = "http://i.hamreus.com:8080" + array.getString(i);
                 }
                 return images;

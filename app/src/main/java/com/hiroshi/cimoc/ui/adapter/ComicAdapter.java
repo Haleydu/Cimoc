@@ -50,7 +50,7 @@ public class ComicAdapter extends BaseAdapter<Comic> {
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
         PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource());
-        viewHolder.comicImage.setController(builder.setUri(comic.getImage()).build());
+        viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
     }
 
     @Override

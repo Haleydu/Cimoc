@@ -25,21 +25,19 @@ public class ResultPresenter extends BasePresenter {
     private String keyword;
     private int page;
     private boolean isLoading;
-    private boolean isInit;
 
     public ResultPresenter(ResultActivity activity, int source, String keyword) {
         this.mResultActivity = activity;
         this.mManga = Kami.getMangaById(source);
         this.keyword = keyword;
-        this.page = 1;
+        this.page = 0;
         this.isLoading = false;
-        this.isInit = true;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mManga.search(keyword, page++);
+        mManga.search(keyword, ++page);
     }
 
     public void onScrolled(int dy) {
@@ -48,14 +46,14 @@ public class ResultPresenter extends BasePresenter {
         if (lastItem >= itemCount - 4 && dy > 0) {
             if (!isLoading) {
                 isLoading = true;
-                mManga.search(keyword, page++);
+                mManga.search(keyword, ++page);
             }
         }
     }
 
     public void onItemClick(int position) {
         Comic comic = mResultActivity.getItem(position);
-        Intent intent = DetailActivity.createIntent(mResultActivity, comic);
+        Intent intent = DetailActivity.createIntent(mResultActivity, comic, true);
         mResultActivity.startActivity(intent);
     }
 
@@ -65,11 +63,12 @@ public class ResultPresenter extends BasePresenter {
             case EventMessage.SEARCH_SUCCESS:
                 List list = (List<Comic>) msg.getData();
                 mResultActivity.hideProgressBar();
-                if (!list.isEmpty()) {
-                    mResultActivity.addAll(list);
-                    isLoading = false;
-                    isInit = false;
-                } else if (isInit) {
+                mResultActivity.addAll(list);
+                isLoading = false;
+                break;
+            case EventMessage.SEARCH_FAIL:
+                if (page == 1) {
+                    mResultActivity.hideProgressBar();
                     mResultActivity.showSnackbar("搜索结果为空 :)");
                 }
                 break;

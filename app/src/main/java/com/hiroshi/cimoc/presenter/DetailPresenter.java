@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.model.EventMessage;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -64,8 +65,10 @@ public class DetailPresenter extends BasePresenter {
         switch (msg.getType()) {
             case EventMessage.LOAD_COMIC_SUCCESS:
                 List<Chapter> list = (List<Chapter>) msg.getData();
-                mComicManager.setChapters(list);
                 initView(list);
+                break;
+            case EventMessage.LOAD_COMIC_FAIL:
+                initView(new LinkedList<Chapter>());
                 break;
             case EventMessage.CHANGE_LAST_PATH:
                 String path = (String) msg.getData();
@@ -79,6 +82,7 @@ public class DetailPresenter extends BasePresenter {
     }
 
     private void initView(List<Chapter> list) {
+        mComicManager.setChapters(list);
         String last = mComicManager.getLast();
         mDetailActivity.setChapterList(mComicManager.getComic(), list, last);
         int resId = mComicManager.isComicStar() ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
@@ -86,7 +90,7 @@ public class DetailPresenter extends BasePresenter {
         mDetailActivity.setStarButtonVisible();
         mDetailActivity.hideProgressBar();
         if (list.isEmpty()) {
-            mDetailActivity.showSnackbar("此漫画已被屏蔽 :(");
+            mDetailActivity.showSnackbar("解析错误或此漫画已被屏蔽 :(");
         }
     }
 

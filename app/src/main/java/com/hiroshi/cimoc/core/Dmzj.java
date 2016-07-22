@@ -3,17 +3,14 @@ package com.hiroshi.cimoc.core;
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.Decryption;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +23,7 @@ import java.util.regex.Pattern;
 public class Dmzj extends Manga {
 
     public Dmzj() {
-        super(Kami.SOURCE_DMZJ, "http://manhua.dmzj.com");
+        super(Kami.SOURCE_DMZJ, "http://m.dmzj.com");
     }
 
     @Override
@@ -47,71 +44,85 @@ public class Dmzj extends Manga {
                 JSONArray array = new JSONArray(matcher.group(1));
                 for (int i = 0; i != array.length(); ++i) {
                     JSONObject object = array.getJSONObject(i);
-                    if (object.getInt("zone_tag_id") == 2308) {
-                        continue;
-                    }
-                    String path = object.getString("comic_url").replace(host, "");
+                    String cid = object.getString("id");
                     String title = object.getString("name");
                     String image = object.getString("cover");
                     long time = object.getLong("last_updatetime") * 1000;
                     String update = new SimpleDateFormat("yyyy-MM-dd").format(new Date(time));
                     String author = object.getString("authors");
                     boolean status = object.getInt("status_tag_id") == 2310;
-                    list.add(build(path, title, image, update, author, null, status));
+                    list.add(build(cid, title, image, update, author, null, status));
+                }
+                return list;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected String parseIntoUrl(String cid) {
+        return host + "/info/" + cid + ".html";
+    }
+
+    @Override
+    protected List<Chapter> parseInto(String html, Comic comic) {
+        if (html.contains("此漫画暂不提供观看")) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile("\"data\":(\\[.*?\\])");
+        Matcher matcher = pattern.matcher(html);
+        List<Chapter> list = new LinkedList<>();
+        if (matcher.find()) {
+            try {
+                JSONArray array = new JSONArray(matcher.group(1));
+                for (int i = 0; i != array.length(); ++i) {
+                    JSONObject object = array.getJSONObject(i);
+                    String c_title = object.getString("chapter_name");
+                    String c_path = object.getString("id");
+                    list.add(new Chapter(c_title, c_path));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return list;
-    }
 
-    @Override
-    protected String parseIntoUrl(String path) {
-        return host + path;
-    }
-
-    @Override
-    protected List<Chapter> parseInto(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
         Document doc = Jsoup.parse(html);
-        Elements items = doc.select(".cartoon_online_border > ul > li > a");
-        for (Element item : items) {
-            String c_title = item.text();
-            String c_path = item.attr("href");
-            list.add(new Chapter(c_title, c_path));
-        }
-        Collections.reverse(list);
-        String intro = doc.select(".middleright_mr > .line_height_content").first().text().trim();
-        Element detail = doc.getElementsByClass("week_mend_back").first();
-        String title = detail.select(".anim_intro_ptext > a > img").first().attr("alt");
-        String image = detail.select(".anim_intro_ptext > a > img").first().attr("src");
-        String author = detail.select(".anim-main_list > table > tbody > tr:eq(2) > td > a").first().text();
-        boolean status = !"连载中".equals(detail.select(".anim-main_list > table > tbody > tr:eq(4) > td > a").first().text());
-        Element node = detail.select(".anim-main_list > table > tbody > tr:eq(8) > td > span").first();
-        String update = node == null ? "-" : node.text();
-        fill(comic, title, image, update, author, intro, status);
+        String intro = doc.select(".txtDesc").first().text().replace("介绍:", "");
+        Element detail = doc.getElementsByClass("Introduct_Sub").first();
+        String title = detail.select("#Cover > img").first().attr("title");
+        String cover = detail.select("#Cover > img").first().attr("src");
+        String author = detail.select(".sub_r > p:eq(0) > a").first().text();
+        boolean status = "已完结".equals(detail.select(".sub_r > p:eq(2) > a:eq(3)").first().text());
+        String update = detail.select(".sub_r > p:eq(3) > .date").first().text().split(" ")[0];
+
+        comic.setIntro(intro);
+        comic.setTitle(title);
+        comic.setCover(cover);
+        comic.setAuthor(author);
+        comic.setStatus(status);
+        comic.setUpdate(update);
+
         return list;
     }
 
     @Override
-    protected String parseBrowseUrl(String path) {
-        return host + path;
+    protected String parseBrowseUrl(String cid, String path) {
+        return host + "/view/" + cid + "/" + path + ".html";
     }
 
     @Override
     protected String[] parseBrowse(String html) {
-        Pattern pattern = Pattern.compile("eval(.*?)\\s+;");
+        Pattern pattern = Pattern.compile("\"page_url\":(\\[.*?\\])");
         Matcher matcher = pattern.matcher(html);
         if (matcher.find()) {
             try {
-                String result = Decryption.evalDecrypt(matcher.group(1));
-                String jsonString = result.substring(17, result.length() - 2);
-
-                JSONArray array = new JSONArray(jsonString);
+                JSONArray array = new JSONArray(matcher.group(1));
                 String[] images = new String[array.length()];
                 for (int i = 0; i != images.length; ++i) {
-                    images[i] = "http://images.dmzj.com/" + array.getString(i);
+                    images[i] = array.getString(i);
                 }
                 return images;
             } catch (Exception e) {

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="?android:attr/borderlessButtonStyle"
     android:id="@+id/item_chapter_button"
     android:layout_width="match_parent"
     android:layout_height="32dp"
-    android:background="@drawable/button_chapter"
     android:paddingLeft="6dp"
     android:paddingRight="6dp"
+    android:gravity="center"
+    android:background="@drawable/button_chapter_selector"
     android:textSize="12sp"
-    android:maxLines="1"
+    android:singleLine="true"
     android:ellipsize="end"
-    android:textColor="@color/grey"/>
+    android:textColor="@color/button_chapter_color"
+    android:clickable="true"/>
 
 

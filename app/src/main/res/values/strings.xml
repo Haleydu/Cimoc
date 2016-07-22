@@ -22,4 +22,11 @@
 
     <string name="about_version">Version: 1.0</string>
 
+    <string name="settings_backup">备份设置</string>
+    <string name="settings_backup_save">备份</string>
+    <string name="settings_backup_save_summary">备份到本地文件</string>
+    <string name="settings_backup_restore">恢复</string>
+    <string name="settings_backup_restore_summary">从本地文件中恢复</string>
+    <string name="settings_reader">阅读设置</string>
+    <string name="settings_reader_cache">清除缓存</string>
 </resources>

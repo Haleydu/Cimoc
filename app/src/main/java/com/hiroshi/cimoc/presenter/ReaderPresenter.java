@@ -17,13 +17,18 @@ import java.util.List;
  */
 public class ReaderPresenter extends BasePresenter {
 
+    private final static int PARSE_NULL = 0;
+    private final static int PARSE_INIT = 1;
+    private final static int PARSE_PREV = 2;
+    private final static int PARSE_NEXT = 3;
+
     private ReaderActivity mReaderActivity;
     private ComicManager mComicManager;
     private Manga mManga;
 
     private List<Chapter> mChapterList;
 
-    private boolean isLoading;
+    private int status;
     private int prev;
     private int next;
     private int index;
@@ -40,26 +45,22 @@ public class ReaderPresenter extends BasePresenter {
     @Override
     public void onCreate() {
         super.onCreate();
-        isLoading = true;
-        mManga.browse(mChapterList.get(next).getPath(), Manga.MODE_INIT);
+        status = PARSE_INIT;
+        mManga.browse(mComicManager.getCid(), mChapterList.get(next).getPath());
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mComicManager.setLast(mReaderActivity.getReadProgress());
+    public void setPage(int progress) {
+        mComicManager.setPage(progress);
     }
 
     public void onPageSelected(int position) {
-        if (!isLoading) {
+        if (status == PARSE_NULL) {
             if (position == 0 && prev < mChapterList.size()) {
-                String path = mChapterList.get(prev).getPath();
-                isLoading = true;
-                mManga.browse(path, Manga.MODE_PREV);
+                status = PARSE_PREV;
+                mManga.browse(mComicManager.getCid(), mChapterList.get(prev).getPath());
             } else if (position == mReaderActivity.getCount() - 1 && next >= 0) {
-                String path = mChapterList.get(next).getPath();
-                isLoading = true;
-                mManga.browse(path, Manga.MODE_NEXT);
+                status = PARSE_NEXT;
+                mManga.browse(mComicManager.getCid(), mChapterList.get(next).getPath());
             }
         }
         onPositionChange(position);
@@ -97,7 +98,7 @@ public class ReaderPresenter extends BasePresenter {
         Chapter chapter = mChapterList.get(which);
         mReaderActivity.setReadMax(chapter.getCount(), progress);
         mReaderActivity.setTitle(chapter.getTitle());
-        mComicManager.setLastPath(chapter.getPath());
+        mComicManager.setLast(chapter.getPath());
         index = which;
     }
 
@@ -105,28 +106,24 @@ public class ReaderPresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         String[] array;
         switch (msg.getType()) {
-            case EventMessage.PARSE_PIC_INIT:
+            case EventMessage.PARSE_PIC_SUCCESS:
                 array = (String[]) msg.getData();
-                mReaderActivity.setInitImage(array, next == mChapterList.size() - 1);
-                mChapterList.get(next).setCount(array.length);
-                switchChapter(next, 1);
-                next = next - 1;
-                isLoading = false;
-                break;
-            case EventMessage.PARSE_PIC_PREV:
-                array = (String[]) msg.getData();
-                mReaderActivity.setPrevImage(array, prev == mChapterList.size() - 1);
-                mChapterList.get(prev).setCount(array.length);
-                switchChapter(prev, array.length);
-                prev = prev + 1;
-                isLoading = false;
-                break;
-            case EventMessage.PARSE_PIC_NEXT:
-                array = (String[]) msg.getData();
-                mReaderActivity.setNextImage(array);
-                mChapterList.get(next).setCount(array.length);
-                next = next - 1;
-                isLoading = false;
+                if (status == PARSE_INIT) {
+                    mChapterList.get(next).setCount(array.length);
+                    mReaderActivity.setInitImage(array, next == mChapterList.size() - 1);
+                    switchChapter(next, 1);
+                    next = next - 1;
+                } else if (status == PARSE_PREV) {
+                    mChapterList.get(prev).setCount(array.length);
+                    mReaderActivity.setPrevImage(array, prev == mChapterList.size() - 1);
+                    switchChapter(prev, array.length);
+                    prev = prev + 1;
+                } else if (status == PARSE_NEXT) {
+                    mChapterList.get(next).setCount(array.length);
+                    mReaderActivity.setNextImage(array);
+                    next = next - 1;
+                }
+                status = PARSE_NULL;
                 break;
             case EventMessage.PARSE_PIC_FAIL:
                 break;
