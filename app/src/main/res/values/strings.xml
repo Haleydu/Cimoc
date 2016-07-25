@@ -20,13 +20,17 @@
 
     <string name="reader_absence">前面没有了 :(</string>
 
-    <string name="about_version">Version: 1.0</string>
+    <string name="about_version">version: 1.0.0</string>
 
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
     <string name="settings_backup_save_summary">备份到本地文件</string>
     <string name="settings_backup_restore">恢复</string>
     <string name="settings_backup_restore_summary">从本地文件中恢复</string>
-    <string name="settings_reader">阅读设置</string>
-    <string name="settings_reader_cache">清除缓存</string>
+    <string name="settings_other">其他设置</string>
+    <string name="settings_other_history">清除历史纪录</string>
+    <string name="settings_other_cache">清除缓存</string>
+
+    <string name="about_resource">源代码</string>
+    <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
 </resources>

@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.utils.ExLog;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,19 +26,49 @@ public class ComicManager {
         mComicDao = CimocApplication.getDaoSession().getComicDao();
     }
 
-    public boolean isExist(int source, String cid) {
-        List<Comic> list = mComicDao.queryBuilder()
-                .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
-                .limit(1)
-                .list();
-        return !list.isEmpty();
+    public void restoreFavorite(final List<Comic> list) {
+        mComicDao.getSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                List<Comic> result = new LinkedList<>();
+                for (Comic comic : list) {
+                    ExLog.d("ComicManager", "get " + comic.getTitle());
+                    Comic temp = mComicDao.queryBuilder()
+                            .where(Properties.Source.eq(comic.getSource()), Properties.Cid.eq(comic.getCid()))
+                            .unique();
+                    if (temp == null) {
+                        ExLog.d("ComicManager", "insert " + comic.getTitle());
+                        comic.setFavorite(System.currentTimeMillis());
+                        long id = mComicDao.insert(comic);
+                        comic.setId(id);
+                        result.add(comic);
+                    } else if (temp.getFavorite() == null) {
+                        ExLog.d("ComicManager", "update " + comic.getTitle());
+                        temp.setFavorite(System.currentTimeMillis());
+                        mComicDao.update(temp);
+                        result.add(temp);
+                    }
+                }
+                EventBus.getDefault().post(new EventMessage(EventMessage.RESTORE_FAVORITE, result));
+            }
+        });
     }
 
-    public void restore(int source, String cid, String title, String cover, String update) {
-        Comic comic = new Comic(null, source, cid, title, cover, update, System.currentTimeMillis(), null, null, null);
-        long id = mComicDao.insert(comic);
-        comic.setId(id);
-        EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, comic));
+    public void cleanHistory(final List<Comic> list) {
+        mComicDao.getSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                for (Comic comic : list) {
+                    if (comic.getFavorite() != null) {
+                        comic.setHistory(null);
+                        mComicDao.update(comic);
+                    } else {
+                        mComicDao.delete(comic);
+                    }
+                }
+                EventBus.getDefault().post(new EventMessage(EventMessage.DELETE_HISTORY, list.size()));
+            }
+        });
     }
 
     public List<Comic> listFavorite() {
@@ -62,12 +93,11 @@ public class ComicManager {
         ExLog.d("ComicManager", "init" + " [" + this.comic.getId() + "] " + this.comic.getTitle());
         if (isResult) {
             ExLog.d("ComicManager", "comic from result");
-            List<Comic> list = mComicDao.queryBuilder()
+            Comic temp = mComicDao.queryBuilder()
                     .where(Properties.Source.eq(comic.getSource()), Properties.Cid.eq(comic.getCid()))
-                    .limit(1)
-                    .list();
-            if (!list.isEmpty()) {
-                this.comic = list.get(0);
+                    .unique();
+            if (temp != null) {
+                this.comic = temp;
                 ExLog.d("ComicManager", "find" + " [" + this.comic.getId() + "] " + this.comic.getTitle());
             }
         }
@@ -111,9 +141,10 @@ public class ComicManager {
         comic.setFavorite(null);
         if (!isComicHistory()) {
             mComicDao.delete(comic);
-            ExLog.d("ComicManager", "delete" + " [" + comic.getId() + "] " + comic.getTitle());
+            comic.setId(null);
+            ExLog.d("ComicManager", "delete" + " [" + id + "] " + comic.getTitle());
         }
-        ExLog.d("ComicManager", "unfavorite" + " [" + comic.getId() + "] " + comic.getTitle());
+        ExLog.d("ComicManager", "unfavorite" + " [" + id + "] " + comic.getTitle());
         EventBus.getDefault().post(new EventMessage(EventMessage.UN_FAVORITE_COMIC, id));
     }
 

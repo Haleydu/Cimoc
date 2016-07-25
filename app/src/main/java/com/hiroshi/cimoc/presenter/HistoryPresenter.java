@@ -1,14 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
 import android.content.Intent;
-import android.view.View;
 
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.ui.activity.DetailActivity;
+import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -32,15 +30,10 @@ public class HistoryPresenter extends BasePresenter {
         return mComicManager.listHistory();
     }
 
-    public BaseAdapter.OnItemClickListener getItemClickListener() {
-        return new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Comic comic = mHistoryFragment.getItem(position);
-                Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic, false);
-                mHistoryFragment.startActivity(intent);
-            }
-        };
+    public void onItemClick(int position) {
+        Comic comic = mHistoryFragment.getItem(position);
+        Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic, false);
+        mHistoryFragment.startActivity(intent);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -49,6 +42,9 @@ public class HistoryPresenter extends BasePresenter {
             case EventMessage.HISTORY_COMIC:
                 Comic comic = (Comic) msg.getData();
                 mHistoryFragment.updateItem(comic);
+                break;
+            case EventMessage.DELETE_HISTORY:
+                mHistoryFragment.clearItem();
                 break;
         }
     }

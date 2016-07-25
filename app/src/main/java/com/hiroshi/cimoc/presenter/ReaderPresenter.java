@@ -66,6 +66,10 @@ public class ReaderPresenter extends BasePresenter {
         onPositionChange(position);
     }
 
+    public int getSource() {
+        return mComicManager.getSource();
+    }
+
     public int getOffset() {
         int offset = 0;
         for (int i = prev - 1; i > index; --i) {

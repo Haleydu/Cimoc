@@ -29,15 +29,13 @@ import butterknife.OnClick;
  */
 public class DetailActivity extends BaseActivity {
 
-    @BindView(R.id.detail_chapter_list) RecyclerView mChapterList;
+    @BindView(R.id.detail_chapter_list) RecyclerView mRecyclerView;
     @BindView(R.id.detail_coordinator_layout) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
     @BindView(R.id.detail_progress_bar) ProgressBar mProgressBar;
 
     private ChapterAdapter mChapterAdapter;
     private DetailPresenter mPresenter;
-
-    private int lastChapter;
 
     @Override
     protected void initToolbar() {
@@ -77,19 +75,6 @@ public class DetailActivity extends BaseActivity {
         mPresenter.onStarClick();
     }
 
-    public void setLastChapter(String path) {
-        int nextChapter = mChapterAdapter.getPositionByPath(path);
-        if (lastChapter != nextChapter && nextChapter != -1) {
-            ChapterAdapter.ViewHolder viewHolder = (ChapterAdapter.ViewHolder) mChapterList.findViewHolderForLayoutPosition(nextChapter);
-            viewHolder.select();
-            if (lastChapter != -1) {
-                viewHolder = (ChapterAdapter.ViewHolder) mChapterList.findViewHolderForLayoutPosition(lastChapter);
-                viewHolder.clear();
-            }
-            lastChapter = nextChapter;
-        }
-    }
-
     public void setStarButtonRes(int resId) {
         mStarButton.setImageResource(resId);
     }
@@ -107,19 +92,23 @@ public class DetailActivity extends BaseActivity {
         Snackbar.make(mCoordinatorLayout, msg, Snackbar.LENGTH_SHORT).show();
     }
 
-    public void setChapterList(Comic comic, List<Chapter> list, String last) {
+    public void setLastChapter(String last) {
+        mChapterAdapter.setLast(last);
+    }
+
+    public void initRecyclerView(Comic comic, List<Chapter> list, String last) {
         mChapterAdapter = new ChapterAdapter(this, list, comic.getCover(), comic.getTitle(),
-                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), last);
+                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate());
+        mChapterAdapter.setLast(last);
         mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 mPresenter.onItemClick(position);
             }
         });
-        mChapterList.setLayoutManager(new GridLayoutManager(this, 4));
-        mChapterList.setAdapter(mChapterAdapter);
-        mChapterList.addItemDecoration(mChapterAdapter.getItemDecoration());
-        lastChapter = mChapterAdapter.getPositionByPath(last);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        mRecyclerView.setAdapter(mChapterAdapter);
+        mRecyclerView.addItemDecoration(mChapterAdapter.getItemDecoration());
     }
 
     public static Intent createIntent(Context context, Comic comic, boolean isResult) {

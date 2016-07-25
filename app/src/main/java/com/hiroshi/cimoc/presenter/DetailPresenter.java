@@ -52,11 +52,11 @@ public class DetailPresenter extends BasePresenter {
         if (mComicManager.isComicStar()) {
             mComicManager.unfavoriteComic();
             mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_border_white_24dp);
-            mDetailActivity.showSnackbar("取消收藏成功 :)");
+            mDetailActivity.showSnackbar("取消收藏成功");
         } else {
             mComicManager.favoriteComic();
             mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_white_24dp);
-            mDetailActivity.showSnackbar("收藏成功 :)");
+            mDetailActivity.showSnackbar("收藏成功");
         }
     }
 
@@ -76,7 +76,7 @@ public class DetailPresenter extends BasePresenter {
                 break;
             case EventMessage.NETWORK_ERROR:
                 mDetailActivity.hideProgressBar();
-                mDetailActivity.showSnackbar("网络错误 :(");
+                mDetailActivity.showSnackbar("网络错误");
                 break;
         }
     }
@@ -84,13 +84,13 @@ public class DetailPresenter extends BasePresenter {
     private void initView(List<Chapter> list) {
         mComicManager.setChapters(list);
         String last = mComicManager.getLast();
-        mDetailActivity.setChapterList(mComicManager.getComic(), list, last);
+        mDetailActivity.initRecyclerView(mComicManager.getComic(), list, last);
         int resId = mComicManager.isComicStar() ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
         mDetailActivity.setStarButtonRes(resId);
         mDetailActivity.setStarButtonVisible();
         mDetailActivity.hideProgressBar();
         if (list.isEmpty()) {
-            mDetailActivity.showSnackbar("解析错误或此漫画已被屏蔽 :(");
+            mDetailActivity.showSnackbar("解析错误或此漫画已被屏蔽");
         }
     }
 

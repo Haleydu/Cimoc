@@ -2,12 +2,16 @@ package com.hiroshi.cimoc.ui.fragment;
 
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -16,7 +20,7 @@ import butterknife.BindView;
  */
 public class FavoriteFragment extends BaseFragment {
 
-    @BindView(R.id.favorite_comic_list) RecyclerView mComicList;
+    @BindView(R.id.favorite_comic_list) RecyclerView mRecyclerView;
 
     private ComicAdapter mComicAdapter;
     private FavoritePresenter mPresenter;
@@ -24,11 +28,16 @@ public class FavoriteFragment extends BaseFragment {
     @Override
     protected void initView() {
         mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getComic());
-        mComicAdapter.setOnItemClickListener(mPresenter.getItemClickListener());
-        mComicList.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mComicList.setItemAnimator(null);
-        mComicList.setAdapter(mComicAdapter);
-        mComicList.addItemDecoration(mComicAdapter.getItemDecoration());
+        mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                mPresenter.onItemClick(position);
+            }
+        });
+        mRecyclerView.setAnimation(null);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerView.setAdapter(mComicAdapter);
+        mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
     }
 
     @Override
@@ -56,6 +65,10 @@ public class FavoriteFragment extends BaseFragment {
 
     public void removeItem(long id) {
         mComicAdapter.removeById(id);
+    }
+
+    public void addItems(List<Comic> list) {
+        mComicAdapter.addAll(0, list);
     }
 
 }

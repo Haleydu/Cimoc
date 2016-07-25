@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;

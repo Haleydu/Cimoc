@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -41,7 +39,6 @@ public class Chuiyao extends Manga {
             String title = item.select("h3:eq(1)").first().text();
 
             String cover = item.select("div:eq(0) > img").first().attr("data-src");
-            Log.e("----", cover);
             String update = item.select("dl:eq(5) > dd").first().text();
             String author = item.select("dl:eq(2) > dd").first().text();
             boolean status = "完结".equals(item.select("div:eq(0) > i").first().text().trim());

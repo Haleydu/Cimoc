@@ -10,7 +10,6 @@ import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFact
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.CimocApplication;
-import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.core.Kami;
 
 import java.io.IOException;
@@ -26,10 +25,6 @@ import okhttp3.Response;
 public class ControllerBuilderFactory {
 
     private static SparseArray<PipelineDraweeControllerBuilder> builderArray = new SparseArray<>();
-
-    public static PipelineDraweeControllerBuilder getControllerBuilder() {
-        return getControllerBuilder(ComicManager.getInstance().getSource());
-    }
 
     public static PipelineDraweeControllerBuilder getControllerBuilder(int source) {
         if (builderArray.get(source) == null) {

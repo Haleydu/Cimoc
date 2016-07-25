@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
+import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -52,7 +53,7 @@ public class ReaderActivity extends BaseActivity {
                         mToolLayout.setVisibility(visibility);
                         return true;
                     }
-                });
+                }, ControllerBuilderFactory.getControllerBuilder(mPresenter.getSource()));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}

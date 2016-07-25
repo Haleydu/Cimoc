@@ -3,11 +3,13 @@ package com.hiroshi.cimoc.ui.fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 
 
@@ -18,7 +20,7 @@ import butterknife.BindView;
  */
 public class HistoryFragment extends BaseFragment {
 
-    @BindView(R.id.history_comic_list) RecyclerView mComicList;
+    @BindView(R.id.history_comic_list) RecyclerView mRecyclerView;
 
     private ComicAdapter mComicAdapter;
     private HistoryPresenter mPresenter;
@@ -26,12 +28,17 @@ public class HistoryFragment extends BaseFragment {
     @Override
     protected void initView() {
         mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getComic());
-        mComicAdapter.setOnItemClickListener(mPresenter.getItemClickListener());
-        mComicList.setItemAnimator(null);
-        mComicList.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mComicList.setItemAnimator(new DefaultItemAnimator());
-        mComicList.setAdapter(mComicAdapter);
-        mComicList.addItemDecoration(mComicAdapter.getItemDecoration());
+        mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                mPresenter.onItemClick(position);
+            }
+        });
+        mRecyclerView.setAnimation(null);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mComicAdapter);
+        mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
     }
 
     @Override
@@ -55,6 +62,10 @@ public class HistoryFragment extends BaseFragment {
 
     public void updateItem(Comic comic) {
         mComicAdapter.update(0, comic);
+    }
+
+    public void clearItem() {
+        mComicAdapter.clear();
     }
 
 }

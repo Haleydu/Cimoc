@@ -2,34 +2,28 @@ package com.hiroshi.cimoc.utils;
 
 import android.os.Environment;
 
-import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/7/22.
  */
 public class BackupUtils {
 
-    public static String filePath = Environment.getExternalStorageDirectory() + File.separator + "Cimoc" + File.separator + "backup";
+    public static String dirPath = Environment.getExternalStorageDirectory() + File.separator + "Cimoc" + File.separator + "backup";
 
-    public static boolean saveFavoriteComic() {
+    public static boolean saveComic(List<Comic> list) {
         try {
             JSONArray array = new JSONArray();
-            for (Comic comic : ComicManager.getInstance().listFavorite()) {
+            for (Comic comic : list) {
                 JSONObject object = new JSONObject();
                 object.put("source", comic.getSource());
                 object.put("cid", comic.getCid());
@@ -38,13 +32,12 @@ public class BackupUtils {
                 object.put("update", comic.getUpdate());
                 array.put(object);
             }
-            if (isFilePathExist()) {
-                String filename = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".cimoc";
-                File file = new File(filePath, filename);
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-                writer.write(array.toString());
-                ExLog.d("Backup", "save to " + filename);
-                return true;
+            if (FileUtils.mkDirsIfNotExist(dirPath)) {
+                String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".cimoc";
+                if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
+                    ExLog.d("Backup", "save to " + name);
+                    return true;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,48 +46,28 @@ public class BackupUtils {
     }
 
     public static String[] showBackupFiles() {
-        if (isFilePathExist()) {
-            File dir = new File(filePath);
-            return dir.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String filename) {
-                    return filename.endsWith(".cimoc");
-                }
-            });
-        }
-        return null;
+        return FileUtils.listFilesHaveSuffix(dirPath, "cimoc");
     }
 
-    public static boolean restoreFavoriteComic(String filename) {
+    public static List<Comic> restoreComic(String name) {
+        List<Comic> list = new LinkedList<>();
         try {
-            File file = new File(filePath, filename);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            String jsonString = reader.readLine();
+            String jsonString = FileUtils.readSingleLineFromFile(dirPath, name);
             JSONArray array = new JSONArray(jsonString);
-            ComicManager manager = ComicManager.getInstance();
             for (int i = 0; i != array.length(); ++i) {
                 JSONObject object = array.getJSONObject(i);
                 int source = object.getInt("source");
                 String cid = object.getString("cid");
-                if (!manager.isExist(source, cid)) {
-                    manager.restore(source, cid, object.getString("title"), object.getString("cover"), object.getString("update"));
-                    ExLog.d("Backup", "restore " + source + " " + cid);
-                }
+                String title = object.getString("title");
+                String cover = object.getString("cover");
+                String update = object.getString("update");
+                list.add(new Comic(null, source, cid, title, cover, update, null, null, null, null));
             }
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
-    }
-
-    private static boolean isFilePathExist() {
-        boolean result = true;
-        File dir = new File(filePath);
-        if (!dir.exists()) {
-            result = dir.mkdirs();
-        }
-        return result;
+        ExLog.d("BackupUtils", "the number of comic is " + list.size());
+        return list;
     }
 
 }

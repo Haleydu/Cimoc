@@ -35,29 +35,26 @@ public class Kami {
         }
     }
 
-    private static IKanman mIKanman;
-    private static Dmzj mDmzj;
-    private static Chuiyao mChuiyao;
+    private static Manga[] mangaArray = new Manga[3];
 
     public static Manga getMangaById(int id) {
-        switch (id) {
-            default:
-            case SOURCE_IKANMAN:
-                if (mIKanman == null) {
-                    mIKanman = new IKanman();
-                }
-                return mIKanman;
-            case SOURCE_DMZJ:
-                if (mDmzj == null) {
-                    mDmzj = new Dmzj();
-                }
-                return mDmzj;
-            case SOURCE_CHUIYAO:
-                if (mChuiyao == null) {
-                    mChuiyao = new Chuiyao();
-                }
-                return mChuiyao;
+        if (id < 0 || id > 2) {
+            return getMangaById(0);
         }
+        if (mangaArray[id] == null) {
+            switch (id) {
+                case SOURCE_IKANMAN:
+                    mangaArray[SOURCE_IKANMAN] = new IKanman();
+                    break;
+                case SOURCE_DMZJ:
+                    mangaArray[SOURCE_DMZJ] = new Dmzj();
+                    break;
+                case SOURCE_CHUIYAO:
+                    mangaArray[SOURCE_CHUIYAO] = new Chuiyao();
+                    break;
+            }
+        }
+        return mangaArray[id];
     }
 
 }

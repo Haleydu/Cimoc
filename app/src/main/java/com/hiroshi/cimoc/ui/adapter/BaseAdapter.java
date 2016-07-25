@@ -46,7 +46,11 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public void addAll(List<T> data) {
-        mDataSet.addAll(data);
+        addAll(mDataSet.size(), data);
+    }
+
+    public void addAll(int location, List<T> data) {
+        mDataSet.addAll(location, data);
         notifyDataSetChanged();
     }
 
@@ -58,6 +62,11 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public void remove(int position) {
         mDataSet.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void clear() {
+        mDataSet.clear();
         notifyDataSetChanged();
     }
 

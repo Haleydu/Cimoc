@@ -1,14 +1,11 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -39,14 +36,6 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         public ViewHolder(View view) {
             super(view);
         }
-
-        public void select() {
-            chapterButton.setSelected(true);
-        }
-
-        public void clear() {
-            chapterButton.setSelected(false);
-        }
     }
 
     public class HeaderHolder extends BaseViewHolder {
@@ -62,7 +51,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, boolean status, String update, String last) {
+    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, boolean status, String update) {
         super(context, list);
         this.image = image;
         this.title = title;
@@ -70,7 +59,6 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         this.status = status;
         this.update = update;
         this.author = author;
-        this.last = last;
     }
 
     @Override
@@ -138,10 +126,12 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         } else {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
-            if (last != null && last.equals(chapter.getPath())) {
-                viewHolder.chapterButton.setSelected(true);
-            }
             viewHolder.chapterButton.setText(chapter.getTitle());
+            if (chapter.getPath().equals(last)) {
+                viewHolder.chapterButton.setSelected(true);
+            } else if (viewHolder.chapterButton.isSelected()) {
+                viewHolder.chapterButton.setSelected(false);
+            }
         }
     }
 
@@ -155,6 +145,11 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
                 return position == 0 ? manager.getSpanCount() : 1;
             }
         });
+    }
+
+    public void setLast(String last) {
+        this.last = last;
+        notifyDataSetChanged();
     }
 
 }

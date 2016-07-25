@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.custom.zoomable.ZoomableDraweeView;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,15 +22,17 @@ public class PicturePagerAdapter extends PagerAdapter {
     private List<String> images;
     private LayoutInflater inflater;
     private SimpleOnGestureListener listener;
+    private PipelineDraweeControllerBuilder builder;
     private int offset;
     private boolean absence;
 
-    public PicturePagerAdapter(List<String> images, LayoutInflater inflater, SimpleOnGestureListener listener) {
+    public PicturePagerAdapter(List<String> images, LayoutInflater inflater, SimpleOnGestureListener listener, PipelineDraweeControllerBuilder builder) {
         this.images = images;
         this.images.add(null);
         this.offset = 0;
         this.inflater = inflater;
         this.listener = listener;
+        this.builder = builder;
     }
 
     public void setAbsence(boolean absence) {
@@ -89,7 +90,6 @@ public class PicturePagerAdapter extends PagerAdapter {
         } else {
             child = inflater.inflate(R.layout.item_picture, container, false);
             ZoomableDraweeView draweeView = (ZoomableDraweeView) child.findViewById(R.id.picture_image_view);
-            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder();
             draweeView.setController(builder.setUri(images.get(position)).setTapToRetryEnabled(true).build());
             draweeView.setTapListener(listener);
         }
