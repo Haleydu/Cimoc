@@ -6,12 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
-
 
 import butterknife.BindView;
 
@@ -34,7 +33,7 @@ public class HistoryFragment extends BaseFragment {
                 mPresenter.onItemClick(position);
             }
         });
-        mRecyclerView.setAnimation(null);
+        mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mComicAdapter);
@@ -56,12 +55,12 @@ public class HistoryFragment extends BaseFragment {
         return R.layout.fragment_history;
     }
 
-    public Comic getItem(int position) {
+    public MiniComic getItem(int position) {
         return mComicAdapter.getItem(position);
     }
 
-    public void updateItem(Comic comic) {
-        mComicAdapter.update(0, comic);
+    public void updateItem(MiniComic comic) {
+        mComicAdapter.update(comic);
     }
 
     public void clearItem() {

@@ -10,6 +10,8 @@ public class Kami {
     public static final int SOURCE_IKANMAN = 0;
     public static final int SOURCE_DMZJ = 1;
     public static final int SOURCE_CHUIYAO = 2;
+    public static final int SOURCE_HHAAZZ = 3;
+    public static final int SOURCE_EHENTAI = 4;
 
     public static String getSourceById(int id) {
         switch (id) {
@@ -20,6 +22,10 @@ public class Kami {
                 return "动漫之家";
             case SOURCE_CHUIYAO:
                 return "吹妖动漫";
+            case SOURCE_HHAAZZ:
+                return "汗汗漫画";
+            case SOURCE_EHENTAI:
+                return "E-Hentai";
         }
     }
 
@@ -32,29 +38,27 @@ public class Kami {
                 return "http://m.dmzj.com/";
             case SOURCE_CHUIYAO:
                 return "http://m.chuiyao.com";
+            case SOURCE_HHAAZZ:
+                return "http://hhaazz.com";
+            case SOURCE_EHENTAI:
+                return "http://lofi.e-hentai.org";
         }
     }
 
-    private static Manga[] mangaArray = new Manga[3];
-
     public static Manga getMangaById(int id) {
-        if (id < 0 || id > 2) {
-            return getMangaById(0);
+        switch (id) {
+            default:
+            case SOURCE_IKANMAN:
+                return new IKanman();
+            case SOURCE_DMZJ:
+                return new Dmzj();
+            case SOURCE_CHUIYAO:
+                return new Chuiyao();
+            case SOURCE_HHAAZZ:
+                return new HHAAZZ();
+            case SOURCE_EHENTAI:
+                return new EHentai();
         }
-        if (mangaArray[id] == null) {
-            switch (id) {
-                case SOURCE_IKANMAN:
-                    mangaArray[SOURCE_IKANMAN] = new IKanman();
-                    break;
-                case SOURCE_DMZJ:
-                    mangaArray[SOURCE_DMZJ] = new Dmzj();
-                    break;
-                case SOURCE_CHUIYAO:
-                    mangaArray[SOURCE_CHUIYAO] = new Chuiyao();
-                    break;
-            }
-        }
-        return mangaArray[id];
     }
 
 }

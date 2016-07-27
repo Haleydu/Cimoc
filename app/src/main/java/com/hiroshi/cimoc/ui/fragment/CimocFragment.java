@@ -6,14 +6,13 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.IKanman;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
@@ -31,6 +30,7 @@ public class CimocFragment extends BaseFragment {
     @BindView(R.id.main_keyword_input) EditText mEditText;
     @BindView(R.id.main_search_btn) FloatingActionButton mSearchBtn;
 
+    private boolean isEnable;
     private int source;
 
     @OnClick(R.id.main_search_btn) void onClick() {
@@ -45,7 +45,8 @@ public class CimocFragment extends BaseFragment {
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_Dialog_Alert);
         builder.setTitle("图源选择");
-        builder.setSingleChoiceItems(R.array.source_items, source, new DialogInterface.OnClickListener() {
+        int array = isEnable ? R.array.ex_source_items : R.array.source_items;
+        builder.setSingleChoiceItems(array, source, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 source = which;
@@ -78,6 +79,7 @@ public class CimocFragment extends BaseFragment {
             }
         });
         source = Kami.SOURCE_IKANMAN;
+        isEnable = CimocApplication.getPreferences().getBoolean(CimocApplication.PREF_EX, false);
     }
 
     @Override
@@ -92,4 +94,5 @@ public class CimocFragment extends BaseFragment {
     protected BasePresenter getPresenter() {
         return null;
     }
+
 }

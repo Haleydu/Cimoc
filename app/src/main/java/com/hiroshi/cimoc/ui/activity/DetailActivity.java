@@ -38,6 +38,12 @@ public class DetailActivity extends BaseActivity {
     private DetailPresenter mPresenter;
 
     @Override
+    public void onBackPressed() {
+        mPresenter.saveComic();
+        super.onBackPressed();
+    }
+
+    @Override
     protected void initToolbar() {
         super.initToolbar();
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -111,8 +117,8 @@ public class DetailActivity extends BaseActivity {
         mRecyclerView.addItemDecoration(mChapterAdapter.getItemDecoration());
     }
 
-    public static Intent createIntent(Context context, Comic comic, boolean isResult) {
-        ComicManager.getInstance().setComic(comic, isResult);
+    public static Intent createIntent(Context context, Long id, int source, String cid) {
+        ComicManager.getInstance().setComic(id, source, cid);
         return new Intent(context, DetailActivity.class);
     }
 

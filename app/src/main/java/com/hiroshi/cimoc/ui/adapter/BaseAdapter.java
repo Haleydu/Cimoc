@@ -26,16 +26,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         mInflater = LayoutInflater.from(context);
     }
 
-    public void update(int location, T data) {
-        mDataSet.remove(data);
-        mDataSet.add(location, data);
-        notifyDataSetChanged();
-    }
-
-    public void update(T data) {
-        update(mDataSet.size(), data);
-    }
-
     public void add(int location, T data) {
         mDataSet.add(location, data);
         notifyItemInserted(location);

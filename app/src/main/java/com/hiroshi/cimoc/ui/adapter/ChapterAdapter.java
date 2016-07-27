@@ -76,18 +76,6 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         };
     }
 
-    public int getPositionByPath(String path) {
-        if (path == null) {
-            return -1;
-        }
-        for (int i = 0; i != mDataSet.size(); ++i) {
-            if (mDataSet.get(i).getPath().equals(path)) {
-                return i + 1;
-            }
-        }
-        return -1;
-    }
-
     @Override
     public int getItemViewType(int position) {
         return position == 0 ? 0 : 1;

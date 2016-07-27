@@ -49,8 +49,10 @@ public class ReaderPresenter extends BasePresenter {
         mManga.browse(mComicManager.getCid(), mChapterList.get(next).getPath());
     }
 
-    public void setPage(int progress) {
-        mComicManager.setPage(progress);
+    public void afterRead(int progress) {
+        if (status != PARSE_INIT) {
+            mComicManager.afterRead(progress);
+        }
     }
 
     public void onPageSelected(int position) {

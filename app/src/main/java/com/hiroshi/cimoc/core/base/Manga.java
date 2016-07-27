@@ -79,7 +79,7 @@ public abstract class Manga {
         });
     }
 
-    public void enqueueClient(String url, final OnResponseSuccessHandler handler) {
+    private void enqueueClient(String url, final OnResponseSuccessHandler handler) {
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -97,6 +97,19 @@ public abstract class Manga {
         });
     }
 
+    protected String execute(String url) {
+        Request request = new Request.Builder().url(url).build();
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                return response.body().string();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     protected abstract String parseSearchUrl(String keyword, int page);
 
     protected abstract List<Comic> parseSearch(String html);
@@ -111,19 +124,6 @@ public abstract class Manga {
 
     private interface OnResponseSuccessHandler {
         void onSuccess(String html);
-    }
-
-    protected Comic build(String path, String title, String cover, String update, String author, String intro, boolean status) {
-        Comic comic = new Comic();
-        comic.setSource(source);
-        comic.setCid(path);
-        comic.setTitle(title);
-        comic.setCover(cover);
-        comic.setUpdate(update);
-        comic.setAuthor(author);
-        comic.setIntro(intro);
-        comic.setStatus(status);
-        return comic;
     }
 
 }

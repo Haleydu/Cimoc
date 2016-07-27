@@ -3,8 +3,8 @@ package com.hiroshi.cimoc.presenter;
 import android.content.Intent;
 
 import com.hiroshi.cimoc.core.ComicManager;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 
@@ -26,13 +26,13 @@ public class HistoryPresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public List<Comic> getComic() {
+    public List<MiniComic> getComic() {
         return mComicManager.listHistory();
     }
 
     public void onItemClick(int position) {
-        Comic comic = mHistoryFragment.getItem(position);
-        Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic, false);
+        MiniComic comic = mHistoryFragment.getItem(position);
+        Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         mHistoryFragment.startActivity(intent);
     }
 
@@ -40,8 +40,7 @@ public class HistoryPresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.HISTORY_COMIC:
-                Comic comic = (Comic) msg.getData();
-                mHistoryFragment.updateItem(comic);
+                mHistoryFragment.updateItem((MiniComic) msg.getData());
                 break;
             case EventMessage.DELETE_HISTORY:
                 mHistoryFragment.clearItem();

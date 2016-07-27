@@ -38,7 +38,7 @@ public class SettingsPresenter extends BasePresenter {
 
     public void backupComic() {
         mSettingsFragment.showAlertDialog("正在备份..");
-        List<Comic> list = mComicManager.listFavorite();
+        List<Comic> list = mComicManager.listBackup();
         if (BackupUtils.saveComic(list)) {
             mSettingsFragment.showSnackbar("备份成功 共 " + list.size() + " 条记录");
         } else {
@@ -51,6 +51,10 @@ public class SettingsPresenter extends BasePresenter {
 
     public void restoreComic() {
         final String[] files = BackupUtils.showBackupFiles();
+        if (files.length == 0) {
+            mSettingsFragment.showSnackbar("没有找到备份文件");
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(mSettingsFragment.getActivity(), R.style.AppTheme_Dialog_Alert);
         builder.setTitle("选择文件");
         builder.setSingleChoiceItems(files, -1, new DialogInterface.OnClickListener() {
@@ -72,8 +76,7 @@ public class SettingsPresenter extends BasePresenter {
 
     public void cleanHistory() {
         mSettingsFragment.showAlertDialog("正在删除..");
-        List<Comic> list = mComicManager.listHistory();
-        mComicManager.cleanHistory(list);
+        mComicManager.cleanHistory();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

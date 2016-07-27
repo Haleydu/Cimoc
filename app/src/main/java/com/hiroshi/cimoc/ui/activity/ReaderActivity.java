@@ -39,7 +39,7 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        mPresenter.setPage(mSeekBar.getProgress());
+        mPresenter.afterRead(mSeekBar.getProgress());
         super.onBackPressed();
     }
 

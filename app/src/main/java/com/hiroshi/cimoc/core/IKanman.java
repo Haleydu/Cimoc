@@ -4,18 +4,14 @@ import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.Decryption;
+import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Hiroshi on 2016/7/8.
@@ -33,17 +29,17 @@ public class IKanman extends Manga {
 
     @Override
     protected List<Comic> parseSearch(String html) {
-        Document doc = Jsoup.parse(html);
-        Elements items = doc.select("#detail > li > a");
+        Node doc = MachiSoup.parse(html);
+        List<Node> nodes = doc.list("#detail > li > a");
         List<Comic> list = new LinkedList<>();
-        for (Element item : items) {
-            String cid = item.attr("href").split("/")[2];
-            String title = item.select("h3").first().text();
-            String cover = item.select("div > img").first().attr("data-src");
-            String update = item.select("dl:eq(5) > dd").first().text();
-            String author = item.select("dl:eq(2) > dd").first().text();
-            boolean status = "完结".equals(item.select("div > i").first().text());
-            list.add(build(cid, title, cover, update, author, null, status));
+        for (Node node : nodes) {
+            String cid = node.attr("href", "/", 2);
+            String title = node.text("h3");
+            String cover = node.attr("div > img", "data-src");
+            String update = node.text("dl:eq(5) > dd");
+            String author = node.text("dl:eq(2) > dd");
+            boolean status = "完结".equals(node.text("div > i"));
+            list.add(new Comic(source, cid, title, cover, update, author, status));
         }
         return list;
     }
@@ -56,30 +52,24 @@ public class IKanman extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Document doc = Jsoup.parse(html);
-        Elements items = doc.select("#chapterList > ul > li > a");
-        for (Element item : items) {
-            String c_title = item.select("b").first().text();
-            String c_path = item.attr("href").split("/|\\.")[3];
+        Node doc = MachiSoup.parse(html);
+        List<Node> nodes = doc.list("#chapterList > ul > li > a");
+        for (Node node : nodes) {
+            String c_title = node.text("b");
+            String c_path = node.attr("href", "/|\\.", 3);
             list.add(new Chapter(c_title, c_path));
         }
 
-        String title = doc.select(".main-bar > h1").first().text();
-        Element detail = doc.getElementsByClass("book-detail").first();
-        Element cont = detail.getElementsByClass("cont-list").first();
-        String cover = cont.select(".thumb > img").first().attr("src");
-        String update = cont.select("dl:eq(2) > dd").first().text();
-        String author = cont.select("dl:eq(3) > dd > a").first().attr("title");
-        Element node = detail.getElementById("bookIntro");
-        String intro = node.select("p:eq(0)").isEmpty() ? node.text() : node.select("p:eq(0)").first().text();
-        boolean status = "完结".equals(cont.select(".thumb > i").first().text());
-
-        comic.setIntro(intro);
-        comic.setTitle(title);
-        comic.setCover(cover);
-        comic.setAuthor(author);
-        comic.setStatus(status);
-        comic.setUpdate(update);
+        String title = doc.text(".main-bar > h1");
+        Node detail = doc.select(".book-detail");
+        Node cont = detail.select(".cont-list");
+        String cover = cont.attr(".thumb > img", "src");
+        String update = cont.text("dl:eq(2) > dd");
+        String author = cont.attr("dl:eq(3) > dd > a", "title");
+        Node temp = detail.id("bookIntro");
+        String intro = temp.exist("p:eq(0)") ? temp.text() : temp.text("p:eq(0)");
+        boolean status = "完结".equals(cont.text(".thumb > i"));
+        comic.setInfo(title, cover, update, intro, author, status);
 
         return list;
     }
@@ -91,11 +81,9 @@ public class IKanman extends Manga {
 
     @Override
     protected String[] parseBrowse(String html) {
-        Pattern pattern = Pattern.compile("decryptDES\\(\"(.*?)\"\\)");
-        Matcher matcher = pattern.matcher(html);
-        if (matcher.find()) {
+        String str = MachiSoup.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
+        if (str != null) {
             try {
-                String str = matcher.group(1);
                 String cipherStr = str.substring(8);
                 String keyStr = str.substring(0, 8);
                 String packed = Decryption.desDecrypt(keyStr, cipherStr);

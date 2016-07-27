@@ -3,17 +3,13 @@ package com.hiroshi.cimoc.core;
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import org.json.JSONArray;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Hiroshi on 2016/7/21.
@@ -31,18 +27,16 @@ public class Chuiyao extends Manga {
 
     @Override
     protected List<Comic> parseSearch(String html) {
-        Document doc = Jsoup.parse(html);
-        Elements items = doc.body().select("li > a");
+        Node doc = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (Element item : items) {
-            String cid = item.attr("href").split("/")[2];
-            String title = item.select("h3:eq(1)").first().text();
-
-            String cover = item.select("div:eq(0) > img").first().attr("data-src");
-            String update = item.select("dl:eq(5) > dd").first().text();
-            String author = item.select("dl:eq(2) > dd").first().text();
-            boolean status = "完结".equals(item.select("div:eq(0) > i").first().text().trim());
-            list.add(build(cid, title, cover, update, author, null, status));
+        for (Node item : doc.list("li > a")) {
+            String cid = item.attr("href", "/", 2);
+            String title = item.text("h3:eq(1)");
+            String cover = item.attr("div:eq(0) > img", "data-src");
+            String update = item.text("dl:eq(5) > dd");
+            String author = item.text("dl:eq(2) > dd");
+            boolean status = "完结".equals(item.text("div:eq(0) > i").trim());
+            list.add(new Comic(source, cid, title, cover, update, author, status));
         }
         return list;
     }
@@ -55,29 +49,22 @@ public class Chuiyao extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Document doc = Jsoup.parse(html);
-        Elements items = doc.select("#chapterList > ul > li > a");
-        for (Element item : items) {
+        Node doc = MachiSoup.body(html);
+        for (Node item : doc.list("#chapterList > ul > li > a")) {
             String c_title = item.attr("title");
-            String c_path = item.attr("href").split("/|\\.")[7];
+            String c_path = item.attr("href", "/|\\.", 7);
             list.add(new Chapter(c_title, c_path));
         }
 
-        String title = doc.select(".main-bar > h1").first().text();
-        Element detail = doc.getElementsByClass("book-detail").first();
-        String cover = detail.select(".cont-list > div:eq(0) > img").first().attr("src");
-        String update = detail.select(".cont-list > dl:eq(2) > dd").first().text();
-        String author = detail.select(".cont-list > dl:eq(3) > dd").first().text();
-        Element node = detail.getElementById("bookIntro");
-        String intro = node.select("p:eq(0)").isEmpty() ? node.text() : node.select("p:eq(0)").first().text();
-        boolean status = "完结".equals(detail.select(".cont-list > div:eq(0) > i").first().text());
-
-        comic.setIntro(intro);
-        comic.setTitle(title);
-        comic.setCover(cover);
-        comic.setAuthor(author);
-        comic.setStatus(status);
-        comic.setUpdate(update);
+        String title = doc.text(".main-bar > h1");
+        Node detail = doc.select(".book-detail");
+        String cover = detail.attr("div:eq(0) > div:eq(0) > img", "src");
+        String update = detail.text("div:eq(0) > dl:eq(2) > dd");
+        String author = detail.text("div:eq(0) > dl:eq(3) > dd");
+        Node temp = detail.id("bookIntro");
+        String intro = temp.exist("p:eq(0)") ? temp.text() : temp.text("p:eq(0)");
+        boolean status = "完结".equals(detail.text(".cont-list > div:eq(0) > i"));
+        comic.setInfo(title, cover, update, intro, author, status);
 
         return list;
     }
@@ -89,11 +76,10 @@ public class Chuiyao extends Manga {
 
     @Override
     protected String[] parseBrowse(String html) {
-        Pattern pattern = Pattern.compile("parseJSON\\('(\\[.*?\\])'");
-        Matcher matcher = pattern.matcher(html);
-        if (matcher.find()) {
+        String jsonString = MachiSoup.match("parseJSON\\('(\\[.*?\\])'", html, 1);
+        if (jsonString != null) {
             try {
-                JSONArray array = new JSONArray(matcher.group(1));
+                JSONArray array = new JSONArray(jsonString);
                 String[] images = new String[array.length()];
                 for (int i = 0; i != array.length(); ++i) {
                     images[i] = array.getString(i);

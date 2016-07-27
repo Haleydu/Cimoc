@@ -11,7 +11,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class ComicAdapter extends BaseAdapter<Comic> {
+public class ComicAdapter extends BaseAdapter<MiniComic> {
 
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
@@ -33,7 +33,7 @@ public class ComicAdapter extends BaseAdapter<Comic> {
         }
     }
 
-    public ComicAdapter(Context context, List<Comic> list) {
+    public ComicAdapter(Context context, List<MiniComic> list) {
         super(context, list);
     }
 
@@ -45,7 +45,7 @@ public class ComicAdapter extends BaseAdapter<Comic> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Comic comic = mDataSet.get(position);
+        MiniComic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
@@ -63,8 +63,14 @@ public class ComicAdapter extends BaseAdapter<Comic> {
         };
     }
 
+    public void update(MiniComic comic) {
+        mDataSet.remove(comic);
+        mDataSet.add(0, comic);
+        notifyDataSetChanged();
+    }
+
     public void removeById(long id) {
-        for (Comic comic : mDataSet) {
+        for (MiniComic comic : mDataSet) {
             if (id == comic.getId()) {
                 remove(comic);
                 break;

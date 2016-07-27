@@ -28,7 +28,7 @@
             android:textSize="14sp"/>
     </RelativeLayout>
     <LinearLayout
-        android:id="@+id/settings_other_cache_btn"
+        android:id="@+id/about_resource_btn"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

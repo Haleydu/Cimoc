@@ -3,8 +3,8 @@ package com.hiroshi.cimoc.presenter;
 import android.content.Intent;
 
 import com.hiroshi.cimoc.core.ComicManager;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 
@@ -26,13 +26,13 @@ public class FavoritePresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public List<Comic> getComic() {
+    public List<MiniComic> getComic() {
         return mComicManager.listFavorite();
     }
 
     public void onItemClick(int position) {
-        Comic comic = mFavoriteFragment.getItem(position);
-        Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic, false);
+        MiniComic comic = mFavoriteFragment.getItem(position);
+        Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         mFavoriteFragment.startActivity(intent);
     }
 
@@ -40,16 +40,13 @@ public class FavoritePresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.FAVORITE_COMIC:
-                Comic comic = (Comic) msg.getData();
-                mFavoriteFragment.addItem(comic);
+                mFavoriteFragment.addItem((MiniComic) msg.getData());
                 break;
             case EventMessage.UN_FAVORITE_COMIC:
-                long id = (Long) msg.getData();
-                mFavoriteFragment.removeItem(id);
+                mFavoriteFragment.removeItem((Long) msg.getData());
                 break;
             case EventMessage.RESTORE_FAVORITE:
-                List<Comic> list = (List<Comic>) msg.getData();
-                mFavoriteFragment.addItems(list);
+                mFavoriteFragment.addItems((List<MiniComic>) msg.getData());
                 break;
         }
     }

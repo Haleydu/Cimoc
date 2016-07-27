@@ -2,6 +2,7 @@ package com.hiroshi.cimoc;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
@@ -18,17 +19,23 @@ import okhttp3.OkHttpClient;
  */
 public class CimocApplication extends Application {
 
+    public static final String PREF_EX = "pref_ex";
+
+    private static final String PREFERENCES_NAME = "cimoc_preferences";
+
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
     private static Context context;
+    private static SharedPreferences preferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initDatabase();
         context = getApplicationContext();
+        preferences = getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         Fresco.initialize(this);
-//      ExLog.enable();
+        ExLog.enable();
     }
 
     private void initDatabase() {
@@ -43,6 +50,10 @@ public class CimocApplication extends Application {
 
     public static DaoSession getDaoSession() {
         return daoSession;
+    }
+
+    public static SharedPreferences getPreferences() {
+        return preferences;
     }
 
     public static OkHttpClient getHttpClient() {

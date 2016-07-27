@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -34,7 +34,7 @@ public class FavoriteFragment extends BaseFragment {
                 mPresenter.onItemClick(position);
             }
         });
-        mRecyclerView.setAnimation(null);
+        mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mComicAdapter);
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
@@ -55,11 +55,11 @@ public class FavoriteFragment extends BaseFragment {
         mPresenter = new FavoritePresenter(this);
     }
 
-    public Comic getItem(int position) {
+    public MiniComic getItem(int position) {
         return mComicAdapter.getItem(position);
     }
 
-    public void addItem(Comic comic) {
+    public void addItem(MiniComic comic) {
         mComicAdapter.add(0, comic);
     }
 
@@ -67,8 +67,10 @@ public class FavoriteFragment extends BaseFragment {
         mComicAdapter.removeById(id);
     }
 
-    public void addItems(List<Comic> list) {
+    public void addItems(List<MiniComic> list) {
         mComicAdapter.addAll(0, list);
     }
+
+
 
 }

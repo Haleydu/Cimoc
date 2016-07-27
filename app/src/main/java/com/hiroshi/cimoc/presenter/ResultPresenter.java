@@ -53,7 +53,7 @@ public class ResultPresenter extends BasePresenter {
 
     public void onItemClick(int position) {
         Comic comic = mResultActivity.getItem(position);
-        Intent intent = DetailActivity.createIntent(mResultActivity, comic, true);
+        Intent intent = DetailActivity.createIntent(mResultActivity, comic.getId(), comic.getSource(), comic.getCid());
         mResultActivity.startActivity(intent);
     }
 
@@ -61,20 +61,20 @@ public class ResultPresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.SEARCH_SUCCESS:
-                List list = (List<Comic>) msg.getData();
                 mResultActivity.hideProgressBar();
-                mResultActivity.addAll(list);
+                mResultActivity.addAll((List<Comic>) msg.getData());
                 isLoading = false;
                 break;
             case EventMessage.SEARCH_FAIL:
                 if (page == 1) {
                     mResultActivity.hideProgressBar();
-                    mResultActivity.showSnackbar("搜索结果为空 :)");
+                    mResultActivity.showSnackbar("搜索结果为空");
                 }
                 break;
             case EventMessage.NETWORK_ERROR:
                 mResultActivity.hideProgressBar();
-                mResultActivity.showSnackbar("网络错误 :(");
+                mResultActivity.showSnackbar("网络错误");
+                isLoading = false;
                 break;
         }
     }

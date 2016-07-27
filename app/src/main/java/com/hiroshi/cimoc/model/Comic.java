@@ -47,9 +47,33 @@ public class Comic {
     public Comic() {
     }
 
+    public Comic(Integer source, String cid, String title, String cover, String update, String author, Boolean status) {
+        this.source = source;
+        this.cid = cid;
+        this.title = title;
+        this.cover = cover;
+        this.update = update;
+        this.author = author;
+        this.status = status;
+    }
+
+    public Comic(Integer source, String cid) {
+        this.source = source;
+        this.cid = cid;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof Comic && ((Comic) o).id.equals(id);
+    }
+
+    public void setInfo(String title, String cover, String update, String intro, String author, boolean status) {
+        this.title = title;
+        this.cover = cover;
+        this.update = update;
+        this.intro = intro;
+        this.author = author;
+        this.status = status;
     }
 
     public String getIntro() {

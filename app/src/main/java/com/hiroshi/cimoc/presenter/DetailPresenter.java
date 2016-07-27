@@ -35,10 +35,8 @@ public class DetailPresenter extends BasePresenter {
         Kami.getMangaById(mComicManager.getSource()).into(mComicManager.getComic());
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mComicManager.saveAndClearComic();
+    public void saveComic() {
+        mComicManager.saveComic();
     }
 
     public void onItemClick(int position) {
@@ -64,15 +62,13 @@ public class DetailPresenter extends BasePresenter {
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.LOAD_COMIC_SUCCESS:
-                List<Chapter> list = (List<Chapter>) msg.getData();
-                initView(list);
+                initView((List<Chapter>) msg.getData());
                 break;
             case EventMessage.LOAD_COMIC_FAIL:
                 initView(new LinkedList<Chapter>());
                 break;
-            case EventMessage.CHANGE_LAST_PATH:
-                String path = (String) msg.getData();
-                mDetailActivity.setLastChapter(path);
+            case EventMessage.AFTER_READ:
+                mDetailActivity.setLastChapter((String) msg.getData());
                 break;
             case EventMessage.NETWORK_ERROR:
                 mDetailActivity.hideProgressBar();
