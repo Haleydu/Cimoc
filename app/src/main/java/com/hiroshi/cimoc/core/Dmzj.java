@@ -40,6 +40,9 @@ public class Dmzj extends Manga {
                 JSONArray array = new JSONArray(jsonString);
                 for (int i = 0; i != array.length(); ++i) {
                     JSONObject object = array.getJSONObject(i);
+                    if (object.getInt("hidden") == 1) {
+                        continue;
+                    }
                     String cid = object.getString("id");
                     String title = object.getString("name");
                     String cover = object.getString("cover");
@@ -64,9 +67,6 @@ public class Dmzj extends Manga {
 
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
-        if (html.contains("此漫画暂不提供观看")) {
-            return null;
-        }
         String jsonString = MachiSoup.match("\"data\":(\\[.*?\\])", html, 1);
         List<Chapter> list = new LinkedList<>();
         if (jsonString != null) {
@@ -118,4 +118,5 @@ public class Dmzj extends Manga {
         }
         return null;
     }
+
 }

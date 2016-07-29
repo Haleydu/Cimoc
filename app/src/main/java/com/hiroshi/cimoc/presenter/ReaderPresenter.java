@@ -6,10 +6,14 @@ import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.activity.ReaderActivity;
 import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
+import com.hiroshi.cimoc.ui.adapter.PreloadAdapter;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,55 +21,73 @@ import java.util.List;
  */
 public class ReaderPresenter extends BasePresenter {
 
-    private final static int PARSE_NULL = 0;
-    private final static int PARSE_INIT = 1;
-    private final static int PARSE_PREV = 2;
-    private final static int PARSE_NEXT = 3;
+    private final static int LOAD_NULL = 0;
+    private final static int LOAD_PREV = 1;
+    private final static int LOAD_NEXT = 2;
 
     private ReaderActivity mReaderActivity;
+    private PreloadAdapter mPreloadAdapter;
     private ComicManager mComicManager;
     private Manga mManga;
 
-    private List<Chapter> mChapterList;
-
     private int status;
-    private int prev;
-    private int next;
-    private int index;
+    private boolean load;
 
     public ReaderPresenter(ReaderActivity activity, int position) {
         mReaderActivity = activity;
         mComicManager = ComicManager.getInstance();
-        mChapterList = mComicManager.getChapters();
+        List<Chapter> list = new ArrayList<>(mComicManager.getChapters());
+        Collections.reverse(list);
+        mPreloadAdapter = new PreloadAdapter(list.toArray(new Chapter[list.size()]), list.size() - position - 1, PicturePagerAdapter.MAX_COUNT / 2 + 1);
         mManga = Kami.getMangaById(mComicManager.getSource());
-        prev = position + 1;
-        next = position;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        status = PARSE_INIT;
-        mManga.browse(mComicManager.getCid(), mChapterList.get(next).getPath());
+        load = false;
+        status = LOAD_NEXT;
+        mManga.browse(mComicManager.getCid(), mPreloadAdapter.getNextChapter().getPath());
     }
 
-    public void afterRead(int progress) {
-        if (status != PARSE_INIT) {
-            mComicManager.afterRead(progress);
+    public void afterRead() {
+        if (load) {
+            mComicManager.afterRead(mPreloadAdapter.getProgress());
+        }
+    }
+
+    public void onPageStateIdle(boolean isFirst) {
+        if (status == LOAD_NULL) {
+            if (isFirst) {
+                Chapter chapter = mPreloadAdapter.getPrevChapter();
+                if (chapter != null) {
+                    status = LOAD_PREV;
+                    mManga.browse(mComicManager.getCid(), mPreloadAdapter.getPrevChapter().getPath());
+                } else {
+                    mReaderActivity.notifyPrevPage(PicturePagerAdapter.STATUS_NULL);
+                }
+            } else {
+                Chapter chapter = mPreloadAdapter.getNextChapter();
+                if (chapter != null) {
+                    status = LOAD_NEXT;
+                    mManga.browse(mComicManager.getCid(), mPreloadAdapter.getNextChapter().getPath());
+                } else {
+                    mReaderActivity.notifyNextPage(PicturePagerAdapter.STATUS_NULL);
+                }
+            }
         }
     }
 
     public void onPageSelected(int position) {
-        if (status == PARSE_NULL) {
-            if (position == 0 && prev < mChapterList.size()) {
-                status = PARSE_PREV;
-                mManga.browse(mComicManager.getCid(), mChapterList.get(prev).getPath());
-            } else if (position == mReaderActivity.getCount() - 1 && next >= 0) {
-                status = PARSE_NEXT;
-                mManga.browse(mComicManager.getCid(), mChapterList.get(next).getPath());
-            }
+        boolean flag = mPreloadAdapter.moveToPosition(position);
+        Chapter chapter = mPreloadAdapter.getValidChapter();
+        if (chapter == null) {
+            mReaderActivity.hideChapterInfo();
+        } else if (flag) {
+            switchChapter();
+        } else {
+            mReaderActivity.setReadProgress(mPreloadAdapter.getProgress());
         }
-        onPositionChange(position);
     }
 
     public int getSource() {
@@ -73,39 +95,12 @@ public class ReaderPresenter extends BasePresenter {
     }
 
     public int getOffset() {
-        int offset = 0;
-        for (int i = prev - 1; i > index; --i) {
-            offset += mChapterList.get(i).getCount();
-        }
-        return offset;
+        return mPreloadAdapter.getCurrentOffset();
     }
 
-    private void onPositionChange(int position) {
-        if (position == 0) {
-            mReaderActivity.clearInformation();
-            return;
-        }
-        for (int i = prev - 1, total = 1; i > next; --i) {
-            Chapter chapter = mChapterList.get(i);
-            if (total + chapter.getCount() > position) {
-                int progress = position - total + 1;
-                if (index != i || position == 1) {
-                    switchChapter(i, progress);
-                } else {
-                    mReaderActivity.setReadProgress(progress);
-                }
-                break;
-            }
-            total += chapter.getCount();
-        }
-    }
-
-    private void switchChapter(int which, int progress) {
-        Chapter chapter = mChapterList.get(which);
-        mReaderActivity.setReadMax(chapter.getCount(), progress);
-        mReaderActivity.setTitle(chapter.getTitle());
-        mComicManager.setLast(chapter.getPath());
-        index = which;
+    private void switchChapter() {
+        mReaderActivity.updateChapterInfo(mPreloadAdapter.getProgress(), mPreloadAdapter.getMax(), mPreloadAdapter.getValidChapter().getTitle());
+        mComicManager.setLast(mPreloadAdapter.getValidChapter().getPath());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -114,24 +109,25 @@ public class ReaderPresenter extends BasePresenter {
         switch (msg.getType()) {
             case EventMessage.PARSE_PIC_SUCCESS:
                 array = (String[]) msg.getData();
-                if (status == PARSE_INIT) {
-                    mChapterList.get(next).setCount(array.length);
-                    mReaderActivity.setInitImage(array, next == mChapterList.size() - 1);
-                    switchChapter(next, 1);
-                    next = next - 1;
-                } else if (status == PARSE_PREV) {
-                    mChapterList.get(prev).setCount(array.length);
-                    mReaderActivity.setPrevImage(array, prev == mChapterList.size() - 1);
-                    switchChapter(prev, array.length);
-                    prev = prev + 1;
-                } else if (status == PARSE_NEXT) {
-                    mChapterList.get(next).setCount(array.length);
+                if (status == LOAD_PREV) {
+                    mReaderActivity.setPrevImage(array);
+                    mPreloadAdapter.movePrev(array.length);
+                } else {
                     mReaderActivity.setNextImage(array);
-                    next = next - 1;
+                    mPreloadAdapter.moveNext(array.length);
                 }
-                status = PARSE_NULL;
+                switchChapter();
+                mReaderActivity.setNoneLimit();
+                load = true;
+                status = LOAD_NULL;
                 break;
             case EventMessage.PARSE_PIC_FAIL:
+            case EventMessage.NETWORK_ERROR:
+                if (status == LOAD_PREV) {
+                    mReaderActivity.notifyPrevPage(PicturePagerAdapter.STATUS_ERROR);
+                } else {
+                    mReaderActivity.notifyNextPage(PicturePagerAdapter.STATUS_ERROR);
+                }
                 break;
         }
     }

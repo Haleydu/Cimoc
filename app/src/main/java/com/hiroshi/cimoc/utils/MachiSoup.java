@@ -36,10 +36,6 @@ public class MachiSoup {
         return null;
     }
 
-    public static Node parse(String html) {
-        return new Node(Jsoup.parse(html));
-    }
-
     public static Node body(String html) {
         return new Node(Jsoup.parse(html).body());
     }

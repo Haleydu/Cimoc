@@ -99,7 +99,9 @@ public class ResultActivity extends BaseActivity {
     }
 
     public void showSnackbar(String msg) {
-        Snackbar.make(mLinearLayout, msg, Snackbar.LENGTH_SHORT).show();
+        if (mLinearLayout.isShown()) {
+            Snackbar.make(mLinearLayout, msg, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     public void addAll(List<Comic> list) {

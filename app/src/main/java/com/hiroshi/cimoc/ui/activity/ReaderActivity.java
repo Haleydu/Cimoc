@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
+import com.hiroshi.cimoc.ui.custom.LimitedViewPager;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -28,7 +30,7 @@ public class ReaderActivity extends BaseActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
 
-    @BindView(R.id.reader_view_pager) ViewPager mViewPager;
+    @BindView(R.id.reader_view_pager) LimitedViewPager mViewPager;
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
     @BindView(R.id.reader_tool_bar) LinearLayout mToolLayout;
@@ -39,7 +41,7 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        mPresenter.afterRead(mSeekBar.getProgress());
+        mPresenter.afterRead();
         super.onBackPressed();
     }
 
@@ -60,20 +62,28 @@ public class ReaderActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
+                mViewPager.setLimit(mPagerAdapter.getLimitByPosition(position));
                 mPresenter.onPageSelected(position);
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_IDLE && mViewPager.getLimit() == LimitedViewPager.LIMIT_RIGHT) {
+                    mPresenter.onPageStateIdle(true);
+                } else if (state == ViewPager.SCROLL_STATE_IDLE && mViewPager.getLimit() == LimitedViewPager.LIMIT_LEFT) {
+                    mPresenter.onPageStateIdle(false);
+                }
+            }
         });
-        mViewPager.setOffscreenPageLimit(6);
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setCurrentItem(PicturePagerAdapter.MAX_COUNT / 2 + 1, false);
+        mViewPager.setOffscreenPageLimit(4);
 
         mSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
                 if (fromUser) {
-                    mViewPager.setCurrentItem(mPresenter.getOffset() + value, false);
+                    mViewPager.setCurrentItem(mPresenter.getOffset() + value - 1, false);
                 }
             }
 
@@ -90,7 +100,7 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     protected void initPresenter() {
-        int position = getIntent().getIntExtra(EXTRA_POSITION, 1);
+        int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
         mPresenter = new ReaderPresenter(this, position);
     }
 
@@ -109,46 +119,46 @@ public class ReaderActivity extends BaseActivity {
         return R.layout.activity_reader;
     }
 
-    public int getCount() {
-        return mPagerAdapter.getCount();
-    }
-
-    public void setInitImage(String[] array, boolean absence) {
-        mPagerAdapter.setAbsence(absence);
-        mPagerAdapter.setNextImages(array);
-        mViewPager.setCurrentItem(1, false);
-    }
-
-    public void setPrevImage(String[] array, boolean absence) {
-        mPagerAdapter.setAbsence(absence);
+    public void setPrevImage(String[] array) {
         mPagerAdapter.setPrevImages(array);
-        mViewPager.setCurrentItem(array.length, false);
     }
 
     public void setNextImage(String[] array) {
         mPagerAdapter.setNextImages(array);
     }
 
-    public void clearInformation() {
-        mChapterTitle.setText(null);
-        mChapterPage.setText(null);
+    public void setNoneLimit() {
+        mViewPager.setLimit(LimitedViewPager.LIMIT_NONE);
     }
 
-    public void setReadMax(int max, int progress) {
+    public void notifyPrevPage(int status) {
+        mPagerAdapter.notifyPrevPage(status);
+    }
+
+    public void notifyNextPage(int status) {
+        mPagerAdapter.notifyNextPage(status);
+    }
+
+    public void hideChapterInfo() {
+        mToolLayout.setVisibility(View.GONE);
+        mSeekBar.setMax(1);
+        mSeekBar.setProgress(1);
+        mChapterPage.setText(null);
+        mChapterTitle.setText(null);
+    }
+
+    public void updateChapterInfo(int progress, int max, String title) {
         mSeekBar.setMax(max);
         mSeekBar.setProgress(progress);
-        String pageString = progress + "/" + max;
-        mChapterPage.setText(pageString);
+        String str = progress + "/" + max;
+        mChapterPage.setText(str);
+        mChapterTitle.setText(title);
     }
 
     public void setReadProgress(int progress) {
         mSeekBar.setProgress(progress);
         String pageString = progress + "/" + mSeekBar.getMax();
         mChapterPage.setText(pageString);
-    }
-
-    public void setTitle(String title) {
-        mChapterTitle.setText(title);
     }
 
     public static Intent createIntent(Context context, int position) {

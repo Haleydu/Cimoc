@@ -3,14 +3,14 @@
     <string-array name="source_items">
         <item>看漫画 - IKanman</item>
         <item>动漫之家 - Dmzj</item>
-        <item>吹妖漫画 - Chuiyao</item>
         <item>汗汗漫画 - HHAAZZ</item>
+        <item>CC图库 - CCTuku</item>
     </string-array>
     <string-array name="ex_source_items">
         <item>看漫画 - IKanman</item>
         <item>动漫之家 - Dmzj</item>
-        <item>吹妖漫画 - Chuiyao</item>
         <item>汗汗漫画 - HHAAZZ</item>
+        <item>CC图库 - CCTuku</item>
         <item>E站 - EHentai</item>
     </string-array>
 </resources>

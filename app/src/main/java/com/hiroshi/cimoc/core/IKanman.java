@@ -29,10 +29,9 @@ public class IKanman extends Manga {
 
     @Override
     protected List<Comic> parseSearch(String html) {
-        Node doc = MachiSoup.parse(html);
-        List<Node> nodes = doc.list("#detail > li > a");
+        Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (Node node : nodes) {
+        for (Node node : body.list("#detail > li > a")) {
             String cid = node.attr("href", "/", 2);
             String title = node.text("h3");
             String cover = node.attr("div > img", "data-src");
@@ -52,23 +51,21 @@ public class IKanman extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Node doc = MachiSoup.parse(html);
-        List<Node> nodes = doc.list("#chapterList > ul > li > a");
-        for (Node node : nodes) {
+        Node body = MachiSoup.body(html);
+        for (Node node : body.list("#chapterList > ul > li > a")) {
             String c_title = node.text("b");
             String c_path = node.attr("href", "/|\\.", 3);
             list.add(new Chapter(c_title, c_path));
         }
 
-        String title = doc.text(".main-bar > h1");
-        Node detail = doc.select(".book-detail");
-        Node cont = detail.select(".cont-list");
-        String cover = cont.attr(".thumb > img", "src");
-        String update = cont.text("dl:eq(2) > dd");
-        String author = cont.attr("dl:eq(3) > dd > a", "title");
+        String title = body.text("div.main-bar > h1");
+        Node detail = body.select("div.book-detail");
+        String cover = detail.attr("div:eq(0) > div:eq(0) > img", "src");
+        String update = detail.text("div:eq(0) > dl:eq(2) > dd");
+        String author = detail.attr("div:eq(0) > dl:eq(3) > dd > a", "title");
         Node temp = detail.id("bookIntro");
         String intro = temp.exist("p:eq(0)") ? temp.text() : temp.text("p:eq(0)");
-        boolean status = "完结".equals(cont.text(".thumb > i"));
+        boolean status = "完结".equals(detail.text("div:eq(0) > div:eq(0) > i"));
         comic.setInfo(title, cover, update, intro, author, status);
 
         return list;

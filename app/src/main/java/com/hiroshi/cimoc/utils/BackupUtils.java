@@ -25,11 +25,13 @@ public class BackupUtils {
             JSONArray array = new JSONArray();
             for (Comic comic : list) {
                 JSONObject object = new JSONObject();
-                object.put("source", comic.getSource());
-                object.put("cid", comic.getCid());
-                object.put("title", comic.getTitle());
-                object.put("cover", comic.getCover());
-                object.put("update", comic.getUpdate());
+                object.put("s", comic.getSource());
+                object.put("i", comic.getCid());
+                object.put("t", comic.getTitle());
+                object.put("c", comic.getCover());
+                object.put("u", comic.getUpdate());
+                object.put("l", comic.getLast());
+                object.put("p", comic.getPage());
                 array.put(object);
             }
             if (FileUtils.mkDirsIfNotExist(dirPath)) {
@@ -56,12 +58,14 @@ public class BackupUtils {
             JSONArray array = new JSONArray(jsonString);
             for (int i = 0; i != array.length(); ++i) {
                 JSONObject object = array.getJSONObject(i);
-                int source = object.getInt("source");
-                String cid = object.getString("cid");
-                String title = object.getString("title");
-                String cover = object.getString("cover");
-                String update = object.getString("update");
-                list.add(new Comic(null, source, cid, title, cover, update, null, null, null, null));
+                int source = object.getInt("s");
+                String cid = object.getString("i");
+                String title = object.getString("t");
+                String cover = object.getString("c");
+                String update = object.getString("u");
+                String last = object.has("l") ? object.getString("l") : null;
+                Integer page = object.has("p") ? object.getInt("p") : null;
+                list.add(new Comic(null, source, cid, title, cover, update, null, null, last, page));
             }
         } catch (Exception e) {
             e.printStackTrace();

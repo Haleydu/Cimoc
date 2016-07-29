@@ -51,7 +51,7 @@ public class SettingsPresenter extends BasePresenter {
 
     public void restoreComic() {
         final String[] files = BackupUtils.showBackupFiles();
-        if (files.length == 0) {
+        if (files == null || files.length == 0) {
             mSettingsFragment.showSnackbar("没有找到备份文件");
             return;
         }

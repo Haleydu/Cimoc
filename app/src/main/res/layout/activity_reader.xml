@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
-    <android.support.v4.view.ViewPager
+    <com.hiroshi.cimoc.ui.custom.LimitedViewPager
         android:id="@+id/reader_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

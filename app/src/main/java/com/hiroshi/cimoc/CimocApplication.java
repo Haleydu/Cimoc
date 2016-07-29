@@ -35,7 +35,7 @@ public class CimocApplication extends Application {
         context = getApplicationContext();
         preferences = getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         Fresco.initialize(this);
-        ExLog.enable();
+//        ExLog.enable();
     }
 
     private void initDatabase() {

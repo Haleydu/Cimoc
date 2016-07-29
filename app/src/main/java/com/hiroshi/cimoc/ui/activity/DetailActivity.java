@@ -95,7 +95,9 @@ public class DetailActivity extends BaseActivity {
     }
 
     public void showSnackbar(String msg) {
-        Snackbar.make(mCoordinatorLayout, msg, Snackbar.LENGTH_SHORT).show();
+        if (mCoordinatorLayout.isShown()) {
+            Snackbar.make(mCoordinatorLayout, msg, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     public void setLastChapter(String last) {

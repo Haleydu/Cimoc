@@ -64,7 +64,7 @@ public class HHAAZZ extends Manga {
         String title = detail.text("div:eq(1) > h3");
         String cover = detail.attr("img:eq(0)", "src");
         String update = detail.text("div:eq(1) > p:eq(5)", 5);
-        String author = detail.text("div:eq(1) > p:eq(1)");
+        String author = detail.text("div:eq(1) > p:eq(1)", 3);
         String intro = doc.text("#detail_block > div > p");
         boolean status = detail.text("div:eq(1) > p:eq(4)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);

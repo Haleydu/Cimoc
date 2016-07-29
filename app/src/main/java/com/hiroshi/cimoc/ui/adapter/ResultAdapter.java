@@ -66,4 +66,5 @@ public class ResultAdapter extends BaseAdapter<Comic> {
             }
         };
     }
+
 }

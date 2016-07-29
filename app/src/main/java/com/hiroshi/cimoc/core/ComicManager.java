@@ -44,12 +44,12 @@ public class ComicManager {
                         comic.setFavorite(System.currentTimeMillis());
                         long id = mComicDao.insert(comic);
                         comic.setId(id);
-                        result.add(new MiniComic(comic));
+                        result.add(0, new MiniComic(comic));
                     } else if (temp.getFavorite() == null) {
                         ExLog.d("ComicManager", "update " + comic.getTitle());
                         temp.setFavorite(System.currentTimeMillis());
                         mComicDao.update(temp);
-                        result.add(new MiniComic(temp));
+                        result.add(0, new MiniComic(temp));
                     }
                 }
                 EventBus.getDefault().post(new EventMessage(EventMessage.RESTORE_FAVORITE, result));
@@ -218,6 +218,7 @@ public class ComicManager {
             ExLog.d("ComicManager", "save" + " [" + comic.getId() + "] " + comic.getTitle());
             mComicDao.update(comic);
         }
+        comic = null;
         ExLog.d("ComicManager", "clear comic");
     }
 

@@ -30,26 +30,26 @@ public class CimocFragment extends BaseFragment {
     @BindView(R.id.main_keyword_input) EditText mEditText;
     @BindView(R.id.main_search_btn) FloatingActionButton mSearchBtn;
 
-    private boolean isEnable;
-    private int source;
+    private int[] source;
+    private int choice;
+    private int array;
 
     @OnClick(R.id.main_search_btn) void onClick() {
         String keyword = mEditText.getText().toString();
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.empty_for_search));
         } else {
-            startActivity(ResultActivity.createIntent(getActivity(), keyword, source));
+            startActivity(ResultActivity.createIntent(getActivity(), keyword, source[choice]));
         }
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_Dialog_Alert);
         builder.setTitle("图源选择");
-        int array = isEnable ? R.array.ex_source_items : R.array.source_items;
-        builder.setSingleChoiceItems(array, source, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(array, choice, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                source = which;
+                choice = which;
             }
         });
         builder.show();
@@ -78,8 +78,14 @@ public class CimocFragment extends BaseFragment {
                 return false;
             }
         });
-        source = Kami.SOURCE_IKANMAN;
-        isEnable = CimocApplication.getPreferences().getBoolean(CimocApplication.PREF_EX, false);
+        choice = 0;
+        boolean enable = CimocApplication.getPreferences().getBoolean(CimocApplication.PREF_EX, false);
+        array = enable ? R.array.ex_source_items : R.array.source_items;
+        if (enable) {
+            source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ, Kami.SOURCE_CCTUKU, Kami.SOURCE_EHENTAI };
+        } else {
+            source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ, Kami.SOURCE_CCTUKU };
+        }
     }
 
     @Override
