@@ -1,5 +1,5 @@
 # 应用简介
-<img src="./screenshot/icon.png">
+<img src="./screenshot/icon.png">  
 Android 平台在线看漫画的应用
 
 # 支持网站
@@ -14,4 +14,4 @@ Android 平台在线看漫画的应用
 <img src="./screenshot/02.png" width="30%" height="30%">
 <img src="./screenshot/03.png" width="30%" height="30%">
 <img src="./screenshot/04.png" width="30%" height="30%">
-<img src="./screenshot/-5.png" width="30%" height="30%">
+<img src="./screenshot/05.png" width="30%" height="30%">
