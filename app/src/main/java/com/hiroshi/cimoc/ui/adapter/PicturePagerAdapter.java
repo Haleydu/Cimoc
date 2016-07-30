@@ -59,18 +59,19 @@ public class PicturePagerAdapter extends PagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void notifyPrevPage(int status) {
-        pStatus = status;
-        notifyDataSetChanged();
-    }
-
-    public void notifyNextPage(int status) {
-        nStatus = status;
+    public void notifySpecialPage(boolean isFirst, int status) {
+        if (isFirst) {
+            pStatus = status;
+        } else {
+            nStatus = status;
+        }
         notifyDataSetChanged();
     }
 
     public int getLimitByPosition(int position) {
-        if (position == prev) {
+        if (prev + 1 == next) {
+            return LimitedViewPager.LIMIT_BOTH;
+        } else if (position == prev) {
             return  LimitedViewPager.LIMIT_RIGHT;
         } else if (position == next) {
             return LimitedViewPager.LIMIT_LEFT;

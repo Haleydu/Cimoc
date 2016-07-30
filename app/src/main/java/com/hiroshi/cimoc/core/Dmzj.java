@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Request;
+
 /**
  * Created by Hiroshi on 2016/7/8.
  */
@@ -24,9 +26,10 @@ public class Dmzj extends Manga {
     }
 
     @Override
-    protected String parseSearchUrl(String keyword, int page) {
+    protected Request buildSearchRequest(String keyword, int page) {
         if (page == 1) {
-            return "http://s.acg.178.com/comicsum/search.php?s=" + keyword;
+            String url = "http://s.acg.178.com/comicsum/search.php?s=" + keyword;
+            return new Request.Builder().url(url).build();
         }
         return null;
     }
@@ -61,8 +64,9 @@ public class Dmzj extends Manga {
     }
 
     @Override
-    protected String parseIntoUrl(String cid) {
-        return host + "/info/" + cid + ".html";
+    protected Request buildIntoRequest(String cid) {
+        String url = host + "/info/" + cid + ".html";
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -97,8 +101,9 @@ public class Dmzj extends Manga {
     }
 
     @Override
-    protected String parseBrowseUrl(String cid, String path) {
-        return host + "/view/" + cid + "/" + path + ".html";
+    protected Request buildBrowseRequest(String cid, String path) {
+        String url = host + "/view/" + cid + "/" + path + ".html";
+        return new Request.Builder().url(url).build();
     }
 
     @Override

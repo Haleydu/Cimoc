@@ -33,11 +33,11 @@ public abstract class Manga {
     }
 
     public void search(String keyword, int page) {
-        String url = parseSearchUrl(keyword, page);
-        if (url == null) {
+        Request request = buildSearchRequest(keyword, page);
+        if (request == null) {
             EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_FAIL, null));
         } else {
-            enqueueClient(url, new OnResponseSuccessHandler() {
+            enqueueClient(request, new OnResponseSuccessHandler() {
                 @Override
                 public void onSuccess(String html) {
                     List<Comic> list = parseSearch(html);
@@ -52,7 +52,7 @@ public abstract class Manga {
     }
 
     public void into(final Comic comic) {
-        enqueueClient(parseIntoUrl(comic.getCid()), new OnResponseSuccessHandler() {
+        enqueueClient(buildIntoRequest(comic.getCid()), new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
                 List<Chapter> list = parseInto(html, comic);
@@ -66,7 +66,7 @@ public abstract class Manga {
     }
 
     public void browse(String cid, String path) {
-        enqueueClient(parseBrowseUrl(cid, path), new OnResponseSuccessHandler() {
+        enqueueClient(buildBrowseRequest(cid, path), new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
                 String[] images = parseBrowse(html);
@@ -79,8 +79,11 @@ public abstract class Manga {
         });
     }
 
-    private void enqueueClient(String url, final OnResponseSuccessHandler handler) {
-        Request request = new Request.Builder().url(url).build();
+    public void cancel() {
+        client.dispatcher().cancelAll();
+    }
+
+    private void enqueueClient(Request request, final OnResponseSuccessHandler handler) {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -110,15 +113,15 @@ public abstract class Manga {
         return null;
     }
 
-    protected abstract String parseSearchUrl(String keyword, int page);
+    protected abstract Request buildSearchRequest(String keyword, int page);
 
     protected abstract List<Comic> parseSearch(String html);
 
-    protected abstract String parseIntoUrl(String cid);
+    protected abstract Request buildIntoRequest(String cid);
 
     protected abstract List<Chapter> parseInto(String html, Comic comic);
 
-    protected abstract String parseBrowseUrl(String cid, String path);
+    protected abstract Request buildBrowseRequest(String cid, String path);
 
     protected abstract String[] parseBrowse(String html);
 

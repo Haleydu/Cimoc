@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Request;
+
 /**
  * Created by Hiroshi on 2016/7/28.
  */
@@ -20,8 +22,9 @@ public class CCTuku extends Manga {
     }
 
     @Override
-    protected String parseSearchUrl(String keyword, int page) {
-        return host + "/comic/search?word=" + keyword + "&page=" + page;
+    protected Request buildSearchRequest(String keyword, int page) {
+        String url = host + "/comic/search?word=" + keyword + "&page=" + page;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -40,8 +43,9 @@ public class CCTuku extends Manga {
     }
 
     @Override
-    protected String parseIntoUrl(String cid) {
-        return host + "/comic/" + cid;
+    protected Request buildIntoRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -67,8 +71,9 @@ public class CCTuku extends Manga {
     }
 
     @Override
-    protected String parseBrowseUrl(String cid, String path) {
-        return host + "/comic/" + cid + "/" + path;
+    protected Request buildBrowseRequest(String cid, String path) {
+        String url = host + "/comic/" + cid + "/" + path;
+        return new Request.Builder().url(url).build();
     }
 
     @Override

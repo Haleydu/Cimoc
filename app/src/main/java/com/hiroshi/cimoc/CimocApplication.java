@@ -8,7 +8,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoMaster.DevOpenHelper;
 import com.hiroshi.cimoc.model.DaoSession;
-import com.hiroshi.cimoc.utils.ExLog;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -25,14 +24,12 @@ public class CimocApplication extends Application {
 
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
-    private static Context context;
     private static SharedPreferences preferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initDatabase();
-        context = getApplicationContext();
         preferences = getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         Fresco.initialize(this);
 //        ExLog.enable();
@@ -42,10 +39,6 @@ public class CimocApplication extends Application {
         DevOpenHelper helper = new DevOpenHelper(this, "cimoc.db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
-    }
-
-    public static Context getContext() {
-        return context;
     }
 
     public static DaoSession getDaoSession() {

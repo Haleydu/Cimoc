@@ -9,6 +9,8 @@ import com.hiroshi.cimoc.utils.MachiSoup.Node;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Request;
+
 /**
  * Created by Hiroshi on 2016/7/26.
  */
@@ -19,8 +21,9 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected String parseSearchUrl(String keyword, int page) {
-        return host + "?f_search=" + keyword + "&page=" + (page - 1);
+    protected Request buildSearchRequest(String keyword, int page) {
+        String url = host + "?f_search=" + keyword + "&page=" + (page - 1);
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -41,8 +44,9 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected String parseIntoUrl(String cid) {
-        return "http://g.e-hentai.org/g/" + cid;
+    protected Request buildIntoRequest(String cid) {
+        String url = "http://g.e-hentai.org/g/" + cid;
+        return new Request.Builder().url(url).header("Cookie", "nw=1").build();
     }
 
     @Override
@@ -50,7 +54,7 @@ public class EHentai extends Manga {
         List<Chapter> list = new LinkedList<>();
         Node doc = MachiSoup.body(html);
         String length = doc.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
-        int size = Integer.parseInt(length) / 8 + 1;
+        int size = Integer.parseInt(length) % 8 == 0 ? Integer.parseInt(length) / 8 : Integer.parseInt(length) / 8 + 1;
         for (int i = 0; i != size; ++i) {
             list.add(0, new Chapter("Ch" + i, "/" + i));
         }
@@ -66,8 +70,9 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected String parseBrowseUrl(String cid, String path) {
-        return host + "/g/" + cid  + path;
+    protected Request buildBrowseRequest(String cid, String path) {
+        String url = host + "/g/" + cid  + path;
+        return new Request.Builder().url(url).build();
     }
 
     @Override

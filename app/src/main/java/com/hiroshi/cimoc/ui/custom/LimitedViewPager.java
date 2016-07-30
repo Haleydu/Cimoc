@@ -19,16 +19,10 @@ public class LimitedViewPager extends ViewPager {
 
     public LimitedViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
     }
 
     public LimitedViewPager(Context context) {
         super(context);
-        init();
-    }
-
-    private void init() {
-        limit = LIMIT_BOTH;
     }
 
     private float lastX;

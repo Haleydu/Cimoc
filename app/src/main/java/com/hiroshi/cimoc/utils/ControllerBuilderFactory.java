@@ -26,11 +26,10 @@ public class ControllerBuilderFactory {
 
     private static SparseArray<PipelineDraweeControllerBuilder> builderArray = new SparseArray<>();
 
-    public static PipelineDraweeControllerBuilder getControllerBuilder(int source) {
+    public static PipelineDraweeControllerBuilder getControllerBuilder(int source, Context context) {
         if (builderArray.get(source) == null) {
-            Context context = CimocApplication.getContext();
-            ImagePipelineFactory factory = buildFactory(context, source);
-            builderArray.put(source, new PipelineDraweeControllerBuilderSupplier(context, factory).get());
+            ImagePipelineFactory factory = buildFactory(context.getApplicationContext(), source);
+            builderArray.put(source, new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get());
         }
         return builderArray.get(source);
     }

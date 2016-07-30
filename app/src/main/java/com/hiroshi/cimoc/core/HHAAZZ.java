@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Request;
+
 /**
  * Created by Hiroshi on 2016/7/26.
  */
@@ -20,9 +22,10 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected String parseSearchUrl(String keyword, int page) {
+    protected Request buildSearchRequest(String keyword, int page) {
         if (page == 1) {
-            return host + "/comicsearch/s.aspx?s=" + keyword;
+            String url = host + "/comicsearch/s.aspx?s=" + keyword;
+            return new Request.Builder().url(url).build();
         }
         return null;
     }
@@ -45,8 +48,9 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected String parseIntoUrl(String cid) {
-        return host + "/comic/" + cid;
+    protected Request buildIntoRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -73,8 +77,9 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected String parseBrowseUrl(String cid, String path) {
-        return host + path;
+    protected Request buildBrowseRequest(String cid, String path) {
+        String url = host + path;
+        return new Request.Builder().url(url).build();
     }
 
     @Override

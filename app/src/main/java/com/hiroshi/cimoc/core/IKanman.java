@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Request;
+
 /**
  * Created by Hiroshi on 2016/7/8.
  */
@@ -23,8 +25,9 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected String parseSearchUrl(String keyword, int page) {
-        return host + "/s/" + keyword + ".html?page=" + page;
+    protected Request buildSearchRequest(String keyword, int page) {
+        String url = host + "/s/" + keyword + ".html?page=" + page;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -44,8 +47,9 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected String parseIntoUrl(String cid) {
-        return host + "/comic/" + cid;
+    protected Request buildIntoRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
@@ -72,8 +76,9 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected String parseBrowseUrl(String cid, String path) {
-        return host + "/comic/" + cid + "/" + path + ".html";
+    protected Request buildBrowseRequest(String cid, String path) {
+        String url = host + "/comic/" + cid + "/" + path + ".html";
+        return new Request.Builder().url(url).build();
     }
 
     @Override

@@ -45,12 +45,7 @@ public class PreloadAdapter {
         return offset[index + 1] - offset[index];
     }
 
-    public int getProgress() {
-        if (index == -1) {
-            return 1;
-        } else if (index == offset.length - 1) {
-            return offset[index] - offset[index - 1];
-        }
+    public int getValidProgress() {
         return current - offset[index] + 1;
     }
     

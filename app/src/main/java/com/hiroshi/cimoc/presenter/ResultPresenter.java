@@ -40,6 +40,12 @@ public class ResultPresenter extends BasePresenter {
         mManga.search(keyword, ++page);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mManga.cancel();
+    }
+
     public void onScrolled(int dy) {
         int lastItem = mResultActivity.findLastItemPosition();
         int itemCount = mResultActivity.getItemCount();

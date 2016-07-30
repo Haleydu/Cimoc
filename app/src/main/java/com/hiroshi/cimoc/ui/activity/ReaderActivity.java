@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,7 +40,7 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        mPresenter.afterRead();
+        mPresenter.afterRead(mSeekBar.getProgress());
         super.onBackPressed();
     }
 
@@ -55,7 +54,7 @@ public class ReaderActivity extends BaseActivity {
                         mToolLayout.setVisibility(visibility);
                         return true;
                     }
-                }, ControllerBuilderFactory.getControllerBuilder(mPresenter.getSource()));
+                }, ControllerBuilderFactory.getControllerBuilder(mPresenter.getSource(), this));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
@@ -131,18 +130,12 @@ public class ReaderActivity extends BaseActivity {
         mViewPager.setLimit(LimitedViewPager.LIMIT_NONE);
     }
 
-    public void notifyPrevPage(int status) {
-        mPagerAdapter.notifyPrevPage(status);
-    }
-
-    public void notifyNextPage(int status) {
-        mPagerAdapter.notifyNextPage(status);
+    public void notifySpecialPage(boolean isFirst, int status) {
+        mPagerAdapter.notifySpecialPage(isFirst, status);
     }
 
     public void hideChapterInfo() {
         mToolLayout.setVisibility(View.GONE);
-        mSeekBar.setMax(1);
-        mSeekBar.setProgress(1);
         mChapterPage.setText(null);
         mChapterTitle.setText(null);
     }

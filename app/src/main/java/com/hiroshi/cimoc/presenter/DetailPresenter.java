@@ -5,6 +5,7 @@ import android.content.Intent;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.core.Kami;
+import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.activity.ReaderActivity;
@@ -23,16 +24,24 @@ public class DetailPresenter extends BasePresenter {
 
     private DetailActivity mDetailActivity;
     private ComicManager mComicManager;
+    private Manga mManga;
 
     public DetailPresenter(DetailActivity activity) {
         mDetailActivity = activity;
         mComicManager = ComicManager.getInstance();
+        mManga = Kami.getMangaById(mComicManager.getSource());
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Kami.getMangaById(mComicManager.getSource()).into(mComicManager.getComic());
+        mManga.into(mComicManager.getComic());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mManga.cancel();
     }
 
     public void saveComic() {
