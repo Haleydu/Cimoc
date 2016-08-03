@@ -2,9 +2,8 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.support.v4.view.ViewPager;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -14,6 +13,7 @@ import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
 import com.hiroshi.cimoc.ui.custom.LimitedViewPager;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -47,12 +47,17 @@ public class ReaderActivity extends BaseActivity {
     @Override
     protected void initView() {
         mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater(),
-                new GestureDetector.SimpleOnGestureListener() {
+                new PhotoDraweeViewController.OnSingleTapListener() {
                     @Override
-                    public boolean onDoubleTap(MotionEvent e) {
-                        int visibility = mToolLayout.isShown() ? View.GONE : View.VISIBLE;
-                        mToolLayout.setVisibility(visibility);
-                        return true;
+                    public void onSingleTap(View view, float x, float y) {
+                        Point point = new Point();
+                        getWindowManager().getDefaultDisplay().getSize(point);
+                        float limitX = point.x / 3.0f;
+                        float limitY = point.y / 3.0f;
+                        if (limitX <= x && x <= 2 * limitX && limitY <= y && y <= 2 * limitY) {
+                            int visibility = mToolLayout.isShown() ? View.GONE : View.VISIBLE;
+                            mToolLayout.setVisibility(visibility);
+                        }
                     }
                 }, ControllerBuilderFactory.getControllerBuilder(mPresenter.getSource(), this));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -81,9 +86,7 @@ public class ReaderActivity extends BaseActivity {
         mSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                if (fromUser) {
-                    mViewPager.setCurrentItem(mPresenter.getOffset() + value - 1, false);
-                }
+                mPresenter.onProgressChanged(value, fromUser);
             }
 
             @Override
@@ -138,6 +141,10 @@ public class ReaderActivity extends BaseActivity {
         mToolLayout.setVisibility(View.GONE);
         mChapterPage.setText(null);
         mChapterTitle.setText(null);
+    }
+
+    public void setCurrentItem(int item) {
+        mViewPager.setCurrentItem(item, false);
     }
 
     public void updateChapterInfo(int progress, int max, String title) {

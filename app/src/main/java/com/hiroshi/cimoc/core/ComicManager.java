@@ -213,6 +213,14 @@ public class ComicManager {
         return comic.getLast();
     }
 
+    public int getPage() {
+        Integer page = comic.getPage();
+        if (page == null) {
+            return -1;
+        }
+        return page;
+    }
+
     public void saveComic() {
         if (isComicExist()) {
             ExLog.d("ComicManager", "save" + " [" + comic.getId() + "] " + comic.getTitle());

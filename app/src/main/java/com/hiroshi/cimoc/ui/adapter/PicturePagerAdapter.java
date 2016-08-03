@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.adapter;
 
+import android.graphics.drawable.Animatable;
 import android.support.v4.view.PagerAdapter;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.LayoutInflater;
@@ -8,9 +9,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.custom.LimitedViewPager;
-import com.hiroshi.cimoc.ui.custom.zoomable.ZoomableDraweeView;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,14 +33,14 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     private List<String> images;
     private LayoutInflater inflater;
-    private SimpleOnGestureListener listener;
+    private OnSingleTapListener listener;
     private PipelineDraweeControllerBuilder builder;
     private int prev;
     private int next;
     private int pStatus;
     private int nStatus;
 
-    public PicturePagerAdapter(List<String> images, LayoutInflater inflater, SimpleOnGestureListener listener,
+    public PicturePagerAdapter(List<String> images, LayoutInflater inflater, OnSingleTapListener listener,
                                PipelineDraweeControllerBuilder builder) {
         this.images = images;
         this.inflater = inflater;
@@ -125,9 +130,19 @@ public class PicturePagerAdapter extends PagerAdapter {
             child.setTag(POSITION_NONE);
         } else {
             child = inflater.inflate(R.layout.item_picture, container, false);
-            ZoomableDraweeView draweeView = (ZoomableDraweeView) child.findViewById(R.id.picture_image_view);
-            draweeView.setController(builder.setUri(images.get(position - prev - 1)).setTapToRetryEnabled(true).build());
-            draweeView.setTapListener(listener);
+            final PhotoDraweeView draweeView = (PhotoDraweeView) child.findViewById(R.id.picture_image_view);
+            draweeView.setOnSingleTapListener(listener);
+            builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                @Override
+                public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                    super.onFinalImageSet(id, imageInfo, animatable);
+                    if (imageInfo == null || draweeView == null) {
+                        return;
+                    }
+                    draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
+                }
+            }).setTapToRetryEnabled(true);
+            draweeView.setController(builder.setUri(images.get(position - prev - 1)).build());
             child.setTag(POSITION_UNCHANGED);
         }
         container.addView(child);

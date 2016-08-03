@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.hiroshi.cimoc.ui.custom.zoomable.ZoomableDraweeView
+<com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/picture_image_view"

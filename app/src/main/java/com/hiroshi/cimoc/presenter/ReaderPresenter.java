@@ -80,9 +80,15 @@ public class ReaderPresenter extends BasePresenter {
         if (chapter == null) {
             mReaderActivity.hideChapterInfo();
         } else if (flag) {
-            switchChapter();
+            switchChapter(mPreloadAdapter.getValidProgress());
         } else {
             mReaderActivity.setReadProgress(mPreloadAdapter.getValidProgress());
+        }
+    }
+
+    public void onProgressChanged(int value, boolean fromUser) {
+        if (fromUser) {
+            mReaderActivity.setCurrentItem(mPreloadAdapter.getCurrentOffset() + value - 1);
         }
     }
 
@@ -90,12 +96,8 @@ public class ReaderPresenter extends BasePresenter {
         return mComicManager.getSource();
     }
 
-    public int getOffset() {
-        return mPreloadAdapter.getCurrentOffset();
-    }
-
-    private void switchChapter() {
-        mReaderActivity.updateChapterInfo(mPreloadAdapter.getValidProgress(), mPreloadAdapter.getMax(), mPreloadAdapter.getValidChapter().getTitle());
+    private void switchChapter(int page) {
+        mReaderActivity.updateChapterInfo(page, mPreloadAdapter.getMax(), mPreloadAdapter.getValidChapter().getTitle());
         mComicManager.setLast(mPreloadAdapter.getValidChapter().getPath());
     }
 
@@ -112,9 +114,15 @@ public class ReaderPresenter extends BasePresenter {
                     mReaderActivity.setNextImage(array);
                     mPreloadAdapter.moveNext(array.length);
                 }
-                switchChapter();
-                mReaderActivity.setNoneLimit();
+                int page = mComicManager.getPage();
+                if (!load &&  mComicManager.getLast().equals(mPreloadAdapter.getValidChapter().getPath()) && page != -1) {
+                    switchChapter(page);
+                    mReaderActivity.setCurrentItem(mPreloadAdapter.getCurrentOffset() + page - 1);
+                } else {
+                    switchChapter(mPreloadAdapter.getValidProgress());
+                }
                 load = true;
+                mReaderActivity.setNoneLimit();
                 status = LOAD_NULL;
                 break;
             case EventMessage.PARSE_PIC_FAIL:

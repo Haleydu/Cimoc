@@ -7,14 +7,10 @@ import android.util.Log;
  */
 public class ExLog {
 
-    private static boolean flag = false;
-
-    public static void enable() {
-        flag = true;
-    }
+    private static boolean DEBUG = true;
 
     public static void d(String tag, String msg) {
-        if (flag) {
+        if (DEBUG) {
             Log.d("ExLog", tag + " - " +  msg);
         }
     }
