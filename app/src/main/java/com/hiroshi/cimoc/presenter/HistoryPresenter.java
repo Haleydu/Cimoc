@@ -30,10 +30,13 @@ public class HistoryPresenter extends BasePresenter {
         return mComicManager.listHistory();
     }
 
-    public void onItemClick(int position) {
-        MiniComic comic = mHistoryFragment.getItem(position);
+    public void onItemClick(MiniComic comic) {
         Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         mHistoryFragment.startActivity(intent);
+    }
+
+    public void onPositiveClick(MiniComic comic) {
+        mComicManager.removeHistory(comic.getId());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -1,13 +1,12 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoMaster.DevOpenHelper;
 import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -18,19 +17,15 @@ import okhttp3.OkHttpClient;
  */
 public class CimocApplication extends Application {
 
-    public static final String PREF_EX = "pref_ex";
-
-    private static final String PREFERENCES_NAME = "cimoc_preferences";
-
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
-    private static SharedPreferences preferences;
+    private static PreferenceMaster preferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initDatabase();
-        preferences = getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        preferences = new PreferenceMaster(getApplicationContext());
         Fresco.initialize(this);
     }
 
@@ -44,7 +39,7 @@ public class CimocApplication extends Application {
         return daoSession;
     }
 
-    public static SharedPreferences getPreferences() {
+    public static PreferenceMaster getPreferences() {
         return preferences;
     }
 

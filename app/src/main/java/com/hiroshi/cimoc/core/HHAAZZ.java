@@ -56,20 +56,20 @@ public class HHAAZZ extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Node doc = MachiSoup.body(html);
-        List<Node> nodes = doc.list("#sort_div_p > a");
+        Node body = MachiSoup.body(html);
+        List<Node> nodes = body.list("#sort_div_p > a");
         for (Node node : nodes) {
             String c_title = node.attr("title");
             String c_path = node.attr("href").substring(host.length());
             list.add(new Chapter(c_title, c_path));
         }
 
-        Node detail = doc.select(".main > div > div.pic");
+        Node detail = body.select(".main > div > div.pic");
         String title = detail.text("div:eq(1) > h3");
         String cover = detail.attr("img:eq(0)", "src");
         String update = detail.text("div:eq(1) > p:eq(5)", 5);
         String author = detail.text("div:eq(1) > p:eq(1)", 3);
-        String intro = doc.text("#detail_block > div > p");
+        String intro = body.text("#detail_block > div > p");
         boolean status = detail.text("div:eq(1) > p:eq(4)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
@@ -111,6 +111,18 @@ public class HHAAZZ extends Manga {
             builder.append((char) Integer.parseInt(array[i]));
         }
         return builder.toString().split("\\|");
+    }
+
+    @Override
+    protected Request buildCheckRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    protected String parseCheck(String html) {
+        Node body = MachiSoup.body(html);
+        return body.text(".main > div > div.pic > div:eq(1) > p:eq(5)", 5);
     }
 
 }

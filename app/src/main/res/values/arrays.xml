@@ -13,4 +13,9 @@
         <item>CC图库 - CCTuku</item>
         <item>E站 - EHentai</item>
     </string-array>
+    <string-array name="index_items">
+        <item>Cimoc</item>
+        <item>我的漫画</item>
+        <item>历史阅读</item>
+    </string-array>
 </resources>

@@ -20,7 +20,9 @@
 
     <string name="reader_absence">前面没有了 :(</string>
 
-    <string name="about_version">version: 1.0.0</string>
+    <string name="comic_new">NEW</string>
+
+    <string name="about_version">version: 1.1.0</string>
 
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
@@ -28,6 +30,7 @@
     <string name="settings_backup_restore">恢复</string>
     <string name="settings_backup_restore_summary">从本地文件中恢复</string>
     <string name="settings_other">其他设置</string>
+    <string name="settings_other_home">首页设置</string>
     <string name="settings_other_history">清除历史纪录</string>
     <string name="settings_other_cache">清除缓存</string>
 

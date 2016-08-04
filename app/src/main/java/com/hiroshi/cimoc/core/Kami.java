@@ -45,19 +45,36 @@ public class Kami {
         }
     }
 
+    private static Manga mIkanman, mDmzj, mHHAAZZ, mCCTuku, mEHentai;
+
     public static Manga getMangaById(int id) {
         switch (id) {
             default:
             case SOURCE_IKANMAN:
-                return new IKanman();
+                if (mIkanman == null) {
+                    mIkanman = new IKanman();
+                }
+                return mIkanman;
             case SOURCE_DMZJ:
-                return new Dmzj();
+                if (mDmzj == null) {
+                    mDmzj = new Dmzj();
+                }
+                return mDmzj;
             case SOURCE_HHAAZZ:
-                return new HHAAZZ();
+                if (mHHAAZZ == null) {
+                    mHHAAZZ = new HHAAZZ();
+                }
+                return mHHAAZZ;
             case SOURCE_CCTUKU:
-                return new CCTuku();
+                if (mCCTuku == null) {
+                    mCCTuku = new CCTuku();
+                }
+                return mCCTuku;
             case SOURCE_EHENTAI:
-                return new EHentai();
+                if (mEHentai == null) {
+                    mEHentai = new EHentai();
+                }
+                return mEHentai;
         }
     }
 

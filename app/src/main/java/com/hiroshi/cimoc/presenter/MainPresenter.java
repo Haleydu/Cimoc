@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
+import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -33,10 +34,42 @@ public class MainPresenter extends BasePresenter {
     private AboutFragment mAboutFragment;
     private Fragment mCurrentFragment;
     
-    public MainPresenter(MainActivity activity) {
+    public MainPresenter(MainActivity activity, int item) {
         mMainActivity = activity;
+        mCheckedItem = item;
         mExitTime = 0;
         initFragment();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        switch (mCheckedItem) {
+            case R.id.drawer_cimoc:
+                mCurrentFragment = mCimocFragment;
+                break;
+            case R.id.drawer_favorite:
+                mCurrentFragment = mFavoriteFragment;
+                break;
+            case R.id.drawer_history:
+                mCurrentFragment = mHistoryFragment;
+                break;
+        }
+        mFragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, mCimocFragment)
+                .add(R.id.main_fragment_container, mFavoriteFragment)
+                .add(R.id.main_fragment_container, mHistoryFragment)
+                .add(R.id.main_fragment_container, mSettingsFragment)
+                .add(R.id.main_fragment_container, mAboutFragment)
+                .hide(mCimocFragment)
+                .hide(mFavoriteFragment)
+                .hide(mHistoryFragment)
+                .hide(mSettingsFragment)
+                .hide(mAboutFragment)
+                .show(mCurrentFragment)
+                .commit();
+        mMainActivity.setCheckedItem(mCheckedItem);
+        mMainActivity.setTitle(PreferenceMaster.getTitleById(mCheckedItem));
     }
 
     private void initFragment() {
@@ -46,20 +79,6 @@ public class MainPresenter extends BasePresenter {
         mHistoryFragment = new HistoryFragment();
         mSettingsFragment = new SettingsFragment();
         mAboutFragment = new AboutFragment();
-        mFragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, mCimocFragment)
-                .add(R.id.main_fragment_container, mFavoriteFragment)
-                .add(R.id.main_fragment_container, mHistoryFragment)
-                .add(R.id.main_fragment_container, mSettingsFragment)
-                .add(R.id.main_fragment_container, mAboutFragment)
-                .hide(mFavoriteFragment)
-                .hide(mHistoryFragment)
-                .hide(mSettingsFragment)
-                .hide(mAboutFragment)
-                .commit();
-        mCurrentFragment = mCimocFragment;
-        mCheckedItem = R.id.drawer_main;
-        mMainActivity.setCheckedItem(mCheckedItem);
     }
 
     public void onBackPressed() {
@@ -76,10 +95,10 @@ public class MainPresenter extends BasePresenter {
     public void transFragment() {
         switch (mCheckedItem) {
             default:
-            case R.id.drawer_main:
+            case R.id.drawer_cimoc:
                 mCurrentFragment = mCimocFragment;
                 break;
-            case R.id.drawer_comic:
+            case R.id.drawer_favorite:
                 mCurrentFragment = mFavoriteFragment;
                 break;
             case R.id.drawer_history:

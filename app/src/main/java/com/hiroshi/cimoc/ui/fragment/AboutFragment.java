@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.OnClick;
 
@@ -19,7 +20,7 @@ public class AboutFragment extends BaseFragment {
     @OnClick(R.id.about_resource_btn) void onClick() {
         if (++count > 9) {
             isEnable = !isEnable;
-            CimocApplication.getPreferences().edit().putBoolean(CimocApplication.PREF_EX, isEnable).apply();
+            CimocApplication.getPreferences().putBoolean(PreferenceMaster.PREF_EX, isEnable);
             if (getView() != null) {
                 String msg = isEnable ? "重启软件开启 EHentai" : "重启软件关闭 EHentai";
                 Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
@@ -33,7 +34,7 @@ public class AboutFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        isEnable = CimocApplication.getPreferences().getBoolean(CimocApplication.PREF_EX, false);
+        isEnable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
         count = 0;
     }
 

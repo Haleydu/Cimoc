@@ -27,6 +27,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
         @BindView(R.id.item_comic_source) TextView comicSource;
+        @BindView(R.id.item_comic_new) TextView comicNew;
 
         public ViewHolder(View view) {
             super(view);
@@ -51,6 +52,11 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
         PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
+        if (comic.getStatus()) {
+            viewHolder.comicNew.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.comicNew.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

@@ -26,16 +26,28 @@ public class FavoritePresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public List<MiniComic> getComic() {
+    public List<MiniComic> getComicList() {
         return mComicManager.listFavorite();
     }
 
-    public void onItemClick(int position) {
-        MiniComic comic = mFavoriteFragment.getItem(position);
+    public MiniComic[] getComicArray() {
+        return mComicManager.arrayFavorite();
+    }
+
+    public void onItemClick(MiniComic comic) {
         Intent intent = DetailActivity.createIntent(mFavoriteFragment.getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         mFavoriteFragment.startActivity(intent);
     }
 
+    public void updateComic(List<MiniComic> list) {
+        mComicManager.updateFavorite(list);
+    }
+
+    public void onPositiveClick(MiniComic comic) {
+        mComicManager.removeFavorite(comic.getId());
+    }
+
+    @SuppressWarnings("unchecked")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {

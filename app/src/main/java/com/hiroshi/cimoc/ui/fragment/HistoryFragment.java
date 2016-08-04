@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +13,7 @@ import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+import com.hiroshi.cimoc.utils.DialogFactory;
 
 import butterknife.BindView;
 
@@ -30,12 +33,23 @@ public class HistoryFragment extends BaseFragment {
         mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                mPresenter.onItemClick(position);
+                mPresenter.onItemClick(mComicAdapter.getItem(position));
+            }
+        });
+        mComicAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View view, final int position) {
+                DialogFactory.buildPositiveDialog(getActivity(), "删除提示", "是否删除该历史纪录", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mPresenter.onPositiveClick(mComicAdapter.getItem(position));
+                        mComicAdapter.remove(position);
+                    }
+                }).show();
             }
         });
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mComicAdapter);
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
     }
@@ -53,10 +67,6 @@ public class HistoryFragment extends BaseFragment {
     @Override
     protected int getLayoutView() {
         return R.layout.fragment_history;
-    }
-
-    public MiniComic getItem(int position) {
-        return mComicAdapter.getItem(position);
     }
 
     public void updateItem(MiniComic comic) {

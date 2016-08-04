@@ -5,6 +5,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.Decryption;
 import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,9 +30,9 @@ public class CCTuku extends Manga {
 
     @Override
     protected List<Comic> parseSearch(String html) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list(".main-list > div > div > div")) {
+        for (Node node : body.list(".main-list > div > div > div")) {
             String cid = node.attr("div:eq(1) > div:eq(0) > a", "href", "/", 2);
             String title = node.text("div:eq(1) > div:eq(0) > a");
             String cover = node.attr("div:eq(0) > a > img", "src");
@@ -51,18 +52,18 @@ public class CCTuku extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
-        for (MachiSoup.Node node : body.list("ul.list-body > li > a")) {
+        Node body = MachiSoup.body(html);
+        for (Node node : body.list("ul.list-body > li > a")) {
             String c_title = node.text();
             String c_path = node.attr("href", "/", 3);
             list.add(new Chapter(c_title, c_path));
         }
 
         String title = body.text("div.title-banner > div.book-title > h1", 0, -2);
-        MachiSoup.Node detail = body.select("div.book > div > div:eq(0)");
+        Node detail = body.select("div.book > div > div:eq(0)");
         String cover = detail.attr("div:eq(0) > a > img", "src");
-        String update = detail.text("div:eq(0) > dl:eq(5) > dd > font", 0, 10);
-        String author = detail.text("div:eq(0) > dl:eq(1) > dd > a");
+        String update = detail.text("div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
+        String author = detail.text("div:eq(1) > div > dl:eq(1) > dd > a");
         String intro = body.text("div.book-details > p:eq(1)");
         boolean status = "完结".equals(detail.text("div:eq(0) > div"));
         comic.setInfo(title, cover, update, intro, author, status);
@@ -98,6 +99,18 @@ public class CCTuku extends Manga {
             }
         }
         return null;
+    }
+
+    @Override
+    protected Request buildCheckRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    protected String parseCheck(String html) {
+        Node body = MachiSoup.body(html);
+        return body.text("div.book > div > div:eq(0) > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
     }
 
 }

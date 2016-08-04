@@ -106,4 +106,16 @@ public class IKanman extends Manga {
         return null;
     }
 
+    @Override
+    protected Request buildCheckRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    protected String parseCheck(String html) {
+        Node body = MachiSoup.body(html);
+        return body.text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
+    }
+
 }

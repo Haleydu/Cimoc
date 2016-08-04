@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class ComicManager {
 
+    public static final long NEW_VALUE = 0xFFFFFFFFFFFL;
+
     private static ComicManager mComicManager;
 
     private ComicDao mComicDao;
@@ -57,6 +59,42 @@ public class ComicManager {
         });
     }
 
+    public void updateFavorite(final List<MiniComic> list) {
+        mComicDao.getSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                for (MiniComic comic : list) {
+                    Comic temp = mComicDao.load(comic.getId());
+                    if (temp != null) {
+                        temp.setUpdate(comic.getUpdate());
+                        temp.setFavorite(NEW_VALUE);
+                        mComicDao.update(temp);
+                    }
+                }
+            }
+        });
+    }
+
+    public void removeFavorite(long id) {
+        Comic comic = mComicDao.load(id);
+        if (comic.getHistory() == null) {
+            mComicDao.delete(comic);
+        } else {
+            comic.setFavorite(null);
+            mComicDao.update(comic);
+        }
+    }
+
+    public void removeHistory(long id) {
+        Comic comic = mComicDao.load(id);
+        if (comic.getFavorite() == null) {
+            mComicDao.delete(comic);
+        } else {
+            comic.setHistory(null);
+            mComicDao.update(comic);
+        }
+    }
+
     public void cleanHistory() {
         mComicDao.getSession().runInTx(new Runnable() {
             @Override
@@ -77,6 +115,24 @@ public class ComicManager {
 
     public List<Comic> listBackup() {
         return mComicDao.queryBuilder().where(Properties.Favorite.isNotNull()).list();
+    }
+
+    public MiniComic[] arrayFavorite() {
+        Cursor cursor = mComicDao.queryBuilder()
+                .where(ComicDao.Properties.Favorite.isNotNull())
+                .buildCursor()
+                .query();
+        MiniComic[] array = new MiniComic[cursor.getCount()];
+        int count = 0;
+        while (cursor.moveToNext()) {
+            long id = cursor.getLong(0);
+            int source = cursor.getInt(1);
+            String cid = cursor.getString(2);
+            String update = cursor.getString(5);
+            array[count++] = new MiniComic(id, source, cid, null, null, update);
+        }
+        cursor.close();
+        return array;
     }
 
     public List<MiniComic> listFavorite() {

@@ -10,9 +10,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
+import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.BindView;
 
@@ -30,7 +32,8 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new MainPresenter(this);
+        int item = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, R.id.drawer_cimoc);
+        mPresenter = new MainPresenter(this, item);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected String getDefaultTitle() {
-        return "Cimoc";
+        return null;
     }
 
     @Override

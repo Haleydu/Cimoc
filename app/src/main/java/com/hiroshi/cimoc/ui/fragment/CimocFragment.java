@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.fragment;
 import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -16,6 +15,8 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
+import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -44,15 +45,12 @@ public class CimocFragment extends BaseFragment {
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_Dialog_Alert);
-        builder.setTitle("图源选择");
-        builder.setSingleChoiceItems(array, choice, new DialogInterface.OnClickListener() {
+        DialogFactory.buildSingleChoiceDialog(getActivity(), "图源选择", array, choice, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 choice = which;
             }
-        });
-        builder.show();
+        }, null).show();
         return true;
     }
 
@@ -79,7 +77,7 @@ public class CimocFragment extends BaseFragment {
             }
         });
         choice = 0;
-        boolean enable = CimocApplication.getPreferences().getBoolean(CimocApplication.PREF_EX, false);
+        boolean enable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
         array = enable ? R.array.ex_source_items : R.array.source_items;
         if (enable) {
             source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ, Kami.SOURCE_CCTUKU, Kami.SOURCE_EHENTAI };

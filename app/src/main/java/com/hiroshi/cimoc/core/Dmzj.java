@@ -87,9 +87,9 @@ public class Dmzj extends Manga {
             }
         }
 
-        Node doc = MachiSoup.body(html);
-        String intro = doc.text(".txtDesc", 3);
-        Node detail = doc.select(".Introduct_Sub");
+        Node body = MachiSoup.body(html);
+        String intro = body.text(".txtDesc", 3);
+        Node detail = body.select(".Introduct_Sub");
         String title = detail.attr("#Cover > img", "title");
         String cover = detail.attr("#Cover > img", "src");
         String author = detail.text(".sub_r > p:eq(0) > a");
@@ -122,6 +122,18 @@ public class Dmzj extends Manga {
             }
         }
         return null;
+    }
+
+    @Override
+    protected Request buildCheckRequest(String cid) {
+        String url = host + "/info/" + cid + ".html";
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    protected String parseCheck(String html) {
+        Node doc = MachiSoup.body(html);
+        return doc.text(".Introduct_Sub > .sub_r > p:eq(3) > .date", " ", 0);
     }
 
 }

@@ -9,6 +9,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -21,7 +22,7 @@ import okhttp3.Response;
  */
 public abstract class Manga {
 
-    private OkHttpClient client;
+    private OkHttpClient mClient;
 
     protected int source;
     protected String host;
@@ -29,7 +30,7 @@ public abstract class Manga {
     public Manga(int source, String host) {
         this.source = source;
         this.host = host;
-        this.client = CimocApplication.getHttpClient();
+        this.mClient = CimocApplication.getHttpClient();
     }
 
     public void search(String keyword, int page) {
@@ -79,16 +80,29 @@ public abstract class Manga {
         });
     }
 
+    public String check(String cid) {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(500, TimeUnit.MILLISECONDS)
+                .readTimeout(1000, TimeUnit.MILLISECONDS)
+                .build();
+        String html = execute(client, buildCheckRequest(cid));
+        if (html != null) {
+            return parseCheck(html);
+        }
+        return null;
+    }
+
     public void cancel() {
-        client.dispatcher().cancelAll();
+        mClient.dispatcher().cancelAll();
     }
 
     private void enqueueClient(Request request, final OnResponseSuccessHandler handler) {
-        client.newCall(request).enqueue(new Callback() {
+        mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 EventBus.getDefault().post(new EventMessage(EventMessage.NETWORK_ERROR, null));
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
@@ -100,8 +114,7 @@ public abstract class Manga {
         });
     }
 
-    protected String execute(String url) {
-        Request request = new Request.Builder().url(url).build();
+    private String execute(OkHttpClient client, Request request) {
         try {
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
@@ -111,6 +124,10 @@ public abstract class Manga {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected String execute(Request request) {
+        return execute(mClient, request);
     }
 
     protected abstract Request buildSearchRequest(String keyword, int page);
@@ -124,6 +141,10 @@ public abstract class Manga {
     protected abstract Request buildBrowseRequest(String cid, String path);
 
     protected abstract String[] parseBrowse(String html);
+
+    protected abstract Request buildCheckRequest(String cid);
+
+    protected abstract String parseCheck(String html);
 
     private interface OnResponseSuccessHandler {
         void onSuccess(String html);
