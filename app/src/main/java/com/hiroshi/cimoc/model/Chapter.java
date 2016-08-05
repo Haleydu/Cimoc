@@ -7,10 +7,12 @@ public class Chapter {
 
     String title;
     String path;
+    int count;
 
     public Chapter(String title, String path) {
         this.title = title;
         this.path = path;
+        this.count = 0;
     }
 
     public String getTitle() {
@@ -19,6 +21,14 @@ public class Chapter {
 
     public String getPath() {
         return path;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
 }

@@ -13,14 +13,14 @@ public class MiniComic {
     private String update;
     private boolean status;
 
-    public MiniComic(Long id, int source, String cid, String title, String cover, String update) {
+    public MiniComic(Long id, int source, String cid, String title, String cover, String update, boolean status) {
         this.id = id;
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
         this.update = update;
-        this.status = false;
+        this.status = status;
     }
 
     public MiniComic(Comic comic) {

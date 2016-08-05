@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 
@@ -31,7 +30,7 @@ public class SettingsFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        mProgressDialog = new AlertDialog.Builder(getActivity(), R.style.AppTheme_Dialog_Alert).setCancelable(false).create();
+        mProgressDialog = DialogFactory.buildCancelableFalseDialog(getActivity());
         mHomeChoice = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, R.id.drawer_cimoc);
         mIndexSummary.setText(PreferenceMaster.getTitleById(mHomeChoice));
     }
@@ -42,7 +41,7 @@ public class SettingsFragment extends BaseFragment {
             showSnackbar("没有找到备份文件");
             return;
         }
-        DialogFactory.buildSingleChoiceDialog(getActivity(), "选择文件", array, -1,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_file, array, -1,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -59,7 +58,7 @@ public class SettingsFragment extends BaseFragment {
 
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {
         final int[] array = new int[] { R.id.drawer_cimoc, R.id.drawer_favorite, R.id.drawer_history };
-        DialogFactory.buildSingleChoiceDialog(getActivity(), "首页选择", R.array.index_items, -1,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_home, R.array.index_items, -1,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -81,16 +80,6 @@ public class SettingsFragment extends BaseFragment {
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
         mPresenter.onCacheBtnClick();
-    }
-
-    @OnClick(R.id.settings_other_history_btn) void onHistoryBtnClick() {
-        mPresenter.onHistoryBtnClick();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mProgressDialog.dismiss();
     }
 
     @Override
@@ -116,13 +105,5 @@ public class SettingsFragment extends BaseFragment {
     public void hideProgressDialog() {
         mProgressDialog.hide();
     }
-
-    public void showSnackbar(String msg) {
-        if (getView() != null) {
-            Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
-        }
-    }
-
-
 
 }

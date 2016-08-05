@@ -128,8 +128,10 @@ public class ComicManager {
             long id = cursor.getLong(0);
             int source = cursor.getInt(1);
             String cid = cursor.getString(2);
+            String title = cursor.getString(3);
+            String cover = cursor.getString(4);
             String update = cursor.getString(5);
-            array[count++] = new MiniComic(id, source, cid, null, null, update);
+            array[count++] = new MiniComic(id, source, cid, title, cover, update, false);
         }
         cursor.close();
         return array;
@@ -162,7 +164,8 @@ public class ComicManager {
             String title = cursor.getString(3);
             String cover = cursor.getString(4);
             String update = cursor.getString(5);
-            list.add(new MiniComic(id, source, cid, title, cover, update));
+            boolean status = cursor.getLong(6) == NEW_VALUE;
+            list.add(new MiniComic(id, source, cid, title, cover, update, status));
         }
         cursor.close();
         return list;
@@ -180,6 +183,9 @@ public class ComicManager {
                     .unique();
         } else {
             comic = mComicDao.load(id);
+            if (comic.getFavorite() != null && comic.getFavorite() == NEW_VALUE) {
+                comic.setFavorite(System.currentTimeMillis());
+            }
         }
         if (comic == null) {
             comic = new Comic(source, cid);

@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.activity.ReaderActivity;
 import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.ui.activity.StreamReaderActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -50,7 +51,7 @@ public class DetailPresenter extends BasePresenter {
 
     public void onItemClick(int position) {
         if (position != 0) {
-            Intent intent = ReaderActivity.createIntent(mDetailActivity, position - 1);
+            Intent intent = StreamReaderActivity.createIntent(mDetailActivity, position - 1);
             mDetailActivity.startActivity(intent);
         }
     }

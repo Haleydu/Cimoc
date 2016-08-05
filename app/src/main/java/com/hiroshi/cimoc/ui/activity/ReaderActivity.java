@@ -38,6 +38,8 @@ public class ReaderActivity extends BaseActivity {
     private PicturePagerAdapter mPagerAdapter;
     private ReaderPresenter mPresenter;
 
+    private int progress;
+
     @Override
     public void onBackPressed() {
         mPresenter.afterRead(mSeekBar.getProgress());
@@ -46,6 +48,8 @@ public class ReaderActivity extends BaseActivity {
 
     @Override
     protected void initView() {
+        progress = 0;
+
         mPagerAdapter = new PicturePagerAdapter(new LinkedList<String>(), getLayoutInflater(),
                 new PhotoDraweeViewController.OnSingleTapListener() {
                     @Override
@@ -60,14 +64,26 @@ public class ReaderActivity extends BaseActivity {
                         }
                     }
                 }, ControllerBuilderFactory.getControllerBuilder(mPresenter.getSource(), this));
+
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
-                mViewPager.setLimit(mPagerAdapter.getLimitByPosition(position));
-                mPresenter.onPageSelected(position);
+                int current = mPagerAdapter.getCurrent();
+                if (position == current) {
+                    return;
+                }
+                mPagerAdapter.setCurrent(position);
+                mViewPager.setLimit(mPagerAdapter.getLimit());
+                if (position > current && progress == mSeekBar.getMax()) {
+                    mPresenter.onChapterToNext();
+                } else if (position < current && progress == 1) {
+                    mPresenter.onChapterToPrev();
+                } else {
+                    setReadProgress(progress + position - current);
+                }
             }
 
             @Override
@@ -81,7 +97,7 @@ public class ReaderActivity extends BaseActivity {
         });
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(PicturePagerAdapter.MAX_COUNT / 2 + 1, false);
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(3);
 
         mSeekBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
@@ -143,22 +159,20 @@ public class ReaderActivity extends BaseActivity {
         mChapterTitle.setText(null);
     }
 
-    public void setCurrentItem(int item) {
-        mViewPager.setCurrentItem(item, false);
+    public void setCurrentItem(int offset) {
+        mViewPager.setCurrentItem(mPagerAdapter.getLeft() + offset, false);
     }
 
-    public void updateChapterInfo(int progress, int max, String title) {
+    public void updateChapterInfo(int max, String title) {
         mSeekBar.setMax(max);
-        mSeekBar.setProgress(progress);
-        String str = progress + "/" + max;
-        mChapterPage.setText(str);
         mChapterTitle.setText(title);
     }
 
-    public void setReadProgress(int progress) {
-        mSeekBar.setProgress(progress);
-        String pageString = progress + "/" + mSeekBar.getMax();
+    public void setReadProgress(int value) {
+        mSeekBar.setProgress(value);
+        String pageString = value + "/" + mSeekBar.getMax();
         mChapterPage.setText(pageString);
+        progress = value;
     }
 
     public static Intent createIntent(Context context, int position) {

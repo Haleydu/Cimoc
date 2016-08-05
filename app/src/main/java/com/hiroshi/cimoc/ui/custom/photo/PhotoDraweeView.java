@@ -64,6 +64,14 @@ public class PhotoDraweeView extends SimpleDraweeView  {
         mPhotoDraweeViewController.setOnSingleTapListener(listener);
     }
 
+    public void setHorizontalMode() {
+        mPhotoDraweeViewController.setHorizontalMode();
+    }
+
+    public void setVerticalMode() {
+        mPhotoDraweeViewController.setVerticalMode();
+    }
+
     public void update(int imageInfoWidth, int imageInfoHeight) {
         mPhotoDraweeViewController.update(imageInfoWidth, imageInfoHeight);
     }

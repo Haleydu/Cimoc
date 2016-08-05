@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -18,7 +17,7 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+import com.hiroshi.cimoc.ui.adapter.FavoriteAdapter;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ public class FavoriteFragment extends BaseFragment {
 
     @BindView(R.id.favorite_comic_list) RecyclerView mRecyclerView;
 
-    private ComicAdapter mComicAdapter;
+    private FavoriteAdapter mFavoriteAdapter;
     private FavoritePresenter mPresenter;
     private Notification.Builder mBuilder;
     private NotificationManager mManager;
@@ -46,36 +45,46 @@ public class FavoriteFragment extends BaseFragment {
         isChecking = false;
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new Notification.Builder(getActivity());
-        mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getComicList());
-        mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        mFavoriteAdapter = new FavoriteAdapter(getActivity(), mPresenter.getComicList());
+        mFavoriteAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                mPresenter.onItemClick(mComicAdapter.getItem(position));
+                MiniComic comic = mFavoriteAdapter.cancelNew(position);
+                mPresenter.onItemClick(comic);
             }
         });
-        mComicAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
+        mFavoriteAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                DialogFactory.buildPositiveDialog(getActivity(), "删除提示", "是否删除该收藏", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mPresenter.onPositiveClick(mComicAdapter.getItem(position));
-                        mComicAdapter.remove(position);
-                    }
-                }).show();
+                DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.favorite_delete_confirm,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mPresenter.onPositiveClick(mFavoriteAdapter.getItem(position));
+                                mFavoriteAdapter.remove(position);
+                            }
+                        }).show();
             }
         });
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.setAdapter(mComicAdapter);
-        mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
+        mRecyclerView.setAdapter(mFavoriteAdapter);
+        mRecyclerView.addItemDecoration(mFavoriteAdapter.getItemDecoration());
     }
 
     @OnClick(R.id.favorite_check_btn) void onCheckClick() {
         if (!isChecking) {
-            isChecking = true;
-            UpdateTask task = new UpdateTask();
-            task.execute(mPresenter.getComicArray());
+            DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.favorite_update_confirm,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            isChecking = true;
+                            UpdateTask task = new UpdateTask();
+                            task.execute(mPresenter.getComicArray());
+                        }
+                    }).show();
+        } else {
+            showSnackbar("正在检查更新中");
         }
     }
 
@@ -95,15 +104,15 @@ public class FavoriteFragment extends BaseFragment {
     }
 
     public void addItem(MiniComic comic) {
-        mComicAdapter.add(0, comic);
+        mFavoriteAdapter.add(0, comic);
     }
 
     public void removeItem(long id) {
-        mComicAdapter.removeById(id);
+        mFavoriteAdapter.removeById(id);
     }
 
     public void addItems(List<MiniComic> list) {
-        mComicAdapter.addAll(0, list);
+        mFavoriteAdapter.addAll(0, list);
     }
 
     class UpdateTask extends AsyncTask<MiniComic, Integer, List<MiniComic>> {
@@ -115,11 +124,7 @@ public class FavoriteFragment extends BaseFragment {
                     .setTicker("正在检查更新")
                     .setOngoing(true)
                     .setProgress(0, 0, true);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mManager.notify(1, mBuilder.build());
-            } else {
-                mManager.notify(1, mBuilder.getNotification());
-            }
+            notifyBuilder();
         }
 
         @Override
@@ -135,6 +140,7 @@ public class FavoriteFragment extends BaseFragment {
                 String update = manga.check(comic.getCid());
                 if (update != null && !comic.getUpdate().equals(update)) {
                     comic.setUpdate(update);
+                    comic.setStatus(true);
                     list.add(comic);
                 }
                 publishProgress(count++, params.length);
@@ -144,31 +150,29 @@ public class FavoriteFragment extends BaseFragment {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            Log.e("----------", "------" + values[0] + "---" + values[1]);
-            mBuilder.setProgress(values[1], values[0], false)
-                    .setTicker(null);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mManager.notify(1, mBuilder.build());
-            } else {
-                mManager.notify(1, mBuilder.getNotification());
-            }
+            mBuilder.setProgress(values[1], values[0], false);
+            notifyBuilder();
         }
 
         @Override
         protected void onPostExecute(List<MiniComic> list) {
-            //mPresenter.updateComic(list);
+            mPresenter.updateComic(list);
+            mFavoriteAdapter.updateAll(list);
             mBuilder.setOngoing(false)
                     .setTicker(null)
                     .setContentText("检查完成")
                     .setProgress(0, 0, false);
-            if (Build.VERSION.SDK_INT >= 16) {
-                mManager.notify(1, mBuilder.build());
-            } else {
-                mManager.notify(1, mBuilder.getNotification());
-            }
+            notifyBuilder();
             isChecking = false;
         }
     }
 
+    private void notifyBuilder() {
+        if (Build.VERSION.SDK_INT >= 16) {
+            mManager.notify(1, mBuilder.build());
+        } else {
+            mManager.notify(1, mBuilder.getNotification());
+        }
+    }
 
 }

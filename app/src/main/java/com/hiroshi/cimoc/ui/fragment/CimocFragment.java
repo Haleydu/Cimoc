@@ -45,12 +45,13 @@ public class CimocFragment extends BaseFragment {
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), "图源选择", array, choice, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                choice = which;
-            }
-        }, null).show();
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, array, choice,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        choice = which;
+                    }
+                }, null).show();
         return true;
     }
 

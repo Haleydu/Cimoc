@@ -40,7 +40,12 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     private static final int EDGE_NONE = -1;
     private static final int EDGE_LEFT = 0;
     private static final int EDGE_RIGHT = 1;
+    private static final int EDGE_TOP = 0;
+    private static final int EDGE_BOTTOM = 1;
     private static final int EDGE_BOTH = 2;
+
+    private static final int MODE_VERTICAL = 0;
+    private static final int MODE_HORIZONTAL = 1;
 
     private final float[] mMatrixValues = new float[9];
     private final RectF mDisplayRect = new RectF();
@@ -54,6 +59,7 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     private boolean mBlockParentIntercept = false;
     private boolean mAllowParentInterceptOnEdge = true;
     private int mScrollEdge = EDGE_BOTH;
+    private int mScrollMode = MODE_HORIZONTAL;
 
     private final Matrix mMatrix = new Matrix();
     private int mImageInfoHeight = -1, mImageInfoWidth = -1;
@@ -95,6 +101,14 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
             mMatrix.setScale(scale, scale, focalX, focalY);
             checkMatrixAndInvalidate();
         }
+    }
+
+    public void setHorizontalMode() {
+        mScrollMode = MODE_HORIZONTAL;
+    }
+
+    public void setVerticalMode() {
+        mScrollMode = MODE_VERTICAL;
     }
 
     public void setZoomTransitionDuration(long duration) {
@@ -154,7 +168,14 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     }
 
     public RectF getDisplayRect() {
-        checkMatrixBounds();
+        switch (mScrollMode) {
+            case MODE_HORIZONTAL:
+                checkHorizontalBounds();
+                break;
+            case MODE_VERTICAL:
+                checkVerticalBounds();
+                break;
+        }
         return getDisplayRect(getDrawMatrix());
     }
 
@@ -163,12 +184,21 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
         if (draweeView == null) {
             return;
         }
-        if (checkMatrixBounds()) {
-            draweeView.invalidate();
+        switch (mScrollMode) {
+            case MODE_HORIZONTAL:
+                if (checkHorizontalBounds()) {
+                    draweeView.invalidate();
+                }
+                break;
+            case MODE_VERTICAL:
+                if (checkVerticalBounds()) {
+                    draweeView.invalidate();
+                }
+                break;
         }
     }
 
-    public boolean checkMatrixBounds() {
+    public boolean checkVerticalBounds() {
         RectF rect = getDisplayRect(getDrawMatrix());
         if (rect == null) {
             return false;
@@ -178,8 +208,45 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
         float width = rect.width();
         float deltaX = 0.0F;
         float deltaY = 0.0F;
-        int viewHeight = getViewHeight();
 
+        int viewHeight = getViewHeight();
+        if (height <= viewHeight) {
+            deltaY = (viewHeight - height) / 2 - rect.top;
+            mScrollEdge = EDGE_BOTH;
+        } else if (rect.top > 0) {
+            deltaY = -rect.top;
+            mScrollEdge = EDGE_TOP;
+        } else if (rect.bottom < viewHeight) {
+            deltaY = viewHeight - rect.bottom;
+            mScrollEdge = EDGE_BOTTOM;
+        } else {
+            mScrollEdge = EDGE_NONE;
+        }
+        int viewWidth = getViewWidth();
+        if (width <= (float) viewWidth) {
+            deltaX = (viewWidth - width) / 2 - rect.left;
+        } else if (rect.left > 0.0F) {
+            deltaX = -rect.left;
+        } else if (rect.right < (float) viewWidth) {
+            deltaX = viewWidth - rect.right;
+        }
+
+        mMatrix.postTranslate(deltaX, deltaY);
+        return true;
+    }
+
+    public boolean checkHorizontalBounds() {
+        RectF rect = getDisplayRect(getDrawMatrix());
+        if (rect == null) {
+            return false;
+        }
+
+        float height = rect.height();
+        float width = rect.width();
+        float deltaX = 0.0F;
+        float deltaY = 0.0F;
+
+        int viewHeight = getViewHeight();
         if (height <= (float) viewHeight) {
             deltaY = (viewHeight - height) / 2 - rect.top;
         } else if (rect.top > 0.0F) {
@@ -225,7 +292,14 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
 
     private void resetMatrix() {
         mMatrix.reset();
-        checkMatrixBounds();
+        switch (mScrollMode) {
+            case MODE_HORIZONTAL:
+                checkHorizontalBounds();
+                break;
+            case MODE_VERTICAL:
+                checkVerticalBounds();
+                break;
+        }
         DraweeView<GenericDraweeHierarchy> draweeView = getDraweeView();
         if (draweeView != null) {
             draweeView.invalidate();
@@ -311,10 +385,21 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
             if (mAllowParentInterceptOnEdge
                     && !mScaleDragDetector.isScaling()
                     && !mBlockParentIntercept) {
-                if (mScrollEdge == EDGE_BOTH || (mScrollEdge == EDGE_LEFT && dx >= 1f) || (
-                        mScrollEdge == EDGE_RIGHT
-                                && dx <= -1f)) {
-                    parent.requestDisallowInterceptTouchEvent(false);
+                switch (mScrollMode) {
+                    case MODE_HORIZONTAL:
+                        if (mScrollEdge == EDGE_BOTH || (mScrollEdge == EDGE_LEFT && dx >= 1f) || (
+                                mScrollEdge == EDGE_RIGHT
+                                        && dx <= -1f)) {
+                            parent.requestDisallowInterceptTouchEvent(false);
+                        }
+                        break;
+                    case MODE_VERTICAL:
+                        if (mScrollEdge == EDGE_BOTH || (mScrollEdge == EDGE_TOP && dy >= 1f) || (
+                                mScrollEdge == EDGE_BOTTOM
+                                        && dy <= -1f)) {
+                            parent.requestDisallowInterceptTouchEvent(false);
+                        }
+                        break;
                 }
             } else {
                 parent.requestDisallowInterceptTouchEvent(true);

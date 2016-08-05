@@ -135,9 +135,21 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         });
     }
 
-    public void setLast(String last) {
-        this.last = last;
-        notifyDataSetChanged();
+    public void setLast(String value) {
+        if (last == null || value.equals(last)) {
+            last = value;
+            return;
+        }
+        String temp = last;
+        last = value;
+        for (int i = 0; i != mDataSet.size(); ++i) {
+            String path = mDataSet.get(i).getPath();
+            if (path.equals(last)) {
+                notifyItemChanged(i + 1);
+            } else if (path.equals(temp)) {
+                notifyItemChanged(i + 1);
+            }
+        }
     }
 
 }

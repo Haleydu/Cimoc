@@ -57,19 +57,9 @@ public class SettingsPresenter extends BasePresenter {
         mComicManager.restoreFavorite(list);
     }
 
-    public void onHistoryBtnClick() {
-        mSettingsFragment.showProgressDialog("正在删除..");
-        mComicManager.cleanHistory();
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
-            case EventMessage.DELETE_HISTORY:
-                int count = (int) msg.getData();
-                mSettingsFragment.hideProgressDialog();
-                mSettingsFragment.showSnackbar("删除成功 共 " + count + " 条记录");
-                break;
             case EventMessage.RESTORE_FAVORITE:
                 List<Comic> list = (List<Comic>) msg.getData();
                 mSettingsFragment.hideProgressDialog();

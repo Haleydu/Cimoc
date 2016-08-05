@@ -11,7 +11,7 @@
     <color name="light_grey">#BEBEBE</color>
 
     <color name="trans_colorAccent">#AAFFC107</color>
-    <color name="trans_light_grey">#3FBEBEBE</color>
+    <color name="trans_light_black">#4F000000</color>
     <color name="trans_grey">#AABEBEBE</color>
     <color name="trans_black">#CC000000</color>
 </resources>

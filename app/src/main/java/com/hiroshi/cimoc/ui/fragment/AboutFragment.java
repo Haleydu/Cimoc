@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.ui.fragment;
 
-import android.support.design.widget.Snackbar;
-
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -21,10 +19,7 @@ public class AboutFragment extends BaseFragment {
         if (++count > 9) {
             isEnable = !isEnable;
             CimocApplication.getPreferences().putBoolean(PreferenceMaster.PREF_EX, isEnable);
-            if (getView() != null) {
-                String msg = isEnable ? "重启软件开启 EHentai" : "重启软件关闭 EHentai";
-                Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
-            }
+            showSnackbar(isEnable ? "重启软件开启 EHentai" : "重启软件关闭 EHentai");
             count = 0;
         }
     }

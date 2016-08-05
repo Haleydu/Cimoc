@@ -46,19 +46,14 @@ public class ResultPresenter extends BasePresenter {
         mManga.cancel();
     }
 
-    public void onScrolled(int dy) {
-        int lastItem = mResultActivity.findLastItemPosition();
-        int itemCount = mResultActivity.getItemCount();
-        if (lastItem >= itemCount - 4 && dy > 0) {
-            if (!isLoading) {
-                isLoading = true;
-                mManga.search(keyword, ++page);
-            }
+    public void onScrolled(int dy, int last, int count) {
+        if (last >= count - 4 && dy > 0 && !isLoading) {
+            isLoading = true;
+            mManga.search(keyword, ++page);
         }
     }
 
-    public void onItemClick(int position) {
-        Comic comic = mResultActivity.getItem(position);
+    public void onItemClick(Comic comic) {
         Intent intent = DetailActivity.createIntent(mResultActivity, comic.getId(), comic.getSource(), comic.getCid());
         mResultActivity.startActivity(intent);
     }

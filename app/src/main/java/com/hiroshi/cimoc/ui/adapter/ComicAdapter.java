@@ -14,6 +14,7 @@ import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -52,11 +53,6 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
         PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
-        if (comic.getStatus()) {
-            viewHolder.comicNew.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.comicNew.setVisibility(View.INVISIBLE);
-        }
     }
 
     @Override
@@ -70,9 +66,15 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
     }
 
     public void update(MiniComic comic) {
-        mDataSet.remove(comic);
-        mDataSet.add(0, comic);
-        notifyDataSetChanged();
+        int position = mDataSet.indexOf(comic);
+        if (position != -1) {
+            mDataSet.remove(comic);
+            mDataSet.add(0, comic);
+            notifyItemMoved(position, 0);
+        } else {
+            mDataSet.add(0, comic);
+            notifyItemInserted(0);
+        }
     }
 
     public void removeById(long id) {

@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,12 @@ public abstract class BaseFragment extends Fragment {
         super.onDestroy();
         if (getPresenter() != null) {
             getPresenter().onDestroy();
+        }
+    }
+
+    public void showSnackbar(String msg) {
+        if (getView() != null) {
+            Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
         }
     }
 

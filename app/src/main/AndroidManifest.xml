@@ -34,6 +34,11 @@
             android:theme="@style/ReaderTheme"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".ui.activity.StreamReaderActivity"
+            android:theme="@style/ReaderTheme"
+            android:screenOrientation="landscape"/>
+
     </application>
 
 </manifest>

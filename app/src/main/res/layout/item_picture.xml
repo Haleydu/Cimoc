@@ -5,7 +5,6 @@
     android:id="@+id/picture_image_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    fresco:actualImageScaleType="fitCenter"
     fresco:progressBarImage="@drawable/progress_trans"
     fresco:progressBarImageScaleType="center"
     fresco:retryImage="@drawable/ic_replay_white_24dp"
