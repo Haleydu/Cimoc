@@ -2,8 +2,6 @@ package com.hiroshi.cimoc.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +16,6 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseFragment extends Fragment {
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutView(), container, false);
@@ -45,12 +42,14 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
-    protected abstract void initView();
+    protected void initView() {}
 
-    protected abstract @LayoutRes int getLayoutView();
+    protected BasePresenter getPresenter() {
+        return null;
+    }
 
-    protected abstract BasePresenter getPresenter();
+    protected void initPresenter() {}
 
-    protected abstract void initPresenter();
+    protected abstract int getLayoutView();
 
 }

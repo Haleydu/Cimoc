@@ -1,9 +1,11 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Toast;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -20,7 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutView());
+        setContentView(getLayoutRes());
         ButterKnife.bind(this);
         initToolbar();
         initPresenter();
@@ -47,14 +49,33 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected abstract @LayoutRes int getLayoutView();
+    protected View getLayoutView() {
+        return null;
+    }
 
-    protected abstract String getDefaultTitle();
+    protected String getDefaultTitle() {
+        return null;
+    }
 
-    protected abstract BasePresenter getPresenter();
+    protected BasePresenter getPresenter() {
+        return null;
+    }
 
-    protected abstract void initPresenter();
+    protected void initPresenter() {}
 
-    protected abstract void initView();
+    protected void initView() {}
+
+    protected abstract int getLayoutRes();
+
+    public void showSnackbar(String msg) {
+        View layout = getLayoutView();
+        if (layout != null && layout.isShown()) {
+            Snackbar.make(layout, msg, Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    public void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
 
 }

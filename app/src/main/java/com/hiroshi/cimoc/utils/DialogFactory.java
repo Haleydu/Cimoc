@@ -6,8 +6,6 @@ import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
 
-import butterknife.OnClick;
-
 /**
  * Created by Hiroshi on 2016/8/4.
  */

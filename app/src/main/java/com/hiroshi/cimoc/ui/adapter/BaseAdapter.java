@@ -61,6 +61,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyDataSetChanged();
     }
 
+    public List<T> getDateSet() {
+        return mDataSet;
+    }
+
     public void setData(List<T> list) {
         mDataSet.clear();
         mDataSet.addAll(list);

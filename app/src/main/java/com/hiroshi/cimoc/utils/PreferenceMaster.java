@@ -10,9 +10,18 @@ import com.hiroshi.cimoc.R;
  */
 public class PreferenceMaster {
 
+    public static final int MODE_HORIZONTAL_PAGE = 0;
+    public static final int MODE_HORIZONTAL_STREAM = 1;
+    public static final int MODE_VERTICAL_STREAM = 2;
+
+    public static final int HOME_CIMOC = 0;
+    public static final int HOME_FAVORITE = 1;
+    public static final int HOME_HISTORY = 2;
+
     public static final String PREF_EX = "pref_ex";
     public static final String PREF_HOME = "pref_home";
-    public static final String PREF_READER = "pref_reader";
+    public static final String PREF_MODE = "pref_mode";
+    public static final String PREF_VOLUME = "pref_volume";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 
@@ -54,15 +63,15 @@ public class PreferenceMaster {
         mSharedPreferences.edit().putLong(key, value).apply();
     }
 
-    public static String getTitleById(int id) {
-        switch (id) {
+    public static int getHomeId(int value) {
+        switch (value) {
             default:
-            case R.id.drawer_cimoc:
-                return "Cimoc";
-            case R.id.drawer_favorite:
-                return "我的漫画";
-            case R.id.drawer_history:
-                return "历史阅读";
+            case HOME_CIMOC:
+                return R.id.drawer_cimoc;
+            case HOME_FAVORITE:
+                return R.id.drawer_favorite;
+            case HOME_HISTORY:
+                return R.id.drawer_history;
         }
     }
 

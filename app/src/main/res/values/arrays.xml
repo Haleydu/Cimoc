@@ -11,11 +11,16 @@
         <item>动漫之家 - Dmzj</item>
         <item>汗汗漫画 - HHAAZZ</item>
         <item>CC图库 - CCTuku</item>
-        <item>E站 - EHentai</item>
+        <item>Ex绅士 - ExHentai</item>
     </string-array>
-    <string-array name="index_items">
+    <string-array name="home_items">
         <item>Cimoc</item>
         <item>我的漫画</item>
         <item>历史阅读</item>
+    </string-array>
+    <string-array name="mode_items">
+        <item>竖屏翻页模式</item>
+        <item>竖屏卷纸模式</item>
+        <item>横屏卷纸模式</item>
     </string-array>
 </resources>

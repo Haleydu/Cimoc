@@ -30,7 +30,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.ReaderActivity"
+            android:name=".ui.activity.PageReaderActivity"
             android:theme="@style/ReaderTheme"
             android:screenOrientation="portrait"/>
 

@@ -25,17 +25,9 @@ public class AboutFragment extends BaseFragment {
     }
 
     @Override
-    protected void initPresenter() {}
-
-    @Override
     protected void initView() {
         isEnable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
         count = 0;
-    }
-
-    @Override
-    protected BasePresenter getPresenter() {
-        return null;
     }
 
     @Override

@@ -8,9 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
+import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ import butterknife.BindView;
  */
 public class ChapterAdapter extends BaseAdapter<Chapter> {
 
+    private int source;
     private String title;
     private String image;
     private String update;
@@ -51,8 +54,9 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, String image, String title, String author, String intro, boolean status, String update) {
+    public ChapterAdapter(Context context, List<Chapter> list, int source, String image, String title, String author, String intro, boolean status, String update) {
         super(context, list);
+        this.source = source;
         this.image = image;
         this.title = title;
         this.intro = intro;
@@ -105,7 +109,8 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            headerHolder.mComicImage.setImageURI(image);
+            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(source, mContext);
+            headerHolder.mComicImage.setController(builder.setUri(image).build());
             headerHolder.mComicTitle.setText(title);
             headerHolder.mComicIntro.setText(intro);
             headerHolder.mComicStatus.setText(status ? "完结" : "连载中");

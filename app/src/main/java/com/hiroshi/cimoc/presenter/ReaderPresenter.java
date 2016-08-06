@@ -1,14 +1,13 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.EventMessage;
-import com.hiroshi.cimoc.ui.activity.ReaderActivity;
-import com.hiroshi.cimoc.ui.adapter.PicturePagerAdapter;
+import com.hiroshi.cimoc.ui.activity.PageReaderActivity;
 import com.hiroshi.cimoc.ui.adapter.PreloadAdapter;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -21,27 +20,29 @@ public class ReaderPresenter extends BasePresenter {
     private final static int LOAD_PREV = 1;
     private final static int LOAD_NEXT = 2;
 
-    private ReaderActivity mReaderActivity;
+    private PageReaderActivity mPageReaderActivity;
     private PreloadAdapter mPreloadAdapter;
-    private ComicManager mComicManager;
     private Manga mManga;
 
+    private String cid;
+    private String last;
+    private Integer page;
     private int status;
-    private boolean load;
 
-    public ReaderPresenter(ReaderActivity activity, int position) {
-        mReaderActivity = activity;
-        mComicManager = ComicManager.getInstance();
-        mPreloadAdapter = new PreloadAdapter(mComicManager.getChapters(), position);
-        mManga = Kami.getMangaById(mComicManager.getSource());
+    public ReaderPresenter(PageReaderActivity activity, int source, String cid, String last, Integer page, Chapter[] array, int position) {
+        mPageReaderActivity = activity;
+        mPreloadAdapter = new PreloadAdapter(array, position);
+        mManga = Kami.getMangaById(source);
+        this.cid = cid;
+        this.last = last;
+        this.page = page;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        load = false;
         status = LOAD_NEXT;
-        mManga.browse(mComicManager.getCid(), mPreloadAdapter.getNextChapter().getPath());
+        mManga.browse(cid, mPreloadAdapter.getNextChapter().getPath());
     }
 
     @Override
@@ -50,58 +51,52 @@ public class ReaderPresenter extends BasePresenter {
         mManga.cancel();
     }
 
-    public void afterRead(int progress) {
-        if (load) {
-            mComicManager.afterRead(progress);
+    public void setPage(int progress) {
+        if (mPreloadAdapter.isLoad()) {
+            EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_PAGE_CHANGE, progress));
         }
     }
 
-    public void onPageStateIdle(boolean isFirst) {
+    public void loadNext() {
         if (status == LOAD_NULL) {
-            Chapter chapter = isFirst ? mPreloadAdapter.getPrevChapter() : mPreloadAdapter.getNextChapter();
+            Chapter chapter = mPreloadAdapter.getNextChapter();
             if (chapter != null) {
-                status = isFirst ? LOAD_PREV : LOAD_NEXT;
-                mManga.browse(mComicManager.getCid(), chapter.getPath());
+                status = LOAD_NEXT;
+                mManga.browse(cid, chapter.getPath());
+                mPageReaderActivity.showToast("正在加载下一话");
             } else {
-                mReaderActivity.notifySpecialPage(isFirst, PicturePagerAdapter.STATUS_NULL);
+                mPageReaderActivity.showToast("后面没有了");
+            }
+        }
+    }
+
+    public void loadPrev() {
+        if (status == LOAD_NULL) {
+            Chapter chapter = mPreloadAdapter.getPrevChapter();
+            if (chapter != null) {
+                status = LOAD_PREV;
+                mManga.browse(cid, chapter.getPath());
+                mPageReaderActivity.showToast("正在加载上一话");
+            } else {
+                mPageReaderActivity.showToast("前面没有了");
             }
         }
     }
 
     public void onChapterToNext() {
         Chapter chapter = mPreloadAdapter.nextChapter();
-        if (chapter == null) {
-            mReaderActivity.hideChapterInfo();
-        } else {
-            switchChapter(1, chapter.getCount(), chapter.getTitle(), chapter.getPath());
-        }
+        switchChapter(1, chapter.getCount(), chapter.getTitle(), chapter.getPath());
     }
 
     public void onChapterToPrev() {
         Chapter chapter = mPreloadAdapter.prevChapter();
-        if (chapter == null) {
-            mReaderActivity.hideChapterInfo();
-        } else {
-            switchChapter(chapter.getCount(), chapter.getCount(), chapter.getTitle(), chapter.getPath());
-        }
+        switchChapter(chapter.getCount(), chapter.getCount(), chapter.getTitle(), chapter.getPath());
     }
 
-    public void onProgressChanged(int value, boolean fromUser) {
-        if (fromUser) {
-            mReaderActivity.setCurrentItem(mPreloadAdapter.getOffset() + value);
-        }
-    }
-
-    public int getSource() {
-        return mComicManager.getSource();
-    }
-
-    private void switchChapter(int progress, int max, String title, String path) {
-        mReaderActivity.updateChapterInfo(max, title);
-        if (progress != -1) {
-            mReaderActivity.setReadProgress(progress);
-        }
-        mComicManager.setLast(path);
+    private void switchChapter(int progress, int count, String title, String path) {
+        mPageReaderActivity.updateChapterInfo(count, title);
+        mPageReaderActivity.setReadProgress(progress);
+        EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, path));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -110,30 +105,31 @@ public class ReaderPresenter extends BasePresenter {
             case EventMessage.PARSE_PIC_SUCCESS:
                 String[] array = (String[]) msg.getData();
                 Chapter chapter;
-                if (status == LOAD_PREV) {
-                    mReaderActivity.setPrevImage(array);
-                    chapter = mPreloadAdapter.movePrev();
-                } else {
-                    mReaderActivity.setNextImage(array);
+                if (!mPreloadAdapter.isLoad()) {
+                    mPageReaderActivity.setNextImage(array);
                     chapter = mPreloadAdapter.moveNext();
+                    if (!chapter.getPath().equals(last) || page == null) {
+                        page = 1;
+                    }
+                    mPageReaderActivity.initLoad(page, array.length, chapter.getTitle());
+                    EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, chapter.getPath()));
+                } else {
+                    if (status == LOAD_PREV) {
+                        mPageReaderActivity.setPrevImage(array);
+                        chapter = mPreloadAdapter.movePrev();
+                    } else {
+                        mPageReaderActivity.setNextImage(array);
+                        chapter = mPreloadAdapter.moveNext();
+                    }
+                    mPageReaderActivity.loadSuccess(status == LOAD_NEXT);
+                    mPageReaderActivity.showToast("加载成功");
                 }
                 chapter.setCount(array.length);
-                int page = mComicManager.getPage();
-                if (!load && chapter.getPath().equals(mComicManager.getLast()) && page != -1) {
-                    switchChapter(-1, array.length, chapter.getTitle(), chapter.getPath());
-                    mReaderActivity.setCurrentItem(page);
-                } else if (status == LOAD_PREV) {
-                    switchChapter(array.length, array.length, chapter.getTitle(), chapter.getPath());
-                } else {
-                    switchChapter(1, array.length, chapter.getTitle(), chapter.getPath());
-                }
-                load = true;
-                mReaderActivity.setNoneLimit();
                 status = LOAD_NULL;
                 break;
             case EventMessage.PARSE_PIC_FAIL:
             case EventMessage.NETWORK_ERROR:
-                mReaderActivity.notifySpecialPage(status == LOAD_PREV, PicturePagerAdapter.STATUS_ERROR);
+                mPageReaderActivity.showToast("加载错误");
                 break;
         }
     }

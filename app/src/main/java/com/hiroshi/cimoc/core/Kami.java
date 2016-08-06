@@ -25,7 +25,7 @@ public class Kami {
             case SOURCE_CCTUKU:
                 return "CC图库";
             case SOURCE_EHENTAI:
-                return "E-Hentai";
+                return "ExHentai";
         }
     }
 
@@ -41,11 +41,11 @@ public class Kami {
             case SOURCE_CCTUKU:
                 return "http://m.tuku.cc";
             case SOURCE_EHENTAI:
-                return "http://lofi.e-hentai.org";
+                return "https://exhentai.org";
         }
     }
 
-    private static Manga mIkanman, mDmzj, mHHAAZZ, mCCTuku, mEHentai;
+    private static Manga mIkanman, mDmzj, mHHAAZZ, mCCTuku, mExHentai;
 
     public static Manga getMangaById(int id) {
         switch (id) {
@@ -71,10 +71,10 @@ public class Kami {
                 }
                 return mCCTuku;
             case SOURCE_EHENTAI:
-                if (mEHentai == null) {
-                    mEHentai = new EHentai();
+                if (mExHentai == null) {
+                    mExHentai = new ExHentai();
                 }
-                return mEHentai;
+                return mExHentai;
         }
     }
 

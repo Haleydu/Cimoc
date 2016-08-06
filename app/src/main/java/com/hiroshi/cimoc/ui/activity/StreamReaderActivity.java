@@ -4,52 +4,46 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Chapter;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.StreamReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.PictureStreamAdapter;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
-
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 
 /**
  * Created by Hiroshi on 2016/8/5.
  */
-public class StreamReaderActivity  extends BaseActivity {
-
-    public static final String EXTRA_POSITION = "extra_position";
+public class StreamReaderActivity extends ReaderActivity{
 
     @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
-    @BindView(R.id.reader_chapter_page) TextView mChapterPage;
-    @BindView(R.id.reader_tool_bar) LinearLayout mToolLayout;
-    @BindView(R.id.reader_seek_bar) DiscreteSeekBar mSeekBar;
 
     private PictureStreamAdapter mStreamAdapter;
     private StreamReaderPresenter mPresenter;
     private LinearLayoutManager mLayoutManager;
 
-    private int progress;
+    private int position;
 
     @Override
-    public void onBackPressed() {
-        mPresenter.afterRead(mSeekBar.getProgress());
-        super.onBackPressed();
+    protected void onPause() {
+        super.onPause();
+        mPresenter.setPage(mSeekBar.getProgress());
     }
 
     @Override
     protected void initView() {
-        progress = 0;
+        progress = 1;
         mLayoutManager = new LinearLayoutManager(this);
-        mStreamAdapter = new PictureStreamAdapter(this, ControllerBuilderFactory.getControllerBuilder(mPresenter.getSource(), this));
+        mStreamAdapter = new PictureStreamAdapter(this, ControllerBuilderFactory.getControllerBuilder(getIntent().getIntExtra(EXTRA_SOURCE, -1), this));
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mStreamAdapter);
@@ -57,23 +51,36 @@ public class StreamReaderActivity  extends BaseActivity {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mPresenter.onScrolled(dy, mLayoutManager.findLastVisibleItemPosition(), mStreamAdapter.getItemCount());
+                int item = mLayoutManager.findFirstVisibleItemPosition();
+                if (item != position) {
+                    position = item;
+                    if (dy > 0) {
+                        ++progress;
+                        if (progress == mSeekBar.getMax()) {
+
+                        }
+                    } else {
+                        --progress;
+                    }
+                    mPresenter.onScrolled(dy, position, mStreamAdapter.getItemCount());
+                }
+
+                Log.e("--------------", "-----" + position);
             }
         });
     }
 
     @Override
-    protected void initToolbar() {}
-
-    @Override
     protected void initPresenter() {
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        String cid = getIntent().getStringExtra(EXTRA_CID);
+        String last = getIntent().getStringExtra(EXTRA_LAST);
+        int page = getIntent().getIntExtra(EXTRA_PAGE, -1);
+        String[] title = getIntent().getStringArrayExtra(EXTRA_TITLE);
+        String[] path = getIntent().getStringArrayExtra(EXTRA_PATH);
+        Chapter[] array = fromArray(title, path);
         int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        mPresenter = new StreamReaderPresenter(this, position);
-    }
-
-    @Override
-    protected String getDefaultTitle() {
-        return null;
+        mPresenter = new StreamReaderPresenter(this, source, cid, last, page, array, position);
     }
 
     @Override
@@ -82,7 +89,7 @@ public class StreamReaderActivity  extends BaseActivity {
     }
 
     @Override
-    protected int getLayoutView() {
+    protected int getLayoutRes() {
         return R.layout.activity_stream_reader;
     }
 
@@ -112,9 +119,9 @@ public class StreamReaderActivity  extends BaseActivity {
         progress = value;
     }
 
-    public static Intent createIntent(Context context, int position) {
+    public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
         Intent intent = new Intent(context, StreamReaderActivity.class);
-        intent.putExtra(EXTRA_POSITION, position);
+        putExtras(intent, comic, list, position);
         return intent;
     }
 

@@ -1,17 +1,15 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.content.Intent;
-
-import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.activity.ReaderActivity;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
-import com.hiroshi.cimoc.ui.activity.StreamReaderActivity;
+import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.ui.activity.DetailActivity;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -26,77 +24,86 @@ public class DetailPresenter extends BasePresenter {
     private DetailActivity mDetailActivity;
     private ComicManager mComicManager;
     private Manga mManga;
+    private Comic mComic;
 
-    public DetailPresenter(DetailActivity activity) {
+
+    public DetailPresenter(DetailActivity activity, Long id, int source, String cid) {
         mDetailActivity = activity;
         mComicManager = ComicManager.getInstance();
-        mManga = Kami.getMangaById(mComicManager.getSource());
+        mManga = Kami.getMangaById(source);
+        mComic = mComicManager.getComic(id, source, cid);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mManga.into(mComicManager.getComic());
+        mManga.into(mComic);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mManga.cancel();
-    }
-
-    public void saveComic() {
-        mComicManager.saveComic();
-    }
-
-    public void onItemClick(int position) {
-        if (position != 0) {
-            Intent intent = StreamReaderActivity.createIntent(mDetailActivity, position - 1);
-            mDetailActivity.startActivity(intent);
+        if (mComic.getId() != null) {
+            mComicManager.updateComic(mComic);
         }
     }
 
-    public void onStarClick() {
-        if (mComicManager.isComicStar()) {
-            mComicManager.unfavoriteComic();
-            mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_border_white_24dp);
-            mDetailActivity.showSnackbar("取消收藏成功");
-        } else {
-            mComicManager.favoriteComic();
-            mDetailActivity.setStarButtonRes(R.drawable.ic_favorite_white_24dp);
-            mDetailActivity.showSnackbar("收藏成功");
-        }
+    public Comic getComic() {
+        return mComic;
     }
 
+    public boolean isComicFavorite() {
+        return mComic.getFavorite() != null;
+    }
+
+    public void favoriteComic() {
+        mComic.setFavorite(System.currentTimeMillis());
+        if (mComic.getId() == null) {
+            long id = mComicManager.insertComic(mComic);
+            mComic.setId(id);
+        }
+        EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, new MiniComic(mComic)));
+    }
+
+    public void unfavoriteComic() {
+        long id = mComic.getId();
+        mComic.setFavorite(null);
+        if (mComic.getHistory() == null) {
+            mComicManager.deleteComic(id);
+            mComic.setId(null);
+        }
+        EventBus.getDefault().post(new EventMessage(EventMessage.UN_FAVORITE_COMIC, id));
+    }
+
+    @SuppressWarnings("unchecked")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.LOAD_COMIC_SUCCESS:
-                initView((List<Chapter>) msg.getData());
+                mDetailActivity.setView(mComic, (List<Chapter>) msg.getData());
                 break;
             case EventMessage.LOAD_COMIC_FAIL:
-                initView(new LinkedList<Chapter>());
-                break;
-            case EventMessage.AFTER_READ:
-                mDetailActivity.setLastChapter((String) msg.getData());
+                mDetailActivity.setView(mComic, new LinkedList<Chapter>());
                 break;
             case EventMessage.NETWORK_ERROR:
-                mDetailActivity.hideProgressBar();
-                mDetailActivity.showSnackbar("网络错误");
+                mDetailActivity.setView(mComic, null);
                 break;
-        }
-    }
-
-    private void initView(List<Chapter> list) {
-        mComicManager.setChapters(list);
-        String last = mComicManager.getLast();
-        mDetailActivity.initRecyclerView(mComicManager.getComic(), list, last);
-        int resId = mComicManager.isComicStar() ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
-        mDetailActivity.setStarButtonRes(resId);
-        mDetailActivity.setStarButtonVisible();
-        mDetailActivity.hideProgressBar();
-        if (list.isEmpty()) {
-            mDetailActivity.showSnackbar("解析错误或此漫画已被屏蔽");
+            case EventMessage.COMIC_LAST_CHANGE:
+                String last = (String) msg.getData();
+                mComic.setHistory(System.currentTimeMillis());
+                mComic.setLast(last);
+                mComic.setPage(1);
+                if (mComic.getId() == null) {
+                    long id = mComicManager.insertComic(mComic);
+                    mComic.setId(id);
+                }
+                EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, new MiniComic(mComic)));
+                mDetailActivity.setLastChapter(last);
+                break;
+            case EventMessage.COMIC_PAGE_CHANGE:
+                mComic.setPage((Integer) msg.getData());
+                break;
         }
     }
 

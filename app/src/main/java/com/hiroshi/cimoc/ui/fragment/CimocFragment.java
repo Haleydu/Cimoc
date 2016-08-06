@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.utils.DialogFactory;
 import com.hiroshi.cimoc.utils.PreferenceMaster;
@@ -90,14 +89,6 @@ public class CimocFragment extends BaseFragment {
     @Override
     protected int getLayoutView() {
         return R.layout.fragment_cimoc;
-    }
-
-    @Override
-    protected void initPresenter() {}
-
-    @Override
-    protected BasePresenter getPresenter() {
-        return null;
     }
 
 }

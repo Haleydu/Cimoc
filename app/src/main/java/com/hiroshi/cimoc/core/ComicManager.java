@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.core;
 import android.database.Cursor;
 
 import com.hiroshi.cimoc.CimocApplication;
-import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
@@ -65,7 +64,7 @@ public class ComicManager {
             public void run() {
                 for (MiniComic comic : list) {
                     Comic temp = mComicDao.load(comic.getId());
-                    if (temp != null) {
+                    if (temp != null && !comic.getUpdate().equals(temp.getUpdate())) {
                         temp.setUpdate(comic.getUpdate());
                         temp.setFavorite(NEW_VALUE);
                         mComicDao.update(temp);
@@ -171,12 +170,8 @@ public class ComicManager {
         return list;
     }
 
-    private Comic comic;
-    private List<Chapter> chapters;
-    private boolean isHistory;
-
-    public void setComic(Long id, int source, String cid) {
-        isHistory = false;
+    public Comic getComic(Long id, int source, String cid) {
+        Comic comic;
         if (id == null) {
             comic = mComicDao.queryBuilder()
                     .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
@@ -190,106 +185,23 @@ public class ComicManager {
         if (comic == null) {
             comic = new Comic(source, cid);
         }
-        ExLog.d("ComicManager", "init id = " + comic.getId() + " source = " + comic.getSource() + " cid = " + comic.getCid());
-    }
-
-    public void setChapters(List<Chapter> chapters) {
-        this.chapters = chapters;
-        ExLog.d("ComicManager", "set chapter list and the number is " + chapters.size());
-    }
-
-    public void setLast(String path) {
-        comic.setLast(path);
-        comic.setPage(1);
-        comic.setHistory(System.currentTimeMillis());
-        if (!isComicExist()) {
-            long id = mComicDao.insert(comic);
-            comic.setId(id);
-            ExLog.d("ComicManager", "insert " + comic.getTitle() + " to " + comic.getId());
-        }
-        if (!isHistory) {
-            EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, new MiniComic(comic)));
-            isHistory = true;
-        }
-        ExLog.d("ComicManager", "set the last path of" + " [" + comic.getId() + "] " + comic.getTitle() + " to " + path);
-    }
-
-    public void afterRead(int page) {
-        comic.setPage(page);
-        ExLog.d("ComicManager", "set the last page of" + " [" + comic.getId() + "] " + comic.getTitle() + " to " + page);
-        EventBus.getDefault().post(new EventMessage(EventMessage.AFTER_READ, comic.getLast()));
-    }
-
-    public void favoriteComic() {
-        comic.setFavorite(System.currentTimeMillis());
-        if (!isComicExist()) {
-            long id = mComicDao.insert(comic);
-            comic.setId(id);
-            ExLog.d("ComicManager", "insert " + comic.getTitle() + " to " + comic.getId());
-        }
-        ExLog.d("ComicManager", "favorite" + " [" + comic.getId() + "] " + comic.getTitle());
-        EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, new MiniComic(comic)));
-    }
-
-    public void unfavoriteComic() {
-        long id = comic.getId();
-        comic.setFavorite(null);
-        if (!isComicHistory()) {
-            mComicDao.delete(comic);
-            comic.setId(null);
-            ExLog.d("ComicManager", "delete" + " [" + id + "] " + comic.getTitle());
-        }
-        ExLog.d("ComicManager", "unfavorite" + " [" + id + "] " + comic.getTitle());
-        EventBus.getDefault().post(new EventMessage(EventMessage.UN_FAVORITE_COMIC, id));
-    }
-
-    public List<Chapter> getChapters() {
-        return chapters;
-    }
-
-    public Comic getComic() {
         return comic;
     }
 
-    public boolean isComicStar() {
-        return comic.getFavorite() != null;
+    public void updateComic(Comic comic) {
+        mComicDao.update(comic);
+        ExLog.d("ComicManager", "update" + " [" + comic.getId() + "] " + comic.getTitle());
     }
 
-    public boolean isComicHistory() {
-        return comic.getHistory() != null;
+    public void deleteComic(long id) {
+        mComicDao.deleteByKey(id);
+        ExLog.d("ComicManager", "delete" + " [" + id + "]");
     }
 
-    public boolean isComicExist() {
-        return comic.getId() != null;
-    }
-
-    public int getSource() {
-        return comic.getSource();
-    }
-
-    public String getCid() {
-        return comic.getCid();
-    }
-
-    public String getLast() {
-        return comic.getLast();
-    }
-
-    public int getPage() {
-        Integer page = comic.getPage();
-        if (page == null) {
-            return -1;
-        }
-        return page;
-    }
-
-    public void saveComic() {
-        if (isComicExist()) {
-            ExLog.d("ComicManager", "save" + " [" + comic.getId() + "] " + comic.getTitle());
-            mComicDao.update(comic);
-        }
-        comic = null;
-        ExLog.d("ComicManager", "clear comic");
+    public long insertComic(Comic comic) {
+        long id = mComicDao.insert(comic);
+        ExLog.d("ComicManager", "insert" + " [" + id + "] " + comic.getTitle());
+        return id;
     }
 
     public static ComicManager getInstance() {

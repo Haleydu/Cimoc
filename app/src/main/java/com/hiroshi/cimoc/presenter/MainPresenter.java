@@ -5,14 +5,13 @@ import android.app.FragmentManager;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -23,7 +22,6 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainPresenter extends BasePresenter {
 
     private MainActivity mMainActivity;
-    private long mExitTime;
 
     private int mCheckedItem;
     private FragmentManager mFragmentManager;
@@ -37,7 +35,6 @@ public class MainPresenter extends BasePresenter {
     public MainPresenter(MainActivity activity, int item) {
         mMainActivity = activity;
         mCheckedItem = item;
-        mExitTime = 0;
         initFragment();
     }
 
@@ -69,7 +66,6 @@ public class MainPresenter extends BasePresenter {
                 .show(mCurrentFragment)
                 .commit();
         mMainActivity.setCheckedItem(mCheckedItem);
-        mMainActivity.setTitle(PreferenceMaster.getTitleById(mCheckedItem));
     }
 
     private void initFragment() {
@@ -79,17 +75,6 @@ public class MainPresenter extends BasePresenter {
         mHistoryFragment = new HistoryFragment();
         mSettingsFragment = new SettingsFragment();
         mAboutFragment = new AboutFragment();
-    }
-
-    public void onBackPressed() {
-        if (mMainActivity.isDrawerOpen()) {
-            mMainActivity.closeDrawer();
-        } else if (System.currentTimeMillis() - mExitTime > 2000) {
-            mMainActivity.showSnackbar("再按一次退出程序");
-            mExitTime = System.currentTimeMillis();
-        } else {
-            mMainActivity.finish();
-        }
     }
 
     public void transFragment() {

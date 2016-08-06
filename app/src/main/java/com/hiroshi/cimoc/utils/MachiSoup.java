@@ -77,7 +77,6 @@ public class MachiSoup {
             try {
                 return element.select(cssQuery).first().text();
             } catch (Exception e) {
-                e.printStackTrace();
             }
             return null;
         }
@@ -105,7 +104,11 @@ public class MachiSoup {
         }
 
         public String attr(String attr) {
-            return element.attr(attr);
+            try {
+                return element.attr(attr);
+            } catch (Exception e) {
+            }
+            return null;
         }
 
         public String attr(String attr, String regex, int index) {
@@ -113,7 +116,11 @@ public class MachiSoup {
         }
 
         public String attr(String cssQuery, String attr) {
-            return element.select(cssQuery).first().attr(attr);
+            try {
+                return element.select(cssQuery).first().attr(attr);
+            } catch (Exception e) {
+            }
+            return null;
         }
 
         public String attr(String cssQuery, String attr, String regex, int index) {

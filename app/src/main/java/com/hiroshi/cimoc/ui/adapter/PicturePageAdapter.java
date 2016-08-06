@@ -6,13 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.ui.custom.LimitedViewPager;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
@@ -22,13 +20,9 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/7/7.
  */
-public class PicturePagerAdapter extends PagerAdapter {
+public class PicturePageAdapter extends PagerAdapter {
 
     public static final int MAX_COUNT = 20000;
-
-    public static final int STATUS_LOAD = 0;
-    public static final int STATUS_NULL = 1;
-    public static final int STATUS_ERROR = 2;
 
     private List<String> images;
     private LayoutInflater inflater;
@@ -36,13 +30,11 @@ public class PicturePagerAdapter extends PagerAdapter {
     private PipelineDraweeControllerBuilder builder;
     private int left;
     private int right;
-    private int pStatus;
-    private int nStatus;
 
     private int current;
 
-    public PicturePagerAdapter(List<String> images, LayoutInflater inflater, OnSingleTapListener listener,
-                               PipelineDraweeControllerBuilder builder) {
+    public PicturePageAdapter(List<String> images, LayoutInflater inflater, OnSingleTapListener listener,
+                              PipelineDraweeControllerBuilder builder) {
         this.images = images;
         this.inflater = inflater;
         this.listener = listener;
@@ -50,8 +42,6 @@ public class PicturePagerAdapter extends PagerAdapter {
         this.left = MAX_COUNT / 2;
         this.current = MAX_COUNT / 2 + 1;
         this.right = MAX_COUNT / 2 + 1;
-        this.pStatus = STATUS_LOAD;
-        this.nStatus = STATUS_LOAD;
     }
 
     public void setCurrent(int current) {
@@ -60,10 +50,6 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     public int getCurrent() {
         return current;
-    }
-
-    public int getLeft() {
-        return left;
     }
 
     public void setPrevImages(String[] array) {
@@ -78,24 +64,12 @@ public class PicturePagerAdapter extends PagerAdapter {
         notifyDataSetChanged();
     }
 
-    public void notifySpecialPage(boolean isFirst, int status) {
-        if (isFirst) {
-            pStatus = status;
-        } else {
-            nStatus = status;
-        }
-        notifyDataSetChanged();
+    public boolean isToLeft() {
+        return current == left + 1;
     }
 
-    public int getLimit() {
-        if (left + 1 == right) {
-            return LimitedViewPager.LIMIT_BOTH;
-        } else if (current == left) {
-            return  LimitedViewPager.LIMIT_RIGHT;
-        } else if (current == right) {
-            return LimitedViewPager.LIMIT_LEFT;
-        }
-        return LimitedViewPager.LIMIT_NONE;
+    public boolean isToRight() {
+        return current == right - 1;
     }
 
     @Override
@@ -121,28 +95,8 @@ public class PicturePagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View child;
-        if (position <= left || position >= right) {
-            child = inflater.inflate(R.layout.item_picture_msg, container, false);
-            TextView textView = (TextView) child.findViewById(R.id.picture_msg);
-            int what = STATUS_LOAD;
-            if (position == left) {
-                what = pStatus;
-            } else if (position == right) {
-                what = nStatus;
-            }
-            switch (what) {
-                case STATUS_LOAD:
-                    textView.setText("等待加载中...");
-                    break;
-                case STATUS_NULL:
-                    textView.setText("没有了 :(");
-                    break;
-                case STATUS_ERROR:
-                    textView.setText("加载错误 :(");
-            }
-            child.setTag(POSITION_NONE);
-        } else {
+        View child = inflater.inflate(R.layout.item_picture, container, false);
+        if (left < position && position < right) {
             child = inflater.inflate(R.layout.item_picture, container, false);
             final PhotoDraweeView draweeView = (PhotoDraweeView) child.findViewById(R.id.picture_image_view);
             draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -152,7 +106,7 @@ public class PicturePagerAdapter extends PagerAdapter {
                 @Override
                 public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                     super.onFinalImageSet(id, imageInfo, animatable);
-                    if (imageInfo == null || draweeView == null) {
+                    if (imageInfo == null) {
                         return;
                     }
                     draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
@@ -160,6 +114,8 @@ public class PicturePagerAdapter extends PagerAdapter {
             }).setTapToRetryEnabled(true);
             draweeView.setController(builder.setUri(images.get(position - left - 1)).build());
             child.setTag(POSITION_UNCHANGED);
+        } else {
+            child.setTag(POSITION_NONE);
         }
         container.addView(child);
         return child;

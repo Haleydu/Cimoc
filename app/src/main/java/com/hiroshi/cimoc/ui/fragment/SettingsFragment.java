@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.fragment;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.support.v7.app.AlertDialog;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.CimocApplication;
@@ -20,19 +21,43 @@ import butterknife.OnClick;
  */
 public class SettingsFragment extends BaseFragment {
 
-    @BindView(R.id.settings_other_home_summary) TextView mIndexSummary;
+    @BindView(R.id.settings_other_home_summary) TextView mHomeSummary;
+    @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
+    @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
 
     private SettingsPresenter mPresenter;
+    private PreferenceMaster mPreference;
     private AlertDialog mProgressDialog;
 
     private int mBackupChoice;
     private int mHomeChoice;
+    private int mModeChoice;
+    private int mTempChoice;
+    private boolean mVolumeChoice;
+
+    private OnClickListener mSingleChoiceListener = new OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            mTempChoice = which;
+        }
+    };
 
     @Override
     protected void initView() {
+        mPreference = CimocApplication.getPreferences();
         mProgressDialog = DialogFactory.buildCancelableFalseDialog(getActivity());
-        mHomeChoice = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, R.id.drawer_cimoc);
-        mIndexSummary.setText(PreferenceMaster.getTitleById(mHomeChoice));
+        mHomeChoice = mPreference.getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
+        mModeChoice = mPreference.getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);
+        mVolumeChoice = mPreference.getBoolean(PreferenceMaster.PREF_VOLUME, false);
+        mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
+        mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
+        mVolumeBox.setChecked(mVolumeChoice);
+    }
+
+    @OnClick(R.id.settings_reader_volume_btn) void onVolumeBtnClick() {
+        mVolumeChoice = !mVolumeChoice;
+        mVolumeBox.setChecked(mVolumeChoice);
+        mPreference.putBoolean(PreferenceMaster.PREF_VOLUME, mVolumeChoice);
     }
 
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
@@ -41,16 +66,11 @@ public class SettingsFragment extends BaseFragment {
             showSnackbar("没有找到备份文件");
             return;
         }
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_file, array, -1,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_file, array, -1, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mBackupChoice = which;
-                    }
-                },
-                new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                        mBackupChoice = mTempChoice;
                         mPresenter.onRestorePositiveBtnClick(array[mBackupChoice]);
                     }
                 }).show();
@@ -58,18 +78,25 @@ public class SettingsFragment extends BaseFragment {
 
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {
         final int[] array = new int[] { R.id.drawer_cimoc, R.id.drawer_favorite, R.id.drawer_history };
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_home, R.array.index_items, -1,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_home, R.array.home_items, mHomeChoice, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mHomeChoice = array[which];
+                        mHomeChoice = mTempChoice;
+                        mPreference.putInt(PreferenceMaster.PREF_HOME, mHomeChoice);
+                        mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
                     }
-                },
+                }).show();
+    }
+
+    @OnClick(R.id.settings_reader_mode_btn) void onModeBtnClick() {
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_mode, R.array.mode_items, mModeChoice, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        CimocApplication.getPreferences().putInt(PreferenceMaster.PREF_HOME, mHomeChoice);
-                        mIndexSummary.setText(PreferenceMaster.getTitleById(mHomeChoice));
+                        mModeChoice = mTempChoice;
+                        mPreference.putInt(PreferenceMaster.PREF_HOME, mModeChoice);
+                        mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
                     }
                 }).show();
     }

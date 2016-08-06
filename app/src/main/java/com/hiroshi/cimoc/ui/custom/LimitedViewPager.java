@@ -19,10 +19,16 @@ public class LimitedViewPager extends ViewPager {
 
     public LimitedViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public LimitedViewPager(Context context) {
         super(context);
+        init();
+    }
+
+    private void init() {
+        limit = LIMIT_BOTH;
     }
 
     private float lastX;
@@ -51,6 +57,18 @@ public class LimitedViewPager extends ViewPager {
             return super.dispatchTouchEvent(ev);
         }
 
+    }
+
+    public void nextPage() {
+        if (limit != LIMIT_LEFT && limit != LIMIT_BOTH) {
+            setCurrentItem(getCurrentItem() + 1);
+        }
+    }
+
+    public void prevPage() {
+        if (limit != LIMIT_RIGHT && limit != LIMIT_BOTH) {
+            setCurrentItem(getCurrentItem() - 1);
+        }
     }
 
     public void setLimit(int limit) {

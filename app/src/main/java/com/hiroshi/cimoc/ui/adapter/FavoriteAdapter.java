@@ -51,6 +51,7 @@ public class FavoriteAdapter extends ComicAdapter {
             int temp = findFirstNormal();
             mDataSet.add(temp, comic);
             notifyItemMoved(position, temp);
+            notifyItemChanged(temp);
         }
         return comic;
     }

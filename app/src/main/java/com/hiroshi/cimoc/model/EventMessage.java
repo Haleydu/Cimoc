@@ -15,9 +15,10 @@ public class EventMessage {
     public static final int FAVORITE_COMIC = 8;
     public static final int UN_FAVORITE_COMIC = 9;
     public static final int HISTORY_COMIC = 10;
-    public static final int AFTER_READ = 11;
-    public static final int DELETE_HISTORY = 12;
-    public static final int RESTORE_FAVORITE = 13;
+    public static final int COMIC_PAGE_CHANGE = 11;
+    public static final int COMIC_LAST_CHANGE = 12;
+    public static final int DELETE_HISTORY = 13;
+    public static final int RESTORE_FAVORITE = 14;
 
     private int type;
     private Object data;

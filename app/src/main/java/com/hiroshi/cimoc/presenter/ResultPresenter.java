@@ -1,17 +1,15 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.content.Intent;
-
 import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.core.base.Manga;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.ui.activity.ResultActivity;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -53,28 +51,19 @@ public class ResultPresenter extends BasePresenter {
         }
     }
 
-    public void onItemClick(Comic comic) {
-        Intent intent = DetailActivity.createIntent(mResultActivity, comic.getId(), comic.getSource(), comic.getCid());
-        mResultActivity.startActivity(intent);
-    }
-
+    @SuppressWarnings("unchecked")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.SEARCH_SUCCESS:
-                mResultActivity.hideProgressBar();
-                mResultActivity.addAll((List<Comic>) msg.getData());
+                mResultActivity.addResultSet((List<Comic>) msg.getData());
                 isLoading = false;
                 break;
             case EventMessage.SEARCH_FAIL:
-                if (page == 1) {
-                    mResultActivity.hideProgressBar();
-                    mResultActivity.showSnackbar("搜索结果为空");
-                }
+                mResultActivity.addResultSet(new LinkedList<Comic>());
                 break;
             case EventMessage.NETWORK_ERROR:
-                mResultActivity.hideProgressBar();
-                mResultActivity.showSnackbar("网络错误");
+                mResultActivity.addResultSet(null);
                 isLoading = false;
                 break;
         }
