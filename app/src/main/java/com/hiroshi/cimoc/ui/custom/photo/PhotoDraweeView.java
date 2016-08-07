@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import com.facebook.drawee.controller.AbstractDraweeController;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -36,6 +37,13 @@ public class PhotoDraweeView extends SimpleDraweeView  {
     protected void init() {
         if (mPhotoDraweeViewController == null || mPhotoDraweeViewController.getDraweeView() == null) {
             mPhotoDraweeViewController = new PhotoDraweeViewController(this);
+        }
+    }
+
+    public void retry() {
+        AbstractDraweeController controller = (AbstractDraweeController) getController();
+        if (controller != null) {
+            controller.onClick();
         }
     }
 

@@ -26,7 +26,7 @@ public class ResultPresenter extends BasePresenter {
 
     public ResultPresenter(ResultActivity activity, int source, String keyword) {
         this.mResultActivity = activity;
-        this.mManga = Kami.getMangaById(source);
+        this.mManga = Kami.getManga(source);
         this.keyword = keyword;
         this.page = 0;
         this.isLoading = false;

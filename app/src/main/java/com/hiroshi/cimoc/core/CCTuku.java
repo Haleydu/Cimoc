@@ -79,15 +79,15 @@ public class CCTuku extends Manga {
 
     @Override
     protected String[] parseBrowse(String html) {
-        String packed = MachiSoup.match("eval(.*?)\\n;", html, 1);
-        if (packed != null) {
+        String[] rs = MachiSoup.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
+        if (rs != null) {
             try {
-                String result = Decryption.evalDecrypt(packed);
+                String result = Decryption.evalDecrypt(rs[1]);
                 String[] array = MachiSoup.match("pic_url='(.*?)';.*?tpf=(\\d+?);.*pages=(\\d+?);.*?pid=(.*?);.*?pic_extname='(.*?)';", result, 1, 2, 3, 4, 5);
                 if (array != null) {
                     int tpf = Integer.parseInt(array[1]) + 1;
                     int pages = Integer.parseInt(array[2]);
-                    String format = "http://tkpic.um5.cc/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
+                    String format = rs[0] + "/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
                     String[] images = new String[pages];
                     for (int i = 0; i != pages; ++i) {
                         images[i] = String.format(Locale.CHINA, format, i + 1);

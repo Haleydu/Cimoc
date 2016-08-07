@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
@@ -26,19 +27,20 @@ public class SettingsPresenter extends BasePresenter {
     }
 
     public void onCacheBtnClick() {
-        mSettingsFragment.showProgressDialog("正在删除..");
+        mSettingsFragment.showProgressDialog(R.string.settings_other_cache_doing);
         FileUtils.deleteDir(mSettingsFragment.getActivity().getCacheDir());
-        mSettingsFragment.showSnackbar("删除成功");
+        mSettingsFragment.showSnackbar(R.string.settings_other_cache_success);
         mSettingsFragment.hideProgressDialog();
     }
 
     public void onBackupBtnClick() {
-        mSettingsFragment.showProgressDialog("正在备份..");
+        mSettingsFragment.showProgressDialog(R.string.settings_backup_save_doing);
         List<Comic> list = mComicManager.listBackup();
         if (BackupUtils.saveComic(list)) {
-            mSettingsFragment.showSnackbar("备份成功 共 " + list.size() + " 条记录");
+            String text = mSettingsFragment.getString(R.string.settings_backup_save_success) + list.size();
+            mSettingsFragment.showSnackbar(text);
         } else {
-            mSettingsFragment.showSnackbar("备份失败 共 " + list.size() + " 条记录");
+            mSettingsFragment.showSnackbar(R.string.settings_backup_save_fail);
         }
         mSettingsFragment.hideProgressDialog();
     }
@@ -52,18 +54,20 @@ public class SettingsPresenter extends BasePresenter {
     }
 
     public void onRestorePositiveBtnClick(String name) {
-        mSettingsFragment.showProgressDialog("正在恢复..");
+        mSettingsFragment.showProgressDialog(R.string.settings_backup_restore_doing);
         List<Comic> list = BackupUtils.restoreComic(name);
         mComicManager.restoreFavorite(list);
     }
 
+    @SuppressWarnings("unchecked")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.RESTORE_FAVORITE:
                 List<Comic> list = (List<Comic>) msg.getData();
                 mSettingsFragment.hideProgressDialog();
-                mSettingsFragment.showSnackbar("恢复成功 共 " + list.size() + " 条记录");
+                String text = mSettingsFragment.getString(R.string.settings_backup_restore_success) + list.size();
+                mSettingsFragment.showSnackbar(text);
                 break;
         }
     }

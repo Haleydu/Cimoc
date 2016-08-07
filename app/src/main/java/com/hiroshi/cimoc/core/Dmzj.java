@@ -108,7 +108,7 @@ public class Dmzj extends Manga {
 
     @Override
     protected String[] parseBrowse(String html) {
-        String jsonString = MachiSoup.match("\"page_url\":(\\[.*?\\])", html, 1);
+        String jsonString = MachiSoup.match("\"page_url\":(\\[.*?\\]),", html, 1);
         if (jsonString != null) {
             try {
                 JSONArray array = new JSONArray(jsonString);

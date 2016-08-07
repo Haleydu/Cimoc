@@ -30,7 +30,7 @@ public class DetailPresenter extends BasePresenter {
     public DetailPresenter(DetailActivity activity, Long id, int source, String cid) {
         mDetailActivity = activity;
         mComicManager = ComicManager.getInstance();
-        mManga = Kami.getMangaById(source);
+        mManga = Kami.getManga(source);
         mComic = mComicManager.getComic(id, source, cid);
     }
 

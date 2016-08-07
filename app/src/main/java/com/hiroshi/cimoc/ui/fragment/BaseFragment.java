@@ -36,6 +36,10 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    public void showSnackbar(int resId) {
+        showSnackbar(getString(resId));
+    }
+
     public void showSnackbar(String msg) {
         if (getView() != null) {
             Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();

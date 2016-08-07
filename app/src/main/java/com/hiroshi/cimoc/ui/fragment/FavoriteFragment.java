@@ -136,7 +136,7 @@ public class FavoriteFragment extends BaseFragment {
                 if (source == Kami.SOURCE_EHENTAI) {
                     continue;
                 }
-                Manga manga = Kami.getMangaById(source);
+                Manga manga = Kami.getManga(source);
                 String update = manga.check(comic.getCid());
                 if (update != null && !comic.getUpdate().equals(update)) {
                     comic.setUpdate(update);

@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
+import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.utils.DialogFactory;
 import com.hiroshi.cimoc.utils.PreferenceMaster;
 
@@ -24,6 +25,7 @@ public class SettingsFragment extends BaseFragment {
     @BindView(R.id.settings_other_home_summary) TextView mHomeSummary;
     @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
     @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
+    @BindView(R.id.settings_other_nightly_checkbox) CheckBox mNightlyBox;
 
     private SettingsPresenter mPresenter;
     private PreferenceMaster mPreference;
@@ -34,6 +36,7 @@ public class SettingsFragment extends BaseFragment {
     private int mModeChoice;
     private int mTempChoice;
     private boolean mVolumeChoice;
+    private boolean mNightlyChoice;
 
     private OnClickListener mSingleChoiceListener = new OnClickListener() {
         @Override
@@ -49,9 +52,22 @@ public class SettingsFragment extends BaseFragment {
         mHomeChoice = mPreference.getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
         mModeChoice = mPreference.getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);
         mVolumeChoice = mPreference.getBoolean(PreferenceMaster.PREF_VOLUME, false);
+        mNightlyChoice = mPreference.getBoolean(PreferenceMaster.PREF_NIGHTLY, false);
         mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
         mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
         mVolumeBox.setChecked(mVolumeChoice);
+        mNightlyBox.setChecked(mNightlyChoice);
+    }
+
+    @OnClick(R.id.settings_other_nightly_btn) void onNightlyBtnClick() {
+        mNightlyChoice = !mNightlyChoice;
+        mNightlyBox.setChecked(mNightlyChoice);
+        if (mNightlyChoice) {
+            ((BaseActivity) getActivity()).nightlyOn();
+        } else {
+            ((BaseActivity) getActivity()).nightlyOff();
+        }
+        mPreference.putBoolean(PreferenceMaster.PREF_NIGHTLY, mNightlyChoice);
     }
 
     @OnClick(R.id.settings_reader_volume_btn) void onVolumeBtnClick() {
@@ -63,7 +79,7 @@ public class SettingsFragment extends BaseFragment {
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
         final String[] array = mPresenter.getFiles();
         if (array == null) {
-            showSnackbar("没有找到备份文件");
+            showSnackbar(R.string.settings_backup_save_not_found);
             return;
         }
         DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_file, array, -1, mSingleChoiceListener,
@@ -95,7 +111,7 @@ public class SettingsFragment extends BaseFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mModeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceMaster.PREF_HOME, mModeChoice);
+                        mPreference.putInt(PreferenceMaster.PREF_MODE, mModeChoice);
                         mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
                     }
                 }).show();
@@ -124,8 +140,8 @@ public class SettingsFragment extends BaseFragment {
         return R.layout.fragment_settings;
     }
 
-    public void showProgressDialog(String msg) {
-        mProgressDialog.setMessage(msg);
+    public void showProgressDialog(int resId) {
+        mProgressDialog.setMessage(getString(resId));
         mProgressDialog.show();
     }
 

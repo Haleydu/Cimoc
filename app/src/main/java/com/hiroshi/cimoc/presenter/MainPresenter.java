@@ -115,7 +115,6 @@ public class MainPresenter extends BasePresenter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
-
     }
 
 }

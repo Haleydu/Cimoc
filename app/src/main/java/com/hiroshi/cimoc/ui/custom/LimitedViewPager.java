@@ -35,28 +35,32 @@ public class LimitedViewPager extends ViewPager {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (limit == LIMIT_NONE){
-            return super.dispatchTouchEvent(ev);
-        } else if (limit == LIMIT_BOTH) {
-            return true;
-        } else {
-            switch (ev.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    lastX = ev.getX();
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    float value = ev.getX() - lastX;
-                    if (limit == LIMIT_LEFT && value < 0) {
-                        return true;
-                    }
-                    if (limit == LIMIT_RIGHT && value > 0) {
-                        return true;
-                    }
-                    break;
+        try {
+            if (limit == LIMIT_NONE){
+                return super.dispatchTouchEvent(ev);
+            } else if (limit == LIMIT_BOTH) {
+                return true;
+            } else {
+                switch (ev.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        lastX = ev.getX();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        float value = ev.getX() - lastX;
+                        if (limit == LIMIT_LEFT && value < 0) {
+                            return true;
+                        }
+                        if (limit == LIMIT_RIGHT && value > 0) {
+                            return true;
+                        }
+                        break;
+                }
+                return super.dispatchTouchEvent(ev);
             }
-            return super.dispatchTouchEvent(ev);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
-
+        return false;
     }
 
     public void nextPage() {

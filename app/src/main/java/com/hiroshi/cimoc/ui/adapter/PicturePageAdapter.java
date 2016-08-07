@@ -33,12 +33,12 @@ public class PicturePageAdapter extends PagerAdapter {
 
     private int current;
 
-    public PicturePageAdapter(List<String> images, LayoutInflater inflater, OnSingleTapListener listener,
-                              PipelineDraweeControllerBuilder builder) {
+    public PicturePageAdapter(List<String> images, LayoutInflater inflater, PipelineDraweeControllerBuilder builder,
+                              OnSingleTapListener listener) {
         this.images = images;
         this.inflater = inflater;
-        this.listener = listener;
         this.builder = builder;
+        this.listener = listener;
         this.left = MAX_COUNT / 2;
         this.current = MAX_COUNT / 2 + 1;
         this.right = MAX_COUNT / 2 + 1;
@@ -97,7 +97,6 @@ public class PicturePageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View child = inflater.inflate(R.layout.item_picture, container, false);
         if (left < position && position < right) {
-            child = inflater.inflate(R.layout.item_picture, container, false);
             final PhotoDraweeView draweeView = (PhotoDraweeView) child.findViewById(R.id.picture_image_view);
             draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             draweeView.setHorizontalMode();

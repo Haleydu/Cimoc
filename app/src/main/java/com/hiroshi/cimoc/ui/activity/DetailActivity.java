@@ -39,11 +39,11 @@ public class DetailActivity extends BaseActivity {
         if (mPresenter.isComicFavorite()) {
             mPresenter.unfavoriteComic();
             mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-            showSnackbar("取消收藏成功");
+            showSnackbar(R.string.detail_unfavorite);
         } else {
             mPresenter.favoriteComic();
             mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
-            showSnackbar("收藏成功");
+            showSnackbar(R.string.detail_favorite);
         }
     }
 
@@ -77,7 +77,7 @@ public class DetailActivity extends BaseActivity {
 
     @Override
     protected String getDefaultTitle() {
-        return "详情";
+        return getString(R.string.detail);
     }
 
     @Override
@@ -97,18 +97,18 @@ public class DetailActivity extends BaseActivity {
     public void setView(Comic comic, List<Chapter> list) {
         if (list == null) {
             mProgressBar.setVisibility(View.GONE);
-            showSnackbar("网络错误");
+            mCoordinatorLayout.setVisibility(View.VISIBLE);
+            showSnackbar(R.string.common_network_error);
             return;
         }
 
         mChapterAdapter = new ChapterAdapter(this, list, comic.getSource(), comic.getCover(), comic.getTitle(),
-                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate());
-        mChapterAdapter.setLast(comic.getLast());
+                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), comic.getLast());
         mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (position != 0) {
-                    Intent intent = PageReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
+                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
                             mChapterAdapter.getDateSet(), position - 1);
                     startActivity(intent);
                 }
@@ -125,10 +125,10 @@ public class DetailActivity extends BaseActivity {
             mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
         }
         mProgressBar.setVisibility(View.GONE);
-        mStarButton.setVisibility(View.VISIBLE);
         mCoordinatorLayout.setVisibility(View.VISIBLE);
+        mStarButton.setVisibility(View.VISIBLE);
         if (list.isEmpty()) {
-            showSnackbar("解析错误或此漫画已被屏蔽");
+            showSnackbar(R.string.detail_error);
         }
     }
 

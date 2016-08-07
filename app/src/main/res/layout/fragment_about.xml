@@ -50,4 +50,32 @@
             android:textSize="14sp"
             android:text="@string/about_resource_url"/>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/about_support_btn"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:clickable="true"
+        android:background="?android:attr/selectableItemBackground">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:text="@string/about_support"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:textSize="14sp"
+            android:text="@string/about_support_summary"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:textSize="14sp"
+            android:text="@string/about_support_account"/>
+    </LinearLayout>
 </LinearLayout>

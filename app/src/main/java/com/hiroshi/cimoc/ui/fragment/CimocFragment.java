@@ -37,7 +37,7 @@ public class CimocFragment extends BaseFragment {
     @OnClick(R.id.main_search_btn) void onClick() {
         String keyword = mEditText.getText().toString();
         if (keyword.isEmpty()) {
-            mInputLayout.setError(getString(R.string.empty_for_search));
+            mInputLayout.setError(getString(R.string.cimoc_empty_error));
         } else {
             startActivity(ResultActivity.createIntent(getActivity(), keyword, source[choice]));
         }
@@ -80,7 +80,8 @@ public class CimocFragment extends BaseFragment {
         boolean enable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
         array = enable ? R.array.ex_source_items : R.array.source_items;
         if (enable) {
-            source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ, Kami.SOURCE_CCTUKU, Kami.SOURCE_EHENTAI };
+            source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ,
+                    Kami.SOURCE_CCTUKU, Kami.SOURCE_EXHENTAI, Kami.SOURCE_EHENTAI };
         } else {
             source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ, Kami.SOURCE_CCTUKU };
         }

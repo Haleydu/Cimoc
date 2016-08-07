@@ -21,7 +21,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_gravity="top"
-                android:hint="@string/hint_for_search"
+                android:hint="@string/cimoc_search_hint"
                 android:textColorHint="@color/white"
                 app:counterEnabled="true"
                 app:theme="@style/TextInputTheme">

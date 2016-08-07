@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ScrollerCompat;
@@ -30,7 +29,7 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     public static final float MAX_SCALE = 3.0f;
 
     public interface OnSingleTapListener {
-        void onSingleTap(View view, float x, float y);
+        void onSingleTap(PhotoDraweeView draweeView, float x, float y);
     }
 
     public interface OnScaleChangeListener {
@@ -64,12 +63,12 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     private final Matrix mMatrix = new Matrix();
     private int mImageInfoHeight = -1, mImageInfoWidth = -1;
     private FlingRunnable mCurrentFlingRunnable;
-    private WeakReference<DraweeView<GenericDraweeHierarchy>> mDraweeView;
+    private WeakReference<PhotoDraweeView> mDraweeView;
 
     private OnSingleTapListener mSingleTapListener;
     private OnScaleChangeListener mScaleChangeListener;
 
-    public PhotoDraweeViewController(DraweeView<GenericDraweeHierarchy> draweeView) {
+    public PhotoDraweeViewController(PhotoDraweeView draweeView) {
         mDraweeView = new WeakReference<>(draweeView);
         draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
         draweeView.setOnTouchListener(this);
@@ -78,7 +77,7 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
         mGestureDetector.setOnDoubleTapListener(this);
     }
 
-    @Nullable public DraweeView<GenericDraweeHierarchy> getDraweeView() {
+    public PhotoDraweeView getDraweeView() {
         return mDraweeView.get();
     }
 
@@ -322,7 +321,7 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     }
 
     @Override public boolean onSingleTapConfirmed(MotionEvent e) {
-        DraweeView<GenericDraweeHierarchy> draweeView = mDraweeView.get();
+        PhotoDraweeView draweeView = mDraweeView.get();
         if (draweeView == null) {
             return false;
         }
@@ -442,17 +441,15 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
         boolean wasScaling = mScaleDragDetector.isScaling();
         boolean wasDragging = mScaleDragDetector.isDragging();
 
-        boolean handled = mScaleDragDetector.onTouchEvent(event);
+        mScaleDragDetector.onTouchEvent(event);
 
         boolean noScale = !wasScaling && !mScaleDragDetector.isScaling();
         boolean noDrag = !wasDragging && !mScaleDragDetector.isDragging();
         mBlockParentIntercept = noScale && noDrag;
 
-        if (mGestureDetector.onTouchEvent(event)) {
-            handled = true;
-        }
+        mGestureDetector.onTouchEvent(event);
 
-        return handled;
+        return true;
     }
 
     private class AnimatedZoomRunnable implements Runnable {

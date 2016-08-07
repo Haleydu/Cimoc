@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hiroshi.cimoc">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,8 +14,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.activity.MainActivity"
-            android:screenOrientation="portrait">
+            android:name=".ui.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -22,22 +22,18 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.ResultActivity"
-            android:screenOrientation="portrait"/>
+            android:name=".ui.activity.ResultActivity"/>
 
         <activity
-            android:name=".ui.activity.DetailActivity"
-            android:screenOrientation="portrait"/>
+            android:name=".ui.activity.DetailActivity"/>
 
         <activity
             android:name=".ui.activity.PageReaderActivity"
-            android:theme="@style/ReaderTheme"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/ReaderTheme"/>
 
         <activity
             android:name=".ui.activity.StreamReaderActivity"
-            android:theme="@style/ReaderTheme"
-            android:screenOrientation="landscape"/>
+            android:theme="@style/ReaderTheme"/>
 
     </application>
 

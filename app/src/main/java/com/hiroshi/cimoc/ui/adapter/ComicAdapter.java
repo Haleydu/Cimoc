@@ -14,7 +14,6 @@ import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,7 +49,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         MiniComic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
+        viewHolder.comicSource.setText(Kami.getSourceTitle(comic.getSource()));
         PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
     }

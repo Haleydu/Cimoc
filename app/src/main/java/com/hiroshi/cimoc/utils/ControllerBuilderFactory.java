@@ -42,7 +42,7 @@ public class ControllerBuilderFactory {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-                String referer = Kami.getRefererById(source);
+                String referer = Kami.getReferer(source);
                 Request.Builder request = chain.request().newBuilder();
                 request.addHeader("Referer", referer);
                 if (cookie != null) {

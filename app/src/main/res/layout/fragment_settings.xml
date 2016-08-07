@@ -155,6 +155,39 @@
                 android:textColor="?attr/colorAccent"
                 android:textSize="14sp"
                 android:text="@string/settings_other"/>
+            <RelativeLayout
+                android:id="@+id/settings_other_nightly_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+                <CheckBox
+                    android:id="@+id/settings_other_nightly_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/settings_other_nightly_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_other_nightly_checkbox"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:text="@string/settings_other_nightly"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_other_nightly_checkbox"
+                    android:layout_below="@id/settings_other_nightly_title"
+                    android:textSize="14sp"
+                    android:textColor="@color/grey"
+                    android:text="@string/settings_other_nightly_summary"/>
+            </RelativeLayout>
             <LinearLayout
                 android:id="@+id/settings_other_home_btn"
                 android:orientation="vertical"

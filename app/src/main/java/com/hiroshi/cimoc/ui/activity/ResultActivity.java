@@ -86,7 +86,7 @@ public class ResultActivity extends BaseActivity {
 
     @Override
     protected String getDefaultTitle() {
-        return "搜索结果";
+        return getString(R.string.result);
     }
 
     @Override
@@ -96,9 +96,9 @@ public class ResultActivity extends BaseActivity {
 
     public void addResultSet(List<Comic> list) {
         if (list == null) {
-            showSnackbar("网络错误");
+            showSnackbar(R.string.common_network_error);
         } else if (list.isEmpty() && mResultAdapter.getItemCount() == 0) {
-            showSnackbar("搜索结果为空");
+            showSnackbar(R.string.result_empty);
         } else {
             mResultAdapter.addAll(list);
         }

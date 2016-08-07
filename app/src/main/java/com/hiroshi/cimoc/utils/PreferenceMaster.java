@@ -22,6 +22,7 @@ public class PreferenceMaster {
     public static final String PREF_HOME = "pref_home";
     public static final String PREF_MODE = "pref_mode";
     public static final String PREF_VOLUME = "pref_volume";
+    public static final String PREF_NIGHTLY = "pref_nightly";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

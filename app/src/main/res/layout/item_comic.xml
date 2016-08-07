@@ -22,7 +22,7 @@
             android:layout_alignParentTop="true"
             android:visibility="invisible"
             android:padding="2dp"
-            android:text="@string/comic_new"
+            android:text="@string/favorite_comic_new"
             android:textStyle="bold"
             android:textColor="?colorAccent"
             android:textSize="10sp"/>

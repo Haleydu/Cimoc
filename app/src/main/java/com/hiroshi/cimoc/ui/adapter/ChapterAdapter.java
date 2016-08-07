@@ -54,7 +54,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, int source, String image, String title, String author, String intro, boolean status, String update) {
+    public ChapterAdapter(Context context, List<Chapter> list, int source, String image, String title, String author, String intro, boolean status, String update, String last) {
         super(context, list);
         this.source = source;
         this.image = image;
@@ -63,6 +63,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         this.status = status;
         this.update = update;
         this.author = author;
+        this.last = last;
     }
 
     @Override
@@ -141,7 +142,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     }
 
     public void setLast(String value) {
-        if (last == null || value.equals(last)) {
+        if (value.equals(last)) {
             last = value;
             return;
         }

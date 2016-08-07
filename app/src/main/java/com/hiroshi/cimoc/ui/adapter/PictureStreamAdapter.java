@@ -13,6 +13,7 @@ import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
 import java.util.LinkedList;
 
@@ -24,10 +25,12 @@ import butterknife.BindView;
 public class PictureStreamAdapter extends BaseAdapter<String> {
 
     private PipelineDraweeControllerBuilder builder;
+    private OnSingleTapListener listener;
 
-    public PictureStreamAdapter(Context context, PipelineDraweeControllerBuilder builder) {
+    public PictureStreamAdapter(Context context, PipelineDraweeControllerBuilder builder, OnSingleTapListener listener) {
         super(context, new LinkedList<String>());
         this.builder = builder;
+        this.listener = listener;
     }
 
     public class ViewHolder extends BaseViewHolder {
@@ -35,6 +38,10 @@ public class PictureStreamAdapter extends BaseAdapter<String> {
 
         public ViewHolder(View view) {
             super(view);
+        }
+
+        public boolean isEquals(PhotoDraweeView draweeView) {
+            return draweeView == photoView;
         }
     }
 
@@ -47,9 +54,20 @@ public class PictureStreamAdapter extends BaseAdapter<String> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         final PhotoDraweeView draweeView = ((ViewHolder) holder).photoView;
+        draweeView.setId(position);
         draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         draweeView.setVerticalMode();
+        draweeView.setOnSingleTapListener(listener);
         builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+            @Override
+            public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
+                super.onIntermediateImageSet(id, imageInfo);
+                if (imageInfo != null) {
+                    draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
+                }
+            }
+
             @Override
             public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                 super.onFinalImageSet(id, imageInfo, animatable);
