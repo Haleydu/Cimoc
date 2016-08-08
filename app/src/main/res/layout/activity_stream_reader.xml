@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
-    <com.hiroshi.cimoc.ui.custom.LimitedViewPager
-        android:id="@+id/reader_view_pager"
+    <include layout="@layout/custom_loading"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/reader_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     <LinearLayout
@@ -18,7 +17,7 @@
         android:paddingBottom="2dp"
         android:paddingLeft="6dp"
         android:paddingRight="6dp"
-        android:background="@color/trans_light_grey">
+        android:background="@color/trans_light_black">
         <TextView
             android:id="@+id/reader_chapter_title"
             android:layout_width="wrap_content"
@@ -41,26 +40,6 @@
             android:textColor="@color/white"
             android:textSize="12sp"/>
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/reader_tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        android:padding="8dp"
-        android:background="@color/trans_black">
-        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-            android:id="@+id/reader_seek_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            app:dsb_min="1"
-            app:dsb_indicatorPopupEnabled="false"
-            app:dsb_trackColor="@color/white"
-            app:dsb_rippleColor="@color/colorAccent"
-            app:dsb_progressColor="@color/colorAccent"
-            app:dsb_indicatorColor="@color/colorAccent"
-            app:dsb_trackHeight="4dp"
-            app:dsb_thumbSize="12dp"/>
-    </LinearLayout>
+    <include layout="@layout/custom_back_btn"/>
+    <include layout="@layout/custom_seek_bar"/>
 </RelativeLayout>

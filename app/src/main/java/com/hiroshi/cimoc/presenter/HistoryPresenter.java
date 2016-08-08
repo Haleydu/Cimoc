@@ -30,10 +30,17 @@ public class HistoryPresenter extends BasePresenter {
         return mComicManager.listHistory();
     }
 
-    public void onItemClick(int position) {
-        MiniComic comic = mHistoryFragment.getItem(position);
+    public void onItemClick(MiniComic comic) {
         Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         mHistoryFragment.startActivity(intent);
+    }
+
+    public void onPositiveClick(MiniComic comic) {
+        mComicManager.removeHistory(comic.getId());
+    }
+
+    public void onHistoryClearClick() {
+        mComicManager.cleanHistory();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -43,7 +50,10 @@ public class HistoryPresenter extends BasePresenter {
                 mHistoryFragment.updateItem((MiniComic) msg.getData());
                 break;
             case EventMessage.DELETE_HISTORY:
+                int count = (int) msg.getData();
                 mHistoryFragment.clearItem();
+                mHistoryFragment.hideProgressDialog();
+                mHistoryFragment.showSnackbar("删除成功 共 " + count + " 条记录");
                 break;
         }
     }

@@ -26,13 +26,13 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         mInflater = LayoutInflater.from(context);
     }
 
+    public void add(T data) {
+        add(mDataSet.size(), data);
+    }
+
     public void add(int location, T data) {
         mDataSet.add(location, data);
         notifyItemInserted(location);
-    }
-
-    public void add(T data) {
-        add(mDataSet.size(), data);
     }
 
     public void addAll(List<T> data) {
@@ -41,23 +41,28 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public void addAll(int location, List<T> data) {
         mDataSet.addAll(location, data);
-        notifyDataSetChanged();
+        notifyItemRangeInserted(location, location + data.size());
     }
 
     public void remove(T data) {
-        if (mDataSet.remove(data)) {
-            notifyDataSetChanged();
+        int position = mDataSet.indexOf(data);
+        if (position != -1) {
+            remove(position);
         }
     }
 
     public void remove(int position) {
         mDataSet.remove(position);
-        notifyDataSetChanged();
+        notifyItemRemoved(position);
     }
 
     public void clear() {
         mDataSet.clear();
         notifyDataSetChanged();
+    }
+
+    public List<T> getDateSet() {
+        return mDataSet;
     }
 
     public void setData(List<T> list) {
@@ -68,10 +73,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public T getItem(int position) {
         return mDataSet.get(position);
-    }
-
-    public List<T> getDataSet() {
-        return mDataSet;
     }
 
     @Override

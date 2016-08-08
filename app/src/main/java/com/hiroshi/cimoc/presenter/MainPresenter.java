@@ -5,12 +5,12 @@ import android.app.FragmentManager;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -22,7 +22,6 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainPresenter extends BasePresenter {
 
     private MainActivity mMainActivity;
-    private long mExitTime;
 
     private int mCheckedItem;
     private FragmentManager mFragmentManager;
@@ -33,10 +32,40 @@ public class MainPresenter extends BasePresenter {
     private AboutFragment mAboutFragment;
     private Fragment mCurrentFragment;
     
-    public MainPresenter(MainActivity activity) {
+    public MainPresenter(MainActivity activity, int item) {
         mMainActivity = activity;
-        mExitTime = 0;
+        mCheckedItem = item;
         initFragment();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        switch (mCheckedItem) {
+            case R.id.drawer_cimoc:
+                mCurrentFragment = mCimocFragment;
+                break;
+            case R.id.drawer_favorite:
+                mCurrentFragment = mFavoriteFragment;
+                break;
+            case R.id.drawer_history:
+                mCurrentFragment = mHistoryFragment;
+                break;
+        }
+        mFragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, mCimocFragment)
+                .add(R.id.main_fragment_container, mFavoriteFragment)
+                .add(R.id.main_fragment_container, mHistoryFragment)
+                .add(R.id.main_fragment_container, mSettingsFragment)
+                .add(R.id.main_fragment_container, mAboutFragment)
+                .hide(mCimocFragment)
+                .hide(mFavoriteFragment)
+                .hide(mHistoryFragment)
+                .hide(mSettingsFragment)
+                .hide(mAboutFragment)
+                .show(mCurrentFragment)
+                .commit();
+        mMainActivity.setCheckedItem(mCheckedItem);
     }
 
     private void initFragment() {
@@ -46,40 +75,15 @@ public class MainPresenter extends BasePresenter {
         mHistoryFragment = new HistoryFragment();
         mSettingsFragment = new SettingsFragment();
         mAboutFragment = new AboutFragment();
-        mFragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, mCimocFragment)
-                .add(R.id.main_fragment_container, mFavoriteFragment)
-                .add(R.id.main_fragment_container, mHistoryFragment)
-                .add(R.id.main_fragment_container, mSettingsFragment)
-                .add(R.id.main_fragment_container, mAboutFragment)
-                .hide(mFavoriteFragment)
-                .hide(mHistoryFragment)
-                .hide(mSettingsFragment)
-                .hide(mAboutFragment)
-                .commit();
-        mCurrentFragment = mCimocFragment;
-        mCheckedItem = R.id.drawer_main;
-        mMainActivity.setCheckedItem(mCheckedItem);
-    }
-
-    public void onBackPressed() {
-        if (mMainActivity.isDrawerOpen()) {
-            mMainActivity.closeDrawer();
-        } else if (System.currentTimeMillis() - mExitTime > 2000) {
-            mMainActivity.showSnackbar("再按一次退出程序");
-            mExitTime = System.currentTimeMillis();
-        } else {
-            mMainActivity.finish();
-        }
     }
 
     public void transFragment() {
         switch (mCheckedItem) {
             default:
-            case R.id.drawer_main:
+            case R.id.drawer_cimoc:
                 mCurrentFragment = mCimocFragment;
                 break;
-            case R.id.drawer_comic:
+            case R.id.drawer_favorite:
                 mCurrentFragment = mFavoriteFragment;
                 break;
             case R.id.drawer_history:
@@ -111,7 +115,6 @@ public class MainPresenter extends BasePresenter {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
-
     }
 
 }

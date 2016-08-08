@@ -14,6 +14,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             fresco:actualImageScaleType="centerCrop"/>
+        <ImageView
+            android:id="@+id/item_comic_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:padding="2dp"
+            android:visibility="invisible"
+            android:src="@drawable/flag_comic_new"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"

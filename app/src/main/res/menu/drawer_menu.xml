@@ -3,10 +3,10 @@
     <group
         android:checkableBehavior="single">
         <item
-            android:id="@+id/drawer_main"
+            android:id="@+id/drawer_cimoc"
             android:title="@string/drawer_main"/>
         <item
-            android:id="@+id/drawer_comic"
+            android:id="@+id/drawer_favorite"
             android:title="@string/drawer_comic"/>
         <item
             android:id="@+id/drawer_history"

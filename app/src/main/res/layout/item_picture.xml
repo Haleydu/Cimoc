@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.hiroshi.cimoc.ui.custom.zoomable.ZoomableDraweeView
+<com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:id="@+id/picture_image_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    fresco:actualImageScaleType="fitCenter"
     fresco:progressBarImage="@drawable/progress_trans"
     fresco:progressBarImageScaleType="center"
     fresco:retryImage="@drawable/ic_replay_white_24dp"

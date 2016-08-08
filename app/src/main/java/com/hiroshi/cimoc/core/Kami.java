@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.core;
 
+import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.base.Manga;
 
 /**
@@ -11,25 +12,31 @@ public class Kami {
     public static final int SOURCE_DMZJ = 1;
     public static final int SOURCE_HHAAZZ = 2;
     public static final int SOURCE_CCTUKU = 3;
+    public static final int SOURCE_U17 = 4;
     public static final int SOURCE_EHENTAI = 100;
+    public static final int SOURCE_EXHENTAI = 101;
 
-    public static String getSourceById(int id) {
+    public static int getSourceTitle(int id) {
         switch (id) {
             default:
             case SOURCE_IKANMAN:
-                return "看漫画";
+                return R.string.source_ikanman;
             case SOURCE_DMZJ:
-                return "动漫之家";
+                return R.string.source_dmzj;
             case SOURCE_HHAAZZ:
-                return "汗汗漫画";
+                return R.string.source_hhaazz;
             case SOURCE_CCTUKU:
-                return "CC图库";
+                return R.string.source_cctuku;
+            case SOURCE_U17:
+                return R.string.source_u17;
             case SOURCE_EHENTAI:
-                return "E-Hentai";
+                return R.string.source_ehentai;
+            case SOURCE_EXHENTAI:
+                return R.string.source_exhentai;
         }
     }
 
-    public static String getRefererById(int id) {
+    public static String getReferer(int id) {
         switch (id) {
             default:
             case SOURCE_IKANMAN:
@@ -40,24 +47,55 @@ public class Kami {
                 return "http://hhaazz.com";
             case SOURCE_CCTUKU:
                 return "http://m.tuku.cc";
+            case SOURCE_U17:
+                return "http://www.u17.com";
             case SOURCE_EHENTAI:
                 return "http://lofi.e-hentai.org";
+            case SOURCE_EXHENTAI:
+                return "https://exhentai.org";
         }
     }
 
-    public static Manga getMangaById(int id) {
+    private static Manga mIkanman, mDmzj, mHHAAZZ, mCCTuku, mU17, mExHentai, mEHentai;
+
+    public static Manga getManga(int id) {
         switch (id) {
             default:
             case SOURCE_IKANMAN:
-                return new IKanman();
+                if (mIkanman == null) {
+                    mIkanman = new IKanman();
+                }
+                return mIkanman;
             case SOURCE_DMZJ:
-                return new Dmzj();
+                if (mDmzj == null) {
+                    mDmzj = new Dmzj();
+                }
+                return mDmzj;
             case SOURCE_HHAAZZ:
-                return new HHAAZZ();
+                if (mHHAAZZ == null) {
+                    mHHAAZZ = new HHAAZZ();
+                }
+                return mHHAAZZ;
             case SOURCE_CCTUKU:
-                return new CCTuku();
+                if (mCCTuku == null) {
+                    mCCTuku = new CCTuku();
+                }
+                return mCCTuku;
+            case SOURCE_U17:
+                if (mU17 == null) {
+                    mU17 = new U17();
+                }
+                return mU17;
             case SOURCE_EHENTAI:
-                return new EHentai();
+                if (mEHentai == null) {
+                    mEHentai = new EHentai();
+                }
+                return mEHentai;
+            case SOURCE_EXHENTAI:
+                if (mExHentai == null) {
+                    mExHentai = new ExHentai();
+                }
+                return mExHentai;
         }
     }
 

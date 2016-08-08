@@ -1,8 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
-
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
@@ -29,68 +26,48 @@ public class SettingsPresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public void cleanCache() {
-        mSettingsFragment.showAlertDialog("正在删除..");
+    public void onCacheBtnClick() {
+        mSettingsFragment.showProgressDialog(R.string.settings_other_cache_doing);
         FileUtils.deleteDir(mSettingsFragment.getActivity().getCacheDir());
-        mSettingsFragment.showSnackbar("删除成功");
-        mSettingsFragment.hideAlertDialog();
+        mSettingsFragment.showSnackbar(R.string.settings_other_cache_success);
+        mSettingsFragment.hideProgressDialog();
     }
 
-    public void backupComic() {
-        mSettingsFragment.showAlertDialog("正在备份..");
+    public void onBackupBtnClick() {
+        mSettingsFragment.showProgressDialog(R.string.settings_backup_save_doing);
         List<Comic> list = mComicManager.listBackup();
         if (BackupUtils.saveComic(list)) {
-            mSettingsFragment.showSnackbar("备份成功 共 " + list.size() + " 条记录");
+            String text = mSettingsFragment.getString(R.string.settings_backup_save_success) + list.size();
+            mSettingsFragment.showSnackbar(text);
         } else {
-            mSettingsFragment.showSnackbar("备份失败 共 " + list.size() + " 条记录");
+            mSettingsFragment.showSnackbar(R.string.settings_backup_save_fail);
         }
-        mSettingsFragment.hideAlertDialog();
+        mSettingsFragment.hideProgressDialog();
     }
 
-    private int choice;
-
-    public void restoreComic() {
-        final String[] files = BackupUtils.showBackupFiles();
+    public String[] getFiles() {
+        String[] files = BackupUtils.showBackupFiles();
         if (files == null || files.length == 0) {
-            mSettingsFragment.showSnackbar("没有找到备份文件");
-            return;
+            return null;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(mSettingsFragment.getActivity(), R.style.AppTheme_Dialog_Alert);
-        builder.setTitle("选择文件");
-        builder.setSingleChoiceItems(files, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                choice = which;
-            }
-        });
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mSettingsFragment.showAlertDialog("正在恢复..");
-                List<Comic> list = BackupUtils.restoreComic(files[choice]);
-                mComicManager.restoreFavorite(list);
-            }
-        });
-        builder.show();
+        return files;
     }
 
-    public void cleanHistory() {
-        mSettingsFragment.showAlertDialog("正在删除..");
-        mComicManager.cleanHistory();
+    public void onRestorePositiveBtnClick(String name) {
+        mSettingsFragment.showProgressDialog(R.string.settings_backup_restore_doing);
+        List<Comic> list = BackupUtils.restoreComic(name);
+        mComicManager.restoreFavorite(list);
     }
 
+    @SuppressWarnings("unchecked")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
-            case EventMessage.DELETE_HISTORY:
-                int count = (int) msg.getData();
-                mSettingsFragment.hideAlertDialog();
-                mSettingsFragment.showSnackbar("删除成功 共 " + count + " 条记录");
-                break;
             case EventMessage.RESTORE_FAVORITE:
                 List<Comic> list = (List<Comic>) msg.getData();
-                mSettingsFragment.hideAlertDialog();
-                mSettingsFragment.showSnackbar("恢复成功 共 " + list.size() + " 条记录");
+                mSettingsFragment.hideProgressDialog();
+                String text = mSettingsFragment.getString(R.string.settings_backup_restore_success) + list.size();
+                mSettingsFragment.showSnackbar(text);
                 break;
         }
     }

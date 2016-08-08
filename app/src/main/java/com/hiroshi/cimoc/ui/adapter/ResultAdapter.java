@@ -51,7 +51,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
-        viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
+        viewHolder.comicSource.setText(Kami.getSourceTitle(comic.getSource()));
         viewHolder.comicUpdate.setText(comic.getUpdate());
         PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());

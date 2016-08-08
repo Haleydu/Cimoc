@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
@@ -27,6 +28,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
         @BindView(R.id.item_comic_source) TextView comicSource;
+        @BindView(R.id.item_comic_new) ImageView comicNew;
 
         public ViewHolder(View view) {
             super(view);
@@ -48,7 +50,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         MiniComic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicSource.setText(Kami.getSourceById(comic.getSource()));
+        viewHolder.comicSource.setText(Kami.getSourceTitle(comic.getSource()));
         PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
     }
@@ -64,9 +66,15 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
     }
 
     public void update(MiniComic comic) {
-        mDataSet.remove(comic);
-        mDataSet.add(0, comic);
-        notifyDataSetChanged();
+        int position = mDataSet.indexOf(comic);
+        if (position != -1) {
+            mDataSet.remove(comic);
+            mDataSet.add(0, comic);
+            notifyItemMoved(position, 0);
+        } else {
+            mDataSet.add(0, comic);
+            notifyItemInserted(0);
+        }
     }
 
     public void removeById(long id) {

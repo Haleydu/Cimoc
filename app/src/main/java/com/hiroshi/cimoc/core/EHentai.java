@@ -27,7 +27,7 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected List<Comic> parseSearch(String html) {
+    protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Node> nodes = body.list("#ig > div > table > tbody > tr");
         List<Comic> list = new LinkedList<>();
@@ -82,7 +82,8 @@ public class EHentai extends Manga {
         String[] array = new String[list.size()];
         for (int i = 0; i != list.size(); ++i) {
             String url = list.get(i).attr("href");
-            String result = execute(url);
+            Request request = new Request.Builder().url(url).build();
+            String result = execute(request);
             if (result != null) {
                 Node node = MachiSoup.body(result);
                 array[i] = node.attr("#sm", "src");
@@ -91,6 +92,16 @@ public class EHentai extends Manga {
             }
         }
         return array;
+    }
+
+    @Override
+    protected Request buildCheckRequest(String cid) {
+        return null;
+    }
+
+    @Override
+    protected String parseCheck(String html) {
+        return null;
     }
 
 }

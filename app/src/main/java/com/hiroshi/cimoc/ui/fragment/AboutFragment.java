@@ -1,10 +1,12 @@
 package com.hiroshi.cimoc.ui.fragment;
 
-import android.support.design.widget.Snackbar;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.OnClick;
 
@@ -16,30 +18,25 @@ public class AboutFragment extends BaseFragment {
     private boolean isEnable;
     private int count;
 
-    @OnClick(R.id.about_resource_btn) void onClick() {
+    @OnClick(R.id.about_support_btn) void onSupportClick() {
+        ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        manager.setPrimaryClip(ClipData.newPlainText(null, getString(R.string.about_support_email)));
+        showSnackbar(R.string.about_already_clip);
+    }
+
+    @OnClick(R.id.about_resource_btn) void onResourceClick() {
         if (++count > 9) {
             isEnable = !isEnable;
-            CimocApplication.getPreferences().edit().putBoolean(CimocApplication.PREF_EX, isEnable).apply();
-            if (getView() != null) {
-                String msg = isEnable ? "重启软件开启 EHentai" : "重启软件关闭 EHentai";
-                Snackbar.make(getView(), msg, Snackbar.LENGTH_SHORT).show();
-            }
+            CimocApplication.getPreferences().putBoolean(PreferenceMaster.PREF_EX, isEnable);
+            showSnackbar(isEnable ? R.string.about_turn_on : R.string.about_turn_off);
             count = 0;
         }
     }
 
     @Override
-    protected void initPresenter() {}
-
-    @Override
     protected void initView() {
-        isEnable = CimocApplication.getPreferences().getBoolean(CimocApplication.PREF_EX, false);
+        isEnable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
         count = 0;
-    }
-
-    @Override
-    protected BasePresenter getPresenter() {
-        return null;
     }
 
     @Override

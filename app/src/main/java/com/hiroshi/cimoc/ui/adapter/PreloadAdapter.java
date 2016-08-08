@@ -8,84 +8,49 @@ import com.hiroshi.cimoc.model.Chapter;
 public class PreloadAdapter {
     
     private Chapter[] array;
-    private int[] offset;
-    private int current;
-    
     private int index;
     private int prev;
     private int next;
     
-    public PreloadAdapter(Chapter[] array, int index, int current) {
+    public PreloadAdapter(Chapter[] array, int index) {
         this.array = array;
         this.index = index;
-        this.current = current;
-
-        offset = new int[array.length + 1];
-        offset[index] = current;
-        prev = index - 1;
+        prev = index + 1;
         next = index;
     }
     
     public Chapter getPrevChapter() {
-        return prev >= 0 ? array[prev] : null;
+        return prev < array.length ? array[prev] : null;
     }
     
     public Chapter getNextChapter() {
-        return next < array.length ? array[next] : null;
+        return next >= 0 ? array[next] : null;
     }
 
-    public Chapter getValidChapter() {
-        if (prev < index && index < next) {
+    public Chapter prevChapter() {
+        if (++index < prev) {
             return array[index];
         }
         return null;
     }
 
-    public int getMax() {
-        return offset[index + 1] - offset[index];
+    public Chapter nextChapter() {
+        if (--index > next) {
+            return array[index];
+        }
+        return null;
     }
 
-    public int getValidProgress() {
-        return current - offset[index] + 1;
-    }
-    
-    public boolean moveToPosition(int position) {
-        if (current == position) {
-            return false;
-        }
-        current = position;
-        if (index == -1) {
-            ++index;
-            return true;
-        }
-        if (index == offset.length - 1) {
-            --index;
-            return true;
-        }
-        if (position == offset[index] - 1){
-            --index;
-            return true;
-        }
-        if (position == offset[index + 1]) {
-            ++index;
-            return true;
-        }
-        return false;
+    public Chapter movePrev() {
+        return array[prev++];
     }
 
-    public int getCurrentOffset() {
-        return offset[index];
+    public Chapter moveNext() {
+        return array[next--];
     }
-    
-    public void movePrev(int value) {
-        offset[prev] = offset[prev + 1] - value;
-        --prev;
+
+    public boolean isLoad() {
+        return prev != next + 1;
     }
-    
-    public void moveNext(int value) {
-        offset[next + 1] = offset[next] + value;
-        ++next;
-    }
-    
     
 }

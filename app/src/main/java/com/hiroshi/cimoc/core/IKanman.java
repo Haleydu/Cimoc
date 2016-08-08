@@ -31,7 +31,7 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected List<Comic> parseSearch(String html) {
+    protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
         for (Node node : body.list("#detail > li > a")) {
@@ -95,7 +95,7 @@ public class IKanman extends Manga {
                 JSONObject info = new JSONObject(jsonString);
                 JSONArray array = info.getJSONArray("images");
                 String[] images = new String[array.length()];
-                for (int i = 0; i != array.length(); ++i) {
+                for (int i = 0; i != images.length; ++i) {
                     images[i] = "http://i.hamreus.com:8080" + array.getString(i);
                 }
                 return images;
@@ -104,6 +104,18 @@ public class IKanman extends Manga {
             }
         }
         return null;
+    }
+
+    @Override
+    protected Request buildCheckRequest(String cid) {
+        String url = host + "/comic/" + cid;
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    protected String parseCheck(String html) {
+        Node body = MachiSoup.body(html);
+        return body.text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
     }
 
 }

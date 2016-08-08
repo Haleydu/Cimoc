@@ -9,7 +9,6 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupp
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.core.Kami;
 
 import java.io.IOException;
@@ -28,19 +27,27 @@ public class ControllerBuilderFactory {
 
     public static PipelineDraweeControllerBuilder getControllerBuilder(int source, Context context) {
         if (builderArray.get(source) == null) {
-            ImagePipelineFactory factory = buildFactory(context.getApplicationContext(), source);
+            ImagePipelineFactory factory;
+            if (source == Kami.SOURCE_EHENTAI) {
+                factory = buildFactory(context.getApplicationContext(), source, "igneous=583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12");
+            } else {
+                factory = buildFactory(context.getApplicationContext(), source, null);
+            }
             builderArray.put(source, new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get());
         }
         return builderArray.get(source);
     }
 
-    private static ImagePipelineFactory buildFactory(Context context, final int source) {
+    private static ImagePipelineFactory buildFactory(Context context, final int source, final String cookie) {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-                String referer = Kami.getRefererById(source);
+                String referer = Kami.getReferer(source);
                 Request.Builder request = chain.request().newBuilder();
                 request.addHeader("Referer", referer);
+                if (cookie != null) {
+                    request.header("Cookie", cookie);
+                }
                 return chain.proceed(request.build());
             }
         }).build();

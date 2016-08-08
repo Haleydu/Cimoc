@@ -9,28 +9,85 @@
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 
-    <string name="hint_for_search">请输入漫画名</string>
-    <string name="empty_for_search">关键字不能为空</string>
+    <string name="cimoc_search_hint">请输入漫画名</string>
+    <string name="cimoc_empty_error">关键字不能为空</string>
+    <string name="cimoc_select_source">图源选择</string>
 
+    <string name="result">搜索结果</string>
     <string name="result_update">最后更新：</string>
     <string name="result_source">来源：</string>
+    <string name="result_empty">搜索结果为空</string>
 
+    <string name="detail">详情</string>
     <string name="detail_header_update">最后更新：</string>
-    <string name="detail_failure">获取详情失败 :(</string>
+    <string name="detail_error">解析错误或此漫画已被屏蔽</string>
+    <string name="detail_favorite">收藏成功</string>
+    <string name="detail_unfavorite">取消收藏成功</string>
 
-    <string name="reader_absence">前面没有了 :(</string>
+    <string name="favorite_delete_confirm">是否删除该漫画</string>
+    <string name="favorite_update_confirm">是否检查更新</string>
 
-    <string name="about_version">version: 1.0.0</string>
+    <string name="history_delete_confirm">是否删除该历史纪录</string>
+    <string name="history_clear_confirm">是否清除所有历史纪录</string>
+
+    <string name="reader_prev_none">前面没有了</string>
+    <string name="reader_next_none">后面没有了</string>
+    <string name="reader_load_prev">正在加载上一话</string>
+    <string name="reader_load_next">正在加载下一话</string>
+    <string name="reader_load_error">加载错误</string>
+    <string name="reader_load_success">加载成功</string>
+    <string name="reader_picture_loading">正在加载中..</string>
 
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
     <string name="settings_backup_save_summary">备份到本地文件</string>
+    <string name="settings_backup_save_success">备份成功 数量为 </string>
+    <string name="settings_backup_save_fail">备份失败</string>
+    <string name="settings_backup_save_not_found">没有找到备份文件</string>
+    <string name="settings_backup_save_doing">正在备份..</string>
     <string name="settings_backup_restore">恢复</string>
     <string name="settings_backup_restore_summary">从本地文件中恢复</string>
+    <string name="settings_backup_restore_success">恢复成功 数量为 </string>
+    <string name="settings_backup_restore_doing">正在恢复..</string>
+    <string name="settings_reader">阅读设置</string>
+    <string name="settings_reader_mode">阅读模式</string>
+    <string name="settings_reader_volume">音量键翻页</string>
+    <string name="settings_reader_volume_summary">仅限翻页模式</string>
     <string name="settings_other">其他设置</string>
-    <string name="settings_other_history">清除历史纪录</string>
+    <string name="settings_other_nightly">夜间模式</string>
+    <string name="settings_other_nightly_summary">全局夜间模式</string>
+    <string name="settings_other_home">首页设置</string>
     <string name="settings_other_cache">清除缓存</string>
+    <string name="settings_other_cache_doing">正在清除..</string>
+    <string name="settings_other_cache_success">清除成功</string>
+    <string name="settings_select_home">首页选择</string>
+    <string name="settings_select_mode">阅读模式选择</string>
+    <string name="settings_select_file">文件选择</string>
 
+    <string name="about_version">version: 1.1.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
+    <string name="about_support">支持作者</string>
+    <string name="about_support_summary">如果喜欢本应用，不妨支持一下作者哟</string>
+    <string name="about_support_account">支付宝账号：cimoc_app@163.com</string>
+    <string name="about_support_email">cimoc_app@163.com</string>
+    <string name="about_support_feedback">该邮箱也用于意见反馈</string>
+    <string name="about_already_clip">邮箱已复制到剪切板</string>
+    <string name="about_turn_on">重启软件打开隐藏图源</string>
+    <string name="about_turn_off">重启软件关闭隐藏图源</string>
+
+    <string name="dialog_confirm">操作确认</string>
+    <string name="dialog_positive">确定</string>
+    <string name="dialog_negative">取消</string>
+
+    <string name="source_ikanman">看漫画</string>
+    <string name="source_dmzj">动漫之家</string>
+    <string name="source_hhaazz">汗汗漫画</string>
+    <string name="source_cctuku">CC图库</string>
+    <string name="source_u17">有妖气</string>
+    <string name="source_ehentai">E-Hentai</string>
+    <string name="source_exhentai">ExHentai</string>
+
+    <string name="common_network_error">网络错误</string>
+
 </resources>

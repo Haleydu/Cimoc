@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.1.0"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -38,8 +38,8 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'org.greenrobot:greendao:3.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.facebook.fresco:fresco:0.11.0'
-    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.11.0'
+    compile 'com.facebook.fresco:fresco:0.12.0'
+    compile 'com.facebook.fresco:imagepipeline-okhttp3:0.12.0'
     compile 'org.jsoup:jsoup:1.9.2'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
 }

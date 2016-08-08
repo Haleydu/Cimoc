@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -26,10 +25,7 @@ import butterknife.BindView;
  */
 public class ResultActivity extends BaseActivity {
 
-    public static final String EXTRA_KEYWORD = "extra_keyword";
-    public static final String EXTRA_SOURCE = "extra_source";
-
-    @BindView(R.id.result_comic_list) RecyclerView mResultList;
+    @BindView(R.id.result_comic_list) RecyclerView mRecyclerView;
     @BindView(R.id.result_progress_bar) ProgressBar mProgressBar;
     @BindView(R.id.result_layout) LinearLayout mLinearLayout;
 
@@ -50,7 +46,7 @@ public class ResultActivity extends BaseActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                onBackPressed();
             }
         });
     }
@@ -59,31 +55,38 @@ public class ResultActivity extends BaseActivity {
     protected void initView() {
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
-        mResultList.setLayoutManager(mLayoutManager);
-        mResultList.setAdapter(mResultAdapter);
-        mResultList.addItemDecoration(mResultAdapter.getItemDecoration());
-        mResultList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mResultAdapter);
+        mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mPresenter.onScrolled(dy);
+                mPresenter.onScrolled(dy, mLayoutManager.findLastVisibleItemPosition(), mResultAdapter.getItemCount());
             }
         });
         mResultAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                mPresenter.onItemClick(position);
+                Comic comic = mResultAdapter.getItem(position);
+                Intent intent = DetailActivity.createIntent(ResultActivity.this, comic.getId(), comic.getSource(), comic.getCid());
+                startActivity(intent);
             }
         });
     }
 
     @Override
-    protected int getLayoutView() {
+    protected int getLayoutRes() {
         return R.layout.activtiy_result;
     }
 
     @Override
+    protected View getLayoutView() {
+        return mLinearLayout;
+    }
+
+    @Override
     protected String getDefaultTitle() {
-        return "搜索结果";
+        return getString(R.string.result);
     }
 
     @Override
@@ -91,32 +94,23 @@ public class ResultActivity extends BaseActivity {
         return mPresenter;
     }
 
-    public void hideProgressBar() {
+    public void addResultSet(List<Comic> list) {
+        if (list == null) {
+            showSnackbar(R.string.common_network_error);
+        } else if (list.isEmpty() && mResultAdapter.getItemCount() == 0) {
+            showSnackbar(R.string.result_empty);
+        } else {
+            mResultAdapter.addAll(list);
+        }
+
         if (mProgressBar.isShown()) {
             mProgressBar.setVisibility(View.GONE);
-            mResultList.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 
-    public void showSnackbar(String msg) {
-        if (mLinearLayout.isShown()) {
-            Snackbar.make(mLinearLayout, msg, Snackbar.LENGTH_SHORT).show();
-        }
-    }
-
-    public void addAll(List<Comic> list) {
-        mResultAdapter.addAll(list);
-    }
-
-    public int findLastItemPosition() {
-        return mLayoutManager.findLastVisibleItemPosition();
-    }
-
-    public int getItemCount() {
-        return mLayoutManager.getItemCount();
-    }
-
-    public Comic getItem(int position) { return mResultAdapter.getItem(position); }
+    public static final String EXTRA_KEYWORD = "a";
+    public static final String EXTRA_SOURCE = "b";
 
     public static Intent createIntent(Context context, String keyword, int source) {
         Intent intent = new Intent(context, ResultActivity.class);
