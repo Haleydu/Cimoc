@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Kami;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.utils.DialogFactory;
 import com.hiroshi.cimoc.utils.PreferenceMaster;
@@ -79,12 +78,7 @@ public class CimocFragment extends BaseFragment {
         choice = 0;
         boolean enable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
         array = enable ? R.array.ex_source_items : R.array.source_items;
-        if (enable) {
-            source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ,
-                    Kami.SOURCE_CCTUKU, Kami.SOURCE_EXHENTAI, Kami.SOURCE_EHENTAI };
-        } else {
-            source = new int[]{ Kami.SOURCE_IKANMAN, Kami.SOURCE_DMZJ, Kami.SOURCE_HHAAZZ, Kami.SOURCE_CCTUKU };
-        }
+        source = getResources().getIntArray(R.array.source_id_items);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected List<Comic> parseSearch(String html) {
+    protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Node> nodes = body.list("#ig > div > table > tbody > tr");
         List<Comic> list = new LinkedList<>();

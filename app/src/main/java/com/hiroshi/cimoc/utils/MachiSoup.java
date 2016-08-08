@@ -15,25 +15,44 @@ import java.util.regex.Pattern;
 public class MachiSoup {
 
     public static String match(String regex, String input, int group) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.find()) {
-            return matcher.group(group);
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.find()) {
+                return matcher.group(group);
+            }
+        } catch (Exception e) {
         }
         return null;
     }
 
     public static String[] match(String regex, String input, int... group) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.find()) {
-            String[] result = new String[group.length];
-            for (int i = 0; i != result.length; ++i) {
-                result[i] = matcher.group(group[i]);
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.find()) {
+                String[] result = new String[group.length];
+                for (int i = 0; i != result.length; ++i) {
+                    result[i] = matcher.group(group[i]);
+                }
+                return result;
             }
-            return result;
+        } catch (Exception e) {
         }
         return null;
+    }
+
+    public static List<String> matchAll(String regex, String input, int group) {
+        LinkedList<String> list = new LinkedList<>();
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            while (matcher.find()) {
+                list.add(matcher.group(group));
+            }
+        } catch (Exception e) {
+        }
+        return list;
     }
 
     public static Node body(String html) {

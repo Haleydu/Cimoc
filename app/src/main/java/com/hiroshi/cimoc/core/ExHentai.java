@@ -17,7 +17,7 @@ import okhttp3.Request;
 public class ExHentai extends Manga {
 
     public ExHentai() {
-        super(Kami.SOURCE_EHENTAI, "https://exhentai.org");
+        super(Kami.SOURCE_EXHENTAI, "https://exhentai.org");
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ExHentai extends Manga {
     }
 
     @Override
-    protected List<Comic> parseSearch(String html) {
+    protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
         for (Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {

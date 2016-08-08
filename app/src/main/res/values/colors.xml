@@ -15,4 +15,5 @@
     <color name="trans_grey">#AA7F7F80</color>
     <color name="trans_light_grey">#AABEBEBE</color>
     <color name="trans_black">#AA000000</color>
+    <color name="trans_white">#00FFFFFF</color>
 </resources>

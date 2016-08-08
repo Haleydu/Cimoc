@@ -101,9 +101,9 @@ public class StreamReaderActivity extends ReaderActivity {
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
         float limitY = point.y / 3.0f;
-        if (position == 0 && draweeView.getId() == 0 && y < limitY) {
+        if (mRecyclerView.getChildAdapterPosition(draweeView) == 0 && y < limitY) {
             mPresenter.loadPrev();
-        } else {
+        } else if (!draweeView.retry()) {
             switchToolLayout();
         }
     }

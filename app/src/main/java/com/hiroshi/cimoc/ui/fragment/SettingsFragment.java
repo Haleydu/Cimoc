@@ -10,7 +10,7 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
-import com.hiroshi.cimoc.ui.activity.BaseActivity;
+import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.utils.DialogFactory;
 import com.hiroshi.cimoc.utils.PreferenceMaster;
 
@@ -63,9 +63,9 @@ public class SettingsFragment extends BaseFragment {
         mNightlyChoice = !mNightlyChoice;
         mNightlyBox.setChecked(mNightlyChoice);
         if (mNightlyChoice) {
-            ((BaseActivity) getActivity()).nightlyOn();
+            ((MainActivity) getActivity()).nightlyOn();
         } else {
-            ((BaseActivity) getActivity()).nightlyOff();
+            ((MainActivity) getActivity()).nightlyOff();
         }
         mPreference.putBoolean(PreferenceMaster.PREF_NIGHTLY, mNightlyChoice);
     }

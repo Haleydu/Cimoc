@@ -64,6 +64,10 @@ public class PicturePageAdapter extends PagerAdapter {
         notifyDataSetChanged();
     }
 
+    public boolean isToBoth() {
+        return isToLeft() && isToRight();
+    }
+
     public boolean isToLeft() {
         return current == left + 1;
     }

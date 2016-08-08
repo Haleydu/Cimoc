@@ -7,12 +7,12 @@
     android:layout_alignParentLeft="true"
     android:layout_alignParentTop="true"
     android:visibility="invisible"
-    android:padding="4dp"
     android:background="@color/trans_grey">
     <ImageView
         android:id="@+id/reader_back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="4dp"
         android:clickable="true"
         android:src="@drawable/ic_navigate_before_white_24dp"/>
 </FrameLayout>

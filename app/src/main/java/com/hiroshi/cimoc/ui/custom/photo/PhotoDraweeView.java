@@ -40,11 +40,9 @@ public class PhotoDraweeView extends SimpleDraweeView  {
         }
     }
 
-    public void retry() {
+    public boolean retry() {
         AbstractDraweeController controller = (AbstractDraweeController) getController();
-        if (controller != null) {
-            controller.onClick();
-        }
+        return controller != null && controller.onClick();
     }
 
     @Override public boolean onTouchEvent(MotionEvent event) {

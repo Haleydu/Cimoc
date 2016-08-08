@@ -33,7 +33,7 @@ public abstract class Manga {
         this.mClient = CimocApplication.getHttpClient();
     }
 
-    public void search(String keyword, int page) {
+    public void search(String keyword, final int page) {
         Request request = buildSearchRequest(keyword, page);
         if (request == null) {
             EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_FAIL, null));
@@ -41,7 +41,7 @@ public abstract class Manga {
             enqueueClient(request, new OnResponseSuccessHandler() {
                 @Override
                 public void onSuccess(String html) {
-                    List<Comic> list = parseSearch(html);
+                    List<Comic> list = parseSearch(html, page);
                     if (list == null || list.isEmpty()) {
                         EventBus.getDefault().post(new EventMessage(EventMessage.SEARCH_FAIL, null));
                     } else {
@@ -132,7 +132,7 @@ public abstract class Manga {
 
     protected abstract Request buildSearchRequest(String keyword, int page);
 
-    protected abstract List<Comic> parseSearch(String html);
+    protected abstract List<Comic> parseSearch(String html, int page);
 
     protected abstract Request buildIntoRequest(String cid);
 

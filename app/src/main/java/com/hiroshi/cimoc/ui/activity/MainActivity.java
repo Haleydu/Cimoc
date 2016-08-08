@@ -106,6 +106,14 @@ public class MainActivity extends BaseActivity {
         mNavigationView.setCheckedItem(id);
     }
 
+    public void nightlyOn() {
+        maskView.setBackgroundColor(getResources().getColor(R.color.trans_black));
+    }
+
+    public void nightlyOff() {
+        maskView.setBackgroundColor(getResources().getColor(R.color.trans_white));
+    }
+
     public void showProgressBar() {
         mFrameLayout.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);

@@ -35,7 +35,7 @@ public class Dmzj extends Manga {
     }
 
     @Override
-    protected List<Comic> parseSearch(String html) {
+    protected List<Comic> parseSearch(String html, int page) {
         String jsonString = MachiSoup.match("g_search_data = (.*);", html, 1);
         List<Comic> list = new LinkedList<>();
         if (jsonString != null) {

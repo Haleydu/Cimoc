@@ -2,7 +2,9 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +60,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initToolbar() {}
+
+    @Override
+    protected WindowManager.LayoutParams getParams() {
+        return new WindowManager.LayoutParams(
+                WindowManager.LayoutParams.TYPE_APPLICATION,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                PixelFormat.TRANSLUCENT);
+    }
 
     @Override
     protected BasePresenter getPresenter() {

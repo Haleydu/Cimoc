@@ -16,7 +16,7 @@ import javax.crypto.spec.DESKeySpec;
  */
 public class Decryption {
 
-    public static String desDecrypt(String keyString, String cipherString) throws Exception  {
+    public static String desDecrypt(String keyString, String cipherString) throws Exception {
         byte[] cipherBytes = Base64.decode(cipherString, Base64.DEFAULT);
         DESKeySpec keySpec = new DESKeySpec(keyString.getBytes());
         Key key = SecretKeyFactory.getInstance("DES").generateSecret(keySpec);
@@ -24,6 +24,11 @@ public class Decryption {
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] result = cipher.doFinal(cipherBytes);
         return new String(result, "UTF-8");
+    }
+
+    public static String base64Decrypt(String cipherString) throws Exception {
+        byte[] cipherBytes = Base64.decode(cipherString, Base64.DEFAULT);
+        return new String(cipherBytes, "UTF-8");
     }
 
     public static String evalDecrypt(String jsCode) {

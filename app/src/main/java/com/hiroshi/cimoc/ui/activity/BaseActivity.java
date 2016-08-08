@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -23,8 +22,7 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private View nightlyView;
-
+    protected View maskView;
     protected Toolbar mToolbar;
 
     @Override
@@ -49,17 +47,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).removeViewImmediate(maskView);
         if (getPresenter() != null) {
             getPresenter().onDestroy();
         }
     }
 
     private void initNightly() {
-        nightlyView = new FrameLayout(this);
-        nightlyView.setBackgroundColor(getResources().getColor(R.color.trans_black));
+        maskView = new View(this);
+        ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).addView(maskView, getParams());
         boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHTLY, false);
         if (nightly) {
-            nightlyOn();
+            maskView.setBackgroundColor(getResources().getColor(R.color.trans_black));
         }
     }
 
@@ -72,17 +71,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void nightlyOn() {
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.MATCH_PARENT,
+    protected WindowManager.LayoutParams getParams() {
+        return new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.TYPE_APPLICATION,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
-        ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).addView(nightlyView, params);
-    }
-
-    public void nightlyOff() {
-        ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).removeView(nightlyView);
     }
 
     protected View getLayoutView() {

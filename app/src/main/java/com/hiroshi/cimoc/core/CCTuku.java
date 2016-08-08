@@ -29,8 +29,12 @@ public class CCTuku extends Manga {
     }
 
     @Override
-    protected List<Comic> parseSearch(String html) {
+    protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
+        int total = Integer.parseInt(MachiSoup.match("\\d+", body.text("div.title-banner > div > h1"), 0));
+        if (page > total) {
+            return null;
+        }
         List<Comic> list = new LinkedList<>();
         for (Node node : body.list(".main-list > div > div > div")) {
             String cid = node.attr("div:eq(1) > div:eq(0) > a", "href", "/", 2);

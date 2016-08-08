@@ -77,5 +77,11 @@
             android:paddingTop="2dp"
             android:textSize="14sp"
             android:text="@string/about_support_account"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="2dp"
+            android:textSize="14sp"
+            android:text="@string/about_support_feedback"/>
     </LinearLayout>
 </LinearLayout>

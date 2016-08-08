@@ -12,6 +12,7 @@ public class Kami {
     public static final int SOURCE_DMZJ = 1;
     public static final int SOURCE_HHAAZZ = 2;
     public static final int SOURCE_CCTUKU = 3;
+    public static final int SOURCE_U17 = 4;
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
 
@@ -26,6 +27,8 @@ public class Kami {
                 return R.string.source_hhaazz;
             case SOURCE_CCTUKU:
                 return R.string.source_cctuku;
+            case SOURCE_U17:
+                return R.string.source_u17;
             case SOURCE_EHENTAI:
                 return R.string.source_ehentai;
             case SOURCE_EXHENTAI:
@@ -44,6 +47,8 @@ public class Kami {
                 return "http://hhaazz.com";
             case SOURCE_CCTUKU:
                 return "http://m.tuku.cc";
+            case SOURCE_U17:
+                return "http://www.u17.com";
             case SOURCE_EHENTAI:
                 return "http://lofi.e-hentai.org";
             case SOURCE_EXHENTAI:
@@ -51,7 +56,7 @@ public class Kami {
         }
     }
 
-    private static Manga mIkanman, mDmzj, mHHAAZZ, mCCTuku, mExHentai, mEHentai;
+    private static Manga mIkanman, mDmzj, mHHAAZZ, mCCTuku, mU17, mExHentai, mEHentai;
 
     public static Manga getManga(int id) {
         switch (id) {
@@ -76,6 +81,11 @@ public class Kami {
                     mCCTuku = new CCTuku();
                 }
                 return mCCTuku;
+            case SOURCE_U17:
+                if (mU17 == null) {
+                    mU17 = new U17();
+                }
+                return mU17;
             case SOURCE_EHENTAI:
                 if (mEHentai == null) {
                     mEHentai = new EHentai();

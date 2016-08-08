@@ -153,7 +153,12 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
         if (progress != 1) {
             mViewPager.setCurrentItem(PicturePageAdapter.MAX_COUNT / 2 + progress);
         } else {
-            mViewPager.setLimit(LimitedViewPager.LIMIT_RIGHT);
+            if (mPageAdapter.isToBoth()) {
+                mViewPager.setLimit(LimitedViewPager.LIMIT_BOTH);
+                mPresenter.loadNext();
+            } else {
+                mViewPager.setLimit(LimitedViewPager.LIMIT_RIGHT);
+            }
             String text = progress + "/" + max;
             mChapterPage.setText(text);
         }

@@ -14,18 +14,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             fresco:actualImageScaleType="centerCrop"/>
-        <TextView
+        <ImageView
             android:id="@+id/item_comic_new"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:visibility="invisible"
             android:padding="2dp"
-            android:text="@string/favorite_comic_new"
-            android:textStyle="bold"
-            android:textColor="?colorAccent"
-            android:textSize="10sp"/>
+            android:visibility="invisible"
+            android:src="@drawable/flag_comic_new"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
