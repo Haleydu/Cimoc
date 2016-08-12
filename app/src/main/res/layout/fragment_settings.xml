@@ -36,7 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_backup_save"/>
                 <TextView
                     android:id="@+id/summary_ringtone"
@@ -44,7 +44,6 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="2dp"
                     android:textSize="14sp"
-                    android:textColor="@color/grey"
                     android:text="@string/settings_backup_save_summary"/>
             </LinearLayout>
             <LinearLayout
@@ -60,14 +59,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_backup_restore"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="2dp"
                     android:textSize="14sp"
-                    android:textColor="@color/grey"
                     android:text="@string/settings_backup_restore_summary"/>
             </LinearLayout>
         </LinearLayout>
@@ -98,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_reader_mode"/>
                 <TextView
                     android:id="@+id/settings_reader_mode_summary"
@@ -129,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@id/settings_reader_volume_checkbox"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_reader_volume"/>
                 <TextView
                     android:layout_width="match_parent"
@@ -137,8 +135,39 @@
                     android:layout_toLeftOf="@id/settings_reader_volume_checkbox"
                     android:layout_below="@id/settings_reader_volume_title"
                     android:textSize="14sp"
-                    android:textColor="@color/grey"
                     android:text="@string/settings_reader_volume_summary"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/settings_reader_split_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+                <CheckBox
+                    android:id="@+id/settings_reader_split_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/settings_reader_split_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_reader_split_checkbox"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text="@string/settings_reader_split"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_reader_split_checkbox"
+                    android:layout_below="@id/settings_reader_split_title"
+                    android:textSize="14sp"
+                    android:text="@string/settings_reader_split_summary"/>
             </RelativeLayout>
         </LinearLayout>
         <LinearLayout
@@ -177,7 +206,7 @@
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@id/settings_other_nightly_checkbox"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_other_nightly"/>
                 <TextView
                     android:layout_width="match_parent"
@@ -185,7 +214,6 @@
                     android:layout_toLeftOf="@id/settings_other_nightly_checkbox"
                     android:layout_below="@id/settings_other_nightly_title"
                     android:textSize="14sp"
-                    android:textColor="@color/grey"
                     android:text="@string/settings_other_nightly_summary"/>
             </RelativeLayout>
             <LinearLayout
@@ -201,7 +229,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_other_home"/>
                 <TextView
                     android:id="@+id/settings_other_home_summary"
@@ -223,7 +251,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_other_cache"/>
                 <TextView
                     android:id="@+id/settings_other_cache_summary"

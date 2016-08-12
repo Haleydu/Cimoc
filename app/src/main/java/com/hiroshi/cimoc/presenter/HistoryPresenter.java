@@ -1,11 +1,9 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.content.Intent;
-
-import com.hiroshi.cimoc.core.ComicManager;
+import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -30,16 +28,11 @@ public class HistoryPresenter extends BasePresenter {
         return mComicManager.listHistory();
     }
 
-    public void onItemClick(MiniComic comic) {
-        Intent intent = DetailActivity.createIntent(mHistoryFragment.getActivity(), comic.getId(), comic.getSource(), comic.getCid());
-        mHistoryFragment.startActivity(intent);
+    public void deleteHistory(MiniComic comic) {
+        mComicManager.deleteHistory(comic.getId());
     }
 
-    public void onPositiveClick(MiniComic comic) {
-        mComicManager.removeHistory(comic.getId());
-    }
-
-    public void onHistoryClearClick() {
+    public void clearHistory() {
         mComicManager.cleanHistory();
     }
 
@@ -50,10 +43,13 @@ public class HistoryPresenter extends BasePresenter {
                 mHistoryFragment.updateItem((MiniComic) msg.getData());
                 break;
             case EventMessage.DELETE_HISTORY:
-                int count = (int) msg.getData();
                 mHistoryFragment.clearItem();
                 mHistoryFragment.hideProgressDialog();
-                mHistoryFragment.showSnackbar("删除成功 共 " + count + " 条记录");
+                String text = mHistoryFragment.getString(R.string.history_clear_success) + (int) msg.getData();
+                mHistoryFragment.showSnackbar(text);
+                break;
+            case EventMessage.COMIC_DELETE:
+                mHistoryFragment.removeItems((int) msg.getData());
                 break;
         }
     }

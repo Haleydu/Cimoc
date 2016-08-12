@@ -41,6 +41,7 @@
             android:textColor="@color/white"
             android:textSize="12sp"/>
     </LinearLayout>
+    <include layout="@layout/custom_mask"/>
     <include layout="@layout/custom_back_btn"/>
     <include layout="@layout/custom_seek_bar"/>
 </RelativeLayout>

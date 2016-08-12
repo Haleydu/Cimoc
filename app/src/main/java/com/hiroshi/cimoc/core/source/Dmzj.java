@@ -1,6 +1,7 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
@@ -22,7 +23,7 @@ import okhttp3.Request;
 public class Dmzj extends Manga {
 
     public Dmzj() {
-        super(Kami.SOURCE_DMZJ, "http://m.dmzj.com");
+        super(SourceManager.SOURCE_DMZJ, "http://m.dmzj.com");
     }
 
     @Override

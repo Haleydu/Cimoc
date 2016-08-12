@@ -1,9 +1,10 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.Decryption;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
@@ -19,7 +20,7 @@ import okhttp3.Request;
 public class CCTuku extends Manga {
 
     public CCTuku() {
-        super(Kami.SOURCE_CCTUKU, "http://m.tuku.cc");
+        super(SourceManager.SOURCE_CCTUKU, "http://m.tuku.cc");
     }
 
     @Override
@@ -86,7 +87,7 @@ public class CCTuku extends Manga {
         String[] rs = MachiSoup.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
         if (rs != null) {
             try {
-                String result = Decryption.evalDecrypt(rs[1]);
+                String result = DecryptionUtils.evalDecrypt(rs[1]);
                 String[] array = MachiSoup.match("pic_url='(.*?)';.*?tpf=(\\d+?);.*pages=(\\d+?);.*?pid=(.*?);.*?pic_extname='(.*?)';", result, 1, 2, 3, 4, 5);
                 if (array != null) {
                     int tpf = Integer.parseInt(array[1]) + 1;

@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +10,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.adapter.PictureStreamAdapter;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -38,9 +39,10 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     protected void initView() {
         super.initView();
+        boolean split = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_SPLIT, false);
         position = 0;
         mLayoutManager = new LinearLayoutManager(this);
-        mStreamAdapter = new PictureStreamAdapter(this, ControllerBuilderFactory.getControllerBuilder(source, this), this);
+        mStreamAdapter = new PictureStreamAdapter(this, ControllerBuilderFactory.getControllerBuilder(source, this), this, split);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mStreamAdapter);
@@ -114,9 +116,11 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    protected boolean isPortrait() {
+    protected void initOrientation() {
         int mode = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_VERTICAL_STREAM);
-        return mode == PreferenceMaster.MODE_HORIZONTAL_STREAM;
+        if (mode == PreferenceMaster.MODE_VERTICAL_STREAM) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
     }
 
     @Override

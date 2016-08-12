@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.manager;
 
 import android.database.Cursor;
 
@@ -74,7 +74,21 @@ public class ComicManager {
         });
     }
 
-    public void removeFavorite(long id) {
+    public void deleteBySource(final int source) {
+        mComicDao.getSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                List<Comic> list = mComicDao.queryBuilder()
+                        .where(Properties.Source.eq(source))
+                        .list();
+                for (Comic comic : list) {
+                    mComicDao.delete(comic);
+                }
+            }
+        });
+    }
+
+    public void deleteFavorite(long id) {
         Comic comic = mComicDao.load(id);
         if (comic.getHistory() == null) {
             mComicDao.delete(comic);
@@ -84,7 +98,7 @@ public class ComicManager {
         }
     }
 
-    public void removeHistory(long id) {
+    public void deleteHistory(long id) {
         Comic comic = mComicDao.load(id);
         if (comic.getFavorite() == null) {
             mComicDao.delete(comic);
@@ -121,19 +135,8 @@ public class ComicManager {
                 .where(ComicDao.Properties.Favorite.isNotNull())
                 .buildCursor()
                 .query();
-        MiniComic[] array = new MiniComic[cursor.getCount()];
-        int count = 0;
-        while (cursor.moveToNext()) {
-            long id = cursor.getLong(0);
-            int source = cursor.getInt(1);
-            String cid = cursor.getString(2);
-            String title = cursor.getString(3);
-            String cover = cursor.getString(4);
-            String update = cursor.getString(5);
-            array[count++] = new MiniComic(id, source, cid, title, cover, update, false);
-        }
-        cursor.close();
-        return array;
+        List<MiniComic> list = listByCursor(cursor);
+        return list.toArray(new MiniComic[cursor.getCount()]);
     }
 
     public List<MiniComic> listFavorite() {

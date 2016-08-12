@@ -1,6 +1,7 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
@@ -12,17 +13,17 @@ import java.util.List;
 import okhttp3.Request;
 
 /**
- * Created by Hiroshi on 2016/8/6.
+ * Created by Hiroshi on 2016/8/9.
  */
-public class ExHentai extends Manga {
+public class Wnacg extends Manga {
 
-    public ExHentai() {
-        super(Kami.SOURCE_EXHENTAI, "https://exhentai.org");
+    public Wnacg() {
+        super(SourceManager.SOURCE_WNACG, "http://www.wnacg.com");
     }
 
     @Override
     protected Request buildSearchRequest(String keyword, int page) {
-        String url = host + "?f_search=" + keyword + "&page=" + (page - 1);
+        String url = host + "/albums-index-page-" + page + "-sname-" + keyword + ".html";
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
     }
 
@@ -30,16 +31,11 @@ public class ExHentai extends Manga {
     protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
-            String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
-            cid = cid.substring(host.length() + 3, cid.length() - 1);
-            String title = node.text("td:eq(2) > div > div:eq(2) > a");
-            String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
-            if (cover == null) {
-                String temp = node.text("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
-                cover = host + "/" + temp;
-            }
-            String update = node.text("td:eq(1)", 0, 10);
+        for (MachiSoup.Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
+            String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
+            String title = node.text("div.info > div.title > a");
+            String cover = node.attr("div.pic_box > a > img", "src");
+            String update = node.text("div.info > div.info_col", 0, 10);
             String author = node.text("td:eq(3) > div > a");
             list.add(new Comic(source, cid, title, cover, update, author, true));
         }
@@ -55,7 +51,7 @@ public class ExHentai extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Node body = MachiSoup.body(html);
+        MachiSoup.Node body = MachiSoup.body(html);
         String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
         int size = Integer.parseInt(length) % 20 == 0 ? Integer.parseInt(length) / 20 : Integer.parseInt(length) / 20 + 1;
         for (int i = 0; i != size; ++i) {
@@ -80,8 +76,8 @@ public class ExHentai extends Manga {
 
     @Override
     protected String[] parseBrowse(String html) {
-        Node body = MachiSoup.body(html);
-        List<Node> list = body.list("#gdt > div > a");
+        MachiSoup.Node body = MachiSoup.body(html);
+        List<MachiSoup.Node> list = body.list("#gdt > div > a");
         String[] array = new String[list.size()];
         for (int i = 0; i != array.length; ++i) {
             String url = list.get(i).attr("href");

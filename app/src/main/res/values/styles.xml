@@ -1,24 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="windowNoTitle">true</item>
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
     </style>
 
-    <style name="TextInputTheme" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <style name="BaseThemeDark" parent="Theme.AppCompat.NoActionBar">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="ReaderTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="BaseAppTheme" parent="BaseTheme">
+        <item name="colorBackgroundAccent">@color/white</item>
+        <item name="colorBackgroundTrans">@color/colorBackgroundTrans</item>
+        <item name="colorChapterText">@color/button_chapter_color</item>
+        <item name="backgroundChapter">@drawable/button_chapter_selector</item>
+        <item name="progressDrawable">@drawable/progress_trans</item>
+        <item name="alertDialogTheme">@style/AlertTheme</item>
+    </style>
+
+    <style name="BaseAppThemeDark" parent="BaseThemeDark">
+        <item name="colorBackgroundAccent">@color/black</item>
+        <item name="colorBackgroundTrans">@color/colorBackgroundTransDark</item>
+        <item name="colorChapterText">@color/button_chapter_color_dark</item>
+        <item name="backgroundChapter">@drawable/button_chapter_selector_dark</item>
+        <item name="progressDrawable">@drawable/progress_trans_dark</item>
+        <item name="alertDialogTheme">@style/AlertThemeDark</item>
+    </style>
+
+    <style name="AppTheme" parent="BaseAppTheme">
+    </style>
+
+    <style name="AppThemeDark" parent="BaseThemeDark">
+    </style>
+
+    <style name="TextInputTheme" parent="BaseTheme">
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <style name="ReaderTheme" parent="BaseAppThemeDark">
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.Dialog.Alert" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="AlertTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AlertThemeDark" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

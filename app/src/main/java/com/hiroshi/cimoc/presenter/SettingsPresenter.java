@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.ComicManager;
+import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
@@ -27,14 +27,14 @@ public class SettingsPresenter extends BasePresenter {
     }
 
     public void onCacheBtnClick() {
-        mSettingsFragment.showProgressDialog(R.string.settings_other_cache_doing);
+        mSettingsFragment.showProgressDialog();
         FileUtils.deleteDir(mSettingsFragment.getActivity().getCacheDir());
         mSettingsFragment.showSnackbar(R.string.settings_other_cache_success);
         mSettingsFragment.hideProgressDialog();
     }
 
     public void onBackupBtnClick() {
-        mSettingsFragment.showProgressDialog(R.string.settings_backup_save_doing);
+        mSettingsFragment.showProgressDialog();
         List<Comic> list = mComicManager.listBackup();
         if (BackupUtils.saveComic(list)) {
             String text = mSettingsFragment.getString(R.string.settings_backup_save_success) + list.size();
@@ -54,7 +54,7 @@ public class SettingsPresenter extends BasePresenter {
     }
 
     public void onRestorePositiveBtnClick(String name) {
-        mSettingsFragment.showProgressDialog(R.string.settings_backup_restore_doing);
+        mSettingsFragment.showProgressDialog();
         List<Comic> list = BackupUtils.restoreComic(name);
         mComicManager.restoreFavorite(list);
     }

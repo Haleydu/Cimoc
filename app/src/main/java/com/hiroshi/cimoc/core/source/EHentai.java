@@ -1,6 +1,7 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
@@ -17,7 +18,7 @@ import okhttp3.Request;
 public class EHentai extends Manga {
 
     public EHentai() {
-        super(Kami.SOURCE_EHENTAI, "http://lofi.e-hentai.org");
+        super(SourceManager.SOURCE_EHENTAI, "http://lofi.e-hentai.org");
     }
 
     @Override

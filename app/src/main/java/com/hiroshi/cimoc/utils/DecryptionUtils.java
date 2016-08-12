@@ -14,7 +14,7 @@ import javax.crypto.spec.DESKeySpec;
 /**
  * Created by Hiroshi on 2016/7/8.
  */
-public class Decryption {
+public class DecryptionUtils {
 
     public static String desDecrypt(String keyString, String cipherString) throws Exception {
         byte[] cipherBytes = Base64.decode(cipherString, Base64.DEFAULT);

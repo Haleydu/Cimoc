@@ -11,7 +11,7 @@ import com.hiroshi.cimoc.ui.adapter.PicturePageAdapter;
 import com.hiroshi.cimoc.ui.custom.LimitedViewPager;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 

@@ -2,17 +2,16 @@ package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.support.v7.app.AlertDialog;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.utils.DialogFactory;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -24,17 +23,18 @@ public class SettingsFragment extends BaseFragment {
 
     @BindView(R.id.settings_other_home_summary) TextView mHomeSummary;
     @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
+    @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
     @BindView(R.id.settings_other_nightly_checkbox) CheckBox mNightlyBox;
 
     private SettingsPresenter mPresenter;
     private PreferenceMaster mPreference;
-    private AlertDialog mProgressDialog;
 
     private int mBackupChoice;
     private int mHomeChoice;
     private int mModeChoice;
     private int mTempChoice;
+    private boolean mSplitChoice;
     private boolean mVolumeChoice;
     private boolean mNightlyChoice;
 
@@ -48,9 +48,9 @@ public class SettingsFragment extends BaseFragment {
     @Override
     protected void initView() {
         mPreference = CimocApplication.getPreferences();
-        mProgressDialog = DialogFactory.buildCancelableFalseDialog(getActivity());
         mHomeChoice = mPreference.getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
         mModeChoice = mPreference.getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);
+        mSplitChoice = mPreference.getBoolean(PreferenceMaster.PREF_SPLIT, false);
         mVolumeChoice = mPreference.getBoolean(PreferenceMaster.PREF_VOLUME, false);
         mNightlyChoice = mPreference.getBoolean(PreferenceMaster.PREF_NIGHTLY, false);
         mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
@@ -62,12 +62,14 @@ public class SettingsFragment extends BaseFragment {
     @OnClick(R.id.settings_other_nightly_btn) void onNightlyBtnClick() {
         mNightlyChoice = !mNightlyChoice;
         mNightlyBox.setChecked(mNightlyChoice);
-        if (mNightlyChoice) {
-            ((MainActivity) getActivity()).nightlyOn();
-        } else {
-            ((MainActivity) getActivity()).nightlyOff();
-        }
         mPreference.putBoolean(PreferenceMaster.PREF_NIGHTLY, mNightlyChoice);
+        ((MainActivity) getActivity()).restart();
+    }
+
+    @OnClick(R.id.settings_reader_split_btn) void onSplitBtnClick() {
+        mSplitChoice = !mSplitChoice;
+        mSplitBox.setChecked(mSplitChoice);
+        mPreference.putBoolean(PreferenceMaster.PREF_SPLIT, mSplitChoice);
     }
 
     @OnClick(R.id.settings_reader_volume_btn) void onVolumeBtnClick() {
@@ -140,13 +142,12 @@ public class SettingsFragment extends BaseFragment {
         return R.layout.fragment_settings;
     }
 
-    public void showProgressDialog(int resId) {
-        mProgressDialog.setMessage(getString(resId));
-        mProgressDialog.show();
+    public void showProgressDialog() {
+        ((MainActivity) getActivity()).showProgressDialog();
     }
 
     public void hideProgressDialog() {
-        mProgressDialog.hide();
+        ((MainActivity) getActivity()).hideProgressDialog();
     }
 
 }

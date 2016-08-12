@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -36,7 +37,7 @@ public class ResultActivity extends BaseActivity {
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         mPresenter = new ResultPresenter(this, source, keyword);
     }
 
@@ -61,7 +62,9 @@ public class ResultActivity extends BaseActivity {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mPresenter.onScrolled(dy, mLayoutManager.findLastVisibleItemPosition(), mResultAdapter.getItemCount());
+                if (mLayoutManager.findLastVisibleItemPosition() >= mResultAdapter.getItemCount() - 4 && dy > 0) {
+                    mPresenter.loadNext();
+                }
             }
         });
         mResultAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
@@ -112,10 +115,10 @@ public class ResultActivity extends BaseActivity {
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";
 
-    public static Intent createIntent(Context context, String keyword, int source) {
+    public static Intent createIntent(Context context, String keyword, int sid) {
         Intent intent = new Intent(context, ResultActivity.class);
         intent.putExtra(EXTRA_KEYWORD, keyword);
-        intent.putExtra(EXTRA_SOURCE, source);
+        intent.putExtra(EXTRA_SOURCE, sid);
         return intent;
     }
 

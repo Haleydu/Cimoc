@@ -2,9 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,7 +13,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
@@ -36,6 +34,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @BindView(R.id.reader_back_layout) View mBackLayout;
     @BindView(R.id.reader_loading_layout) View mLoadingLayout;
     @BindView(R.id.reader_seek_bar) DiscreteSeekBar mSeekBar;
+    @BindView(R.id.reader_mask) View mNightMask;
 
     protected ReaderPresenter mPresenter;
     protected int source;
@@ -44,6 +43,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initView() {
+        if (CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHTLY, false)) {
+            mNightMask.setVisibility(View.VISIBLE);
+        }
         progress = max = 1;
         mSeekBar.setOnProgressChangeListener(this);
     }
@@ -62,11 +64,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initToolbar() {}
 
     @Override
-    protected WindowManager.LayoutParams getParams() {
-        return new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.TYPE_APPLICATION,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                PixelFormat.TRANSLUCENT);
+    protected void initTheme() {
+        setTheme(R.style.ReaderTheme);
     }
 
     @Override

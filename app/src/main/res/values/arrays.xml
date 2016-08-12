@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="source_items">
-        <item>看漫画 - IKanman</item>
-        <item>动漫之家 - Dmzj</item>
-        <item>汗汗漫画 - HHAAZZ</item>
-        <item>CC图库 - CCTuku</item>
-        <item>有妖气 - U17</item>
-    </string-array>
-    <string-array name="ex_source_items">
-        <item>看漫画 - IKanman</item>
-        <item>动漫之家 - Dmzj</item>
-        <item>汗汗漫画 - HHAAZZ</item>
-        <item>CC图库 - CCTuku</item>
-        <item>有妖气 - U17</item>
-        <item>E绅士 - EHentai</item>
-        <item>Ex绅士 - ExHentai</item>
-    </string-array>
     <integer-array name="source_id_items">
         <item>0</item>
         <item>1</item>

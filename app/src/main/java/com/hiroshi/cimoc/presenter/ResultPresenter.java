@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
@@ -26,7 +26,7 @@ public class ResultPresenter extends BasePresenter {
 
     public ResultPresenter(ResultActivity activity, int source, String keyword) {
         this.mResultActivity = activity;
-        this.mManga = Kami.getManga(source);
+        this.mManga = SourceManager.getManga(source);
         this.keyword = keyword;
         this.page = 0;
         this.isLoading = false;
@@ -44,8 +44,8 @@ public class ResultPresenter extends BasePresenter {
         mManga.cancel();
     }
 
-    public void onScrolled(int dy, int last, int count) {
-        if (last >= count - 4 && dy > 0 && !isLoading) {
+    public void loadNext() {
+        if (!isLoading) {
             isLoading = true;
             mManga.search(keyword, ++page);
         }

@@ -10,11 +10,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.presenter.CimocPresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.utils.DialogFactory;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -29,21 +29,21 @@ public class CimocFragment extends BaseFragment {
     @BindView(R.id.main_keyword_input) EditText mEditText;
     @BindView(R.id.main_search_btn) FloatingActionButton mSearchBtn;
 
-    private int[] source;
+    private CimocPresenter mPresenter;
+
     private int choice;
-    private int array;
 
     @OnClick(R.id.main_search_btn) void onClick() {
         String keyword = mEditText.getText().toString();
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.cimoc_empty_error));
         } else {
-            startActivity(ResultActivity.createIntent(getActivity(), keyword, source[choice]));
+            startActivity(ResultActivity.createIntent(getActivity(), keyword, mPresenter.getSid(choice)));
         }
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, array, choice,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.getItems(), choice,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -76,14 +76,21 @@ public class CimocFragment extends BaseFragment {
             }
         });
         choice = 0;
-        boolean enable = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_EX, false);
-        array = enable ? R.array.ex_source_items : R.array.source_items;
-        source = getResources().getIntArray(R.array.source_id_items);
     }
 
     @Override
     protected int getLayoutView() {
         return R.layout.fragment_cimoc;
+    }
+
+    @Override
+    protected void initPresenter() {
+        mPresenter = new CimocPresenter(this);
+    }
+
+    @Override
+    protected BasePresenter getPresenter() {
+        return mPresenter;
     }
 
 }

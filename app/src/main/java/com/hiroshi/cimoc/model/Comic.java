@@ -13,7 +13,7 @@ import org.greenrobot.greendao.annotation.Generated;
 public class Comic {
 
     @Id(autoincrement = true) private Long id;
-    @NotNull private Integer source;
+    @NotNull private int source;
     @NotNull private String cid;
     @NotNull private String title;
     @NotNull private String cover;
@@ -27,10 +27,9 @@ public class Comic {
     @Transient private String author;
     @Transient private Boolean status;
 
-    @Generated(hash = 1262295933)
-    public Comic(Long id, @NotNull Integer source, @NotNull String cid,
-            @NotNull String title, @NotNull String cover, @NotNull String update,
-            Long favorite, Long history, String last, Integer page) {
+    @Generated(hash = 1562578524)
+    public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
+                 @NotNull String update, Long favorite, Long history, String last, Integer page) {
         this.id = id;
         this.source = source;
         this.cid = cid;
@@ -47,7 +46,7 @@ public class Comic {
     public Comic() {
     }
 
-    public Comic(Integer source, String cid, String title, String cover, String update, String author, Boolean status) {
+    public Comic(int source, String cid, String title, String cover, String update, String author, Boolean status) {
         this.source = source;
         this.cid = cid;
         this.title = title;
@@ -57,7 +56,7 @@ public class Comic {
         this.status = status;
     }
 
-    public Comic(Integer source, String cid) {
+    public Comic(int source, String cid) {
         this.source = source;
         this.cid = cid;
     }
@@ -164,11 +163,11 @@ public class Comic {
         this.cid = cid;
     }
 
-    public Integer getSource() {
+    public int getSource() {
         return this.source;
     }
 
-    public void setSource(Integer source) {
+    public void setSource(int source) {
         this.source = source;
     }
 

@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.ui.activity.ReaderActivity;
@@ -37,7 +37,7 @@ public class ReaderPresenter extends BasePresenter {
     public ReaderPresenter(ReaderActivity activity, int source, String cid, String last, Integer page, Chapter[] array, int position) {
         mReaderActivity = activity;
         mPreloadAdapter = new PreloadAdapter(array, position);
-        mManga = Kami.getManga(source);
+        mManga = SourceManager.getManga(source);
         isShowNext = true;
         isShowPrev = true;
         count = 0;

@@ -4,11 +4,9 @@ import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
-import com.hiroshi.cimoc.model.DaoMaster.DevOpenHelper;
 import com.hiroshi.cimoc.model.DaoSession;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
-
-import org.greenrobot.greendao.database.Database;
+import com.hiroshi.cimoc.core.DBOpenHelper;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 
 import okhttp3.OkHttpClient;
 
@@ -24,15 +22,10 @@ public class CimocApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        initDatabase();
+        DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
+        daoSession = new DaoMaster(helper.getWritableDatabase()).newSession();
         preferences = new PreferenceMaster(getApplicationContext());
         Fresco.initialize(this);
-    }
-
-    private void initDatabase() {
-        DevOpenHelper helper = new DevOpenHelper(this, "cimoc.db");
-        Database db = helper.getWritableDb();
-        daoSession = new DaoMaster(db).newSession();
     }
 
     public static DaoSession getDaoSession() {

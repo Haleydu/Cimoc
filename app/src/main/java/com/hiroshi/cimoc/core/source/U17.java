@@ -1,9 +1,10 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.Decryption;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
@@ -18,7 +19,7 @@ import okhttp3.Request;
 public class U17 extends Manga {
 
     public U17() {
-        super(Kami.SOURCE_U17, "http://www.u17.com");
+        super(SourceManager.SOURCE_U17, "http://www.u17.com");
     }
 
     @Override
@@ -84,7 +85,7 @@ public class U17 extends Manga {
             try {
                 String[] images = new String[list.size()];
                 for (int i = 0; i != images.length; ++i) {
-                    images[i] = Decryption.base64Decrypt(list.get(i));
+                    images[i] = DecryptionUtils.base64Decrypt(list.get(i));
                 }
                 return images;
             } catch (Exception e) {

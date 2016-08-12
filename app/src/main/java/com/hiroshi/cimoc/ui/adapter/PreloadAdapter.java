@@ -28,15 +28,15 @@ public class PreloadAdapter {
     }
 
     public Chapter prevChapter() {
-        if (++index < prev) {
-            return array[index];
+        if (index + 1 < prev) {
+            return array[++index];
         }
         return null;
     }
 
     public Chapter nextChapter() {
-        if (--index > next) {
-            return array[index];
+        if (index - 1 > next) {
+            return array[--index];
         }
         return null;
     }

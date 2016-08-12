@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,11 +12,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
+import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.FavoriteAdapter;
 import com.hiroshi.cimoc.utils.DialogFactory;
@@ -50,7 +52,8 @@ public class FavoriteFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position) {
                 MiniComic comic = mFavoriteAdapter.cancelNew(position);
-                mPresenter.onItemClick(comic);
+                Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
+                startActivity(intent);
             }
         });
         mFavoriteAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
@@ -60,7 +63,7 @@ public class FavoriteFragment extends BaseFragment {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mPresenter.onPositiveClick(mFavoriteAdapter.getItem(position));
+                                mPresenter.deleteComic(mFavoriteAdapter.getItem(position));
                                 mFavoriteAdapter.remove(position);
                             }
                         }).show();
@@ -111,6 +114,10 @@ public class FavoriteFragment extends BaseFragment {
         mFavoriteAdapter.removeById(id);
     }
 
+    public void removeItems(int source) {
+        mFavoriteAdapter.removeBySource(source);
+    }
+
     public void addItems(List<MiniComic> list) {
         mFavoriteAdapter.addAll(0, list);
     }
@@ -133,10 +140,10 @@ public class FavoriteFragment extends BaseFragment {
             int count = 1;
             for (MiniComic comic : params) {
                 int source = comic.getSource();
-                if (source == Kami.SOURCE_EHENTAI) {
+                if (source >= 100) {
                     continue;
                 }
-                Manga manga = Kami.getManga(source);
+                Manga manga = SourceManager.getManga(source);
                 String update = manga.check(comic.getCid());
                 if (update != null && !comic.getUpdate().equals(update)) {
                     comic.setUpdate(update);

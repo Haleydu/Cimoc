@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core.base;
+package com.hiroshi.cimoc.core.source.base;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Chapter;
