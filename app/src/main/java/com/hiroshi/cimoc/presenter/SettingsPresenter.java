@@ -26,23 +26,17 @@ public class SettingsPresenter extends BasePresenter {
         mComicManager = ComicManager.getInstance();
     }
 
-    public void onCacheBtnClick() {
-        mSettingsFragment.showProgressDialog();
+    public void clearCache() {
         FileUtils.deleteDir(mSettingsFragment.getActivity().getCacheDir());
-        mSettingsFragment.showSnackbar(R.string.settings_other_cache_success);
-        mSettingsFragment.hideProgressDialog();
     }
 
-    public void onBackupBtnClick() {
-        mSettingsFragment.showProgressDialog();
+    public int backup() {
         List<Comic> list = mComicManager.listBackup();
         if (BackupUtils.saveComic(list)) {
-            String text = mSettingsFragment.getString(R.string.settings_backup_save_success) + list.size();
-            mSettingsFragment.showSnackbar(text);
+            return list.size();
         } else {
-            mSettingsFragment.showSnackbar(R.string.settings_backup_save_fail);
+            return -1;
         }
-        mSettingsFragment.hideProgressDialog();
     }
 
     public String[] getFiles() {
@@ -53,8 +47,7 @@ public class SettingsPresenter extends BasePresenter {
         return files;
     }
 
-    public void onRestorePositiveBtnClick(String name) {
-        mSettingsFragment.showProgressDialog();
+    public void restore(String name) {
         List<Comic> list = BackupUtils.restoreComic(name);
         mComicManager.restoreFavorite(list);
     }
@@ -65,9 +58,9 @@ public class SettingsPresenter extends BasePresenter {
         switch (msg.getType()) {
             case EventMessage.RESTORE_FAVORITE:
                 List<Comic> list = (List<Comic>) msg.getData();
-                mSettingsFragment.hideProgressDialog();
                 String text = mSettingsFragment.getString(R.string.settings_backup_restore_success) + list.size();
                 mSettingsFragment.showSnackbar(text);
+                mSettingsFragment.hideProgressDialog();
                 break;
         }
     }

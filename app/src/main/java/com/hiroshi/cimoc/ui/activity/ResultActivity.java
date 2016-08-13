@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,7 +11,6 @@ import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -35,7 +35,7 @@ public class ResultActivity extends BaseActivity {
     private ResultPresenter mPresenter;
 
     @Override
-    protected void initPresenter() {
+    protected void initPresenter(Bundle savedInstanceState) {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         mPresenter = new ResultPresenter(this, source, keyword);

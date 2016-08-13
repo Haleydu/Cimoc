@@ -25,7 +25,8 @@ public class SettingsFragment extends BaseFragment {
     @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
-    @BindView(R.id.settings_other_nightly_checkbox) CheckBox mNightlyBox;
+    @BindView(R.id.settings_reader_reverse_checkbox) CheckBox mReverseBox;
+    @BindView(R.id.settings_other_night_checkbox) CheckBox mNightBox;
 
     private SettingsPresenter mPresenter;
     private PreferenceMaster mPreference;
@@ -36,7 +37,8 @@ public class SettingsFragment extends BaseFragment {
     private int mTempChoice;
     private boolean mSplitChoice;
     private boolean mVolumeChoice;
-    private boolean mNightlyChoice;
+    private boolean mNightChoice;
+    private boolean mReverseChoice;
 
     private OnClickListener mSingleChoiceListener = new OnClickListener() {
         @Override
@@ -52,17 +54,19 @@ public class SettingsFragment extends BaseFragment {
         mModeChoice = mPreference.getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);
         mSplitChoice = mPreference.getBoolean(PreferenceMaster.PREF_SPLIT, false);
         mVolumeChoice = mPreference.getBoolean(PreferenceMaster.PREF_VOLUME, false);
-        mNightlyChoice = mPreference.getBoolean(PreferenceMaster.PREF_NIGHTLY, false);
+        mNightChoice = mPreference.getBoolean(PreferenceMaster.PREF_NIGHT, false);
+        mReverseChoice = mPreference.getBoolean(PreferenceMaster.PREF_REVERSE, false);
         mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
         mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
         mVolumeBox.setChecked(mVolumeChoice);
-        mNightlyBox.setChecked(mNightlyChoice);
+        mNightBox.setChecked(mNightChoice);
+        mReverseBox.setChecked(mReverseChoice);
     }
 
-    @OnClick(R.id.settings_other_nightly_btn) void onNightlyBtnClick() {
-        mNightlyChoice = !mNightlyChoice;
-        mNightlyBox.setChecked(mNightlyChoice);
-        mPreference.putBoolean(PreferenceMaster.PREF_NIGHTLY, mNightlyChoice);
+    @OnClick(R.id.settings_other_night_btn) void onNightBtnClick() {
+        mNightChoice = !mNightChoice;
+        mNightBox.setChecked(mNightChoice);
+        mPreference.putBoolean(PreferenceMaster.PREF_NIGHT, mNightChoice);
         ((MainActivity) getActivity()).restart();
     }
 
@@ -78,6 +82,12 @@ public class SettingsFragment extends BaseFragment {
         mPreference.putBoolean(PreferenceMaster.PREF_VOLUME, mVolumeChoice);
     }
 
+    @OnClick(R.id.settings_reader_reverse_btn) void onReverseClick() {
+        mReverseChoice = !mReverseChoice;
+        mReverseBox.setChecked(mReverseChoice);
+        mPreference.putBoolean(PreferenceMaster.PREF_REVERSE, mReverseChoice);
+    }
+
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
         final String[] array = mPresenter.getFiles();
         if (array == null) {
@@ -89,13 +99,13 @@ public class SettingsFragment extends BaseFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mBackupChoice = mTempChoice;
-                        mPresenter.onRestorePositiveBtnClick(array[mBackupChoice]);
+                        showProgressDialog();
+                        mPresenter.restore(array[mBackupChoice]);
                     }
                 }).show();
     }
 
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {
-        final int[] array = new int[] { R.id.drawer_cimoc, R.id.drawer_favorite, R.id.drawer_history };
         DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_home, R.array.home_items, mHomeChoice, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
@@ -120,11 +130,22 @@ public class SettingsFragment extends BaseFragment {
     }
 
     @OnClick(R.id.settings_backup_save_btn) void onSaveBtnClick() {
-        mPresenter.onBackupBtnClick();
+        showProgressDialog();
+        int size = mPresenter.backup();
+        if (size != -1) {
+            String text = getString(R.string.settings_backup_save_success) + size;
+            showSnackbar(text);
+        } else {
+            showSnackbar(R.string.settings_backup_save_fail);
+        }
+        hideProgressDialog();
     }
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
-        mPresenter.onCacheBtnClick();
+        showProgressDialog();
+        mPresenter.clearCache();
+        showSnackbar(R.string.settings_other_cache_success);
+        hideProgressDialog();
     }
 
     @Override

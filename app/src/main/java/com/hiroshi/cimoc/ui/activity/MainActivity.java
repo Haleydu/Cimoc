@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -80,7 +81,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void initPresenter() {
+    protected void initPresenter(Bundle savedInstanceState) {
         int home = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
         mPresenter = new MainPresenter(this, PreferenceMaster.getHomeId(home));
     }

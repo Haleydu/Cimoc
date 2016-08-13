@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer-array name="source_id_items">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>100</item>
-        <item>101</item>
-    </integer-array>
     <string-array name="home_items">
         <item>Cimoc</item>
         <item>我的漫画</item>

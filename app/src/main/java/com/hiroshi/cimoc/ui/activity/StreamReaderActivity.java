@@ -1,16 +1,15 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.content.pm.ActivityInfo;
 import android.graphics.Point;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 import com.hiroshi.cimoc.ui.adapter.PictureStreamAdapter;
+import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
-import com.hiroshi.cimoc.core.PreferenceMaster;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -26,67 +25,63 @@ public class StreamReaderActivity extends ReaderActivity {
     @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
 
     private PictureStreamAdapter mStreamAdapter;
-    private LinearLayoutManager mLayoutManager;
+    private PreCacheLayoutManager mLayoutManager;
 
-    private int position;
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mPresenter.setPage(progress);
-    }
+    private int position = 0;
 
     @Override
     protected void initView() {
-        super.initView();
-        boolean split = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_SPLIT, false);
-        position = 0;
-        mLayoutManager = new LinearLayoutManager(this);
-        mStreamAdapter = new PictureStreamAdapter(this, ControllerBuilderFactory.getControllerBuilder(source, this), this, split);
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mStreamAdapter);
-        mRecyclerView.addItemDecoration(mStreamAdapter.getItemDecoration());
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                switch (newState) {
-                    case RecyclerView.SCROLL_STATE_DRAGGING:
-                        hideToolLayout();
-                        break;
-                    case RecyclerView.SCROLL_STATE_IDLE:
-                    case RecyclerView.SCROLL_STATE_SETTLING:
-                        int item = mLayoutManager.findLastVisibleItemPosition();
-                        if (item == mStreamAdapter.getItemCount() - 1) {
-                            mPresenter.loadNext();
-                        }
-                        break;
-                }
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int item = mLayoutManager.findFirstVisibleItemPosition();
-                if (item != position) {
-                    position = item;
-                    if (dy > 0) {
-                        if (progress == max) {
-                            mPresenter.onChapterToNext();
-                        } else {
-                            setReadProgress(progress + 1);
-                        }
-                    } else if (dy < 0) {
-                        if (progress == 1) {
-                            mPresenter.onChapterToPrev();
-                        } else {
-                            setReadProgress(progress - 1);
-                        }
-                    } else {
-                        setReadProgress(progress);
+        if (shouldCreate()) {
+            super.initView();
+            boolean split = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_SPLIT, false);
+            mLayoutManager = new PreCacheLayoutManager(this);
+            mLayoutManager.setExtraSpace(8);
+            mStreamAdapter = new PictureStreamAdapter(this, ControllerBuilderFactory.getControllerBuilder(source, this), this, split);
+            mRecyclerView.setItemAnimator(null);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setAdapter(mStreamAdapter);
+            mRecyclerView.addItemDecoration(mStreamAdapter.getItemDecoration());
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    switch (newState) {
+                        case RecyclerView.SCROLL_STATE_DRAGGING:
+                            hideToolLayout();
+                            break;
+                        case RecyclerView.SCROLL_STATE_IDLE:
+                        case RecyclerView.SCROLL_STATE_SETTLING:
+                            int item = mLayoutManager.findLastVisibleItemPosition();
+                            if (item == mStreamAdapter.getItemCount() - 1) {
+                                mPresenter.loadNext();
+                            }
+                            break;
                     }
                 }
-            }
-        });
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    int item = mLayoutManager.findFirstVisibleItemPosition();
+                    if (item != position) {
+                        position = item;
+                        if (dy > 0) {
+                            if (progress == max) {
+                                mPresenter.onChapterToNext();
+                            } else {
+                                setReadProgress(progress + 1);
+                            }
+                        } else if (dy < 0) {
+                            if (progress == 1) {
+                                mPresenter.onChapterToPrev();
+                            } else {
+                                setReadProgress(progress - 1);
+                            }
+                        } else {
+                            setReadProgress(progress);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -113,14 +108,6 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_stream_reader;
-    }
-
-    @Override
-    protected void initOrientation() {
-        int mode = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_VERTICAL_STREAM);
-        if (mode == PreferenceMaster.MODE_VERTICAL_STREAM) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
     }
 
     @Override

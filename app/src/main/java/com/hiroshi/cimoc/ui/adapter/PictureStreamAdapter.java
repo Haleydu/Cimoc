@@ -43,7 +43,7 @@ public class PictureStreamAdapter extends BaseAdapter<String> {
     }
 
     public class ViewHolder extends BaseViewHolder {
-        @BindView(R.id.picture_image_view) PhotoDraweeView photoView;
+        @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
 
         public ViewHolder(View view) {
             super(view);

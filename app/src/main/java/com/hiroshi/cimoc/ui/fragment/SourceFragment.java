@@ -65,7 +65,7 @@ public class SourceFragment extends BaseFragment {
         final EditText editText = (EditText) view.findViewById(R.id.source_edit_text);
         builder.setTitle(R.string.source_add);
         builder.setView(view);
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 int sid = SourceManager.getId(editText.getText().toString());

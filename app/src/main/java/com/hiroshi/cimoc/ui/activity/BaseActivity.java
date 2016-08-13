@@ -29,7 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
         initToolbar();
-        initPresenter();
+        initPresenter(savedInstanceState);
         initView();
         if (getPresenter() != null) {
             getPresenter().onCreate();
@@ -49,7 +49,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initTheme() {
-        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHTLY, false);
+        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHT, false);
         if (nightly) {
             setTheme(R.style.AppThemeDark);
         } else {
@@ -78,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    protected void initPresenter() {}
+    protected void initPresenter(Bundle savedInstanceState) {}
 
     protected void initView() {}
 

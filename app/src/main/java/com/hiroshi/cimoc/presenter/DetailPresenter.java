@@ -44,9 +44,6 @@ public class DetailPresenter extends BasePresenter {
     public void onDestroy() {
         super.onDestroy();
         mManga.cancel();
-        if (mComic.getId() != null) {
-            mComicManager.updateComic(mComic);
-        }
     }
 
     public Comic getComic() {
@@ -91,18 +88,24 @@ public class DetailPresenter extends BasePresenter {
                 break;
             case EventMessage.COMIC_LAST_CHANGE:
                 String last = (String) msg.getData();
+                int page = (int) msg.getSecond();
                 mComic.setHistory(System.currentTimeMillis());
                 mComic.setLast(last);
-                mComic.setPage(1);
+                mComic.setPage(page);
                 if (mComic.getId() == null) {
                     long id = mComicManager.insertComic(mComic);
                     mComic.setId(id);
+                } else {
+                    mComicManager.updateComic(mComic);
                 }
                 EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, new MiniComic(mComic)));
                 mDetailActivity.setLastChapter(last);
                 break;
             case EventMessage.COMIC_PAGE_CHANGE:
                 mComic.setPage((Integer) msg.getData());
+                if (mComic.getId() != null) {
+                    mComicManager.updateComic(mComic);
+                }
                 break;
         }
     }

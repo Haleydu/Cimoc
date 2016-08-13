@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -59,7 +60,7 @@ public class DetailActivity extends BaseActivity {
     }
 
     @Override
-    protected void initPresenter() {
+    protected void initPresenter(Bundle savedInstanceState) {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);

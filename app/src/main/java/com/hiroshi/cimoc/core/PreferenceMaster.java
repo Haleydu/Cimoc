@@ -11,8 +11,8 @@ import com.hiroshi.cimoc.R;
 public class PreferenceMaster {
 
     public static final int MODE_HORIZONTAL_PAGE = 0;
-    public static final int MODE_HORIZONTAL_STREAM = 1;
-    public static final int MODE_VERTICAL_STREAM = 2;
+    public static final int MODE_PORTRAIT_STREAM = 1;
+    public static final int MODE_LANDSCAPE_STREAM = 2;
 
     public static final int HOME_CIMOC = 0;
     public static final int HOME_FAVORITE = 1;
@@ -21,8 +21,9 @@ public class PreferenceMaster {
     public static final String PREF_HOME = "pref_home";
     public static final String PREF_MODE = "pref_mode";
     public static final String PREF_VOLUME = "pref_volume";
-    public static final String PREF_NIGHTLY = "pref_nightly";
+    public static final String PREF_NIGHT = "pref_night";
     public static final String PREF_SPLIT = "pref_split";
+    public static final String PREF_REVERSE = "pref_reverse";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

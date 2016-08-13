@@ -138,6 +138,38 @@
                     android:text="@string/settings_reader_volume_summary"/>
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/settings_reader_reverse_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+                <CheckBox
+                    android:id="@+id/settings_reader_reverse_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/settings_reader_reverse_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_reader_reverse_checkbox"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text="@string/settings_reader_reverse"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_reader_reverse_checkbox"
+                    android:layout_below="@id/settings_reader_reverse_title"
+                    android:textSize="14sp"
+                    android:text="@string/settings_reader_reverse_summary"/>
+            </RelativeLayout>
+            <RelativeLayout
                 android:id="@+id/settings_reader_split_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -185,7 +217,7 @@
                 android:textSize="14sp"
                 android:text="@string/settings_other"/>
             <RelativeLayout
-                android:id="@+id/settings_other_nightly_btn"
+                android:id="@+id/settings_other_night_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -193,7 +225,7 @@
                 android:clickable="true"
                 android:background="?android:attr/selectableItemBackground">
                 <CheckBox
-                    android:id="@+id/settings_other_nightly_checkbox"
+                    android:id="@+id/settings_other_night_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -201,18 +233,18 @@
                     android:focusable="false"
                     android:background="@null"/>
                 <TextView
-                    android:id="@+id/settings_other_nightly_title"
+                    android:id="@+id/settings_other_night_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/settings_other_nightly_checkbox"
+                    android:layout_toLeftOf="@id/settings_other_night_checkbox"
                     android:textSize="16sp"
                     android:textColor="?android:attr/textColorPrimary"
                     android:text="@string/settings_other_nightly"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toLeftOf="@id/settings_other_nightly_checkbox"
-                    android:layout_below="@id/settings_other_nightly_title"
+                    android:layout_toLeftOf="@id/settings_other_night_checkbox"
+                    android:layout_below="@id/settings_other_night_title"
                     android:textSize="14sp"
                     android:text="@string/settings_other_nightly_summary"/>
             </RelativeLayout>

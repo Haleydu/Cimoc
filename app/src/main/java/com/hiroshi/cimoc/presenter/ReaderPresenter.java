@@ -31,10 +31,10 @@ public class ReaderPresenter extends BasePresenter {
 
     private String cid;
     private String last;
-    private Integer page;
+    private int page;
     private int status;
 
-    public ReaderPresenter(ReaderActivity activity, int source, String cid, String last, Integer page, Chapter[] array, int position) {
+    public ReaderPresenter(ReaderActivity activity, int source, String cid, String last, int page, Chapter[] array, int position) {
         mReaderActivity = activity;
         mPreloadAdapter = new PreloadAdapter(array, position);
         mManga = SourceManager.getManga(source);
@@ -109,10 +109,18 @@ public class ReaderPresenter extends BasePresenter {
         switchChapter(chapter.getCount(), chapter.getCount(), chapter.getTitle(), chapter.getPath());
     }
 
+    public int getChapterPosition() {
+        return mPreloadAdapter.getCurrent();
+    }
+
+    public Chapter getCurrentChapter() {
+        return mPreloadAdapter.currentChapter();
+    }
+
     private void switchChapter(int progress, int count, String title, String path) {
         mReaderActivity.updateChapterInfo(count, title);
         mReaderActivity.setReadProgress(progress);
-        EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, path));
+        EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, path, progress));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -124,11 +132,11 @@ public class ReaderPresenter extends BasePresenter {
                 if (!mPreloadAdapter.isLoad()) {
                     mReaderActivity.setNextImage(array);
                     chapter = mPreloadAdapter.moveNext();
-                    if (!chapter.getPath().equals(last) || page == null) {
+                    if (!chapter.getPath().equals(last) || page == -1) {
                         page = 1;
                     }
                     mReaderActivity.initLoad(page, array.length, chapter.getTitle());
-                    EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, chapter.getPath()));
+                    EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, chapter.getPath(), page));
                 } else {
                     if (status == LOAD_PREV) {
                         mReaderActivity.setPrevImage(array);

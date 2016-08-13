@@ -52,6 +52,8 @@
     <string name="settings_reader_mode">阅读模式</string>
     <string name="settings_reader_volume">音量键翻页</string>
     <string name="settings_reader_volume_summary">仅限翻页模式</string>
+    <string name="settings_reader_reverse">从右往左翻页</string>
+    <string name="settings_reader_reverse_summary">默认从左往右</string>
     <string name="settings_reader_split">自动切割分页</string>
     <string name="settings_reader_split_summary">仅限卷纸模式</string>
     <string name="settings_other">其他设置</string>
@@ -64,7 +66,7 @@
     <string name="settings_select_mode">阅读模式选择</string>
     <string name="settings_select_file">文件选择</string>
 
-    <string name="about_version">version: 1.1.1</string>
+    <string name="about_version">version: 1.2.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
