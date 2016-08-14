@@ -40,7 +40,6 @@ public class PicturePageAdapter extends PagerAdapter {
         this.builder = builder;
         this.listener = listener;
         this.left = MAX_COUNT / 2;
-        this.current = MAX_COUNT / 2 + 1;
         this.right = MAX_COUNT / 2 + 1;
     }
 

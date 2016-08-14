@@ -73,8 +73,16 @@ public class LimitedViewPager extends ViewPager {
         this.limit = limit;
     }
 
-    public int getLimit() {
-        return limit;
+    public boolean limitRight() {
+        return limit == LIMIT_RIGHT;
+    }
+
+    public boolean limitLeft() {
+        return limit == LIMIT_LEFT;
+    }
+
+    public boolean limitBoth() {
+        return limit == LIMIT_BOTH;
     }
 
 }

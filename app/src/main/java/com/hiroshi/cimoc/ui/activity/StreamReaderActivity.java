@@ -65,13 +65,13 @@ public class StreamReaderActivity extends ReaderActivity {
                         position = item;
                         if (dy > 0) {
                             if (progress == max) {
-                                mPresenter.onChapterToNext();
+                                mPresenter.toNextChapter();
                             } else {
                                 setReadProgress(progress + 1);
                             }
                         } else if (dy < 0) {
                             if (progress == 1) {
-                                mPresenter.onChapterToPrev();
+                                mPresenter.toPrevChapter();
                             } else {
                                 setReadProgress(progress - 1);
                             }

@@ -10,7 +10,9 @@ import com.hiroshi.cimoc.core.source.EHentai;
 import com.hiroshi.cimoc.core.source.ExHentai;
 import com.hiroshi.cimoc.core.source.HHAAZZ;
 import com.hiroshi.cimoc.core.source.IKanman;
+import com.hiroshi.cimoc.core.source.NHentai;
 import com.hiroshi.cimoc.core.source.U17;
+import com.hiroshi.cimoc.core.source.Wnacg;
 import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
@@ -82,6 +84,10 @@ public class SourceManager {
                 return R.string.source_ehentai;
             case SOURCE_EXHENTAI:
                 return R.string.source_exhentai;
+            case SOURCE_NHENTAI:
+                return R.string.source_nhentai;
+            case SOURCE_WNACG:
+                return R.string.source_wnacg;
         }
         return R.string.common_null;
     }
@@ -102,6 +108,10 @@ public class SourceManager {
                 return SOURCE_EHENTAI;
             case "ExHentai":
                 return SOURCE_EXHENTAI;
+            case "NHentai":
+                return SOURCE_NHENTAI;
+            case "Wnacg":
+                return SOURCE_WNACG;
         }
         return -1;
     }
@@ -120,39 +130,50 @@ public class SourceManager {
             case SOURCE_DMZJ:
                 if (manga == null) {
                     manga = new Dmzj();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
+                    sparseArray.put(SOURCE_DMZJ, manga);
                 }
                 break;
             case SOURCE_HHAAZZ:
                 if (manga == null) {
                     manga = new HHAAZZ();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
+                    sparseArray.put(SOURCE_HHAAZZ, manga);
                 }
                 break;
             case SOURCE_CCTUKU:
                 if (manga == null) {
                     manga = new CCTuku();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
+                    sparseArray.put(SOURCE_CCTUKU, manga);
                 }
                 break;
             case SOURCE_U17:
                 if (manga == null) {
                     manga = new U17();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
+                    sparseArray.put(SOURCE_U17, manga);
                 }
                 break;
             case SOURCE_EHENTAI:
                 if (manga == null) {
                     manga = new EHentai();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
+                    sparseArray.put(SOURCE_EHENTAI, manga);
                 }
                 break;
             case SOURCE_EXHENTAI:
                 if (manga == null) {
                     manga = new ExHentai();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
+                    sparseArray.put(SOURCE_EXHENTAI, manga);
                 }
                 break;
+            case SOURCE_NHENTAI:
+                if (manga == null) {
+                    manga = new NHentai();
+                    sparseArray.put(SOURCE_NHENTAI, manga);
+                }
+                break;
+            case SOURCE_WNACG:
+                if (manga == null) {
+                    manga = new Wnacg();
+                    sparseArray.put(SOURCE_WNACG, manga);
+                }
         }
         return manga;
     }

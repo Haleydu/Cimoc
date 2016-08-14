@@ -30,9 +30,8 @@ public class EHentai extends Manga {
     @Override
     protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
-        List<Node> nodes = body.list("#ig > div > table > tbody > tr");
         List<Comic> list = new LinkedList<>();
-        for (Node node : nodes) {
+        for (Node node : body.list("#ig > div > table > tbody > tr")) {
             String cid = node.attr("td:eq(1) > table > tbody > tr:eq(0) > td > a", "href");
             cid = cid.substring(host.length() + 3, cid.length() - 1);
             String title = node.text("td:eq(1) > table > tbody > tr:eq(0) > td > a");

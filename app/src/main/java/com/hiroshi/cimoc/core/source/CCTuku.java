@@ -64,7 +64,7 @@ public class CCTuku extends Manga {
             list.add(new Chapter(c_title, c_path));
         }
 
-        String title = body.text("div.title-banner > div.book-title > h1", 0, -2);
+        String title = body.text("div.title-banner > div.book-title > h1", 0, -3);
         Node detail = body.select("div.book > div > div:eq(0)");
         String cover = detail.attr("div:eq(0) > a > img", "src");
         String update = detail.text("div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);

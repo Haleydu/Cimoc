@@ -85,7 +85,8 @@
     <string name="source_add">添加图源</string>
     <string name="source_add_exist">图源已存在</string>
     <string name="source_add_success">添加成功</string>
-    <string name="source_add_error">图源错误</string>
+    <string name="source_add_error">添加失败</string>
+    <string name="source_source_none">未开启图源</string>
     <string name="source_ikanman">看漫画</string>
     <string name="source_dmzj">动漫之家</string>
     <string name="source_hhaazz">汗汗漫画</string>
@@ -93,6 +94,8 @@
     <string name="source_u17">有妖气</string>
     <string name="source_ehentai">E-Hentai</string>
     <string name="source_exhentai">ExHentai</string>
+    <string name="source_nhentai">NHentai</string>
+    <string name="source_wnacg">绅士漫画</string>
 
     <string name="common_network_error">网络错误</string>
     <string name="common_null">null</string>

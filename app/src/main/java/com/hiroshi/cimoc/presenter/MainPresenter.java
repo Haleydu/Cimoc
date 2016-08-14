@@ -108,8 +108,9 @@ public class MainPresenter extends BasePresenter {
         mMainActivity.hideProgressBar();
     }
 
-    public boolean onNavigationItemSelected(MenuItem menuItem) {
+    public boolean switchItem(MenuItem menuItem) {
         if (menuItem.getItemId() == mCheckedItem) {
+            mMainActivity.closeDrawer();
             return false;
         }
         mCheckedItem = menuItem.getItemId();

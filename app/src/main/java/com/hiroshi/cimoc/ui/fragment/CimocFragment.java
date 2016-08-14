@@ -38,7 +38,12 @@ public class CimocFragment extends BaseFragment {
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.cimoc_empty_error));
         } else {
-            startActivity(ResultActivity.createIntent(getActivity(), keyword, mPresenter.getSid(choice)));
+            int sid = mPresenter.getSid(choice);
+            if (sid == -1) {
+                showSnackbar(R.string.source_source_none);
+            } else {
+                startActivity(ResultActivity.createIntent(getActivity(), keyword, mPresenter.getSid(choice)));
+            }
         }
     }
 

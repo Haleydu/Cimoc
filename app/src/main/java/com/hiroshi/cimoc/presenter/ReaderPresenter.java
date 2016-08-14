@@ -93,7 +93,7 @@ public class ReaderPresenter extends BasePresenter {
         }
     }
 
-    public void onChapterToNext() {
+    public void toNextChapter() {
         Chapter chapter = mPreloadAdapter.nextChapter();
         if (chapter == null) {
             return;
@@ -101,7 +101,7 @@ public class ReaderPresenter extends BasePresenter {
         switchChapter(1, chapter.getCount(), chapter.getTitle(), chapter.getPath());
     }
 
-    public void onChapterToPrev() {
+    public void toPrevChapter() {
         Chapter chapter = mPreloadAdapter.prevChapter();
         if (chapter == null) {
             return;

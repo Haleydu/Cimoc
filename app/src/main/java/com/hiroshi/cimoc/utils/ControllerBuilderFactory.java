@@ -59,7 +59,6 @@ public class ControllerBuilderFactory {
 
     private static String getReferer(int id) {
         switch (id) {
-            default:
             case SourceManager.SOURCE_IKANMAN:
                 return "http://m.ikanman.com";
             case SourceManager.SOURCE_DMZJ:
@@ -74,7 +73,12 @@ public class ControllerBuilderFactory {
                 return "http://lofi.e-hentai.org";
             case SourceManager.SOURCE_EXHENTAI:
                 return "https://exhentai.org";
+            case SourceManager.SOURCE_NHENTAI:
+                return "https://nhentai.net";
+            case SourceManager.SOURCE_WNACG:
+                return "http://www.wnacg.com";
         }
+        return "";
     }
 
 }

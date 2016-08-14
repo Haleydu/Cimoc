@@ -9,8 +9,8 @@ import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 
 import butterknife.ButterKnife;
 
@@ -29,7 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
         initToolbar();
-        initPresenter(savedInstanceState);
+        initPresenter();
         initView();
         if (getPresenter() != null) {
             getPresenter().onCreate();
@@ -78,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    protected void initPresenter(Bundle savedInstanceState) {}
+    protected void initPresenter() {}
 
     protected void initView() {}
 

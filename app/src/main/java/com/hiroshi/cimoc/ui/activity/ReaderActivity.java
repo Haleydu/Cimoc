@@ -52,9 +52,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHT, false)) {
             mNightMask.setVisibility(View.VISIBLE);
         }
-        progress = max = 1;
         mSeekBar.setOnProgressChangeListener(this);
-
     }
 
     @Override
@@ -102,7 +100,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    protected void initPresenter(Bundle savedInstanceState) {
+    protected void initPresenter() {
         if (shouldCreate()) {
             source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
             String cid = getIntent().getStringExtra(EXTRA_CID);
@@ -161,9 +159,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     public void initLoad(int progress, int max, String title) {
-        mLoadingLayout.setVisibility(View.INVISIBLE);
+        this.progress = 1;
         this.max = max;
         mChapterTitle.setText(title);
+        mLoadingLayout.setVisibility(View.INVISIBLE);
     }
 
     public void showToast(int resId) {

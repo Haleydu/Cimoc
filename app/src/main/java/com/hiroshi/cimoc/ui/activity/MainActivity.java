@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,9 +13,9 @@ import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
-import com.hiroshi.cimoc.core.PreferenceMaster;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
 import butterknife.BindView;
@@ -75,13 +74,13 @@ public class MainActivity extends BaseActivity {
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                return mPresenter.onNavigationItemSelected(item);
+                return mPresenter.switchItem(item);
             }
         });
     }
 
     @Override
-    protected void initPresenter(Bundle savedInstanceState) {
+    protected void initPresenter() {
         int home = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
         mPresenter = new MainPresenter(this, PreferenceMaster.getHomeId(home));
     }

@@ -34,6 +34,12 @@ public class CimocPresenter extends BasePresenter {
     }
 
     public int getSid(int location) {
+        if (mSourceList == null) {
+            getItems();
+        }
+        if (mSourceList.isEmpty()) {
+            return -1;
+        }
         return mSourceList.get(location).getSid();
     }
 

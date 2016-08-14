@@ -104,14 +104,15 @@ public class MachiSoup {
             String s = text(cssQuery);
             if (s == null) {
                 return null;
-            } else if (end <= 0) {
-                return s.substring(start, s.length() + end);
+            }
+            if (end < 0) {
+                return s.substring(start, s.length() + 1 + end);
             }
             return s.substring(start, end);
         }
 
         public String text(String cssQuery, int start) {
-            return text(cssQuery, start, 0);
+            return text(cssQuery, start, -1);
         }
 
         public String text(String cssQuery, String regex, int index) {

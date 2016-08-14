@@ -29,7 +29,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
     private PicturePageAdapter mPageAdapter;
 
     private boolean volume;
-    private boolean isReverse;
+    private boolean reverse;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -50,14 +50,16 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
     protected void initView() {
         if (shouldCreate()) {
             super.initView();
-            isReverse = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_REVERSE, false);
-            mSeekBar.setReverse(isReverse);
+            reverse = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_REVERSE, false);
+            mSeekBar.setReverse(reverse);
             volume = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_VOLUME, false);
             mPageAdapter = new PicturePageAdapter(new LinkedList<String>(), getLayoutInflater(),
                     ControllerBuilderFactory.getControllerBuilder(source, this), this);
+            int current = reverse ? PicturePageAdapter.MAX_COUNT / 2 : PicturePageAdapter.MAX_COUNT / 2 + 1;
+            mPageAdapter.setCurrent(current);
             mViewPager.addOnPageChangeListener(this);
             mViewPager.setAdapter(mPageAdapter);
-            mViewPager.setCurrentItem(PicturePageAdapter.MAX_COUNT / 2 + 1, false);
+            mViewPager.setCurrentItem(current, false);
             mViewPager.setOffscreenPageLimit(3);
         }
     }
@@ -79,22 +81,14 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
         } else {
             mViewPager.setLimit(LimitedViewPager.LIMIT_NONE);
         }
-        if (isReverse) {
-            if (position < current && progress == max) {
-                mPresenter.onChapterToNext();
-            } else if (position > current && progress == 1) {
-                mPresenter.onChapterToPrev();
-            } else {
-                setReadProgress(progress + current - position);
-            }
+        if (progress == max && (position < current && reverse || position > current && !reverse)) {
+            mPresenter.toNextChapter();
+        } else if (progress == 1 && (position > current && reverse || position < current && !reverse)) {
+            mPresenter.toPrevChapter();
+        } else if (reverse) {
+            setReadProgress(progress + current - position);
         } else {
-            if (position > current && progress == max) {
-                mPresenter.onChapterToNext();
-            } else if (position < current && progress == 1) {
-                mPresenter.onChapterToPrev();
-            } else {
-                setReadProgress(progress + position - current);
-            }
+            setReadProgress(progress + position - current);
         }
     }
 
@@ -105,8 +99,10 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
                 hideToolLayout();
                 break;
             case ViewPager.SCROLL_STATE_IDLE:
-                if (isReverse && mPageAdapter.isToLeft() || !isReverse && mPageAdapter.isToRight()) {
+                if (reverse && mPageAdapter.isToLeft() || !reverse && mPageAdapter.isToRight()) {
                     mPresenter.loadNext();
+                } else if (reverse && mPageAdapter.isToRight() || !reverse && mPageAdapter.isToLeft()) {
+                    mPresenter.loadPrev();
                 }
                 break;
         }
@@ -115,7 +111,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            int offset = isReverse ? progress - value : value - progress;
+            int offset = reverse ? progress - value : value - progress;
             mViewPager.setCurrentItem(mPageAdapter.getCurrent() + offset);
         }
     }
@@ -136,7 +132,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
             switchToolLayout();
         } else if (y >= limitY) {
             draweeView.retry();
-        } else if (!isReverse && mPageAdapter.isToLeft() || isReverse && mPageAdapter.isToRight()) {
+        } else if (!reverse && mPageAdapter.isToLeft() || reverse && mPageAdapter.isToRight()) {
             mPresenter.loadPrev();
         }
     }
@@ -148,7 +144,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
 
     @Override
     public void setPrevImage(String[] array) {
-        if (isReverse) {
+        if (reverse) {
             int size = array.length;
             for (int i = 0; i != size / 2; ++i) {
                 String temp = array[i];
@@ -163,7 +159,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
 
     @Override
     public void setNextImage(String[] array) {
-        if (isReverse) {
+        if (reverse) {
             int size = array.length;
             for (int i = 0; i != size / 2; ++i) {
                 String temp = array[i];
@@ -178,8 +174,8 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
 
     @Override
     public void loadSuccess(boolean isNext) {
-        if (!isReverse && (isNext && mPageAdapter.isToRight() || !isNext && mPageAdapter.isToLeft())
-                || isReverse && (isNext && mPageAdapter.isToLeft() || !isNext && mPageAdapter.isToRight())) {
+        if (!reverse && (isNext && mViewPager.limitLeft() || !isNext && mViewPager.limitRight())
+                || reverse && (isNext && mViewPager.limitRight() || !isNext && mViewPager.limitLeft())) {
             mViewPager.setLimit(LimitedViewPager.LIMIT_NONE);
         }
         showToast(R.string.reader_load_success);
@@ -189,19 +185,17 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangeLi
     public void initLoad(int progress, int max, String title) {
         super.initLoad(progress, max, title);
         if (progress != 1) {
-            if (isReverse) {
-                mViewPager.setCurrentItem(PicturePageAdapter.MAX_COUNT / 2 + progress);
-            } else {
+            if (reverse) {
                 mViewPager.setCurrentItem(PicturePageAdapter.MAX_COUNT / 2 - progress + 1);
+            } else {
+                mViewPager.setCurrentItem(PicturePageAdapter.MAX_COUNT / 2 + progress);
             }
         } else {
-            if (mPageAdapter.isToBoth()) {
+            if (max == 1) {
                 mViewPager.setLimit(LimitedViewPager.LIMIT_BOTH);
                 mPresenter.loadNext();
-            } else if (isReverse) {
+            } else if (reverse) {
                 mViewPager.setLimit(LimitedViewPager.LIMIT_LEFT);
-                mPageAdapter.setCurrent(PicturePageAdapter.MAX_COUNT / 2);
-                mViewPager.setCurrentItem(PicturePageAdapter.MAX_COUNT / 2, false);
             } else {
                 mViewPager.setLimit(LimitedViewPager.LIMIT_RIGHT);
             }
