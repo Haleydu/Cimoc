@@ -1,12 +1,13 @@
 package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -76,22 +77,21 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         Node body = MachiSoup.body(html);
-        List<Node> list = body.list("#gh > div > a");
-        String[] array = new String[list.size()];
-        for (int i = 0; i != list.size(); ++i) {
-            String url = list.get(i).attr("href");
+        List<Node> nodes = body.list("#gh > div > a");
+        List<String> list = new ArrayList<>(nodes.size());
+        for (Node node : nodes) {
+            String url = node.attr("href");
             Request request = new Request.Builder().url(url).build();
             String result = execute(request);
             if (result != null) {
-                Node node = MachiSoup.body(result);
-                array[i] = node.attr("#sm", "src");
+                list.add(MachiSoup.body(result).attr("#sm", "src"));
             } else {
-                array[i] = null;
+                list.add(null);
             }
         }
-        return array;
+        return list;
     }
 
     @Override

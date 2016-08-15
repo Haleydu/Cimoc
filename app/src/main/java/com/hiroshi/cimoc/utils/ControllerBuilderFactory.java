@@ -25,17 +25,21 @@ public class ControllerBuilderFactory {
 
     private static SparseArray<PipelineDraweeControllerBuilder> builderArray = new SparseArray<>();
 
-    public static PipelineDraweeControllerBuilder getControllerBuilder(int source, Context context) {
-        if (builderArray.get(source) == null) {
-            ImagePipelineFactory factory;
-            if (source == SourceManager.SOURCE_EXHENTAI) {
-                factory = buildFactory(context.getApplicationContext(), source, "igneous=583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12");
-            } else {
-                factory = buildFactory(context.getApplicationContext(), source, null);
-            }
-            builderArray.put(source, new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get());
+    public static PipelineDraweeControllerBuilder getCoverControllerBuilder(int source, Context context) {
+        PipelineDraweeControllerBuilder builder = builderArray.get(source);
+        if (builder == null) {
+            String cookie = source == SourceManager.SOURCE_EXHENTAI ? "igneous=583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12" : null;
+            ImagePipelineFactory factory = buildFactory(context.getApplicationContext(), source, cookie);
+            builder = new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get();
+            builderArray.put(source, builder);
         }
-        return builderArray.get(source);
+        return builder;
+    }
+
+    public static PipelineDraweeControllerBuilder getControllerBuilder(int source, Context context) {
+        String cookie = source == SourceManager.SOURCE_EXHENTAI ? "igneous=583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12" : null;
+        ImagePipelineFactory factory = buildFactory(context.getApplicationContext(), source, cookie);
+        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get();
     }
 
     private static ImagePipelineFactory buildFactory(Context context, final int source, final String cookie) {

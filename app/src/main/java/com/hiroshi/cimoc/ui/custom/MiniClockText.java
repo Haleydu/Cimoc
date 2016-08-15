@@ -13,7 +13,7 @@ import java.util.Calendar;
  */
 public class MiniClockText extends TextView {
 
-    public static final CharSequence FORMAT_24_HOUR = "H:mm";
+    public static final CharSequence FORMAT_24_HOUR = "HH:mm";
 
     private Calendar mCalendar;
     private boolean mAttached = false;

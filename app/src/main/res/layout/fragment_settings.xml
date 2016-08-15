@@ -201,6 +201,38 @@
                     android:textSize="14sp"
                     android:text="@string/settings_reader_split_summary"/>
             </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/settings_reader_bright_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+                <CheckBox
+                    android:id="@+id/settings_reader_bright_checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/settings_reader_bright_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_reader_bright_checkbox"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text="@string/settings_reader_bright"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@id/settings_reader_bright_checkbox"
+                    android:layout_below="@id/settings_reader_bright_title"
+                    android:textSize="14sp"
+                    android:text="@string/settings_reader_bright_summary"/>
+            </RelativeLayout>
         </LinearLayout>
         <LinearLayout
             android:orientation="vertical"

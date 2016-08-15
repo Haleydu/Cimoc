@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -80,22 +81,21 @@ public class ExHentai extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         Node body = MachiSoup.body(html);
-        List<Node> list = body.list("#gdt > div > a");
-        String[] array = new String[list.size()];
-        for (int i = 0; i != array.length; ++i) {
-            String url = list.get(i).attr("href");
+        List<Node> nodes = body.list("#gdt > div > a");
+        List<String> list = new ArrayList<>(nodes.size());
+        for (Node node : nodes) {
+            String url = node.attr("href");
             Request request = new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
             String result = execute(request);
             if (result != null) {
-                MachiSoup.Node node = MachiSoup.body(result);
-                array[i] = node.attr("#img", "src");
+                list.add(MachiSoup.body(result).attr("#img", "src"));
             } else {
-                array[i] = null;
+                list.add(null);
             }
         }
-        return array;
+        return list;
     }
 
     @Override

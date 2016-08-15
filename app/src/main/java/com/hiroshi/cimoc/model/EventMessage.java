@@ -1,5 +1,10 @@
 package com.hiroshi.cimoc.model;
 
+import android.support.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Created by Hiroshi on 2016/7/2.
  */
@@ -21,22 +26,28 @@ public class EventMessage {
     public static final int RESTORE_FAVORITE = 14;
     public static final int COMIC_DELETE = 15;
 
+    @IntDef({SEARCH_SUCCESS, SEARCH_FAIL, LOAD_COMIC_SUCCESS, LOAD_COMIC_FAIL, PARSE_PIC_SUCCESS, PARSE_PIC_FAIL,
+            NETWORK_ERROR, FAVORITE_COMIC, UN_FAVORITE_COMIC, HISTORY_COMIC, COMIC_PAGE_CHANGE, COMIC_LAST_CHANGE,
+            DELETE_HISTORY, RESTORE_FAVORITE, COMIC_DELETE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EventType {}
+
     private int type;
     private Object data;
     private Object second;
 
-    public EventMessage(int type, Object data) {
+    public EventMessage(@EventType int type, Object data) {
         this.type = type;
         this.data = data;
     }
 
-    public EventMessage(int type, Object data, Object second) {
+    public EventMessage(@EventType int type, Object data, Object second) {
         this.type = type;
         this.data = data;
         this.second = second;
     }
 
-    public int getType() {
+    public @EventType int getType() {
         return type;
     }
 

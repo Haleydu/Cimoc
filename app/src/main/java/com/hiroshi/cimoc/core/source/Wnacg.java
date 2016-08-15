@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Wnacg extends Manga {
     protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
+        for (Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
             String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
             String title = node.text("div.info > div.title > a");
             String cover = node.attr("div.pic_box > a > img", "data-original");
@@ -51,7 +52,7 @@ public class Wnacg extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = MachiSoup.body(html);
         String length = body.text("#bodywrap > div > div.uwconn > label:eq(1)", 3, -2);
         int size = Integer.parseInt(length) % 12 == 0 ? Integer.parseInt(length) / 12 : Integer.parseInt(length) / 12 + 1;
         for (int i = 1; i <= size; ++i) {
@@ -74,22 +75,21 @@ public class Wnacg extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
-        MachiSoup.Node body = MachiSoup.body(html);
-        List<MachiSoup.Node> list = body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a");
-        String[] array = new String[list.size()];
-        for (int i = 0; i != array.length; ++i) {
-            String url = host + list.get(i).attr("href");
+    protected List<String> parseBrowse(String html) {
+        Node body = MachiSoup.body(html);
+        List<Node> nodes = body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a");
+        List<String> list = new ArrayList<>(nodes.size());
+        for (Node node : nodes) {
+            String url = host + node.attr("href");
             Request request = new Request.Builder().url(url).build();
             String result = execute(request);
             if (result != null) {
-                MachiSoup.Node node = MachiSoup.body(result);
-                array[i] = node.attr("#picarea", "src");
+                list.add(MachiSoup.body(result).attr("#picarea", "src"));
             } else {
-                array[i] = null;
+                list.add(null);
             }
         }
-        return array;
+        return list;
     }
 
     @Override

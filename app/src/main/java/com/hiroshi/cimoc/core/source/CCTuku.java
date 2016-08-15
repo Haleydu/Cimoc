@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -83,7 +84,7 @@ public class CCTuku extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String[] rs = MachiSoup.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
         if (rs != null) {
             try {
@@ -93,11 +94,11 @@ public class CCTuku extends Manga {
                     int tpf = Integer.parseInt(array[1]) + 1;
                     int pages = Integer.parseInt(array[2]);
                     String format = rs[0] + "/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
-                    String[] images = new String[pages];
+                    List<String> list = new ArrayList<>(pages);
                     for (int i = 0; i != pages; ++i) {
-                        images[i] = String.format(Locale.CHINA, format, i + 1);
+                        list.add(String.format(Locale.CHINA, format, i + 1));
                     }
-                    return images;
+                    return list;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

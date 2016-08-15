@@ -110,7 +110,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(source, mContext);
+            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getCoverControllerBuilder(source, mContext);
             headerHolder.mComicImage.setController(builder.setUri(image).build());
             headerHolder.mComicTitle.setText(title);
             headerHolder.mComicIntro.setText(intro);

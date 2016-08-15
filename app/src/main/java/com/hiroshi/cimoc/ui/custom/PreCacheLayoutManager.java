@@ -26,7 +26,11 @@ public class PreCacheLayoutManager extends LinearLayoutManager {
     @Override
     protected int getExtraLayoutSpace(RecyclerView.State state) {
         if (mExtraSpace > 0) {
-            return mExtraSpace * getHeight();
+            if (getOrientation() == LinearLayoutManager.HORIZONTAL) {
+                return mExtraSpace * getWidth();
+            } else {
+                return mExtraSpace * getHeight();
+            }
         }
         return 0;
     }

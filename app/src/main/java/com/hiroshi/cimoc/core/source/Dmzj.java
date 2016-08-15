@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,16 +109,16 @@ public class Dmzj extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String jsonString = MachiSoup.match("\"page_url\":(\\[.*?\\]),", html, 1);
         if (jsonString != null) {
             try {
                 JSONArray array = new JSONArray(jsonString);
-                String[] images = new String[array.length()];
-                for (int i = 0; i != images.length; ++i) {
-                    images[i] = array.getString(i);
+                List<String> list = new ArrayList<>(array.length());
+                for (int i = 0; i != array.length(); ++i) {
+                    list.add(array.getString(i));
                 }
-                return images;
+                return list;
             } catch (Exception e) {
                 e.printStackTrace();
             }

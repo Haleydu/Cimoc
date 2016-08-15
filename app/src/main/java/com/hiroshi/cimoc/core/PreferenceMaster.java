@@ -24,6 +24,7 @@ public class PreferenceMaster {
     public static final String PREF_NIGHT = "pref_night";
     public static final String PREF_SPLIT = "pref_split";
     public static final String PREF_REVERSE = "pref_reverse";
+    public static final String PREF_BRIGHT = "pref_bright";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

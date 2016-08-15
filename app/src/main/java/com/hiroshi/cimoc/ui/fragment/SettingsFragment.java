@@ -26,6 +26,7 @@ public class SettingsFragment extends BaseFragment {
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
     @BindView(R.id.settings_reader_reverse_checkbox) CheckBox mReverseBox;
+    @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
     @BindView(R.id.settings_other_night_checkbox) CheckBox mNightBox;
 
     private SettingsPresenter mPresenter;
@@ -39,6 +40,7 @@ public class SettingsFragment extends BaseFragment {
     private boolean mVolumeChoice;
     private boolean mNightChoice;
     private boolean mReverseChoice;
+    private boolean mBrightChoice;
 
     private OnClickListener mSingleChoiceListener = new OnClickListener() {
         @Override
@@ -56,11 +58,14 @@ public class SettingsFragment extends BaseFragment {
         mVolumeChoice = mPreference.getBoolean(PreferenceMaster.PREF_VOLUME, false);
         mNightChoice = mPreference.getBoolean(PreferenceMaster.PREF_NIGHT, false);
         mReverseChoice = mPreference.getBoolean(PreferenceMaster.PREF_REVERSE, false);
+        mBrightChoice = mPreference.getBoolean(PreferenceMaster.PREF_BRIGHT, false);
         mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
         mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
         mVolumeBox.setChecked(mVolumeChoice);
         mNightBox.setChecked(mNightChoice);
         mReverseBox.setChecked(mReverseChoice);
+        mSplitBox.setChecked(mSplitChoice);
+        mBrightBox.setChecked(mBrightChoice);
     }
 
     @OnClick(R.id.settings_other_night_btn) void onNightBtnClick() {
@@ -86,6 +91,12 @@ public class SettingsFragment extends BaseFragment {
         mReverseChoice = !mReverseChoice;
         mReverseBox.setChecked(mReverseChoice);
         mPreference.putBoolean(PreferenceMaster.PREF_REVERSE, mReverseChoice);
+    }
+
+    @OnClick(R.id.settings_reader_bright_btn) void onBrightClick() {
+        mBrightChoice = !mBrightChoice;
+        mBrightBox.setChecked(mBrightChoice);
+        mPreference.putBoolean(PreferenceMaster.PREF_BRIGHT, mBrightChoice);
     }
 
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {

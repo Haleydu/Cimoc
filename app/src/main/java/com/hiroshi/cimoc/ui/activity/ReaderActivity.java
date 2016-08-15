@@ -1,11 +1,12 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,12 +17,16 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
+import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
+import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
+import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -34,25 +39,41 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
+    @BindView(R.id.reader_battery) TextView mBatteryText;
     @BindView(R.id.reader_progress_layout) View mProgressLayout;
     @BindView(R.id.reader_back_layout) View mBackLayout;
     @BindView(R.id.reader_loading_layout) View mLoadingLayout;
     @BindView(R.id.reader_seek_bar) ReverseSeekBar mSeekBar;
     @BindView(R.id.reader_mask) View mNightMask;
 
+    protected PreCacheLayoutManager mLayoutManager;
+    protected ReaderAdapter mReaderAdapter;
+
     protected ReaderPresenter mPresenter;
-    protected int source;
     protected int progress;
     protected int max;
 
-    private boolean isLandscape;
+    private int source;
 
     @Override
     protected void initView() {
+        if (CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_BRIGHT, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
         if (CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHT, false)) {
             mNightMask.setVisibility(View.VISIBLE);
         }
         mSeekBar.setOnProgressChangeListener(this);
+        mReaderAdapter = new ReaderAdapter(this, new LinkedList<String>());
+        mReaderAdapter.setSingleTapListener(this);
+        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
+        mLayoutManager = new PreCacheLayoutManager(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(batteryReceiver,  new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
     @Override
@@ -61,16 +82,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (mPresenter != null) {
             mPresenter.setPage(progress);
         }
+        unregisterReceiver(batteryReceiver);
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mPresenter != null) {
-            getIntent().putExtra(EXTRA_PAGE, progress);
-            getIntent().putExtra(EXTRA_POSITION, mPresenter.getChapterPosition());
-            getIntent().putExtra(EXTRA_LAST, mPresenter.getCurrentChapter().getPath());
-        }
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @OnClick(R.id.reader_back_btn) void onBackClick() {
@@ -78,21 +95,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    protected void initTheme() {
-        setTheme(R.style.ReaderTheme);
-    }
+    protected void initTheme() {}
 
     @Override
     protected void initToolbar() {}
-
-    @Override
-    protected void initOrientation() {
-        int mode = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);
-        isLandscape = mode == PreferenceMaster.MODE_LANDSCAPE_STREAM;
-        if (isLandscape) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-    }
 
     @Override
     protected BasePresenter getPresenter() {
@@ -101,25 +107,15 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initPresenter() {
-        if (shouldCreate()) {
-            source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-            String cid = getIntent().getStringExtra(EXTRA_CID);
-            String last = getIntent().getStringExtra(EXTRA_LAST);
-            int page = getIntent().getIntExtra(EXTRA_PAGE, -1);
-            String[] title = getIntent().getStringArrayExtra(EXTRA_TITLE);
-            String[] path = getIntent().getStringArrayExtra(EXTRA_PATH);
-            Chapter[] array = fromArray(title, path);
-            int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-            mPresenter = new ReaderPresenter(this, source, cid, last, page, array, position);
-        }
-    }
-
-    protected boolean shouldCreate() {
-        if (isLandscape) {
-            return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
-        } else {
-            return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
-        }
+        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        String cid = getIntent().getStringExtra(EXTRA_CID);
+        String last = getIntent().getStringExtra(EXTRA_LAST);
+        int page = getIntent().getIntExtra(EXTRA_PAGE, -1);
+        String[] title = getIntent().getStringArrayExtra(EXTRA_TITLE);
+        String[] path = getIntent().getStringArrayExtra(EXTRA_PATH);
+        Chapter[] array = fromArray(title, path);
+        int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
+        mPresenter = new ReaderPresenter(this, source, cid, last, page, array, position);
     }
 
     @Override
@@ -127,6 +123,18 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onStopTrackingTouch(DiscreteSeekBar seekBar) {}
+
+    private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
+                int level = intent.getIntExtra("level", 0);
+                int scale = intent.getIntExtra("scale", 100);
+                String text = (level * 100 / scale) + "%";
+                mBatteryText.setText(text);
+            }
+        }
+    };
 
     public void updateChapterInfo(int max, String title) {
         this.max = max;
@@ -171,11 +179,17 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     }
 
-    public abstract void setPrevImage(String[] array);
+    public void loadSuccess() {
+        showToast(R.string.reader_load_success);
+    }
 
-    public abstract void setNextImage(String[] array);
+    public void setPrevImage(List<String> list) {
+        mReaderAdapter.addAll(0, list);
+    }
 
-    public abstract void loadSuccess(boolean isNext);
+    public void setNextImage(List<String> list) {
+        mReaderAdapter.addAll(list);
+    }
 
     private static final String EXTRA_SOURCE = "a";
     private static final String EXTRA_CID = "b";
@@ -219,11 +233,17 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
         int mode = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);
-        Intent intent;
-        if (mode == PreferenceMaster.MODE_HORIZONTAL_PAGE) {
-            intent = new Intent(context, PageReaderActivity.class);
-        } else {
-            intent = new Intent(context, StreamReaderActivity.class);
+        Intent intent = null;
+        switch (mode) {
+            case PreferenceMaster.MODE_HORIZONTAL_PAGE:
+                intent = new Intent(context, PageReaderActivity.class);
+                break;
+            case PreferenceMaster.MODE_PORTRAIT_STREAM:
+                intent = new Intent(context, StreamReaderActivity.class);
+                break;
+            case PreferenceMaster.MODE_LANDSCAPE_STREAM:
+                intent = new Intent(context, LandscapeStreamReaderActivity.class);
+                break;
         }
         putExtras(intent, comic, list, position);
         return intent;

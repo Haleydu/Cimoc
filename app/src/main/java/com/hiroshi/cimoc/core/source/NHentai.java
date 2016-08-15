@@ -5,7 +5,9 @@ import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +17,6 @@ import okhttp3.Request;
  * Created by Hiroshi on 2016/8/14.
  */
 public class NHentai extends Manga {
-
 
     public NHentai() {
         super(SourceManager.SOURCE_NHENTAI, "https://nhentai.net");
@@ -29,9 +30,9 @@ public class NHentai extends Manga {
 
     @Override
     protected List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("#content > div.index-container > div > a")) {
+        for (Node node : body.list("#content > div.index-container > div > a")) {
             String cid = node.attr("href", "/", 2);
             String title = node.text("div.caption");
             String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
@@ -51,7 +52,7 @@ public class NHentai extends Manga {
     @Override
     protected List<Chapter> parseInto(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node doc = MachiSoup.body(html);
+        Node doc = MachiSoup.body(html);
         list.add(new Chapter("全一话", ""));
 
         String title = doc.text("#info > h1");
@@ -70,15 +71,15 @@ public class NHentai extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
-        MachiSoup.Node body = MachiSoup.body(html);
-        List<MachiSoup.Node> list = body.list("#thumbnail-container > div > a > img");
-        String[] array = new String[list.size()];
-        for (int i = 0; i != list.size(); ++i) {
-            String url = "https:" + list.get(i).attr("data-src");
-            array[i] = url.replace("t.jpg", ".jpg");
+    protected List<String> parseBrowse(String html) {
+        Node body = MachiSoup.body(html);
+        List<Node> nodes = body.list("#thumbnail-container > div > a > img");
+        List<String> list = new ArrayList<>(nodes.size());
+        for (Node node : nodes) {
+            String url = "https:" + node.attr("data-src");
+            list.add(url.replace("t.jpg", ".jpg"));
         }
-        return array;
+        return list;
     }
 
     @Override

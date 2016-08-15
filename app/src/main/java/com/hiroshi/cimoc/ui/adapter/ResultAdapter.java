@@ -30,6 +30,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         @BindView(R.id.result_comic_author) TextView comicAuthor;
         @BindView(R.id.result_comic_update) TextView comicUpdate;
         @BindView(R.id.result_comic_source) TextView comicSource;
+        @BindView(R.id.result_comic_update_tab) TextView tabUpdate;
 
         public ResultViewHolder(View view) {
             super(view);
@@ -53,8 +54,12 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        viewHolder.comicUpdate.setText(comic.getUpdate());
-        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
+        if (comic.getUpdate().isEmpty()) {
+            viewHolder.tabUpdate.setVisibility(View.INVISIBLE);
+        } else {
+            viewHolder.comicUpdate.setText(comic.getUpdate());
+        }
+        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getCoverControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
     }
 

@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +23,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initOrientation();
         initTheme();
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
@@ -42,10 +40,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getPresenter() != null) {
             getPresenter().onDestroy();
         }
-    }
-
-    protected void initOrientation() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     protected void initTheme() {

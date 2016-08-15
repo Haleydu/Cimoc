@@ -15,7 +15,8 @@
 
         <activity
             android:name=".ui.activity.MainActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -23,16 +24,30 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.ResultActivity"/>
+            android:name=".ui.activity.ResultActivity"
+            android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.DetailActivity"/>
+            android:name=".ui.activity.DetailActivity"
+            android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.PageReaderActivity"/>
+            android:name=".ui.activity.PageReaderActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/ReaderTheme"/>
 
         <activity
-            android:name=".ui.activity.StreamReaderActivity"/>
+            android:name=".ui.activity.StreamReaderActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/ReaderTheme"/>
+
+        <activity
+            android:name=".ui.activity.LandscapeStreamReaderActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/ReaderTheme"/>
 
     </application>
 

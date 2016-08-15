@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.utils.MachiSoup.Node;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String str = MachiSoup.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
         if (str != null) {
             try {
@@ -95,11 +96,11 @@ public class IKanman extends Manga {
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONObject info = new JSONObject(jsonString);
                 JSONArray array = info.getJSONArray("images");
-                String[] images = new String[array.length()];
-                for (int i = 0; i != images.length; ++i) {
-                    images[i] = "http://i.hamreus.com:8080" + array.getString(i);
+                List<String> list = new ArrayList<>(array.length());
+                for (int i = 0; i != array.length(); ++i) {
+                    list.add("http://i.hamreus.com:8080" + array.getString(i));
                 }
-                return images;
+                return list;
             } catch (Exception e) {
                 e.printStackTrace();
             }

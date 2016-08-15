@@ -42,12 +42,12 @@
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
     <string name="settings_backup_save_summary">备份到本地文件</string>
-    <string name="settings_backup_save_success">备份成功 数量为 </string>
+    <string name="settings_backup_save_success">备份成功 数量为</string>
     <string name="settings_backup_save_fail">备份失败</string>
     <string name="settings_backup_save_not_found">没有找到备份文件</string>
     <string name="settings_backup_restore">恢复</string>
     <string name="settings_backup_restore_summary">从本地文件中恢复</string>
-    <string name="settings_backup_restore_success">恢复成功 数量为 </string>
+    <string name="settings_backup_restore_success">恢复成功 数量为</string>
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
     <string name="settings_reader_volume">音量键翻页</string>
@@ -56,6 +56,8 @@
     <string name="settings_reader_reverse_summary">默认从左往右</string>
     <string name="settings_reader_split">自动切割分页</string>
     <string name="settings_reader_split_summary">仅限卷纸模式</string>
+    <string name="settings_reader_bright">保持屏幕常亮</string>
+    <string name="settings_reader_bright_summary">阅读状态屏幕常亮</string>
     <string name="settings_other">其他设置</string>
     <string name="settings_other_nightly">夜间模式</string>
     <string name="settings_other_nightly_summary">全局夜间模式</string>

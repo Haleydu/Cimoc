@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -84,16 +85,16 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
         if (str != null) {
             String[] result = unsuan(str[0]);
             String domain = String.format(Locale.CHINA, "http://x8.1112223333.com:9393/dm%02d", Integer.parseInt(str[1]));
-            String[] array = new String[result.length];
+            List<String> list = new ArrayList<>(result.length);
             for (int i = 0; i != result.length; ++i) {
-                array[i] = domain + result[i];
+                list.add(domain + result[i]);
             }
-            return array;
+            return list;
         }
         return null;
     }

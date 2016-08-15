@@ -12,6 +12,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.List;
+
 /**
  * Created by Hiroshi on 2016/7/8.
  */
@@ -123,31 +125,32 @@ public class ReaderPresenter extends BasePresenter {
         EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, path, progress));
     }
 
+    @SuppressWarnings("unchecked")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(EventMessage msg) {
         switch (msg.getType()) {
             case EventMessage.PARSE_PIC_SUCCESS:
-                String[] array = (String[]) msg.getData();
+                List<String> list = (List<String>) msg.getData();
                 Chapter chapter;
                 if (!mPreloadAdapter.isLoad()) {
-                    mReaderActivity.setNextImage(array);
+                    mReaderActivity.setNextImage(list);
                     chapter = mPreloadAdapter.moveNext();
                     if (!chapter.getPath().equals(last) || page == -1) {
                         page = 1;
                     }
-                    mReaderActivity.initLoad(page, array.length, chapter.getTitle());
+                    mReaderActivity.initLoad(page, list.size(), chapter.getTitle());
                     EventBus.getDefault().post(new EventMessage(EventMessage.COMIC_LAST_CHANGE, chapter.getPath(), page));
                 } else {
                     if (status == LOAD_PREV) {
-                        mReaderActivity.setPrevImage(array);
+                        mReaderActivity.setPrevImage(list);
                         chapter = mPreloadAdapter.movePrev();
                     } else {
-                        mReaderActivity.setNextImage(array);
+                        mReaderActivity.setNextImage(list);
                         chapter = mPreloadAdapter.moveNext();
                     }
-                    mReaderActivity.loadSuccess(status == LOAD_NEXT);
+                    mReaderActivity.loadSuccess();
                 }
-                chapter.setCount(array.length);
+                chapter.setCount(list.size());
                 status = LOAD_NULL;
                 break;
             case EventMessage.PARSE_PIC_FAIL:
