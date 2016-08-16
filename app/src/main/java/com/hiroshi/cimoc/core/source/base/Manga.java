@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core.base;
+package com.hiroshi.cimoc.core.source.base;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Chapter;
@@ -70,11 +70,11 @@ public abstract class Manga {
         enqueueClient(buildBrowseRequest(cid, path), new OnResponseSuccessHandler() {
             @Override
             public void onSuccess(String html) {
-                String[] images = parseBrowse(html);
-                if (images == null) {
+                List<String> list = parseBrowse(html);
+                if (list == null || list.isEmpty()) {
                     EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_FAIL, null));
                 } else {
-                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_SUCCESS, images));
+                    EventBus.getDefault().post(new EventMessage(EventMessage.PARSE_PIC_SUCCESS, list));
                 }
             }
         });
@@ -140,7 +140,7 @@ public abstract class Manga {
 
     protected abstract Request buildBrowseRequest(String cid, String path);
 
-    protected abstract String[] parseBrowse(String html);
+    protected abstract List<String> parseBrowse(String html);
 
     protected abstract Request buildCheckRequest(String cid);
 

@@ -1,11 +1,13 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import okhttp3.Request;
 public class ExHentai extends Manga {
 
     public ExHentai() {
-        super(Kami.SOURCE_EXHENTAI, "https://exhentai.org");
+        super(SourceManager.SOURCE_EXHENTAI, "https://exhentai.org");
     }
 
     @Override
@@ -40,7 +42,8 @@ public class ExHentai extends Manga {
                 cover = host + "/" + temp;
             }
             String update = node.text("td:eq(1)", 0, 10);
-            String author = node.text("td:eq(3) > div > a");
+            String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s+", "");
             list.add(new Comic(source, cid, title, cover, update, author, true));
         }
         return list;
@@ -79,22 +82,21 @@ public class ExHentai extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         Node body = MachiSoup.body(html);
-        List<Node> list = body.list("#gdt > div > a");
-        String[] array = new String[list.size()];
-        for (int i = 0; i != array.length; ++i) {
-            String url = list.get(i).attr("href");
+        List<Node> nodes = body.list("#gdt > div > a");
+        List<String> list = new ArrayList<>(nodes.size());
+        for (Node node : nodes) {
+            String url = node.attr("href");
             Request request = new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
             String result = execute(request);
             if (result != null) {
-                MachiSoup.Node node = MachiSoup.body(result);
-                array[i] = node.attr("#img", "src");
+                list.add(MachiSoup.body(result).attr("#img", "src"));
             } else {
-                array[i] = null;
+                list.add(null);
             }
         }
-        return array;
+        return list;
     }
 
     @Override

@@ -1,12 +1,14 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.Decryption;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +21,7 @@ import okhttp3.Request;
 public class CCTuku extends Manga {
 
     public CCTuku() {
-        super(Kami.SOURCE_CCTUKU, "http://m.tuku.cc");
+        super(SourceManager.SOURCE_CCTUKU, "http://m.tuku.cc");
     }
 
     @Override
@@ -63,7 +65,7 @@ public class CCTuku extends Manga {
             list.add(new Chapter(c_title, c_path));
         }
 
-        String title = body.text("div.title-banner > div.book-title > h1", 0, -2);
+        String title = body.text("div.title-banner > div.book-title > h1", 0, -3);
         Node detail = body.select("div.book > div > div:eq(0)");
         String cover = detail.attr("div:eq(0) > a > img", "src");
         String update = detail.text("div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
@@ -82,21 +84,21 @@ public class CCTuku extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String[] rs = MachiSoup.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
         if (rs != null) {
             try {
-                String result = Decryption.evalDecrypt(rs[1]);
+                String result = DecryptionUtils.evalDecrypt(rs[1]);
                 String[] array = MachiSoup.match("pic_url='(.*?)';.*?tpf=(\\d+?);.*pages=(\\d+?);.*?pid=(.*?);.*?pic_extname='(.*?)';", result, 1, 2, 3, 4, 5);
                 if (array != null) {
                     int tpf = Integer.parseInt(array[1]) + 1;
                     int pages = Integer.parseInt(array[2]);
                     String format = rs[0] + "/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
-                    String[] images = new String[pages];
+                    List<String> list = new ArrayList<>(pages);
                     for (int i = 0; i != pages; ++i) {
-                        images[i] = String.format(Locale.CHINA, format, i + 1);
+                        list.add(String.format(Locale.CHINA, format, i + 1));
                     }
-                    return images;
+                    return list;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -3,17 +3,16 @@
     <color name="colorPrimary">#2196F3</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#FFC107</color>
+    <color name="colorAccentTrans">#AAFFC107</color>
+    <color name="textColorSecondary">#8A000000</color>
+    <color name="colorBackground">#FFFAFAFA</color>
+    <color name="colorBackgroundTrans">#AAFAFAFA</color>
+    <color name="textColorSecondaryDark">#B3FFFFFF</color>
+    <color name="colorBackgroundDark">#FF303030</color>
+    <color name="colorBackgroundTransDark">#AA303030</color>
 
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-    <color name="default_grey">#E8E8E7</color>
-    <color name="grey">#7F7F80</color>
-    <color name="light_grey">#BEBEBE</color>
-
-    <color name="trans_colorAccent">#AAFFC107</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="trans_black">#90000000</color>
     <color name="trans_light_black">#4F000000</color>
-    <color name="trans_grey">#AA7F7F80</color>
-    <color name="trans_light_grey">#AABEBEBE</color>
-    <color name="trans_black">#AA000000</color>
-    <color name="trans_white">#00FFFFFF</color>
 </resources>

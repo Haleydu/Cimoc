@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="colorBackgroundAccent" format="reference|color"/>
+    <attr name="colorBackgroundTrans" format="reference|color"/>
+    <attr name="colorChapterText" format="reference|color"/>
+    <attr name="backgroundChapter" format="reference"/>
+    <attr name="progressDrawable" format="reference"/>
+</resources>

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:background="@color/colorPrimary">
+        android:background="?attr/colorPrimary">
         <TextView
             android:id="@+id/about_app_name"
             android:layout_width="wrap_content"
@@ -28,7 +28,6 @@
             android:textSize="14sp"/>
     </RelativeLayout>
     <LinearLayout
-        android:id="@+id/about_resource_btn"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,8 +38,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:text="@string/about_resource"/>
         <TextView
             android:id="@+id/settings_other_cache_summary"
@@ -62,8 +61,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
-            android:textColor="@color/black"
             android:text="@string/about_support"/>
         <TextView
             android:layout_width="match_parent"

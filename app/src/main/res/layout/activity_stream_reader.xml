@@ -3,43 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
-    <include layout="@layout/custom_loading"/>
+    <include layout="@layout/custom_reader_loading"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/reader_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
-        android:paddingLeft="6dp"
-        android:paddingRight="6dp"
-        android:background="@color/trans_light_black">
-        <TextView
-            android:id="@+id/reader_chapter_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
-        <TextView
-            android:id="@+id/reader_chapter_page"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
-        <com.hiroshi.cimoc.ui.custom.MiniClockText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
-    </LinearLayout>
+    <include layout="@layout/custom_reader_info"/>
     <include layout="@layout/custom_back_btn"/>
     <include layout="@layout/custom_seek_bar"/>
+    <include layout="@layout/custom_reader_mask"/>
 </RelativeLayout>

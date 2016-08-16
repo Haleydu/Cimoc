@@ -14,6 +14,7 @@ import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
+import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,10 +34,12 @@ public class ResultActivity extends BaseActivity {
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
 
+    private int source;
+
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, 0);
+        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         mPresenter = new ResultPresenter(this, source, keyword);
     }
 
@@ -55,21 +58,25 @@ public class ResultActivity extends BaseActivity {
     protected void initView() {
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mResultAdapter);
-        mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                mPresenter.onScrolled(dy, mLayoutManager.findLastVisibleItemPosition(), mResultAdapter.getItemCount());
-            }
-        });
         mResultAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Comic comic = mResultAdapter.getItem(position);
                 Intent intent = DetailActivity.createIntent(ResultActivity.this, comic.getId(), comic.getSource(), comic.getCid());
                 startActivity(intent);
+            }
+        });
+        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mResultAdapter);
+        mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (mLayoutManager.findLastVisibleItemPosition() >= mResultAdapter.getItemCount() - 4 && dy > 0) {
+                    mPresenter.loadNext();
+                }
             }
         });
     }
@@ -112,10 +119,10 @@ public class ResultActivity extends BaseActivity {
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";
 
-    public static Intent createIntent(Context context, String keyword, int source) {
+    public static Intent createIntent(Context context, String keyword, int sid) {
         Intent intent = new Intent(context, ResultActivity.class);
         intent.putExtra(EXTRA_KEYWORD, keyword);
-        intent.putExtra(EXTRA_SOURCE, source);
+        intent.putExtra(EXTRA_SOURCE, sid);
         return intent;
     }
 

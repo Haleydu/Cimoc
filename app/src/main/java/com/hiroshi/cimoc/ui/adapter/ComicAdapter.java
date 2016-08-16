@@ -11,10 +11,11 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Kami;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,8 +51,8 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         MiniComic comic = mDataSet.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicSource.setText(Kami.getSourceTitle(comic.getSource()));
-        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(comic.getSource(), mContext);
+        viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
+        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getCoverControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
     }
 
@@ -75,6 +76,17 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
             mDataSet.add(0, comic);
             notifyItemInserted(0);
         }
+    }
+
+    public void removeBySource(int source) {
+        Iterator<MiniComic> iterator = mDataSet.iterator();
+        while (iterator.hasNext()) {
+            MiniComic comic = iterator.next();
+            if (source == comic.getSource()) {
+                iterator.remove();
+            }
+        }
+        notifyDataSetChanged();
     }
 
     public void removeById(long id) {

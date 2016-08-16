@@ -8,8 +8,8 @@
     android:layout_alignParentBottom="true"
     android:visibility="gone"
     android:padding="8dp"
-    android:background="@color/trans_grey">
-    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+    android:background="@color/trans_light_black">
+    <com.hiroshi.cimoc.ui.custom.ReverseSeekBar
         android:id="@+id/reader_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,9 +17,9 @@
         app:dsb_min="1"
         app:dsb_indicatorPopupEnabled="true"
         app:dsb_trackColor="@color/white"
-        app:dsb_rippleColor="@color/colorAccent"
-        app:dsb_progressColor="@color/colorAccent"
-        app:dsb_indicatorColor="@color/colorAccent"
+        app:dsb_rippleColor="?attr/colorAccent"
+        app:dsb_progressColor="?attr/colorAccent"
+        app:dsb_indicatorColor="?attr/colorAccent"
         app:dsb_indicatorTextAppearance="@color/white"
         app:dsb_trackHeight="4dp"
         app:dsb_thumbSize="12dp"/>

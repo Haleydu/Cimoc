@@ -1,11 +1,13 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +19,7 @@ import okhttp3.Request;
 public class EHentai extends Manga {
 
     public EHentai() {
-        super(Kami.SOURCE_EHENTAI, "http://lofi.e-hentai.org");
+        super(SourceManager.SOURCE_EHENTAI, "http://lofi.e-hentai.org");
     }
 
     @Override
@@ -29,15 +31,15 @@ public class EHentai extends Manga {
     @Override
     protected List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
-        List<Node> nodes = body.list("#ig > div > table > tbody > tr");
         List<Comic> list = new LinkedList<>();
-        for (Node node : nodes) {
+        for (Node node : body.list("#ig > div > table > tbody > tr")) {
             String cid = node.attr("td:eq(1) > table > tbody > tr:eq(0) > td > a", "href");
             cid = cid.substring(host.length() + 3, cid.length() - 1);
             String title = node.text("td:eq(1) > table > tbody > tr:eq(0) > td > a");
             String cover = node.attr("td:eq(0) > a > img", "src");
             String update = node.text("td:eq(1) > table > tbody > tr:eq(1) > td:eq(1)", 0, 10);
-            String author = node.text("td:eq(1) > table > tbody > tr:eq(1) > td:eq(1)", 20);
+            String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s+", "");
             list.add(new Comic(source, cid, title, cover, update, author, true));
         }
         return list;
@@ -76,22 +78,21 @@ public class EHentai extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         Node body = MachiSoup.body(html);
-        List<Node> list = body.list("#gh > div > a");
-        String[] array = new String[list.size()];
-        for (int i = 0; i != list.size(); ++i) {
-            String url = list.get(i).attr("href");
+        List<Node> nodes = body.list("#gh > div > a");
+        List<String> list = new ArrayList<>(nodes.size());
+        for (Node node : nodes) {
+            String url = node.attr("href");
             Request request = new Request.Builder().url(url).build();
             String result = execute(request);
             if (result != null) {
-                Node node = MachiSoup.body(result);
-                array[i] = node.attr("#sm", "src");
+                list.add(MachiSoup.body(result).attr("#sm", "src"));
             } else {
-                array[i] = null;
+                list.add(null);
             }
         }
-        return array;
+        return list;
     }
 
     @Override

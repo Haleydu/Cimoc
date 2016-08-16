@@ -1,19 +1,15 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.PreferenceMaster;
 import com.hiroshi.cimoc.presenter.BasePresenter;
-import com.hiroshi.cimoc.utils.PreferenceMaster;
 
 import butterknife.ButterKnife;
 
@@ -22,20 +18,14 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected View maskView;
     protected Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isPortrait()) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
+        initTheme();
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
-        initNightly();
         initToolbar();
         initPresenter();
         initView();
@@ -47,18 +37,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).removeViewImmediate(maskView);
         if (getPresenter() != null) {
             getPresenter().onDestroy();
         }
     }
 
-    private void initNightly() {
-        maskView = new View(this);
-        ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).addView(maskView, getParams());
-        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHTLY, false);
+    protected void initTheme() {
+        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHT, false);
         if (nightly) {
-            maskView.setBackgroundColor(getResources().getColor(R.color.trans_black));
+            setTheme(R.style.AppThemeDark);
+        } else {
+            setTheme(R.style.AppTheme);
         }
     }
 
@@ -71,13 +60,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    protected WindowManager.LayoutParams getParams() {
-        return new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.TYPE_APPLICATION,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
-    }
-
     protected View getLayoutView() {
         return null;
     }
@@ -88,10 +70,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected BasePresenter getPresenter() {
         return null;
-    }
-
-    protected boolean isPortrait() {
-        return true;
     }
 
     protected void initPresenter() {}

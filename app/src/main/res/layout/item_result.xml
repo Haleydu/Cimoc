@@ -4,13 +4,13 @@
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="120dp"
+    android:padding="10dp"
     android:clickable="true"
-    android:background="@color/white"
+    android:background="?attr/colorBackgroundAccent"
     android:foreground="?android:attr/selectableItemBackground">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp">
+        android:layout_height="match_parent">
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/result_comic_image"
             android:layout_width="80dp"
@@ -25,7 +25,7 @@
             android:layout_alignParentRight="true"
             android:textSize="14sp"/>
         <TextView
-            android:id="@+id/result_comic_source_lab"
+            android:id="@+id/result_comic_source_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/result_comic_source"
@@ -40,6 +40,7 @@
             android:layout_alignParentRight="true"
             android:textSize="14sp"/>
         <TextView
+            android:id="@+id/result_comic_update_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/result_comic_update"
@@ -52,18 +53,18 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@id/result_comic_image"
-            android:layout_toLeftOf="@id/result_comic_source_lab"
+            android:layout_toLeftOf="@id/result_comic_source_tab"
             android:layout_marginRight="6dp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:textColor="@color/black"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"/>
         <TextView
             android:id="@+id/result_comic_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/result_comic_title"
-            android:layout_toLeftOf="@id/result_comic_source_lab"
+            android:layout_toLeftOf="@id/result_comic_source_tab"
             android:layout_below="@id/result_comic_title"
             android:layout_marginTop="10dp"
             android:maxLines="1"

@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.manager;
 
 import android.database.Cursor;
 
@@ -8,7 +8,6 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.utils.ExLog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,18 +35,15 @@ public class ComicManager {
             public void run() {
                 List<MiniComic> result = new LinkedList<>();
                 for (Comic comic : list) {
-                    ExLog.d("ComicManager", "get " + comic.getTitle());
                     Comic temp = mComicDao.queryBuilder()
                             .where(Properties.Source.eq(comic.getSource()), Properties.Cid.eq(comic.getCid()))
                             .unique();
                     if (temp == null) {
-                        ExLog.d("ComicManager", "insert " + comic.getTitle());
                         comic.setFavorite(System.currentTimeMillis());
                         long id = mComicDao.insert(comic);
                         comic.setId(id);
                         result.add(0, new MiniComic(comic));
                     } else if (temp.getFavorite() == null) {
-                        ExLog.d("ComicManager", "update " + comic.getTitle());
                         temp.setFavorite(System.currentTimeMillis());
                         mComicDao.update(temp);
                         result.add(0, new MiniComic(temp));
@@ -74,7 +70,21 @@ public class ComicManager {
         });
     }
 
-    public void removeFavorite(long id) {
+    public void deleteBySource(final int source) {
+        mComicDao.getSession().runInTx(new Runnable() {
+            @Override
+            public void run() {
+                List<Comic> list = mComicDao.queryBuilder()
+                        .where(Properties.Source.eq(source))
+                        .list();
+                for (Comic comic : list) {
+                    mComicDao.delete(comic);
+                }
+            }
+        });
+    }
+
+    public void deleteFavorite(long id) {
         Comic comic = mComicDao.load(id);
         if (comic.getHistory() == null) {
             mComicDao.delete(comic);
@@ -84,7 +94,7 @@ public class ComicManager {
         }
     }
 
-    public void removeHistory(long id) {
+    public void deleteHistory(long id) {
         Comic comic = mComicDao.load(id);
         if (comic.getFavorite() == null) {
             mComicDao.delete(comic);
@@ -121,19 +131,8 @@ public class ComicManager {
                 .where(ComicDao.Properties.Favorite.isNotNull())
                 .buildCursor()
                 .query();
-        MiniComic[] array = new MiniComic[cursor.getCount()];
-        int count = 0;
-        while (cursor.moveToNext()) {
-            long id = cursor.getLong(0);
-            int source = cursor.getInt(1);
-            String cid = cursor.getString(2);
-            String title = cursor.getString(3);
-            String cover = cursor.getString(4);
-            String update = cursor.getString(5);
-            array[count++] = new MiniComic(id, source, cid, title, cover, update, false);
-        }
-        cursor.close();
-        return array;
+        List<MiniComic> list = listByCursor(cursor);
+        return list.toArray(new MiniComic[cursor.getCount()]);
     }
 
     public List<MiniComic> listFavorite() {
@@ -190,17 +189,14 @@ public class ComicManager {
 
     public void updateComic(Comic comic) {
         mComicDao.update(comic);
-        ExLog.d("ComicManager", "update" + " [" + comic.getId() + "] " + comic.getTitle());
     }
 
     public void deleteComic(long id) {
         mComicDao.deleteByKey(id);
-        ExLog.d("ComicManager", "delete" + " [" + id + "]");
     }
 
     public long insertComic(Comic comic) {
         long id = mComicDao.insert(comic);
-        ExLog.d("ComicManager", "insert" + " [" + id + "] " + comic.getTitle());
         return id;
     }
 

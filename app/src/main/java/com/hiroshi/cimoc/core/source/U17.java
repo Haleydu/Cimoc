@@ -1,12 +1,14 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.Decryption;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ import okhttp3.Request;
 public class U17 extends Manga {
 
     public U17() {
-        super(Kami.SOURCE_U17, "http://www.u17.com");
+        super(SourceManager.SOURCE_U17, "http://www.u17.com");
     }
 
     @Override
@@ -78,15 +80,15 @@ public class U17 extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
-        List<String> list = MachiSoup.matchAll("\"src\":\"(.*?)\"", html, 1);
-        if (!list.isEmpty()) {
+    protected List<String> parseBrowse(String html) {
+        List<String> result = MachiSoup.matchAll("\"src\":\"(.*?)\"", html, 1);
+        if (!result.isEmpty()) {
             try {
-                String[] images = new String[list.size()];
-                for (int i = 0; i != images.length; ++i) {
-                    images[i] = Decryption.base64Decrypt(list.get(i));
+                List<String> list = new ArrayList<>(result.size());
+                for (String str : result) {
+                    list.add(DecryptionUtils.base64Decrypt(str));
                 }
-                return images;
+                return list;
             } catch (Exception e) {
                 e.printStackTrace();
             }

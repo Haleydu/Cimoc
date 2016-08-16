@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.ComicManager;
-import com.hiroshi.cimoc.core.Kami;
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.EventMessage;
@@ -30,7 +30,7 @@ public class DetailPresenter extends BasePresenter {
     public DetailPresenter(DetailActivity activity, Long id, int source, String cid) {
         mDetailActivity = activity;
         mComicManager = ComicManager.getInstance();
-        mManga = Kami.getManga(source);
+        mManga = SourceManager.getManga(source);
         mComic = mComicManager.getComic(id, source, cid);
     }
 
@@ -91,18 +91,24 @@ public class DetailPresenter extends BasePresenter {
                 break;
             case EventMessage.COMIC_LAST_CHANGE:
                 String last = (String) msg.getData();
+                int page = (int) msg.getSecond();
                 mComic.setHistory(System.currentTimeMillis());
                 mComic.setLast(last);
-                mComic.setPage(1);
+                mComic.setPage(page);
                 if (mComic.getId() == null) {
                     long id = mComicManager.insertComic(mComic);
                     mComic.setId(id);
+                } else {
+                    mComicManager.updateComic(mComic);
                 }
                 EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, new MiniComic(mComic)));
                 mDetailActivity.setLastChapter(last);
                 break;
             case EventMessage.COMIC_PAGE_CHANGE:
                 mComic.setPage((Integer) msg.getData());
+                if (mComic.getId() != null) {
+                    mComicManager.updateComic(mComic);
+                }
                 break;
         }
     }

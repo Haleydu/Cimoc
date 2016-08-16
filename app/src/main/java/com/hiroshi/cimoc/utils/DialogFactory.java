@@ -12,7 +12,7 @@ import com.hiroshi.cimoc.R;
 public class DialogFactory {
 
     public static AlertDialog buildPositiveDialog(Context context, int titleId, int messageId, OnClickListener listener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AppTheme_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(titleId);
         builder.setMessage(messageId);
         builder.setPositiveButton(R.string.dialog_positive, listener);
@@ -27,7 +27,7 @@ public class DialogFactory {
 
     public static AlertDialog buildSingleChoiceDialog(Context context, int titleId, String[] array, int choice,
                                                       OnClickListener listener, OnClickListener positive) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AppTheme_Dialog_Alert);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(titleId);
         builder.setSingleChoiceItems(array, choice, listener);
         if (positive != null) {
@@ -37,7 +37,7 @@ public class DialogFactory {
     }
 
     public static AlertDialog buildCancelableFalseDialog(Context context) {
-        return new AlertDialog.Builder(context, R.style.AppTheme_Dialog_Alert).setCancelable(false).create();
+        return new AlertDialog.Builder(context).setCancelable(false).create();
     }
 
 }

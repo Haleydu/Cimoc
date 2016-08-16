@@ -4,19 +4,17 @@
     android:id="@+id/result_layout"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
     <include layout="@layout/custom_toolbar"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/result_comic_list"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/default_grey"/>
+        android:layout_height="match_parent"/>
     <ProgressBar
         android:id="@+id/result_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:indeterminateDrawable="@drawable/progress_trans"/>
+        android:indeterminateDrawable="?attr/progressDrawable"/>
 </LinearLayout>

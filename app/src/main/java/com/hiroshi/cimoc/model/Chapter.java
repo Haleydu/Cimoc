@@ -5,9 +5,9 @@ package com.hiroshi.cimoc.model;
  */
 public class Chapter {
 
-    String title;
-    String path;
-    int count;
+    private String title;
+    private String path;
+    private int count;
 
     public Chapter(String title, String path) {
         this.title = title;

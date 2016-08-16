@@ -1,11 +1,13 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +20,7 @@ import okhttp3.Request;
 public class HHAAZZ extends Manga {
 
     public HHAAZZ() {
-        super(Kami.SOURCE_HHAAZZ, "http://hhaazz.com");
+        super(SourceManager.SOURCE_HHAAZZ, "http://hhaazz.com");
     }
 
     @Override
@@ -83,16 +85,16 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
         if (str != null) {
             String[] result = unsuan(str[0]);
             String domain = String.format(Locale.CHINA, "http://x8.1112223333.com:9393/dm%02d", Integer.parseInt(str[1]));
-            String[] array = new String[result.length];
+            List<String> list = new ArrayList<>(result.length);
             for (int i = 0; i != result.length; ++i) {
-                array[i] = domain + result[i];
+                list.add(domain + result[i]);
             }
-            return array;
+            return list;
         }
         return null;
     }

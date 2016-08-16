@@ -1,15 +1,17 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.Decryption;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import okhttp3.Request;
 public class IKanman extends Manga {
 
     public IKanman() {
-        super(Kami.SOURCE_IKANMAN, "http://m.ikanman.com");
+        super(SourceManager.SOURCE_IKANMAN, "http://m.ikanman.com");
     }
 
     @Override
@@ -82,23 +84,23 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected String[] parseBrowse(String html) {
+    protected List<String> parseBrowse(String html) {
         String str = MachiSoup.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
         if (str != null) {
             try {
                 String cipherStr = str.substring(8);
                 String keyStr = str.substring(0, 8);
-                String packed = Decryption.desDecrypt(keyStr, cipherStr);
-                String result = Decryption.evalDecrypt(packed.substring(4));
+                String packed = DecryptionUtils.desDecrypt(keyStr, cipherStr);
+                String result = DecryptionUtils.evalDecrypt(packed.substring(4));
 
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONObject info = new JSONObject(jsonString);
                 JSONArray array = info.getJSONArray("images");
-                String[] images = new String[array.length()];
-                for (int i = 0; i != images.length; ++i) {
-                    images[i] = "http://i.hamreus.com:8080" + array.getString(i);
+                List<String> list = new ArrayList<>(array.length());
+                for (int i = 0; i != array.length(); ++i) {
+                    list.add("http://i.hamreus.com:8080" + array.getString(i));
                 }
-                return images;
+                return list;
             } catch (Exception e) {
                 e.printStackTrace();
             }

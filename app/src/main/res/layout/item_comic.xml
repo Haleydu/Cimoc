@@ -29,14 +29,15 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:padding="6dp"
-            android:background="#AFFFFFFF">
+            android:background="?attr/colorBackgroundTrans">
             <TextView
                 android:id="@+id/item_comic_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:maxLines="1"
-                android:textColor="@color/black"
+                android:ellipsize="end"
+                android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp"/>
             <TextView
                 android:id="@+id/item_comic_source"
