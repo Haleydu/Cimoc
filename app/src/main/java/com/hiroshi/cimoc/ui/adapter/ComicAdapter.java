@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -78,11 +79,14 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
     }
 
     public void removeBySource(int source) {
-        for (MiniComic comic : mDataSet) {
+        Iterator<MiniComic> iterator = mDataSet.iterator();
+        while (iterator.hasNext()) {
+            MiniComic comic = iterator.next();
             if (source == comic.getSource()) {
-                remove(comic);
+                iterator.remove();
             }
         }
+        notifyDataSetChanged();
     }
 
     public void removeById(long id) {

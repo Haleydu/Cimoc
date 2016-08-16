@@ -44,6 +44,9 @@ public class DetailPresenter extends BasePresenter {
     public void onDestroy() {
         super.onDestroy();
         mManga.cancel();
+        if (mComic.getId() != null) {
+            mComicManager.updateComic(mComic);
+        }
     }
 
     public Comic getComic() {

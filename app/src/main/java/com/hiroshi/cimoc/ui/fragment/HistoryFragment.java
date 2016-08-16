@@ -53,6 +53,7 @@ public class HistoryFragment extends BaseFragment {
                         }).show();
             }
         });
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mComicAdapter);

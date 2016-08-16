@@ -8,7 +8,6 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
 import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.utils.ExLog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,18 +35,15 @@ public class ComicManager {
             public void run() {
                 List<MiniComic> result = new LinkedList<>();
                 for (Comic comic : list) {
-                    ExLog.d("ComicManager", "get " + comic.getTitle());
                     Comic temp = mComicDao.queryBuilder()
                             .where(Properties.Source.eq(comic.getSource()), Properties.Cid.eq(comic.getCid()))
                             .unique();
                     if (temp == null) {
-                        ExLog.d("ComicManager", "insert " + comic.getTitle());
                         comic.setFavorite(System.currentTimeMillis());
                         long id = mComicDao.insert(comic);
                         comic.setId(id);
                         result.add(0, new MiniComic(comic));
                     } else if (temp.getFavorite() == null) {
-                        ExLog.d("ComicManager", "update " + comic.getTitle());
                         temp.setFavorite(System.currentTimeMillis());
                         mComicDao.update(temp);
                         result.add(0, new MiniComic(temp));
@@ -193,17 +189,14 @@ public class ComicManager {
 
     public void updateComic(Comic comic) {
         mComicDao.update(comic);
-        ExLog.d("ComicManager", "update" + " [" + comic.getId() + "] " + comic.getTitle());
     }
 
     public void deleteComic(long id) {
         mComicDao.deleteByKey(id);
-        ExLog.d("ComicManager", "delete" + " [" + id + "]");
     }
 
     public long insertComic(Comic comic) {
         long id = mComicDao.insert(comic);
-        ExLog.d("ComicManager", "insert" + " [" + id + "] " + comic.getTitle());
         return id;
     }
 

@@ -13,7 +13,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.List;
 
@@ -23,6 +22,8 @@ import butterknife.BindView;
  * Created by Hiroshi on 2016/7/3.
  */
 public class ResultAdapter extends BaseAdapter<Comic> {
+
+    private PipelineDraweeControllerBuilder builder;
 
     public class ResultViewHolder extends BaseViewHolder {
         @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
@@ -59,8 +60,11 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         } else {
             viewHolder.comicUpdate.setText(comic.getUpdate());
         }
-        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getCoverControllerBuilder(comic.getSource(), mContext);
         viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
+    }
+
+    public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
+        this.builder = builder;
     }
 
     @Override

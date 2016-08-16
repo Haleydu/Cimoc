@@ -82,10 +82,12 @@
 
 # greenDAO
 -keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
-    public static java.lang.String TABLENAME;
+public static java.lang.String TABLENAME;
 }
 -keep class **$Properties
 -dontwarn org.greenrobot.greendao.database.**
+-dontwarn org.greenrobot.greendao.rx.**
+-dontwarn rx.**
 
 # ButterKnife
 -keep public class * implements butterknife.internal.ViewBinder { public <init>(); }

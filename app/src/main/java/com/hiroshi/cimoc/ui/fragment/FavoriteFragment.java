@@ -69,6 +69,7 @@ public class FavoriteFragment extends BaseFragment {
                         }).show();
             }
         });
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mFavoriteAdapter);
@@ -87,7 +88,7 @@ public class FavoriteFragment extends BaseFragment {
                         }
                     }).show();
         } else {
-            showSnackbar("正在检查更新中");
+            showSnackbar(R.string.favorite_update_doing);
         }
     }
 
@@ -166,7 +167,7 @@ public class FavoriteFragment extends BaseFragment {
             mPresenter.updateComic(list);
             mFavoriteAdapter.updateAll(list);
             mBuilder.setOngoing(false)
-                    .setTicker(null)
+                    .setTicker("检查完成")
                     .setContentText("检查完成")
                     .setProgress(0, 0, false);
             notifyBuilder();

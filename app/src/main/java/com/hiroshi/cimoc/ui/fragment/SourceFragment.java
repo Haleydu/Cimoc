@@ -53,6 +53,7 @@ public class SourceFragment extends BaseFragment {
                 mPresenter.update(source);
             }
         });
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         mRecyclerView.setAdapter(mSourceAdapter);

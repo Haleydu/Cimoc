@@ -55,18 +55,10 @@ public class StreamReaderActivity extends ReaderActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 int item = mLayoutManager.findFirstVisibleItemPosition();
                 if (item != position) {
-                    if (dy > 0) {
-                        if (progress == max) {
-                            mPresenter.toNextChapter();
-                        } else {
-                            setReadProgress(progress + 1);
-                        }
-                    } else if (dy < 0) {
-                        if (progress == 1) {
-                            mPresenter.toPrevChapter();
-                        } else {
-                            setReadProgress(progress - 1);
-                        }
+                    if (dy > 0 && progress == max) {
+                        mPresenter.toNextChapter();
+                    } else if (dy < 0 && progress == 1) {
+                        mPresenter.toPrevChapter();
                     } else {
                         setReadProgress(progress + item - position);
                     }
@@ -112,8 +104,8 @@ public class StreamReaderActivity extends ReaderActivity {
     public void initLoad(int progress, int max, String title) {
         super.initLoad(progress, max, title);
         if (progress != 1) {
-            this.progress = progress;
             position = progress - 1;
+            setReadProgress(progress);
             mRecyclerView.scrollToPosition(progress - 1);
         } else {
            setReadProgress(1);

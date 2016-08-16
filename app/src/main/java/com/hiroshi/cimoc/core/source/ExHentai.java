@@ -42,7 +42,8 @@ public class ExHentai extends Manga {
                 cover = host + "/" + temp;
             }
             String update = node.text("td:eq(1)", 0, 10);
-            String author = node.text("td:eq(3) > div > a");
+            String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s+", "");
             list.add(new Comic(source, cid, title, cover, update, author, true));
         }
         return list;

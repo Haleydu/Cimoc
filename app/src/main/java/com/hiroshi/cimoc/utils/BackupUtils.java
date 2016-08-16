@@ -37,7 +37,6 @@ public class BackupUtils {
             if (FileUtils.mkDirsIfNotExist(dirPath)) {
                 String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".cimoc";
                 if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
-                    ExLog.d("Backup", "save to " + name);
                     return true;
                 }
             }
@@ -70,7 +69,6 @@ public class BackupUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ExLog.d("BackupUtils", "the number of comic is " + list.size());
         return list;
     }
 

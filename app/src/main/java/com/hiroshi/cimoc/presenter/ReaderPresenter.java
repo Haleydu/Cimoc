@@ -111,14 +111,6 @@ public class ReaderPresenter extends BasePresenter {
         switchChapter(chapter.getCount(), chapter.getCount(), chapter.getTitle(), chapter.getPath());
     }
 
-    public int getChapterPosition() {
-        return mPreloadAdapter.getCurrent();
-    }
-
-    public Chapter getCurrentChapter() {
-        return mPreloadAdapter.currentChapter();
-    }
-
     private void switchChapter(int progress, int count, String title, String path) {
         mReaderActivity.updateChapterInfo(count, title);
         mReaderActivity.setReadProgress(progress);
@@ -156,7 +148,7 @@ public class ReaderPresenter extends BasePresenter {
             case EventMessage.PARSE_PIC_FAIL:
             case EventMessage.NETWORK_ERROR:
                 mReaderActivity.showToast(R.string.reader_load_error);
-                if (++count < 2) {
+                if (mPreloadAdapter.isLoad() && ++count < 2) {
                     status = LOAD_NULL;
                 }
                 break;

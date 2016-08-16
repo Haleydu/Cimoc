@@ -43,18 +43,19 @@ public class ControllerBuilderFactory {
     }
 
     private static ImagePipelineFactory buildFactory(Context context, final int source, final String cookie) {
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
-                String referer = getReferer(source);
-                Request.Builder request = chain.request().newBuilder();
-                request.addHeader("Referer", referer);
-                if (cookie != null) {
-                    request.header("Cookie", cookie);
-                }
-                return chain.proceed(request.build());
-            }
-        }).build();
+                    String referer = getReferer(source);
+                    Request.Builder request = chain.request().newBuilder();
+                    request.addHeader("Referer", referer);
+                    if (cookie != null) {
+                        request.header("Cookie", cookie);
+                    }
+                    return chain.proceed(request.build());
+                    }
+                }).build();
         ImagePipelineConfig config = OkHttpImagePipelineConfigFactory.newBuilder(context, client)
                 .setBitmapsConfig(Bitmap.Config.RGB_565)
                 .build();

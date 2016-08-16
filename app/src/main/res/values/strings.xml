@@ -26,6 +26,7 @@
 
     <string name="favorite_delete_confirm">是否删除该漫画</string>
     <string name="favorite_update_confirm">是否检查更新</string>
+    <string name="favorite_update_doing">正在检查更新中</string>
 
     <string name="history_delete_confirm">是否删除该历史纪录</string>
     <string name="history_clear_confirm">是否清除所有历史纪录</string>
