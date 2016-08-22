@@ -8,9 +8,9 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.PreferenceMaster;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
+import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
 import butterknife.BindView;
@@ -19,7 +19,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/22.
  */
-public class SettingsFragment extends BaseFragment {
+public class SettingsFragment extends BaseFragment implements SettingsView {
 
     @BindView(R.id.settings_other_home_summary) TextView mHomeSummary;
     @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
@@ -144,8 +144,7 @@ public class SettingsFragment extends BaseFragment {
         showProgressDialog();
         int size = mPresenter.backup();
         if (size != -1) {
-            String text = getString(R.string.settings_backup_save_success) + size;
-            showSnackbar(text);
+            showSnackbar(R.string.settings_backup_save_success, size);
         } else {
             showSnackbar(R.string.settings_backup_save_fail);
         }
@@ -154,32 +153,32 @@ public class SettingsFragment extends BaseFragment {
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
         showProgressDialog();
-        mPresenter.clearCache();
+        mPresenter.deleteDir(getActivity().getCacheDir());
         showSnackbar(R.string.settings_other_cache_success);
         hideProgressDialog();
     }
 
     @Override
-    protected void initPresenter() {
-        mPresenter = new SettingsPresenter(this);
+    public void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
+    public void onRestoreSuccess(int count) {
+        showSnackbar(R.string.settings_backup_restore_success, count);
+        hideProgressDialog();
+    }
+
+    @Override
+    protected void initPresenter() {
+        mPresenter = new SettingsPresenter();
+        mPresenter.attachView(this);
     }
 
     @Override
     protected int getLayoutView() {
         return R.layout.fragment_settings;
-    }
-
-    public void showProgressDialog() {
-        ((MainActivity) getActivity()).showProgressDialog();
-    }
-
-    public void hideProgressDialog() {
-        ((MainActivity) getActivity()).hideProgressDialog();
     }
 
 }

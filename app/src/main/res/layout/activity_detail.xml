@@ -6,9 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/custom_toolbar"/>
+    <ProgressBar
+        android:id="@+id/detail_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:indeterminateDrawable="?attr/progressDrawable"/>
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/detail_coordinator_layout"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
@@ -22,13 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_gravity="bottom|end"
-            android:visibility="invisible"
             app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
     </android.support.design.widget.CoordinatorLayout>
-    <ProgressBar
-        android:id="@+id/detail_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:indeterminateDrawable="?attr/progressDrawable"/>
 </LinearLayout>

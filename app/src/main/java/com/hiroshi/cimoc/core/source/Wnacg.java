@@ -1,35 +1,32 @@
 package com.hiroshi.cimoc.core.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.source.base.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Request;
 
 /**
  * Created by Hiroshi on 2016/8/9.
  */
-public class Wnacg extends Manga {
-
-    public Wnacg() {
-        super(SourceManager.SOURCE_WNACG, "http://www.wnacg.com");
-    }
+public class Wnacg extends MangaParser {
 
     @Override
-    protected Request buildSearchRequest(String keyword, int page) {
-        String url = host + "/albums-index-page-" + page + "-sname-" + keyword + ".html";
+    public Request getSearchRequest(String keyword, int page) {
+        String url = String.format(Locale.CHINA, "http://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Comic> parseSearch(String html, int page) {
+    public List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
         for (Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
@@ -38,19 +35,19 @@ public class Wnacg extends Manga {
             String cover = node.attr("div.pic_box > a > img", "data-original");
             String update = node.text("div.info > div.info_col").trim();
             update = MachiSoup.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
-            list.add(new Comic(source, cid, title, cover, update, null, true));
+            list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, null, true));
         }
         return list;
     }
 
     @Override
-    protected Request buildIntoRequest(String cid) {
-        String url = host + "/photos-index-aid-" + cid + ".html";
+    public Request getInfoRequest(String cid) {
+        String url = String.format(Locale.CHINA, "http://www.wnacg.com/photos-index-aid-%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Chapter> parseInto(String html, Comic comic) {
+    public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
         String length = body.text("#bodywrap > div > div.uwconn > label:eq(1)", 3, -2);
@@ -69,37 +66,30 @@ public class Wnacg extends Manga {
     }
 
     @Override
-    protected Request buildBrowseRequest(String cid, String path) {
-        String url = host + "/photos-index-page-" + path + "-aid-" + cid + ".html";
+    public Request getImagesRequest(String cid, String path) {
+        String url = String.format(Locale.CHINA, "http://www.wnacg.com/photos-index-page-%s-aid%s.html", path, cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<String> parseBrowse(String html) {
+    public List<ImageUrl> parseImages(String html) {
+        List<ImageUrl> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
-        List<Node> nodes = body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a");
-        List<String> list = new ArrayList<>(nodes.size());
-        for (Node node : nodes) {
-            String url = host + node.attr("href");
-            Request request = new Request.Builder().url(url).build();
-            String result = execute(request);
-            if (result != null) {
-                list.add(MachiSoup.body(result).attr("#picarea", "src"));
-            } else {
-                list.add(null);
-            }
+        for (Node node : body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a")) {
+            String url = String.format(Locale.CHINA, "http://www.wnacg.com/%s", node.attr("href"));
+            list.add(new ImageUrl(url, true));
         }
         return list;
     }
 
     @Override
-    protected Request buildCheckRequest(String cid) {
-        return null;
+    public Request getLazyRequest(String url) {
+        return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected String parseCheck(String html) {
-        return null;
+    public String parseLazy(String html) {
+        return MachiSoup.body(html).attr("#picarea", "src");
     }
 
 }

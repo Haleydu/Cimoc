@@ -1,9 +1,10 @@
 package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
@@ -11,29 +12,25 @@ import com.hiroshi.cimoc.utils.MachiSoup.Node;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Request;
 
 /**
  * Created by Hiroshi on 2016/7/8.
  */
-public class IKanman extends Manga {
-
-    public IKanman() {
-        super(SourceManager.SOURCE_IKANMAN, "http://m.ikanman.com");
-    }
+public class IKanman extends MangaParser {
 
     @Override
-    protected Request buildSearchRequest(String keyword, int page) {
-        String url = host + "/s/" + keyword + ".html?page=" + page;
+    public Request getSearchRequest(String keyword, int page) {
+        String url = String.format(Locale.CHINA, "http://m.ikanman.com/s/%s.html?page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Comic> parseSearch(String html, int page) {
+    public List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
         for (Node node : body.list("#detail > li > a")) {
@@ -43,19 +40,19 @@ public class IKanman extends Manga {
             String update = node.text("dl:eq(5) > dd");
             String author = node.text("dl:eq(2) > dd");
             boolean status = "完结".equals(node.text("div > i"));
-            list.add(new Comic(source, cid, title, cover, update, author, status));
+            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author, status));
         }
         return list;
     }
 
     @Override
-    protected Request buildIntoRequest(String cid) {
-        String url = host + "/comic/" + cid;
+    public Request getInfoRequest(String cid) {
+        String url = String.format(Locale.CHINA, "http://m.ikanman.com/comic/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Chapter> parseInto(String html, Comic comic) {
+    public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
         for (Node node : body.list("#chapterList > ul > li > a")) {
@@ -78,13 +75,14 @@ public class IKanman extends Manga {
     }
 
     @Override
-    protected Request buildBrowseRequest(String cid, String path) {
-        String url = host + "/comic/" + cid + "/" + path + ".html";
+    public Request getImagesRequest(String cid, String path) {
+        String url = String.format(Locale.CHINA, "http://m.ikanman.com/comic/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<String> parseBrowse(String html) {
+    public List<ImageUrl> parseImages(String html) {
+        List<ImageUrl> list = new LinkedList<>();
         String str = MachiSoup.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
         if (str != null) {
             try {
@@ -96,26 +94,23 @@ public class IKanman extends Manga {
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONObject info = new JSONObject(jsonString);
                 JSONArray array = info.getJSONArray("images");
-                List<String> list = new ArrayList<>(array.length());
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add("http://i.hamreus.com:8080" + array.getString(i));
+                    list.add(new ImageUrl("http://i.hamreus.com:8080" + array.getString(i), false));
                 }
-                return list;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return null;
+        return list;
     }
 
     @Override
-    protected Request buildCheckRequest(String cid) {
-        String url = host + "/comic/" + cid;
-        return new Request.Builder().url(url).build();
+    public Request getCheckRequest(String cid) {
+        return getInfoRequest(cid);
     }
 
     @Override
-    protected String parseCheck(String html) {
+    public String parseCheck(String html) {
         Node body = MachiSoup.body(html);
         return body.text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
     }

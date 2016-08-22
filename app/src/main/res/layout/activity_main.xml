@@ -11,18 +11,18 @@
         android:layout_height="match_parent"
         android:background="?android:attr/colorBackground">
         <include layout="@layout/custom_toolbar"/>
-        <FrameLayout
-            android:id="@+id/main_fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
         <ProgressBar
             android:id="@+id/main_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:indeterminateDrawable="?attr/progressDrawable"/>
+        <FrameLayout
+            android:id="@+id/main_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
     </LinearLayout>
     <android.support.design.widget.NavigationView
         android:id="@+id/main_navigation_view"

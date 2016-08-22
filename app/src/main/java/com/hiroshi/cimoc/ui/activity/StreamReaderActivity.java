@@ -2,10 +2,12 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 
@@ -66,6 +68,7 @@ public class StreamReaderActivity extends ReaderActivity {
                 }
             }
         });
+        mPresenter.loadInit();
     }
 
     @Override
@@ -88,8 +91,8 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    public void setPrevImage(List<String> list) {
-        super.setPrevImage(list);
+    public void onNextLoadSuccess(List<ImageUrl> list) {
+        super.onNextLoadSuccess(list);
         if (position == 0) {
             position = list.size();
         }
@@ -101,15 +104,17 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    public void initLoad(int progress, int max, String title) {
-        super.initLoad(progress, max, title);
+    public void onFirstLoadSuccess(int progress, int max, String title) {
+        this.max = max;
         if (progress != 1) {
             position = progress - 1;
             setReadProgress(progress);
             mRecyclerView.scrollToPosition(progress - 1);
         } else {
-           setReadProgress(1);
+            setReadProgress(1);
         }
+        mChapterTitle.setText(title);
+        mLoadingLayout.setVisibility(View.INVISIBLE);
     }
 
 }

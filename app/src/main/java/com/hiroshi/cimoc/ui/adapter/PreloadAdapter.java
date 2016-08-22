@@ -41,14 +41,6 @@ public class PreloadAdapter {
         return null;
     }
 
-    public Chapter currentChapter() {
-        return array[index];
-    }
-
-    public int getCurrent() {
-        return index;
-    }
-
     public Chapter movePrev() {
         return array[prev++];
     }

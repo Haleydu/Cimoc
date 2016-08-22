@@ -6,15 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/custom_toolbar"/>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/result_comic_list"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
     <ProgressBar
         android:id="@+id/result_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:indeterminateDrawable="?attr/progressDrawable"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/result_comic_list"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

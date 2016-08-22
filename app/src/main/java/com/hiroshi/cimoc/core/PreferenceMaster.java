@@ -3,8 +3,6 @@ package com.hiroshi.cimoc.core;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.hiroshi.cimoc.R;
-
 /**
  * Created by Hiroshi on 2016/8/4.
  */
@@ -64,18 +62,6 @@ public class PreferenceMaster {
 
     public void putLong(String key, long value) {
         mSharedPreferences.edit().putLong(key, value).apply();
-    }
-
-    public static int getHomeId(int value) {
-        switch (value) {
-            default:
-            case HOME_CIMOC:
-                return R.id.drawer_cimoc;
-            case HOME_FAVORITE:
-                return R.id.drawer_favorite;
-            case HOME_HISTORY:
-                return R.id.drawer_history;
-        }
     }
 
 }

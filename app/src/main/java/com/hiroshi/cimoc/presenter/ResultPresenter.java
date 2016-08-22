@@ -1,71 +1,67 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.source.base.Parser;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.EventMessage;
-import com.hiroshi.cimoc.ui.activity.ResultActivity;
+import com.hiroshi.cimoc.ui.view.ResultView;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.LinkedList;
 import java.util.List;
+
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/4.
  */
-public class ResultPresenter extends BasePresenter {
+public class ResultPresenter extends BasePresenter<ResultView> {
 
-    private ResultActivity mResultActivity;
-
-    private Manga mManga;
     private String keyword;
     private int page;
     private boolean isLoading;
+    private Parser parser;
 
-    public ResultPresenter(ResultActivity activity, int source, String keyword) {
-        this.mResultActivity = activity;
-        this.mManga = SourceManager.getManga(source);
+    public ResultPresenter(int source, String keyword) {
         this.keyword = keyword;
         this.page = 0;
         this.isLoading = false;
+        this.parser = SourceManager.getParser(source);
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mManga.search(keyword, ++page);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mManga.cancel();
-    }
-
-    public void loadNext() {
+    public void load() {
         if (!isLoading) {
             isLoading = true;
-            mManga.search(keyword, ++page);
-        }
-    }
+            Manga.search(parser, keyword, ++page)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<Comic>>() {
+                        @Override
+                        public void onCompleted() {
+                            if (page == 1) {
+                                mBaseView.showLayout();
+                            }
+                            isLoading = false;
+                        }
 
-    @SuppressWarnings("unchecked")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(EventMessage msg) {
-        switch (msg.getType()) {
-            case EventMessage.SEARCH_SUCCESS:
-                mResultActivity.addResultSet((List<Comic>) msg.getData());
-                isLoading = false;
-                break;
-            case EventMessage.SEARCH_FAIL:
-                mResultActivity.addResultSet(new LinkedList<Comic>());
-                break;
-            case EventMessage.NETWORK_ERROR:
-                mResultActivity.addResultSet(null);
-                isLoading = false;
-                break;
+                        @Override
+                        public void onError(Throwable e) {
+                            if (page == 1) {
+                                if (e instanceof Manga.NetworkErrorException) {
+                                    mBaseView.onNetworkError();
+                                } else if (e instanceof Manga.EmptyResultException) {
+                                    mBaseView.onEmptyResult();
+                                } else {
+                                    mBaseView.onParseError();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onNext(List<Comic> list) {
+                            mBaseView.onLoadSuccess(list);
+                        }
+                    });
         }
     }
 

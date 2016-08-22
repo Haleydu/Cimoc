@@ -6,10 +6,9 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
-import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.model.MiniComic;
-
-import org.greenrobot.eventbus.EventBus;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +48,7 @@ public class ComicManager {
                         result.add(0, new MiniComic(temp));
                     }
                 }
-                EventBus.getDefault().post(new EventMessage(EventMessage.RESTORE_FAVORITE, result));
+                RxBus.getInstance().post(new RxEvent(RxEvent.RESTORE_FAVORITE, result));
             }
         });
     }
@@ -117,22 +116,13 @@ public class ComicManager {
                         mComicDao.delete(comic);
                     }
                 }
-                EventBus.getDefault().post(new EventMessage(EventMessage.DELETE_HISTORY, list.size()));
+                RxBus.getInstance().post(new RxEvent(RxEvent.DELETE_HISTORY, list.size()));
             }
         });
     }
 
     public List<Comic> listBackup() {
         return mComicDao.queryBuilder().where(Properties.Favorite.isNotNull()).list();
-    }
-
-    public MiniComic[] arrayFavorite() {
-        Cursor cursor = mComicDao.queryBuilder()
-                .where(ComicDao.Properties.Favorite.isNotNull())
-                .buildCursor()
-                .query();
-        List<MiniComic> list = listByCursor(cursor);
-        return list.toArray(new MiniComic[cursor.getCount()]);
     }
 
     public List<MiniComic> listFavorite() {
@@ -196,8 +186,7 @@ public class ComicManager {
     }
 
     public long insertComic(Comic comic) {
-        long id = mComicDao.insert(comic);
-        return id;
+        return mComicDao.insert(comic);
     }
 
     public static ComicManager getInstance() {

@@ -9,7 +9,6 @@ import android.view.View;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.PreferenceMaster;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 
 import butterknife.ButterKnife;
 
@@ -29,17 +28,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         initToolbar();
         initPresenter();
         initView();
-        if (getPresenter() != null) {
-            getPresenter().onCreate();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (getPresenter() != null) {
-            getPresenter().onDestroy();
-        }
     }
 
     protected void initTheme() {
@@ -68,24 +56,20 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    protected BasePresenter getPresenter() {
-        return null;
-    }
-
     protected void initPresenter() {}
 
     protected void initView() {}
 
     protected abstract int getLayoutRes();
 
-    public void showSnackbar(String msg) {
+    protected void showSnackbar(String msg) {
         View layout = getLayoutView();
         if (layout != null && layout.isShown()) {
             Snackbar.make(layout, msg, Snackbar.LENGTH_SHORT).show();
         }
     }
 
-    public void showSnackbar(int resId) {
+    protected void showSnackbar(int resId) {
         showSnackbar(getString(resId));
     }
 

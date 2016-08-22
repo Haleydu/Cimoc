@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -65,6 +66,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
                 }
             }
         });
+        mPresenter.loadInit();
     }
 
     @Override
@@ -127,13 +129,15 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     }
 
     @Override
-    public void initLoad(int progress, int max, String title) {
-        super.initLoad(progress, max, title);
+    public void onFirstLoadSuccess(int progress, int max, String title) {
+        this.max = max;
         if (progress != 1) {
             mRecyclerView.scrollToPosition(progress - 1);
         } else {
             setReadProgress(1);
         }
+        mChapterTitle.setText(title);
+        mLoadingLayout.setVisibility(View.INVISIBLE);
     }
 
 }

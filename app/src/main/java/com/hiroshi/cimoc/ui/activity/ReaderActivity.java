@@ -15,12 +15,13 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.PreferenceMaster;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
+import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -35,7 +36,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/8/6.
  */
-public abstract class ReaderActivity extends BaseActivity implements OnSingleTapListener, OnProgressChangeListener {
+public abstract class ReaderActivity extends BaseActivity implements OnSingleTapListener, OnProgressChangeListener, ReaderView {
 
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
@@ -50,8 +51,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected ReaderAdapter mReaderAdapter;
 
     protected ReaderPresenter mPresenter;
-    protected int progress;
-    protected int max;
+    protected int progress = 1;
+    protected int max = 1;
 
     private int source;
 
@@ -64,7 +65,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mNightMask.setVisibility(View.VISIBLE);
         }
         mSeekBar.setOnProgressChangeListener(this);
-        mReaderAdapter = new ReaderAdapter(this, new LinkedList<String>());
+        mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
         mReaderAdapter.setSingleTapListener(this);
         mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
         mLayoutManager = new PreCacheLayoutManager(this);
@@ -86,6 +87,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
+    protected void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
@@ -101,11 +108,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initToolbar() {}
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
-    }
-
-    @Override
     protected void initPresenter() {
         source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
@@ -115,7 +117,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         String[] path = getIntent().getStringArrayExtra(EXTRA_PATH);
         Chapter[] array = fromArray(title, path);
         int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        mPresenter = new ReaderPresenter(this, source, cid, last, page, array, position);
+        mPresenter = new ReaderPresenter(source, cid, last, page, array, position);
+        mPresenter.attachView(this);
     }
 
     @Override
@@ -136,19 +139,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     };
 
-    public void updateChapterInfo(int max, String title) {
-        this.max = max;
-        mChapterTitle.setText(title);
-    }
-
-    public void hideToolLayout() {
+    protected void hideToolLayout() {
         if (mProgressLayout.isShown()) {
             mProgressLayout.setVisibility(View.INVISIBLE);
             mBackLayout.setVisibility(View.INVISIBLE);
         }
     }
 
-    public void switchToolLayout() {
+    protected void switchToolLayout() {
         if (mProgressLayout.isShown()) {
             mProgressLayout.setVisibility(View.INVISIBLE);
             mBackLayout.setVisibility(View.INVISIBLE);
@@ -160,35 +158,55 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     }
 
-    public void setReadProgress(int progress) {
+    protected void setReadProgress(int progress) {
         this.progress = progress;
         String text = progress + "/" + max;
         mChapterPage.setText(text);
     }
 
-    public void initLoad(int progress, int max, String title) {
-        this.progress = 1;
-        this.max = max;
-        mChapterTitle.setText(title);
-        mLoadingLayout.setVisibility(View.INVISIBLE);
-    }
-
-    public void showToast(int resId) {
+    protected void showToast(int resId) {
         if (!isFinishing()) {
             Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void loadSuccess() {
+    @Override
+    public void onParseError() {
+        showToast(R.string.common_parse_error);
+    }
+
+    @Override
+    public void onNetworkError() {
+        showToast(R.string.common_network_error);
+    }
+
+    @Override
+    public void onNextLoadSuccess(List<ImageUrl> list) {
+        mReaderAdapter.addAll(list);
         showToast(R.string.reader_load_success);
     }
 
-    public void setPrevImage(List<String> list) {
+    @Override
+    public void onPrevLoadSuccess(List<ImageUrl> list) {
         mReaderAdapter.addAll(0, list);
+        showToast(R.string.reader_load_success);
     }
 
-    public void setNextImage(List<String> list) {
-        mReaderAdapter.addAll(list);
+    @Override
+    public void onChapterChange(Chapter chapter, boolean isNext) {
+        max = chapter.getCount();
+        mChapterTitle.setText(chapter.getTitle());
+        setReadProgress(isNext ? 1 : chapter.getCount());
+    }
+
+    @Override
+    public void onImageLoadSuccess(int id, String url) {
+        mReaderAdapter.update(id, url);
+    }
+
+    @Override
+    public void showMessage(int resId) {
+        showToast(resId);
     }
 
     private static final String EXTRA_SOURCE = "a";
@@ -229,7 +247,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
         return array;
     }
-
 
     public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
         int mode = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_MODE, PreferenceMaster.MODE_HORIZONTAL_PAGE);

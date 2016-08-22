@@ -1,35 +1,32 @@
 package com.hiroshi.cimoc.core.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.core.source.base.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Request;
 
 /**
  * Created by Hiroshi on 2016/8/14.
  */
-public class NHentai extends Manga {
-
-    public NHentai() {
-        super(SourceManager.SOURCE_NHENTAI, "https://nhentai.net");
-    }
+public class NHentai extends MangaParser {
 
     @Override
-    protected Request buildSearchRequest(String keyword, int page) {
-        String url = host + "/search/?q=" + keyword + "&page=" + page;
+    public Request getSearchRequest(String keyword, int page) {
+        String url = String.format(Locale.CHINA, "https://nhentai.net/search/?q=%s&page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Comic> parseSearch(String html, int page) {
+    public List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
         for (Node node : body.list("#content > div.index-container > div > a")) {
@@ -38,19 +35,19 @@ public class NHentai extends Manga {
             String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s+", "");
             String cover = "https:" + node.attr("img", "src");
-            list.add(new Comic(source, cid, title, cover, "", author, true));
+            list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, "", author, true));
         }
         return list;
     }
 
     @Override
-    protected Request buildIntoRequest(String cid) {
-        String url = host + "/g/" + cid;
+    public Request getInfoRequest(String cid) {
+        String url = String.format(Locale.CHINA, "https://nhentai.net/g/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Chapter> parseInto(String html, Comic comic) {
+    public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node doc = MachiSoup.body(html);
         list.add(new Chapter("全一话", ""));
@@ -65,31 +62,20 @@ public class NHentai extends Manga {
     }
 
     @Override
-    protected Request buildBrowseRequest(String cid, String path) {
-        String url = host + "/g/" + cid;
-        return new Request.Builder().url(url).build();
+    public Request getImagesRequest(String cid, String path) {
+        return getInfoRequest(cid);
     }
 
     @Override
-    protected List<String> parseBrowse(String html) {
+    public List<ImageUrl> parseImages(String html) {
         Node body = MachiSoup.body(html);
         List<Node> nodes = body.list("#thumbnail-container > div > a > img");
-        List<String> list = new ArrayList<>(nodes.size());
+        List<ImageUrl> list = new LinkedList<>();
         for (Node node : nodes) {
             String url = "https:" + node.attr("data-src");
-            list.add(url.replace("t.jpg", ".jpg"));
+            list.add(new ImageUrl(url.replace("t.jpg", ".jpg"), false));
         }
         return list;
-    }
-
-    @Override
-    protected Request buildCheckRequest(String cid) {
-        return null;
-    }
-
-    @Override
-    protected String parseCheck(String html) {
-        return null;
     }
 
 }

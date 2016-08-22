@@ -31,8 +31,8 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
-        switch (newVersion) {
-            case 2:
+        switch (oldVersion) {
+            case 1:
                 SourceDao.createTable(db, false);
                 initSource(db);
         }

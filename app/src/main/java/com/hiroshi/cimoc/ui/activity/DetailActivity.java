@@ -12,10 +12,10 @@ import android.widget.ProgressBar;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
+import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class DetailActivity extends BaseActivity {
+public class DetailActivity extends BaseActivity implements DetailView {
 
     @BindView(R.id.detail_chapter_list) RecyclerView mRecyclerView;
     @BindView(R.id.detail_coordinator_layout) CoordinatorLayout mCoordinatorLayout;
@@ -48,6 +48,11 @@ public class DetailActivity extends BaseActivity {
     }
 
     @Override
+    protected void initView() {
+        mPresenter.load();
+    }
+
+    @Override
     protected void initToolbar() {
         super.initToolbar();
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -64,10 +69,18 @@ public class DetailActivity extends BaseActivity {
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
         if (id == -1) {
-            mPresenter = new DetailPresenter(this, null, source, cid);
+            mPresenter = new DetailPresenter(null, source, cid);
         } else {
-            mPresenter = new DetailPresenter(this, id, source, cid);
+            mPresenter = new DetailPresenter(id, source, cid);
         }
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.updateComic();
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
@@ -81,27 +94,17 @@ public class DetailActivity extends BaseActivity {
     }
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
-    }
-
-    @Override
     protected View getLayoutView() {
         return mCoordinatorLayout;
     }
 
-    public void setLastChapter(String last) {
+    @Override
+    public void onChapterChange(String last) {
         mChapterAdapter.setLast(last);
     }
 
-    public void setView(Comic comic, List<Chapter> list) {
-        if (list == null) {
-            mProgressBar.setVisibility(View.GONE);
-            mCoordinatorLayout.setVisibility(View.VISIBLE);
-            showSnackbar(R.string.common_network_error);
-            return;
-        }
-
+    @Override
+    public void onLoadSuccess(Comic comic, List<Chapter> list) {
         mChapterAdapter = new ChapterAdapter(this, list, comic.getSource(), comic.getCover(), comic.getTitle(),
                 comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), comic.getLast());
         mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
@@ -124,12 +127,24 @@ public class DetailActivity extends BaseActivity {
         } else {
             mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
         }
-        mProgressBar.setVisibility(View.GONE);
-        mCoordinatorLayout.setVisibility(View.VISIBLE);
-        mStarButton.setVisibility(View.VISIBLE);
-        if (list.isEmpty()) {
-            showSnackbar(R.string.detail_error);
+    }
+
+    @Override
+    public void showLayout() {
+        if (mProgressBar.isShown() || !mCoordinatorLayout.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+            mCoordinatorLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onNetworkError() {
+        showSnackbar(R.string.common_network_error);
+    }
+
+    @Override
+    public void onParseError() {
+        showSnackbar(R.string.common_parse_error);
     }
 
     public static final String EXTRA_ID = "a";

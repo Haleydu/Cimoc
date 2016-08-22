@@ -10,10 +10,10 @@ import android.widget.EditText;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourcePresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
+import com.hiroshi.cimoc.ui.view.SourceView;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
 import butterknife.BindView;
@@ -22,7 +22,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/8/11.
  */
-public class SourceFragment extends BaseFragment {
+public class SourceFragment extends BaseFragment implements SourceView {
 
     @BindView(R.id.source_recycler_view) RecyclerView mRecyclerView;
 
@@ -81,22 +81,30 @@ public class SourceFragment extends BaseFragment {
     }
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
+    public void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
     protected void initPresenter() {
-        mPresenter = new SourcePresenter(this);
+        mPresenter = new SourcePresenter();
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    public void onSourceAdd(Source source) {
+        if (source == null) {
+            showSnackbar(R.string.source_add_exist);
+        } else {
+            mSourceAdapter.add(source);
+            showSnackbar(R.string.source_add_success);
+        }
     }
 
     @Override
     protected int getLayoutView() {
         return R.layout.fragment_source;
-    }
-
-    public void addItem(Source source) {
-        mSourceAdapter.add(source);
     }
 
 }

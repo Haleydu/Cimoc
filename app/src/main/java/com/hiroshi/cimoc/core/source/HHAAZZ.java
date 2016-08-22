@@ -1,13 +1,13 @@
 package com.hiroshi.cimoc.core.source;
 
-import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.source.base.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.MachiSoup;
 import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -17,52 +17,47 @@ import okhttp3.Request;
 /**
  * Created by Hiroshi on 2016/7/26.
  */
-public class HHAAZZ extends Manga {
-
-    public HHAAZZ() {
-        super(SourceManager.SOURCE_HHAAZZ, "http://hhaazz.com");
-    }
+public class HHAAZZ extends MangaParser {
 
     @Override
-    protected Request buildSearchRequest(String keyword, int page) {
+    public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = host + "/comicsearch/s.aspx?s=" + keyword;
+            String url = String.format(Locale.CHINA, "http://hhaazz.com/comicsearch/s.aspx?s=%s", keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
     }
 
     @Override
-    protected List<Comic> parseSearch(String html, int page) {
+    public List<Comic> parseSearch(String html, int page) {
         Node body = MachiSoup.body(html);
-        List<Node> nodes = body.list(".se-list > li");
         List<Comic> list = new LinkedList<>();
-        for (Node node : nodes) {
+        for (Node node : body.list(".se-list > li")) {
             String cid = node.attr("a:eq(0)", "href", "/", 4);
             String title = node.text("a:eq(0) > div > h3");
             String cover = node.attr("a:eq(0) > img", "src");
             String update = node.text("a:eq(0) > div > p:eq(4) > span", 0, 10);
             String author = node.text("a:eq(0) > div > p:eq(1)");
             boolean status = "完结".equals(node.text("a:eq(1) > span:eq(1)"));
-            list.add(new Comic(source, cid, title, cover, update, author, status));
+            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author, status));
         }
         return list;
     }
 
     @Override
-    protected Request buildIntoRequest(String cid) {
-        String url = host + "/comic/" + cid;
+    public Request getInfoRequest(String cid) {
+        String url = String.format(Locale.CHINA, "http://hhaazz.com/comic/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<Chapter> parseInto(String html, Comic comic) {
+    public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
         List<Node> nodes = body.list("#sort_div_p > a");
         for (Node node : nodes) {
             String c_title = node.attr("title");
-            String c_path = node.attr("href").substring(host.length());
+            String c_path = node.attr("href").substring(17);
             list.add(new Chapter(c_title, c_path));
         }
 
@@ -79,24 +74,23 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected Request buildBrowseRequest(String cid, String path) {
-        String url = host + path;
+    public Request getImagesRequest(String cid, String path) {
+        String url = String.format(Locale.CHINA, "http://hhaazz.com/%s", path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    protected List<String> parseBrowse(String html) {
+    public List<ImageUrl> parseImages(String html) {
+        List<ImageUrl> list = new LinkedList<>();
         String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
         if (str != null) {
             String[] result = unsuan(str[0]);
             String domain = String.format(Locale.CHINA, "http://x8.1112223333.com:9393/dm%02d", Integer.parseInt(str[1]));
-            List<String> list = new ArrayList<>(result.length);
             for (int i = 0; i != result.length; ++i) {
-                list.add(domain + result[i]);
+                list.add(new ImageUrl(domain + result[i], false));
             }
-            return list;
         }
-        return null;
+        return list;
     }
 
     private static String[] unsuan(String str) {
@@ -116,13 +110,12 @@ public class HHAAZZ extends Manga {
     }
 
     @Override
-    protected Request buildCheckRequest(String cid) {
-        String url = host + "/comic/" + cid;
-        return new Request.Builder().url(url).build();
+    public Request getCheckRequest(String cid) {
+        return getInfoRequest(cid);
     }
 
     @Override
-    protected String parseCheck(String html) {
+    public String parseCheck(String html) {
         Node body = MachiSoup.body(html);
         return body.text(".main > div > div.pic > div:eq(1) > p:eq(5)", 5);
     }

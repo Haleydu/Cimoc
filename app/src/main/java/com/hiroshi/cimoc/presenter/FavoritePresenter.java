@@ -1,61 +1,94 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
+import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.view.FavoriteView;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
+import java.util.LinkedList;
 import java.util.List;
+
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/6.
  */
-public class FavoritePresenter extends BasePresenter {
+public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
-    private FavoriteFragment mFavoriteFragment;
     private ComicManager mComicManager;
 
-    public FavoritePresenter(FavoriteFragment fragment) {
-        mFavoriteFragment = fragment;
+    public FavoritePresenter() {
         mComicManager = ComicManager.getInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.FAVORITE_COMIC, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onItemAdd((MiniComic) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.UN_FAVORITE_COMIC, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onItemRemove((long) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.RESTORE_FAVORITE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onItemAdd((List<MiniComic>) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.COMIC_DELETE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onSourceRemove((int) rxEvent.getData());
+            }
+        });
+    }
+
+    public void checkUpdate() {
+        List<MiniComic> favorite = mComicManager.listFavorite();
+        final int size = favorite.size();
+        Manga.check(favorite)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<MiniComic>() {
+                    List<MiniComic> list = new LinkedList<>();
+                    int count = 0;
+
+                    @Override
+                    public void onCompleted() {
+                        mComicManager.updateFavorite(list);
+                        mBaseView.onCheckComplete(list);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {}
+
+                    @Override
+                    public void onNext(MiniComic comic) {
+                        if (comic != null) {
+                            list.add(comic);
+                        }
+                        mBaseView.onProgressChange(++count, size);
+                    }
+                });
     }
 
     public List<MiniComic> getComicList() {
         return mComicManager.listFavorite();
     }
 
-    public MiniComic[] getComicArray() {
-        return mComicManager.arrayFavorite();
-    }
-
-    public void updateComic(List<MiniComic> list) {
-        mComicManager.updateFavorite(list);
-    }
-
     public void deleteComic(MiniComic comic) {
         mComicManager.deleteFavorite(comic.getId());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(EventMessage msg) {
-        switch (msg.getType()) {
-            case EventMessage.FAVORITE_COMIC:
-                mFavoriteFragment.addItem((MiniComic) msg.getData());
-                break;
-            case EventMessage.UN_FAVORITE_COMIC:
-                mFavoriteFragment.removeItem((long) msg.getData());
-                break;
-            case EventMessage.RESTORE_FAVORITE:
-                mFavoriteFragment.addItems((List<MiniComic>) msg.getData());
-                break;
-            case EventMessage.COMIC_DELETE:
-                mFavoriteFragment.removeItems((int) msg.getData());
-                break;
-        }
     }
 
 }

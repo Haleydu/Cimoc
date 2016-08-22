@@ -1,49 +1,102 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.EventMessage;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.view.DetailView;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.LinkedList;
 import java.util.List;
+
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/4.
  */
-public class DetailPresenter extends BasePresenter {
+public class DetailPresenter extends BasePresenter<DetailView> {
 
-    private DetailActivity mDetailActivity;
     private ComicManager mComicManager;
-    private Manga mManga;
     private Comic mComic;
+    private int source;
 
-
-    public DetailPresenter(DetailActivity activity, Long id, int source, String cid) {
-        mDetailActivity = activity;
-        mComicManager = ComicManager.getInstance();
-        mManga = SourceManager.getManga(source);
-        mComic = mComicManager.getComic(id, source, cid);
+    public DetailPresenter(Long id, int source, String cid) {
+        this.source = source;
+        this.mComicManager = ComicManager.getInstance();
+        this.mComic = mComicManager.getComic(id, source, cid);
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        mManga.into(mComic);
+    public void attachView(DetailView mBaseView) {
+        super.attachView(mBaseView);
+        initSubscription();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mManga.cancel();
+    protected void initSubscription() {
+        addSubscription(RxEvent.COMIC_CHAPTER_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                String last = (String) rxEvent.getData();
+                int page = (int) rxEvent.getData(1);
+                mComic.setHistory(System.currentTimeMillis());
+                mComic.setLast(last);
+                mComic.setPage(page);
+                if (mComic.getId() == null) {
+                    long id = mComicManager.insertComic(mComic);
+                    mComic.setId(id);
+                } else {
+                    mComicManager.updateComic(mComic);
+                }
+                RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
+                mBaseView.onChapterChange(last);
+            }
+        });
+        addSubscription(RxEvent.COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mComic.setPage((Integer) rxEvent.getData());
+                if (mComic.getId() != null) {
+                    mComicManager.updateComic(mComic);
+                }
+            }
+        });
+    }
+
+    public void load() {
+        Manga.info(SourceManager.getParser(source), mComic)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Chapter>>() {
+                    @Override
+                    public void onCompleted() {
+                        mBaseView.showLayout();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        mBaseView.showLayout();
+                        if (e instanceof Manga.NetworkErrorException) {
+                            mBaseView.onNetworkError();
+                        } else {
+                            mBaseView.onParseError();
+                        }
+                    }
+
+                    @Override
+                    public void onNext(List<Chapter> list) {
+                        mBaseView.onLoadSuccess(mComic, list);
+                    }
+                });
+    }
+
+    public void updateComic() {
         if (mComic.getId() != null) {
             mComicManager.updateComic(mComic);
         }
@@ -63,7 +116,7 @@ public class DetailPresenter extends BasePresenter {
             long id = mComicManager.insertComic(mComic);
             mComic.setId(id);
         }
-        EventBus.getDefault().post(new EventMessage(EventMessage.FAVORITE_COMIC, new MiniComic(mComic)));
+        RxBus.getInstance().post(new RxEvent(RxEvent.FAVORITE_COMIC, new MiniComic(mComic)));
     }
 
     public void unfavoriteComic() {
@@ -73,44 +126,7 @@ public class DetailPresenter extends BasePresenter {
             mComicManager.deleteComic(id);
             mComic.setId(null);
         }
-        EventBus.getDefault().post(new EventMessage(EventMessage.UN_FAVORITE_COMIC, id));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(EventMessage msg) {
-        switch (msg.getType()) {
-            case EventMessage.LOAD_COMIC_SUCCESS:
-                mDetailActivity.setView(mComic, (List<Chapter>) msg.getData());
-                break;
-            case EventMessage.LOAD_COMIC_FAIL:
-                mDetailActivity.setView(mComic, new LinkedList<Chapter>());
-                break;
-            case EventMessage.NETWORK_ERROR:
-                mDetailActivity.setView(mComic, null);
-                break;
-            case EventMessage.COMIC_LAST_CHANGE:
-                String last = (String) msg.getData();
-                int page = (int) msg.getSecond();
-                mComic.setHistory(System.currentTimeMillis());
-                mComic.setLast(last);
-                mComic.setPage(page);
-                if (mComic.getId() == null) {
-                    long id = mComicManager.insertComic(mComic);
-                    mComic.setId(id);
-                } else {
-                    mComicManager.updateComic(mComic);
-                }
-                EventBus.getDefault().post(new EventMessage(EventMessage.HISTORY_COMIC, new MiniComic(mComic)));
-                mDetailActivity.setLastChapter(last);
-                break;
-            case EventMessage.COMIC_PAGE_CHANGE:
-                mComic.setPage((Integer) msg.getData());
-                if (mComic.getId() != null) {
-                    mComicManager.updateComic(mComic);
-                }
-                break;
-        }
+        RxBus.getInstance().post(new RxEvent(RxEvent.UN_FAVORITE_COMIC, id));
     }
 
 }

@@ -22,6 +22,9 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
@@ -34,7 +37,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/8/5.
  */
-public class ReaderAdapter extends BaseAdapter<String> {
+public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public static final int MODE_PAGE = 0;
     public static final int MODE_STREAM = 1;
@@ -48,7 +51,7 @@ public class ReaderAdapter extends BaseAdapter<String> {
     private @PictureMode int mode;
     private boolean split = false;
 
-    public ReaderAdapter(Context context, List<String> list) {
+    public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
     }
 
@@ -68,6 +71,14 @@ public class ReaderAdapter extends BaseAdapter<String> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        ImageUrl imageUrl = mDataSet.get(position);
+        if (imageUrl.isLazy()) {
+            if (!imageUrl.isLoading()) {
+                imageUrl.setLoading(true);
+                RxBus.getInstance().post(new RxEvent(RxEvent.IMAGE_LAZY_LOAD, imageUrl));
+            }
+            return;
+        }
         final PhotoDraweeView draweeView = ((ViewHolder) holder).photoView;
         switch (mode) {
             case MODE_PAGE:
@@ -113,12 +124,12 @@ public class ReaderAdapter extends BaseAdapter<String> {
         builder.setTapToRetryEnabled(true);
         if (split) {
             ImageRequest request = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(mDataSet.get(position)))
-                    .setPostprocessor(new SplitPostprocessor(mDataSet.get(position)))
+                    .newBuilderWithSource(Uri.parse(imageUrl.getUrl()))
+                    .setPostprocessor(new SplitPostprocessor(imageUrl.getUrl() + "split"))
                     .build();
             draweeView.setController(builder.setImageRequest(request).build());
         } else {
-            draweeView.setController(builder.setUri(mDataSet.get(position)).build());
+            draweeView.setController(builder.setUri(imageUrl.getUrl()).build());
         }
     }
 
@@ -200,6 +211,19 @@ public class ReaderAdapter extends BaseAdapter<String> {
                         outRect.set(0, 10, 0, 10);
                     }
                 };
+        }
+    }
+
+    public void update(int id, String url) {
+        for (int i = 0; i != mDataSet.size(); ++i) {
+            ImageUrl imageUrl = mDataSet.get(i);
+            if (imageUrl.getId() == id && imageUrl.isLoading()) {
+                imageUrl.setUrl(url);
+                imageUrl.setLoading(false);
+                imageUrl.setLazy(false);
+                notifyItemChanged(i);
+                break;
+            }
         }
     }
 
