@@ -12,9 +12,11 @@ import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.List;
 
+import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -26,10 +28,10 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     private Comic mComic;
     private int source;
 
-    public DetailPresenter(Long id, int source, String cid) {
+    public DetailPresenter(int source) {
         this.source = source;
         this.mComicManager = ComicManager.getInstance();
-        this.mComic = mComicManager.getComic(id, source, cid);
+        //this.mComic = mComicManager.getComic(id, source, cid);
     }
 
     @Override
@@ -49,10 +51,10 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 mComic.setLast(last);
                 mComic.setPage(page);
                 if (mComic.getId() == null) {
-                    long id = mComicManager.insertComic(mComic);
+                    long id = mComicManager.insert(mComic);
                     mComic.setId(id);
                 } else {
-                    mComicManager.updateComic(mComic);
+                    mComicManager.update(mComic);
                 }
                 RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
                 mBaseView.onChapterChange(last);
@@ -63,16 +65,28 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             public void call(RxEvent rxEvent) {
                 mComic.setPage((Integer) rxEvent.getData());
                 if (mComic.getId() != null) {
-                    mComicManager.updateComic(mComic);
+                    mComicManager.update(mComic);
                 }
             }
         });
     }
 
-    public void load() {
-        Manga.info(SourceManager.getParser(source), mComic)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+    public void load(long id, final String cid) {
+        Observable<Comic> observable =
+                id == -1 ? mComicManager.load(source, cid) : mComicManager.load(id);
+        observable.flatMap(new Func1<Comic, Observable<List<Chapter>>>() {
+            @Override
+            public Observable<List<Chapter>> call(Comic comic) {
+                if (comic == null) {
+                    comic = new Comic(source, cid);
+                } if (comic.getFavorite() != null && comic.getHighlight()) {
+                    comic.setHighlight(false);
+                    comic.setFavorite(System.currentTimeMillis());
+                }
+                mComic = comic;
+                return Manga.info(SourceManager.getParser(source), comic);
+            }
+        }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Chapter>>() {
                     @Override
                     public void onCompleted() {
@@ -98,7 +112,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     public void updateComic() {
         if (mComic.getId() != null) {
-            mComicManager.updateComic(mComic);
+            mComicManager.update(mComic);
         }
     }
 
@@ -113,7 +127,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     public void favoriteComic() {
         mComic.setFavorite(System.currentTimeMillis());
         if (mComic.getId() == null) {
-            long id = mComicManager.insertComic(mComic);
+            long id = mComicManager.insert(mComic);
             mComic.setId(id);
         }
         RxBus.getInstance().post(new RxEvent(RxEvent.FAVORITE_COMIC, new MiniComic(mComic)));
@@ -123,7 +137,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         long id = mComic.getId();
         mComic.setFavorite(null);
         if (mComic.getHistory() == null) {
-            mComicManager.deleteComic(id);
+            mComicManager.deleteByKey(id);
             mComic.setId(null);
         }
         RxBus.getInstance().post(new RxEvent(RxEvent.UN_FAVORITE_COMIC, id));

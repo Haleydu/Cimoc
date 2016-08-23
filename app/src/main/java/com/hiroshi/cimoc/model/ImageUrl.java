@@ -31,7 +31,9 @@ public class ImageUrl {
         this.url = url;
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
     public String getUrl() {
         return url;
@@ -41,7 +43,9 @@ public class ImageUrl {
         return lazy;
     }
 
-    public boolean isLoading() { return loading; }
+    public boolean isLoading() {
+        return loading;
+    }
 
     @Override
     public boolean equals(Object o) {

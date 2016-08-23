@@ -64,7 +64,7 @@ public class BackupUtils {
                 String update = object.getString("u");
                 String last = object.has("l") ? object.getString("l") : null;
                 Integer page = object.has("p") ? object.getInt("p") : null;
-                list.add(new Comic(null, source, cid, title, cover, update, null, null, last, page));
+                list.add(new Comic(null, source, cid, title, cover, update, false, null, null, last, page));
             }
         } catch (Exception e) {
             e.printStackTrace();

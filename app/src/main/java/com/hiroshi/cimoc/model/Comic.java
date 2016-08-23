@@ -1,10 +1,10 @@
 package com.hiroshi.cimoc.model;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Transient;
-import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by Hiroshi on 2016/7/20.
@@ -18,6 +18,7 @@ public class Comic {
     @NotNull private String title;
     @NotNull private String cover;
     @NotNull private String update;
+    @NotNull private boolean highlight;
     private Long favorite;
     private Long history;
     private String last;
@@ -27,15 +28,16 @@ public class Comic {
     @Transient private String author;
     @Transient private Boolean status;
 
-    @Generated(hash = 1562578524)
+    @Generated(hash = 562563607)
     public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
-                 @NotNull String update, Long favorite, Long history, String last, Integer page) {
+            @NotNull String update, boolean highlight, Long favorite, Long history, String last, Integer page) {
         this.id = id;
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
         this.update = update;
+        this.highlight = highlight;
         this.favorite = favorite;
         this.history = history;
         this.last = last;
@@ -177,6 +179,14 @@ public class Comic {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean getHighlight() {
+        return this.highlight;
+    }
+
+    public void setHighlight(boolean highlight) {
+        this.highlight = highlight;
     }
 
 }

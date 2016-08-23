@@ -15,6 +15,9 @@ import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 import com.hiroshi.cimoc.ui.view.HistoryView;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -30,7 +33,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
 
     @Override
     protected void initView() {
-        mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getComic());
+        mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
         mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -57,6 +60,8 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mComicAdapter);
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
+
+        mPresenter.loadComic();
     }
 
     @OnClick(R.id.history_clear_btn) void onHistoryClearClick() {
@@ -83,12 +88,18 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     }
 
     @Override
+    public void onLoadSuccess(List<MiniComic> list) {
+        mComicAdapter.addAll(list);
+    }
+
+    @Override
     protected int getLayoutView() {
         return R.layout.fragment_history;
     }
 
     @Override
-    public void onItemClear(int count) {
+    public void onItemClear() {
+        int count = mComicAdapter.getItemCount();
         mComicAdapter.clear();
         showSnackbar(R.string.history_clear_success, count);
         hideProgressDialog();

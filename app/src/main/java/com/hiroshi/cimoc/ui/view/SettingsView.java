@@ -7,4 +7,6 @@ public interface SettingsView extends BaseView {
 
     void onRestoreSuccess(int count);
 
+    void onBackupSuccess(int count);
+
 }

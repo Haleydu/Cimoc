@@ -26,7 +26,6 @@
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
 
-    <string name="favorite_delete_confirm">是否删除该漫画</string>
     <string name="favorite_update_confirm">是否检查更新</string>
     <string name="favorite_update_doing">正在检查更新</string>
     <string name="favorite_update_finish">检查更新完成</string>

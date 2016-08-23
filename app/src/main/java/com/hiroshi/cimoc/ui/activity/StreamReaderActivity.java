@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -91,8 +90,8 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    public void onNextLoadSuccess(List<ImageUrl> list) {
-        super.onNextLoadSuccess(list);
+    public void onPrevLoadSuccess(List<ImageUrl> list) {
+        super.onPrevLoadSuccess(list);
         if (position == 0) {
             position = list.size();
         }
@@ -104,8 +103,9 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    public void onFirstLoadSuccess(int progress, int max, String title) {
-        this.max = max;
+    public void onFirstLoadSuccess(List<ImageUrl> list, int progress, String title) {
+        mReaderAdapter.setData(list);
+        max = list.size();
         if (progress != 1) {
             position = progress - 1;
             setReadProgress(progress);
@@ -114,7 +114,6 @@ public class StreamReaderActivity extends ReaderActivity {
             setReadProgress(1);
         }
         mChapterTitle.setText(title);
-        mLoadingLayout.setVisibility(View.INVISIBLE);
     }
 
 }

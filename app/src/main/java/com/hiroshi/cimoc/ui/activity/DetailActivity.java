@@ -49,7 +49,9 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     protected void initView() {
-        mPresenter.load();
+        long id = getIntent().getLongExtra(EXTRA_ID, -1);
+        String cid = getIntent().getStringExtra(EXTRA_CID);
+        mPresenter.load(id, cid);
     }
 
     @Override
@@ -65,14 +67,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     protected void initPresenter() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        String cid = getIntent().getStringExtra(EXTRA_CID);
-        if (id == -1) {
-            mPresenter = new DetailPresenter(null, source, cid);
-        } else {
-            mPresenter = new DetailPresenter(id, source, cid);
-        }
+        mPresenter = new DetailPresenter(source);
         mPresenter.attachView(this);
     }
 

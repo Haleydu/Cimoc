@@ -21,6 +21,8 @@ import java.util.List;
  * RecyclerViewPager
  *
  * @author Green
+ *
+ * https://github.com/lsjwzh/RecyclerViewPager
  */
 public class RecyclerViewPager extends RecyclerView {
     

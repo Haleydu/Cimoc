@@ -18,6 +18,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
+import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
 import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
@@ -36,14 +37,14 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/8/6.
  */
-public abstract class ReaderActivity extends BaseActivity implements OnSingleTapListener, OnProgressChangeListener, ReaderView {
+public abstract class ReaderActivity extends BaseActivity implements OnSingleTapListener,
+        OnProgressChangeListener, OnLazyLoadListener, ReaderView {
 
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
     @BindView(R.id.reader_battery) TextView mBatteryText;
     @BindView(R.id.reader_progress_layout) View mProgressLayout;
     @BindView(R.id.reader_back_layout) View mBackLayout;
-    @BindView(R.id.reader_loading_layout) View mLoadingLayout;
     @BindView(R.id.reader_seek_bar) ReverseSeekBar mSeekBar;
     @BindView(R.id.reader_mask) View mNightMask;
 
@@ -65,9 +66,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mNightMask.setVisibility(View.VISIBLE);
         }
         mSeekBar.setOnProgressChangeListener(this);
-        mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
+        List<ImageUrl> list = new LinkedList<>();
+        list.add(new ImageUrl(null, true));
+        mReaderAdapter = new ReaderAdapter(this, list);
         mReaderAdapter.setSingleTapListener(this);
         mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
+        mReaderAdapter.setLazyLoadListener(this);
         mLayoutManager = new PreCacheLayoutManager(this);
     }
 
@@ -126,6 +130,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onStopTrackingTouch(DiscreteSeekBar seekBar) {}
+
+    @Override
+    public void onLoad(ImageUrl imageUrl) {
+        mPresenter.lazyLoad(imageUrl);
+    }
 
     private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
         @Override

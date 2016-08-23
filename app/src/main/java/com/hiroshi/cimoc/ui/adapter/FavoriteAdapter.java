@@ -20,7 +20,7 @@ public class FavoriteAdapter extends ComicAdapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (mDataSet.get(position).getStatus()) {
+        if (mDataSet.get(position).isHighlight()) {
             ((ViewHolder) holder).comicNew.setVisibility(View.VISIBLE);
         } else {
             ((ViewHolder) holder).comicNew.setVisibility(View.INVISIBLE);
@@ -37,16 +37,17 @@ public class FavoriteAdapter extends ComicAdapter {
         super.addAll(findFirstNormal(), data);
     }
 
-    public void updateAll(List<MiniComic> list) {
-        mDataSet.removeAll(list);
-        mDataSet.addAll(0, list);
-        notifyDataSetChanged();
+    public void update(MiniComic comic) {
+        int position = mDataSet.indexOf(comic);
+        mDataSet.remove(position);
+        mDataSet.add(0, comic);
+        notifyItemMoved(position, 0);
     }
 
-    public MiniComic cancelNew(int position) {
+    public MiniComic cancelHighlight(int position) {
         MiniComic comic = mDataSet.get(position);
-        if (comic.getStatus()) {
-            comic.setStatus(false);
+        if (comic.isHighlight()) {
+            comic.setHighlight(false);
             mDataSet.remove(position);
             int temp = findFirstNormal();
             mDataSet.add(temp, comic);
@@ -59,7 +60,7 @@ public class FavoriteAdapter extends ComicAdapter {
     private int findFirstNormal() {
         int index = 0;
         for (MiniComic comic : mDataSet) {
-            if (!comic.getStatus()) {
+            if (!comic.isHighlight()) {
                 break;
             }
             ++index;

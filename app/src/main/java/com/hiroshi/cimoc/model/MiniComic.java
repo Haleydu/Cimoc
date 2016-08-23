@@ -11,16 +11,16 @@ public class MiniComic {
     private String title;
     private String cover;
     private String update;
-    private boolean status;
+    private boolean highlight;
 
-    public MiniComic(Long id, int source, String cid, String title, String cover, String update, boolean status) {
+    public MiniComic(Long id, int source, String cid, String title, String cover, String update, boolean highlight) {
         this.id = id;
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
         this.update = update;
-        this.status = status;
+        this.highlight = highlight;
     }
 
     public MiniComic(Comic comic) {
@@ -30,7 +30,7 @@ public class MiniComic {
         this.title = comic.getTitle();
         this.cover = comic.getCover();
         this.update = comic.getUpdate();
-        this.status = false;
+        this.highlight = comic.getHighlight();
     }
 
     @Override
@@ -38,12 +38,12 @@ public class MiniComic {
         return o instanceof MiniComic && ((MiniComic) o).id.equals(id);
     }
 
-    public boolean getStatus() {
-        return this.status;
+    public boolean isHighlight() {
+        return this.highlight;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setHighlight(boolean highlight) {
+        this.highlight = highlight;
     }
 
     public String getUpdate() {

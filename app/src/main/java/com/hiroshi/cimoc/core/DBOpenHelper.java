@@ -35,6 +35,8 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
             case 1:
                 SourceDao.createTable(db, false);
                 initSource(db);
+            case 2:
+                updateHighlight(db);
         }
     }
 
@@ -47,6 +49,29 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         array[3] = new Source(null, SourceManager.SOURCE_CCTUKU, true);
         array[4] = new Source(null, SourceManager.SOURCE_U17, true);
         dao.insertInTx(array);
+    }
+
+    private void updateHighlight(Database db) {
+        db.beginTransaction();
+        db.execSQL("CREATE TABLE \"COMIC2\" (" +
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                "\"SOURCE\" INTEGER NOT NULL ," +
+                "\"CID\" TEXT NOT NULL ," +
+                "\"TITLE\" TEXT NOT NULL ," +
+                "\"COVER\" TEXT NOT NULL ," +
+                "\"UPDATE\" TEXT NOT NULL ," +
+                "\"HIGHLIGHT\" INTEGER NOT NULL ," +
+                "\"FAVORITE\" INTEGER," +
+                "\"HISTORY\" INTEGER," +
+                "\"LAST\" TEXT," +
+                "\"PAGE\" INTEGER)");
+        db.execSQL("INSERT INTO \"COMIC2\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC\"");
+        db.execSQL("DROP TABLE \"COMIC\"");
+        db.execSQL("ALTER TABLE \"COMIC2\" RENAME TO \"COMIC\"");
+        db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " + System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
 }

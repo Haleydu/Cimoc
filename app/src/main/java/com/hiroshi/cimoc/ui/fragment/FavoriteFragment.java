@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -19,6 +20,8 @@ import com.hiroshi.cimoc.ui.adapter.FavoriteAdapter;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,33 +46,61 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
         isChecking = false;
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new Notification.Builder(getActivity());
-        mFavoriteAdapter = new FavoriteAdapter(getActivity(), mPresenter.getComicList());
+        mFavoriteAdapter = new FavoriteAdapter(getActivity(), new LinkedList<MiniComic>());
         mFavoriteAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                MiniComic comic = mFavoriteAdapter.cancelNew(position);
+                MiniComic comic = mFavoriteAdapter.cancelHighlight(position);
                 Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
                 startActivity(intent);
             }
         });
-        mFavoriteAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
-            public void onItemLongClick(View view, final int position) {
-                DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.favorite_delete_confirm,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mPresenter.deleteComic(mFavoriteAdapter.getItem(position));
-                                mFavoriteAdapter.remove(position);
-                            }
-                        }).show();
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                int flag = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                return makeMovementFlags(flag, 0);
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+                if (fromPosition == toPosition) {
+                    return false;
+                }
+
+                List<MiniComic> list = mFavoriteAdapter.getDateSet();
+                long fromId = list.get(fromPosition).getId();
+                long toId = list.get(toPosition).getId();
+                boolean isBack = fromPosition < toPosition;
+                if (isBack) {
+                    for (int i = fromPosition; i < toPosition; i++) {
+                        Collections.swap(list, i, i + 1);
+                    }
+                } else {
+                    for (int i = fromPosition; i > toPosition; i--) {
+                        Collections.swap(list, i, i - 1);
+                    }
+                }
+                mPresenter.updateComic(fromId, toId, isBack);
+                mFavoriteAdapter.notifyItemMoved(fromPosition, toPosition);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
             }
         });
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mFavoriteAdapter);
         mRecyclerView.addItemDecoration(mFavoriteAdapter.getItemDecoration());
+
+        mPresenter.loadComic();
     }
 
     @OnClick(R.id.favorite_check_btn) void onCheckClick() {
@@ -138,8 +169,12 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     }
 
     @Override
-    public void onCheckComplete(List<MiniComic> list) {
-        mFavoriteAdapter.updateAll(list);
+    public void onComicUpdate(MiniComic comic) {
+        mFavoriteAdapter.update(comic);
+    }
+
+    @Override
+    public void onCheckComplete() {
         mBuilder.setOngoing(false)
                 .setTicker(getString(R.string.favorite_update_finish))
                 .setContentText(getString(R.string.favorite_update_finish))

@@ -74,15 +74,15 @@ public class Manga {
         });
     }
 
-    public static Observable<MiniComic> check(final List<MiniComic> list) {
-        return Observable.create(new Observable.OnSubscribe<MiniComic>() {
+    public static Observable<Comic> check(final List<Comic> list) {
+        return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
-            public void call(Subscriber<? super MiniComic> subscriber) {
+            public void call(Subscriber<? super Comic> subscriber) {
                 OkHttpClient client = new OkHttpClient.Builder()
                         .connectTimeout(500, TimeUnit.MILLISECONDS)
                         .readTimeout(1000, TimeUnit.MILLISECONDS)
                         .build();
-                for (MiniComic comic : list) {
+                for (Comic comic : list) {
                     int source = comic.getSource();
                     if (source < 100) {
                         Parser parser = SourceManager.getParser(source);
@@ -90,10 +90,12 @@ public class Manga {
                             Request request = parser.getCheckRequest(comic.getCid());
                             Response response = client.newCall(request).execute();
                             if (response.isSuccessful()) {
-                                String update = parser.parseCheck(response.body().string());
-                                if (comic.getUpdate().equals(update)) {
+                                String html = response.body().string();
+                                response.close();
+                                String update = parser.parseCheck(html);
+                                if (!comic.getUpdate().equals(update)) {
                                     comic.setUpdate(update);
-                                    comic.setStatus(true);
+                                    comic.setHighlight(true);
                                     subscriber.onNext(comic);
                                     continue;
                                 }
@@ -117,6 +119,7 @@ public class Manga {
                     Response response = mClient.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String html = response.body().string();
+                        response.close();
                         List<T> list = handler.onSuccess(html);
                         if (list.isEmpty()) {
                             subscriber.onError(new EmptyResultException());

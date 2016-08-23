@@ -4,16 +4,18 @@ import android.graphics.Point;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
-import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager.OnPageChangedListener;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -71,6 +73,9 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
 
     @Override
     public void OnPageChanged(int oldPosition, int newPosition) {
+        if (oldPosition == -1) {
+            return;
+        }
         if (newPosition > oldPosition && progress == max) {
             mPresenter.toNextChapter();
         } else if (newPosition < oldPosition && progress == 1) {
@@ -129,15 +134,16 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     }
 
     @Override
-    public void onFirstLoadSuccess(int progress, int max, String title) {
-        this.max = max;
+    public void onFirstLoadSuccess(List<ImageUrl> list, int progress, String title) {
+        mReaderAdapter.setData(list);
+        max = list.size();
         if (progress != 1) {
             mRecyclerView.scrollToPosition(progress - 1);
+            setReadProgress(progress);
         } else {
             setReadProgress(1);
         }
         mChapterTitle.setText(title);
-        mLoadingLayout.setVisibility(View.INVISIBLE);
     }
 
 }

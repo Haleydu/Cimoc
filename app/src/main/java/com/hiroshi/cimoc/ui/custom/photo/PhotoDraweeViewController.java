@@ -22,6 +22,9 @@ import com.facebook.drawee.view.DraweeView;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * https://github.com/ongakuer/PhotoDraweeView
+ */
 public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGestureListener, OnDoubleTapListener {
 
     public static final float MIN_SCALE = 1.0f;

@@ -142,13 +142,7 @@ public class SettingsFragment extends BaseFragment implements SettingsView {
 
     @OnClick(R.id.settings_backup_save_btn) void onSaveBtnClick() {
         showProgressDialog();
-        int size = mPresenter.backup();
-        if (size != -1) {
-            showSnackbar(R.string.settings_backup_save_success, size);
-        } else {
-            showSnackbar(R.string.settings_backup_save_fail);
-        }
-        hideProgressDialog();
+        mPresenter.backup();
     }
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
@@ -167,6 +161,16 @@ public class SettingsFragment extends BaseFragment implements SettingsView {
     @Override
     public void onRestoreSuccess(int count) {
         showSnackbar(R.string.settings_backup_restore_success, count);
+        hideProgressDialog();
+    }
+
+    @Override
+    public void onBackupSuccess(int count) {
+        if (count != -1) {
+            showSnackbar(R.string.settings_backup_save_success, count);
+        } else {
+            showSnackbar(R.string.settings_backup_save_fail);
+        }
         hideProgressDialog();
     }
 

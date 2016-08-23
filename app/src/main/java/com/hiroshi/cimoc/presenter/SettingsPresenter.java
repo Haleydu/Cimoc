@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.utils.FileUtils;
 import java.io.File;
 import java.util.List;
 
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
 /**
@@ -39,13 +40,19 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         FileUtils.deleteDir(dir);
     }
 
-    public int backup() {
-        List<Comic> list = mComicManager.listBackup();
-        if (BackupUtils.saveComic(list)) {
-            return list.size();
-        } else {
-            return -1;
-        }
+    public void backup() {
+        mComicManager.listFavorite()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Comic>>() {
+                    @Override
+                    public void call(List<Comic> list) {
+                        if (BackupUtils.saveComic(list)) {
+                            mBaseView.onBackupSuccess(list.size());
+                        } else {
+                            mBaseView.onBackupSuccess(-1);
+                        }
+                    }
+                });
     }
 
     public String[] getFiles() {

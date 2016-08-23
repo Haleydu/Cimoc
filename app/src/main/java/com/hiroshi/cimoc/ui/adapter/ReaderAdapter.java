@@ -23,8 +23,6 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.rx.RxBus;
-import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
@@ -42,12 +40,16 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     public static final int MODE_PAGE = 0;
     public static final int MODE_STREAM = 1;
 
+    public static final int TYPE_LOADING = 0;
+    public static final int TYPE_IMAGE = 1;
+
     @IntDef({MODE_PAGE, MODE_STREAM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PictureMode {}
 
-    private PipelineDraweeControllerBuilder builder;
-    private OnSingleTapListener listener;
+    private PipelineDraweeControllerBuilder mControllerBuilder;
+    private OnSingleTapListener mSingleTapListener;
+    private OnLazyLoadListener mLazyLoadListener;
     private @PictureMode int mode;
     private boolean split = false;
 
@@ -55,36 +57,50 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         super(context, list);
     }
 
-    public class ViewHolder extends BaseViewHolder {
+    public class ImageHolder extends BaseViewHolder {
         @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
+        public ImageHolder(View view) {
+            super(view);
+        }
+    }
 
-        public ViewHolder(View view) {
+    public class LoadingHolder extends BaseViewHolder {
+        public LoadingHolder(View view) {
             super(view);
         }
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return mDataSet.get(position).isLazy() ? TYPE_LOADING : TYPE_IMAGE;
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_picture, parent, false);
-        return new ViewHolder(view);
+        if (viewType == TYPE_IMAGE) {
+            View view = mInflater.inflate(R.layout.item_picture, parent, false);
+            return new ImageHolder(view);
+        }
+        View view = mInflater.inflate(R.layout.item_loading, parent, false);
+        return new LoadingHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ImageUrl imageUrl = mDataSet.get(position);
         if (imageUrl.isLazy()) {
-            if (!imageUrl.isLoading()) {
+            if (!imageUrl.isLoading() && mLazyLoadListener != null) {
                 imageUrl.setLoading(true);
-                RxBus.getInstance().post(new RxEvent(RxEvent.IMAGE_LAZY_LOAD, imageUrl));
+                mLazyLoadListener.onLoad(imageUrl);
             }
             return;
         }
-        final PhotoDraweeView draweeView = ((ViewHolder) holder).photoView;
+        final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
         switch (mode) {
             case MODE_PAGE:
                 draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 draweeView.setHorizontalMode();
-                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         super.onFinalImageSet(id, imageInfo, animatable);
@@ -98,7 +114,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             case MODE_STREAM:
                 draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 draweeView.setVerticalMode();
-                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
                         super.onIntermediateImageSet(id, imageInfo);
@@ -120,25 +136,29 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 });
                 break;
         }
-        draweeView.setOnSingleTapListener(listener);
-        builder.setTapToRetryEnabled(true);
+        draweeView.setOnSingleTapListener(mSingleTapListener);
+        mControllerBuilder.setTapToRetryEnabled(true);
         if (split) {
             ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(imageUrl.getUrl()))
                     .setPostprocessor(new SplitPostprocessor(imageUrl.getUrl() + "split"))
                     .build();
-            draweeView.setController(builder.setImageRequest(request).build());
+            draweeView.setController(mControllerBuilder.setImageRequest(request).build());
         } else {
-            draweeView.setController(builder.setUri(imageUrl.getUrl()).build());
+            draweeView.setController(mControllerBuilder.setUri(imageUrl.getUrl()).build());
         }
     }
 
     public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
-        this.builder = builder;
+        this.mControllerBuilder = builder;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {
-        this.listener = listener;
+        this.mSingleTapListener = listener;
+    }
+
+    public void setLazyLoadListener(OnLazyLoadListener listener) {
+        this.mLazyLoadListener = listener;
     }
 
     public void setAutoSplit(boolean split) {
@@ -225,6 +245,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 break;
             }
         }
+    }
+
+    public interface OnLazyLoadListener {
+        void onLoad(ImageUrl imageUrl);
     }
 
 }

@@ -17,7 +17,9 @@ public interface FavoriteView extends BaseView {
 
     void onSourceRemove(int source);
 
-    void onCheckComplete(List<MiniComic> list);
+    void onComicUpdate(MiniComic comic);
+
+    void onCheckComplete();
 
     void onProgressChange(int progress, int max);
 

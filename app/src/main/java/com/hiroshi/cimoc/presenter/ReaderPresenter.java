@@ -51,24 +51,21 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         this.parser = SourceManager.getParser(source);
     }
 
-    @Override
-    protected void initSubscription() {
-        addSubscription(RxEvent.IMAGE_LAZY_LOAD, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                ImageUrl imageUrl = (ImageUrl) rxEvent.getData();
-                final int id = imageUrl.getId();
-                Manga.load(parser, imageUrl.getUrl())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<String>() {
-                            @Override
-                            public void call(String url) {
-                                mBaseView.onImageLoadSuccess(id, url);
-                            }
-                        });
-            }
-        });
+    public void lazyLoad(ImageUrl imageUrl) {
+        final int id = imageUrl.getId();
+        Manga.load(parser, imageUrl.getUrl())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String url) {
+                        mBaseView.onImageLoadSuccess(id, url);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                    }
+                });
     }
 
     public void setPage(int progress) {
@@ -151,21 +148,27 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                     @Override
                     public void onNext(List<ImageUrl> list) {
                         Chapter chapter;
-                        if (status == LOAD_PREV) {
-                            mBaseView.onPrevLoadSuccess(list);
-                            chapter = mPreloadAdapter.movePrev();
-                        } else {
-                            mBaseView.onNextLoadSuccess(list);
-                            chapter = mPreloadAdapter.moveNext();
+                        switch (status) {
+                            case LOAD_INIT:
+                                chapter = mPreloadAdapter.moveNext();
+                                if (!chapter.getPath().equals(last) || page == -1) {
+                                    page = 1;
+                                }
+                                mBaseView.onFirstLoadSuccess(list, page, chapter.getTitle());
+                                RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), page));
+                                chapter.setCount(list.size());
+                                break;
+                            case LOAD_PREV:
+                                mBaseView.onPrevLoadSuccess(list);
+                                chapter = mPreloadAdapter.movePrev();
+                                chapter.setCount(list.size());
+                                break;
+                            case LOAD_NEXT:
+                                mBaseView.onNextLoadSuccess(list);
+                                chapter = mPreloadAdapter.moveNext();
+                                chapter.setCount(list.size());
+                                break;
                         }
-                        if (status == LOAD_INIT) {
-                            if (!chapter.getPath().equals(last) || page == -1) {
-                                page = 1;
-                            }
-                            mBaseView.onFirstLoadSuccess(page, list.size(), chapter.getTitle());
-                            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), page));
-                        }
-                        chapter.setCount(list.size());
                     }
                 });
     }

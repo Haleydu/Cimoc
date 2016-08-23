@@ -55,18 +55,18 @@ public class EHentai extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Node doc = MachiSoup.body(html);
-        String length = doc.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
+        Node body = MachiSoup.body(html);
+        String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
         int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
         for (int i = 0; i != size; ++i) {
             list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
         }
 
-        String update = doc.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
-        String title = doc.text("#gn");
-        String intro = doc.text("#gj");
-        String author = doc.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
-        String cover = doc.attr("#gd1 > img", "src");
+        String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
+        String title = body.text("#gn");
+        String intro = body.text("#gj");
+        String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
+        String cover = body.attr("#gd1 > img", "src");
         comic.setInfo(title, cover, update, intro, author, true);
 
         return list;
@@ -82,7 +82,7 @@ public class EHentai extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
-        for (Node node : body.list("#gh > div > a")) {
+        for (Node node : body.list("#gdt > div > div > a")) {
             list.add(new ImageUrl(node.attr("href"), true));
         }
         return list;
