@@ -6,7 +6,6 @@ import com.hiroshi.cimoc.core.source.base.Parser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +15,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/8/20.
@@ -66,12 +66,13 @@ public class Manga {
                         String newUrl = parser.parseLazy(html);
                         subscriber.onNext(newUrl);
                     }
+                    response.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 subscriber.onCompleted();
             }
-        });
+        }).subscribeOn(Schedulers.io());
     }
 
     public static Observable<Comic> check(final List<Comic> list) {
@@ -91,7 +92,6 @@ public class Manga {
                             Response response = client.newCall(request).execute();
                             if (response.isSuccessful()) {
                                 String html = response.body().string();
-                                response.close();
                                 String update = parser.parseCheck(html);
                                 if (!comic.getUpdate().equals(update)) {
                                     comic.setUpdate(update);
@@ -100,6 +100,7 @@ public class Manga {
                                     continue;
                                 }
                             }
+                            response.close();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -108,7 +109,7 @@ public class Manga {
                 }
                 subscriber.onCompleted();
             }
-        });
+        }).subscribeOn(Schedulers.io());
     }
 
     private static <T> Observable<List<T>> create(final Request request, final OnResponseSuccessHandler<T> handler) {
@@ -119,7 +120,6 @@ public class Manga {
                     Response response = mClient.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String html = response.body().string();
-                        response.close();
                         List<T> list = handler.onSuccess(html);
                         if (list.isEmpty()) {
                             subscriber.onError(new EmptyResultException());
@@ -130,11 +130,12 @@ public class Manga {
                     } else {
                         subscriber.onError(new ParseErrorException());
                     }
+                    response.close();
                 } catch (Exception e) {
                     subscriber.onError(new NetworkErrorException());
                 }
             }
-        });
+        }).subscribeOn(Schedulers.io());
     }
 
     private interface OnResponseSuccessHandler<T> {

@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.ui.view.SourceView;
 
 import java.util.List;
 
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -26,16 +27,21 @@ public class SourcePresenter extends BasePresenter<SourceView> {
         mComicManager = ComicManager.getInstance();
     }
 
-    public List<Source> list() {
-        return mSourceManager.list();
+    public void load() {
+        mSourceManager.list()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Source>>() {
+                    @Override
+                    public void call(List<Source> list) {
+                        mBaseView.onSourceLoad(list);
+                    }
+                });
     }
 
     public void add(int sid) {
-        Source source = null;
-        if (!mSourceManager.exist(sid)) {
-            long id = mSourceManager.insert(sid);
-            source = new Source(id, sid, true);
-        }
+        Source source = new Source(null, sid, true);
+        long id = mSourceManager.insert(source);
+        source.setId(id);
         mBaseView.onSourceAdd(source);
     }
 
@@ -49,7 +55,7 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                 .subscribe(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
-                        mSourceManager.delete(source.getId());
+                        mSourceManager.delete(source);
                         mComicManager.deleteInTx(list);
                     }
                 });

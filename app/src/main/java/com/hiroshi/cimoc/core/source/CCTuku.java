@@ -22,7 +22,7 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "http://m.tuku.cc/comic/search?word=%s&page=%d", keyword, page);
+        String url = String.format(Locale.getDefault(), "http://m.tuku.cc/comic/search?word=%s&page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -47,7 +47,7 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://m.tuku.cc/comic/%s", cid);
+        String url = String.format(Locale.getDefault(), "http://m.tuku.cc/comic/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -75,7 +75,7 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://m.tuku.cc/comic/%s/%s", cid, path);
+        String url = String.format(Locale.getDefault(), "http://m.tuku.cc/comic/%s/%s", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -92,7 +92,7 @@ public class CCTuku extends MangaParser {
                     int pages = Integer.parseInt(array[2]);
                     String format = rs[0] + "/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
                     for (int i = 0; i != pages; ++i) {
-                        list.add(new ImageUrl(String.format(Locale.CHINA, format, i + 1), false));
+                        list.add(new ImageUrl(i + 1, String.format(Locale.getDefault(), format, i + 1), false));
                     }
                 }
             } catch (Exception e) {

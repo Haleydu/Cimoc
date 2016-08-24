@@ -75,6 +75,7 @@ public class Comic {
         this.intro = intro;
         this.author = author;
         this.status = status;
+        this.highlight = false;
     }
 
     public String getIntro() {

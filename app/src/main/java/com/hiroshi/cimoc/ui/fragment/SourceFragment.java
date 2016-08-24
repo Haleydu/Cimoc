@@ -16,6 +16,9 @@ import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
 import com.hiroshi.cimoc.ui.view.SourceView;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -31,7 +34,7 @@ public class SourceFragment extends BaseFragment implements SourceView {
 
     @Override
     protected void initView() {
-        mSourceAdapter = new SourceAdapter(getActivity(), mPresenter.list());
+        mSourceAdapter = new SourceAdapter(getActivity(), new LinkedList<Source>());
         mSourceAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
@@ -60,6 +63,11 @@ public class SourceFragment extends BaseFragment implements SourceView {
         mRecyclerView.addItemDecoration(mSourceAdapter.getItemDecoration());
     }
 
+    @Override
+    protected void initData() {
+        mPresenter.load();
+    }
+
     @OnClick(R.id.source_add_btn) void onSourceAddClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_source, null);
@@ -72,6 +80,8 @@ public class SourceFragment extends BaseFragment implements SourceView {
                 int sid = SourceManager.getId(editText.getText().toString());
                 if (sid == -1) {
                     showSnackbar(R.string.source_add_error);
+                } else if (mSourceAdapter.contain(sid)) {
+                    showSnackbar(R.string.source_add_exist);
                 } else {
                     mPresenter.add(sid);
                 }
@@ -94,12 +104,13 @@ public class SourceFragment extends BaseFragment implements SourceView {
 
     @Override
     public void onSourceAdd(Source source) {
-        if (source == null) {
-            showSnackbar(R.string.source_add_exist);
-        } else {
-            mSourceAdapter.add(source);
-            showSnackbar(R.string.source_add_success);
-        }
+        mSourceAdapter.add(source);
+        showSnackbar(R.string.source_add_success);
+    }
+
+    @Override
+    public void onSourceLoad(List<Source> list) {
+        mSourceAdapter.addAll(list);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class CimocFragment extends BaseFragment implements BaseView {
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.getItems(), choice,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.load(), choice,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -86,7 +86,12 @@ public class CimocFragment extends BaseFragment implements BaseView {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void initData() {
         choice = 0;
+        mPresenter.load();
     }
 
     @Override

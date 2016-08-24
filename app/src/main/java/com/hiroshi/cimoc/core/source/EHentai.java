@@ -21,7 +21,7 @@ public class EHentai extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "http://g.e-hentai.org/?f_search=%s&page=%d", keyword, (page - 1));
+        String url = String.format(Locale.getDefault(), "http://g.e-hentai.org/?f_search=%s&page=%d", keyword, (page - 1));
         return new Request.Builder().url(url).build();
     }
 
@@ -36,7 +36,7 @@ public class EHentai extends MangaParser {
             String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
             if (cover == null) {
                 String temp = node.text("td:eq(2) > div > div:eq(0)", 14).split("~", 2)[0];
-                cover = "http://ehgt.org/" + temp;
+                cover = "http://ehgt.org/".concat(temp);
             }
             String update = node.text("td:eq(1)", 0, 10);
             String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
@@ -48,7 +48,7 @@ public class EHentai extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://g.e-hentai.org/g/%s", cid);
+        String url = String.format(Locale.getDefault(), "http://g.e-hentai.org/g/%s", cid);
         return new Request.Builder().url(url).header("Cookie", "nw=1").build();
     }
 
@@ -74,7 +74,7 @@ public class EHentai extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://g.e-hentai.org/g/%s/?p=%s", cid, path);
+        String url = String.format(Locale.getDefault(), "http://g.e-hentai.org/g/%s/?p=%s", cid, path);
         return new Request.Builder().url(url).header("Cookie", "nw=1").build();
     }
 
@@ -82,8 +82,9 @@ public class EHentai extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
+        int count = 0;
         for (Node node : body.list("#gdt > div > div > a")) {
-            list.add(new ImageUrl(node.attr("href"), true));
+            list.add(new ImageUrl(++count, node.attr("href"), true));
         }
         return list;
     }

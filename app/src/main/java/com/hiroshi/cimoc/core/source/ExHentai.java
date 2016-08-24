@@ -21,7 +21,7 @@ public class ExHentai extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "https://exhentai.org?f_search=%s&page=%d", keyword, (page - 1));
+        String url = String.format(Locale.getDefault(), "https://exhentai.org?f_search=%s&page=%d", keyword, (page - 1));
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
     }
 
@@ -48,7 +48,7 @@ public class ExHentai extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "https://exhentai.org/g/%s", cid);
+        String url = String.format(Locale.getDefault(), "https://exhentai.org/g/%s", cid);
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e;").build();
     }
 
@@ -74,7 +74,7 @@ public class ExHentai extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "https://exhentai.org/g/%s?p=%s", cid, path);
+        String url = String.format(Locale.getDefault(), "https://exhentai.org/g/%s?p=%s", cid, path);
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e;").build();
     }
 
@@ -82,8 +82,9 @@ public class ExHentai extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
+        int count = 0;
         for (Node node : body.list("#gdt > div > div > a")) {
-            list.add(new ImageUrl(node.attr("href"), true));
+            list.add(new ImageUrl(++count, node.attr("href"), true));
         }
         return list;
     }

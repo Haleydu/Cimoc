@@ -18,19 +18,16 @@ public class CimocPresenter extends BasePresenter<BaseView> {
         mSourceManager = SourceManager.getInstance();
     }
 
-    public String[] getItems() {
+    public String[] load() {
         mSourceList = mSourceManager.listEnable();
-        String[] items = new String[mSourceList.size()];
-        for (int i = 0; i != items.length; ++i) {
-            items[i] = SourceManager.getTitle(mSourceList.get(i).getSid());
+        String[] array = new String[mSourceList.size()];
+        for (int i = 0; i != array.length; ++i) {
+            array[i] = SourceManager.getTitle(mSourceList.get(i).getSid());
         }
-        return items;
+        return array;
     }
 
     public int getSid(int location) {
-        if (mSourceList == null) {
-            getItems();
-        }
         if (mSourceList.isEmpty()) {
             return -1;
         }

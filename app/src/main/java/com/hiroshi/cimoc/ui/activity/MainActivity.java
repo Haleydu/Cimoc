@@ -16,7 +16,7 @@ import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
@@ -128,16 +128,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initCheckItem() {
-        int home = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
+        int home = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
         switch (home) {
             default:
-            case PreferenceMaster.HOME_CIMOC:
+            case PreferenceManager.HOME_CIMOC:
                 mCheckItem = R.id.drawer_cimoc;
                 break;
-            case PreferenceMaster.HOME_FAVORITE:
+            case PreferenceManager.HOME_FAVORITE:
                 mCheckItem = R.id.drawer_favorite;
                 break;
-            case PreferenceMaster.HOME_HISTORY:
+            case PreferenceManager.HOME_HISTORY:
                 mCheckItem = R.id.drawer_history;
                 break;
         }
@@ -156,7 +156,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected String getDefaultTitle() {
-        int home = CimocApplication.getPreferences().getInt(PreferenceMaster.PREF_HOME, PreferenceMaster.HOME_CIMOC);
+        int home = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
         return getResources().getStringArray(R.array.home_items)[home];
     }
 

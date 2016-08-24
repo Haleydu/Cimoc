@@ -56,21 +56,26 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         });
     }
 
-    private int size;
-    private int count;
-
     public void checkUpdate() {
         mComicManager.listFavorite()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
-                        count = 0;
-                        size = list.size();
                         return Manga.check(list);
+                    }
+                })
+                .doOnNext(new Action1<Comic>() {
+                    @Override
+                    public void call(Comic comic) {
+                        if (comic != null) {
+                            mComicManager.update(comic);
+                        }
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Comic>() {
+                    private int count = 0;
+
                     @Override
                     public void onCompleted() {
                         mBaseView.onCheckComplete();
@@ -82,16 +87,15 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     @Override
                     public void onNext(Comic comic) {
                         if (comic != null) {
-                            mComicManager.update(comic);
                             mBaseView.onComicUpdate(new MiniComic(comic));
                         }
-                        mBaseView.onProgressChange(++count, size);
+                        mBaseView.onProgressChange(++count);
                     }
                 });
     }
 
     public void updateComic(long fromId, long toId, final boolean isBack) {
-        Observable.concat(mComicManager.load(fromId), mComicManager.load(toId))
+        Observable.concat(mComicManager.loadInRx(fromId), mComicManager.loadInRx(toId))
                 .observeOn(Schedulers.io())
                 .toList()
                 .subscribe(new Action1<List<Comic>>() {

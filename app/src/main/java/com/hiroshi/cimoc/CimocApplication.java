@@ -6,7 +6,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.core.DBOpenHelper;
-import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 
 import okhttp3.OkHttpClient;
 
@@ -17,14 +17,14 @@ public class CimocApplication extends Application {
 
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
-    private static PreferenceMaster preferences;
+    private static PreferenceManager preferences;
 
     @Override
     public void onCreate() {
         super.onCreate();
         DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
         daoSession = new DaoMaster(helper.getWritableDatabase()).newSession();
-        preferences = new PreferenceMaster(getApplicationContext());
+        preferences = new PreferenceManager(getApplicationContext());
         Fresco.initialize(this);
     }
 
@@ -32,7 +32,7 @@ public class CimocApplication extends Application {
         return daoSession;
     }
 
-    public static PreferenceMaster getPreferences() {
+    public static PreferenceManager getPreferences() {
         return preferences;
     }
 

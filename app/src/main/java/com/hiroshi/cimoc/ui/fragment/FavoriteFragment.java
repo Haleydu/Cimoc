@@ -39,11 +39,10 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     private Notification.Builder mBuilder;
     private NotificationManager mManager;
 
-    private boolean isChecking;
+    private int max;
 
     @Override
     protected void initView() {
-        isChecking = false;
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new Notification.Builder(getActivity());
         mFavoriteAdapter = new FavoriteAdapter(getActivity(), new LinkedList<MiniComic>());
@@ -99,17 +98,21 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mFavoriteAdapter);
         mRecyclerView.addItemDecoration(mFavoriteAdapter.getItemDecoration());
+    }
 
+    @Override
+    protected void initData() {
+        max = -1;
         mPresenter.loadComic();
     }
 
     @OnClick(R.id.favorite_check_btn) void onCheckClick() {
-        if (!isChecking) {
+        if (max == -1) {
             DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.favorite_update_confirm,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            isChecking = true;
+                            max = mFavoriteAdapter.getItemCount();
                             mPresenter.checkUpdate();
                             mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp)
                                     .setContentTitle(getString(R.string.app_name))
@@ -163,7 +166,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     }
 
     @Override
-    public void onProgressChange(int progress, int max) {
+    public void onProgressChange(int progress) {
         mBuilder.setProgress(max, progress, false);
         notifyBuilder();
     }
@@ -180,7 +183,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
                 .setContentText(getString(R.string.favorite_update_finish))
                 .setProgress(0, 0, false);
         notifyBuilder();
-        isChecking = false;
+        max = -1;
     }
 
     private void notifyBuilder() {

@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:layout_gravity="bottom|end"
+            android:visibility="invisible"
             app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

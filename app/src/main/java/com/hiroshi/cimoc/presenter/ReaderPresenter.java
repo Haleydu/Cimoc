@@ -36,18 +36,15 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private Parser parser;
     private String cid;
-    private String last;
-    private int page;
     private int status;
 
-    public ReaderPresenter(int source, String cid, String last, int page, Chapter[] array, int position) {
+    public ReaderPresenter(int source, String cid, Chapter[] array, int position) {
         this.mPreloadAdapter = new PreloadAdapter(array, position);
+        this.cid = cid;
         this.isShowNext = true;
         this.isShowPrev = true;
         this.count = 0;
-        this.cid = cid;
-        this.last = last;
-        this.page = page;
+
         this.parser = SourceManager.getParser(source);
     }
 
@@ -74,9 +71,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         }
     }
 
-    public void loadInit() {
+    public void loadInit(String last, int page) {
         status = LOAD_INIT;
-        images(mPreloadAdapter.getNextChapter().getPath());
+        images(mPreloadAdapter.getNextChapter().getPath(), last, page);
     }
 
     public void loadNext() {
@@ -110,7 +107,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     public void toNextChapter() {
         Chapter chapter = mPreloadAdapter.nextChapter();
         if (chapter != null) {
-            mBaseView.onChapterChange(chapter, true);
+            mBaseView.onChapterChange(chapter);
             RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), 1));
         }
     }
@@ -118,14 +115,17 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     public void toPrevChapter() {
         Chapter chapter = mPreloadAdapter.prevChapter();
         if (chapter != null) {
-            mBaseView.onChapterChange(chapter, false);
+            mBaseView.onChapterChange(chapter);
             RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
         }
     }
 
     private void images(final String path) {
+        images(path, null, -1);
+    }
+
+    private void images(final String path, final String last, final int page) {
         Manga.images(parser, cid, path)
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<ImageUrl>>() {
                     @Override
@@ -151,12 +151,15 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                         switch (status) {
                             case LOAD_INIT:
                                 chapter = mPreloadAdapter.moveNext();
-                                if (!chapter.getPath().equals(last) || page == -1) {
-                                    page = 1;
-                                }
-                                mBaseView.onFirstLoadSuccess(list, page, chapter.getTitle());
-                                RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), page));
                                 chapter.setCount(list.size());
+                                mBaseView.onChapterChange(chapter);
+                                if (!chapter.getPath().equals(last) || page == -1) {
+                                    mBaseView.onInitLoadSuccess(list, 1);
+                                    RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), 1));
+                                } else {
+                                    mBaseView.onInitLoadSuccess(list, page);
+                                    RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), page));
+                                }
                                 break;
                             case LOAD_PREV:
                                 mBaseView.onPrevLoadSuccess(list);

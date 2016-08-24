@@ -7,13 +7,12 @@ import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.HistoryView;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
 /**
@@ -45,7 +44,6 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     public void loadComic() {
         mComicManager.listHistory()
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -59,6 +57,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                     }
                 })
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {
@@ -68,54 +67,47 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
     }
 
     public void deleteHistory(MiniComic comic) {
-        mComicManager.deleteHistory(comic.getId());
+        mComicManager.loadInRx(comic.getId())
+                .observeOn(Schedulers.io())
+                .subscribe(new Action1<Comic>() {
+                    @Override
+                    public void call(Comic comic) {
+                        if (comic.getFavorite() == null) {
+                            mComicManager.delete(comic);
+                        } else {
+                            comic.setHistory(null);
+                            mComicManager.update(comic);
+                        }
+                    }
+                });
     }
 
     public void clearHistory() {
         mComicManager.listHistory()
-                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
+                .flatMap(new Func1<List<Comic>, Observable<Void>>() {
                     @Override
-                    public Observable<Comic> call(List<Comic> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .groupBy(new Func1<Comic, Boolean>() {
-                    @Override
-                    public Boolean call(Comic comic) {
-                        boolean shouldDelete = comic.getFavorite() == null;
-                        if (!shouldDelete) {
-                            comic.setHistory(null);
-                        }
-                        return shouldDelete;
+                    public Observable<Void> call(final List<Comic> list) {
+                        return mComicManager.callInTx(new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                for (Comic comic : list) {
+                                    if (comic.getFavorite() == null) {
+                                        mComicManager.delete(comic);
+                                    } else {
+                                        comic.setHistory(null);
+                                        mComicManager.update(comic);
+                                    }
+                                }
+                                return null;
+                            }
+                        });
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<GroupedObservable<Boolean, Comic>>() {
+                .subscribe(new Action1<Void>() {
                     @Override
-                    public void onCompleted() {
-                        mBaseView.onItemClear();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {}
-
-                    @Override
-                    public void onNext(GroupedObservable<Boolean, Comic> booleanComicGroupedObservable) {
-                        final boolean shouldDelete = booleanComicGroupedObservable.getKey();
-                        booleanComicGroupedObservable
-                                .observeOn(Schedulers.io())
-                                .subscribeOn(Schedulers.io())
-                                .toList()
-                                .subscribe(new Action1<List<Comic>>() {
-                                    @Override
-                                    public void call(List<Comic> list) {
-                                        if (shouldDelete) {
-                                            mComicManager.deleteInTx(list);
-                                        } else {
-                                            mComicManager.updateInTx(list);
-                                        }
-                                    }
-                                });
+                    public void call(Void aVoid) {
+                        mBaseView.onHistoryClear();
                     }
                 });
     }

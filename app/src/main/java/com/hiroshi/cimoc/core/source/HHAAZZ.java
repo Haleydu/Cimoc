@@ -22,7 +22,7 @@ public class HHAAZZ extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = String.format(Locale.CHINA, "http://hhaazz.com/comicsearch/s.aspx?s=%s", keyword);
+            String url = String.format(Locale.getDefault(), "http://hhaazz.com/comicsearch/s.aspx?s=%s", keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -46,7 +46,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://hhaazz.com/comic/%s", cid);
+        String url = String.format(Locale.getDefault(), "http://hhaazz.com/comic/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -75,7 +75,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://hhaazz.com/%s", path);
+        String url = String.format(Locale.getDefault(), "http://hhaazz.com/%s", path);
         return new Request.Builder().url(url).build();
     }
 
@@ -85,9 +85,9 @@ public class HHAAZZ extends MangaParser {
         String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
         if (str != null) {
             String[] result = unsuan(str[0]);
-            String domain = String.format(Locale.CHINA, "http://x8.1112223333.com:9393/dm%02d", Integer.parseInt(str[1]));
+            String domain = String.format(Locale.getDefault(), "http://x8.1112223333.com:9393/dm%02d", Integer.parseInt(str[1]));
             for (int i = 0; i != result.length; ++i) {
-                list.add(new ImageUrl(domain + result[i], false));
+                list.add(new ImageUrl(i + 1, domain + result[i], false));
             }
         }
         return list;

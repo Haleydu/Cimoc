@@ -21,6 +21,6 @@ public interface FavoriteView extends BaseView {
 
     void onCheckComplete();
 
-    void onProgressChange(int progress, int max);
+    void onProgressChange(int progress);
 
 }

@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 
 import butterknife.ButterKnife;
 
@@ -28,10 +28,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         initToolbar();
         initPresenter();
         initView();
+        initData();
     }
 
     protected void initTheme() {
-        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHT, false);
+        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
         if (nightly) {
             setTheme(R.style.AppThemeDark);
         } else {
@@ -59,6 +60,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void initPresenter() {}
 
     protected void initView() {}
+
+    protected void initData() {}
 
     protected abstract int getLayoutRes();
 

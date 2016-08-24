@@ -60,7 +60,10 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         mRecyclerView.setAdapter(mComicAdapter);
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
+    }
 
+    @Override
+    protected void initData() {
         mPresenter.loadComic();
     }
 
@@ -98,7 +101,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     }
 
     @Override
-    public void onItemClear() {
+    public void onHistoryClear() {
         int count = mComicAdapter.getItemCount();
         mComicAdapter.clear();
         showSnackbar(R.string.history_clear_success, count);

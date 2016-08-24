@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.core.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 /**
  * Created by Hiroshi on 2016/8/4.
  */
-public class PreferenceMaster {
+public class PreferenceManager {
 
     public static final int MODE_HORIZONTAL_PAGE = 0;
     public static final int MODE_PORTRAIT_STREAM = 1;
@@ -28,7 +28,7 @@ public class PreferenceMaster {
 
     private SharedPreferences mSharedPreferences;
 
-    public PreferenceMaster(Context context) {
+    public PreferenceManager(Context context) {
         mSharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 

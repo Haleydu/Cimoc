@@ -9,12 +9,12 @@ import java.util.List;
  */
 public interface HistoryView extends BaseView {
 
-    void onItemClear();
-
     void onItemUpdate(MiniComic comic);
 
     void onLoadSuccess(List<MiniComic> list);
 
     void onSourceRemove(int source);
+
+    void onHistoryClear();
 
 }

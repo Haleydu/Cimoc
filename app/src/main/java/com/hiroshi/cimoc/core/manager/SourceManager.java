@@ -19,6 +19,8 @@ import com.hiroshi.cimoc.model.SourceDao.Properties;
 
 import java.util.List;
 
+import rx.Observable;
+
 /**
  * Created by Hiroshi on 2016/8/11.
  */
@@ -43,24 +45,26 @@ public class SourceManager {
         mSourceDao = CimocApplication.getDaoSession().getSourceDao();
     }
 
-    public List<Source> list() {
-        return mSourceDao.queryBuilder().orderAsc(Properties.Sid).list();
+    public Observable<List<Source>> list() {
+        return mSourceDao.queryBuilder()
+                .orderAsc(Properties.Sid)
+                .rx()
+                .list();
     }
 
     public List<Source> listEnable() {
-        return mSourceDao.queryBuilder().where(Properties.Enable.eq(true)).orderAsc(Properties.Sid).list();
+        return mSourceDao.queryBuilder()
+                .where(Properties.Enable.eq(true))
+                .orderAsc(Properties.Sid)
+                .list();
     }
 
-    public boolean exist(int sid) {
-        return mSourceDao.queryBuilder().where(Properties.Sid.eq(sid)).unique() != null;
+    public long insert(Source source) {
+        return mSourceDao.insert(source);
     }
 
-    public long insert(int sid) {
-        return mSourceDao.insert(new Source(null, sid, true));
-    }
-
-    public void delete(long id) {
-        mSourceDao.deleteByKey(id);
+    public void delete(Source source) {
+        mSourceDao.delete(source);
     }
 
     public void update(Source source) {

@@ -25,7 +25,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "http://m.ikanman.com/s/%s.html?page=%d", keyword, page);
+        String url = String.format(Locale.getDefault(), "http://m.ikanman.com/s/%s.html?page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -47,7 +47,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://m.ikanman.com/comic/%s", cid);
+        String url = String.format(Locale.getDefault(), "http://m.ikanman.com/comic/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -76,7 +76,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://m.ikanman.com/comic/%s/%s.html", cid, path);
+        String url = String.format(Locale.getDefault(), "http://m.ikanman.com/comic/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -95,7 +95,7 @@ public class IKanman extends MangaParser {
                 JSONObject info = new JSONObject(jsonString);
                 JSONArray array = info.getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl("http://i.hamreus.com:8080" + array.getString(i), false));
+                    list.add(new ImageUrl(i + 1, "http://i.hamreus.com:8080".concat(array.getString(i)), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -100,9 +101,26 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     @Override
-    public void onLoadSuccess(Comic comic, List<Chapter> list) {
-        mChapterAdapter = new ChapterAdapter(this, list, comic.getSource(), comic.getCover(), comic.getTitle(),
+    public void onComicLoad(Comic comic) {
+        mChapterAdapter = new ChapterAdapter(this, new LinkedList<Chapter>(), comic.getSource(), comic.getCover(), comic.getTitle(),
                 comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), comic.getLast());
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        mRecyclerView.setAdapter(mChapterAdapter);
+        mRecyclerView.addItemDecoration(mChapterAdapter.getItemDecoration());
+
+        if (comic.getTitle() != null && comic.getCover() != null && comic.getUpdate() != null) {
+            if (comic.getFavorite() != null) {
+                mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
+            } else {
+                mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+            }
+            mStarButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onChapterLoad(List<Chapter> list) {
         mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -113,16 +131,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 }
             }
         });
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        mRecyclerView.setAdapter(mChapterAdapter);
-        mRecyclerView.addItemDecoration(mChapterAdapter.getItemDecoration());
-
-        if (comic.getFavorite() != null) {
-            mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
-        } else {
-            mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-        }
+        mChapterAdapter.setData(list);
     }
 
     @Override

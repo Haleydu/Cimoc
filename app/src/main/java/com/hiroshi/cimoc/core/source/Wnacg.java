@@ -21,7 +21,7 @@ public class Wnacg extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "http://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
+        String url = String.format(Locale.getDefault(), "http://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
         return new Request.Builder().url(url).build();
     }
 
@@ -42,7 +42,7 @@ public class Wnacg extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://www.wnacg.com/photos-index-aid-%s.html", cid);
+        String url = String.format(Locale.getDefault(), "http://www.wnacg.com/photos-index-aid-%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -67,7 +67,7 @@ public class Wnacg extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://www.wnacg.com/photos-index-page-%s-aid%s.html", path, cid);
+        String url = String.format(Locale.getDefault(), "http://www.wnacg.com/photos-index-page-%s-aid%s.html", path, cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -75,9 +75,10 @@ public class Wnacg extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = MachiSoup.body(html);
+        int count = 0;
         for (Node node : body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a")) {
-            String url = String.format(Locale.CHINA, "http://www.wnacg.com/%s", node.attr("href"));
-            list.add(new ImageUrl(url, true));
+            String url = "http://www.wnacg.com/".concat(node.attr("href"));
+            list.add(new ImageUrl(++count, url, true));
         }
         return list;
     }

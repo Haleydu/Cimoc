@@ -64,7 +64,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://m.dmzj.com/info/%s.html", cid);
+        String url = String.format(Locale.getDefault(), "http://m.dmzj.com/info/%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -101,7 +101,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://m.dmzj.com/view/%s/%s.html", cid, path);
+        String url = String.format(Locale.getDefault(), "http://m.dmzj.com/view/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -113,7 +113,7 @@ public class Dmzj extends MangaParser {
             try {
                 JSONArray array = new JSONArray(jsonString);
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(array.getString(i), false));
+                    list.add(new ImageUrl(i + 1, array.getString(i), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

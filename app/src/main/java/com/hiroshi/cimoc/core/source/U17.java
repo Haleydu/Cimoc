@@ -22,7 +22,7 @@ public class U17 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "http://so.u17.com/all/%s/m0_p%d.html", keyword, page);
+        String url = String.format(Locale.getDefault(), "http://so.u17.com/all/%s/m0_p%d.html", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -45,7 +45,7 @@ public class U17 extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "http://www.u17.com/comic/%s.html", cid);
+        String url = String.format(Locale.getDefault(), "http://www.u17.com/comic/%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -72,7 +72,7 @@ public class U17 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.CHINA, "http://www.u17.com/chapter/%s.html", path);
+        String url = String.format(Locale.getDefault(), "http://www.u17.com/chapter/%s.html", path);
         return new Request.Builder().url(url).build();
     }
 
@@ -82,8 +82,9 @@ public class U17 extends MangaParser {
         List<String> result = MachiSoup.matchAll("\"src\":\"(.*?)\"", html, 1);
         if (!result.isEmpty()) {
             try {
+                int count = 0;
                 for (String str : result) {
-                    list.add(new ImageUrl(DecryptionUtils.base64Decrypt(str), false));
+                    list.add(new ImageUrl(++count, DecryptionUtils.base64Decrypt(str), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

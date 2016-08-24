@@ -21,7 +21,7 @@ public class NHentai extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.CHINA, "https://nhentai.net/search/?q=%s&page=%d", keyword, page);
+        String url = String.format(Locale.getDefault(), "https://nhentai.net/search/?q=%s&page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -34,7 +34,7 @@ public class NHentai extends MangaParser {
             String title = node.text("div.caption");
             String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s+", "");
-            String cover = "https:" + node.attr("img", "src");
+            String cover = "https:".concat(node.attr("img", "src"));
             list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, "", author, true));
         }
         return list;
@@ -42,7 +42,7 @@ public class NHentai extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.CHINA, "https://nhentai.net/g/%s", cid);
+        String url = String.format(Locale.getDefault(), "https://nhentai.net/g/%s", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -69,11 +69,11 @@ public class NHentai extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         Node body = MachiSoup.body(html);
-        List<Node> nodes = body.list("#thumbnail-container > div > a > img");
         List<ImageUrl> list = new LinkedList<>();
-        for (Node node : nodes) {
-            String url = "https:" + node.attr("data-src");
-            list.add(new ImageUrl(url.replace("t.jpg", ".jpg"), false));
+        int count = 0;
+        for (Node node : body.list("#thumbnail-container > div > a > img")) {
+            String url = "https:".concat(node.attr("data-src"));
+            list.add(new ImageUrl(++count, url.replace("t.jpg", ".jpg"), false));
         }
         return list;
     }

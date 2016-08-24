@@ -12,7 +12,9 @@ public interface DetailView extends BaseView {
 
     void showLayout();
 
-    void onLoadSuccess(Comic comic, List<Chapter> list);
+    void onComicLoad(Comic comic);
+
+    void onChapterLoad(List<Chapter> list);
 
     void onChapterChange(String chapter);
 

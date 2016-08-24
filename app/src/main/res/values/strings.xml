@@ -71,7 +71,7 @@
     <string name="settings_select_mode">阅读模式选择</string>
     <string name="settings_select_file">文件选择</string>
 
-    <string name="about_version">version: 1.2.0</string>
+    <string name="about_version">version: 1.3.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -80,6 +80,13 @@
     <string name="about_support_email">cimoc_app@163.com</string>
     <string name="about_support_feedback">该邮箱也用于意见反馈</string>
     <string name="about_already_clip">邮箱已复制到剪切板</string>
+    <string name="about_update">检查更新</string>
+    <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
+    <string name="about_update_summary">点击检查更新</string>
+    <string name="about_update_latest">当前已经是最新版本</string>
+    <string name="about_update_download">点击下载最新版本</string>
+    <string name="about_update_doing">正在检查更新</string>
+    <string name="about_update_fail">检查更新失败</string>
 
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>

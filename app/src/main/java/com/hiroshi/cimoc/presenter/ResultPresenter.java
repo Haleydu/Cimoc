@@ -10,7 +10,6 @@ import java.util.List;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/4.
@@ -33,7 +32,6 @@ public class ResultPresenter extends BasePresenter<ResultView> {
         if (!isLoading) {
             isLoading = true;
             Manga.search(parser, keyword, ++page)
-                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<List<Comic>>() {
                         @Override

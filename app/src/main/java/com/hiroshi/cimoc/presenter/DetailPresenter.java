@@ -17,7 +17,6 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/4.
@@ -31,7 +30,6 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     public DetailPresenter(int source) {
         this.source = source;
         this.mComicManager = ComicManager.getInstance();
-        //this.mComic = mComicManager.getComic(id, source, cid);
     }
 
     @Override
@@ -73,7 +71,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     public void load(long id, final String cid) {
         Observable<Comic> observable =
-                id == -1 ? mComicManager.load(source, cid) : mComicManager.load(id);
+                id == -1 ? mComicManager.loadInRx(source, cid) : mComicManager.loadInRx(id);
         observable.flatMap(new Func1<Comic, Observable<List<Chapter>>>() {
             @Override
             public Observable<List<Chapter>> call(Comic comic) {
@@ -87,25 +85,23 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 return Manga.info(SourceManager.getParser(source), comic);
             }
         }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Chapter>>() {
+                .subscribe(new Action1<List<Chapter>>() {
                     @Override
-                    public void onCompleted() {
+                    public void call(List<Chapter> list) {
                         mBaseView.showLayout();
+                        mBaseView.onComicLoad(mComic);
+                        mBaseView.onChapterLoad(list);
                     }
-
+                }, new Action1<Throwable>() {
                     @Override
-                    public void onError(Throwable e) {
+                    public void call(Throwable throwable) {
                         mBaseView.showLayout();
-                        if (e instanceof Manga.NetworkErrorException) {
+                        if (throwable instanceof Manga.NetworkErrorException) {
                             mBaseView.onNetworkError();
                         } else {
+                            mBaseView.onComicLoad(mComic);
                             mBaseView.onParseError();
                         }
-                    }
-
-                    @Override
-                    public void onNext(List<Chapter> list) {
-                        mBaseView.onLoadSuccess(mComic, list);
                     }
                 });
     }

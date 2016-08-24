@@ -9,4 +9,12 @@ public interface SettingsView extends BaseView {
 
     void onBackupSuccess(int count);
 
+    void onBackupFail();
+
+    void onFilesLoadSuccess(String[] files);
+
+    void onFilesLoadFail();
+
+    void onCacheClearSuccess();
+
 }

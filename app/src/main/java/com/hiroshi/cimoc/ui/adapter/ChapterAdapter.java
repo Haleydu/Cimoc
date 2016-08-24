@@ -54,7 +54,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, int source, String image, String title, String author, String intro, boolean status, String update, String last) {
+    public ChapterAdapter(Context context, List<Chapter> list, int source, String image, String title, String author, String intro, Boolean status, String update, String last) {
         super(context, list);
         this.source = source;
         this.image = image;

@@ -8,12 +8,14 @@ public class ImageUrl {
     private static int count = 0;
 
     private int id;
+    private int num;
     private String url;
     private boolean lazy;
     private boolean loading;
 
-    public ImageUrl(String url, boolean lazy) {
+    public ImageUrl(int num, String url, boolean lazy) {
         this.id = ++count;
+        this.num = num;
         this.url = url;
         this.lazy = lazy;
         this.loading = false;
@@ -33,6 +35,10 @@ public class ImageUrl {
 
     public int getId() {
         return id;
+    }
+
+    public int getNum() {
+        return num;
     }
 
     public String getUrl() {
