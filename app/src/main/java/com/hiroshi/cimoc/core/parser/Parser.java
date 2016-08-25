@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core.source.base;
+package com.hiroshi.cimoc.core.parser;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;

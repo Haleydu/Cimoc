@@ -1,13 +1,12 @@
-package com.hiroshi.cimoc.core.source;
+package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.MangaParser;
+import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
-import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +29,7 @@ public class U17 extends MangaParser {
     public List<Comic> parseSearch(String html, int page) {
         MachiSoup.Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list(".comiclist > ul > li > div")) {
+        for (MachiSoup.Node node : body.list("#comiclist > div.search_list > div.comiclist > ul > li > div")) {
             String cid = node.attr("div:eq(1) > h3 > strong > a", "href", "/|\\.", 6);
             String title = node.attr("div:eq(1) > h3 > strong > a", "title");
             String cover = node.attr("div:eq(0) > a > img", "src");
@@ -59,13 +58,12 @@ public class U17 extends MangaParser {
             list.add(0, new Chapter(c_title, c_path));
         }
 
-        Node detail = body.select("div.comic_info");
-        String title = body.text("div:eq(0) > h1").trim();
-        String cover = detail.attr("div:eq(0) > div.coverBox > div.cover > a > img", "src");
-        String author = detail.text("div:eq(1) > div > div.info > a:eq(0)");
-        String intro = detail.text("div:eq(0) > div.info > #words").trim();
+        String title = body.text("div.comic_info > div.left > h1.fl").trim();
+        String cover = body.attr("#cover > a > img", "src");
+        String author = body.text("div.comic_info > div.right > div.author_info > div.info > a.name");
+        String intro = body.text("div.comic_info > div.left > div.info > #words").trim();
         boolean status = "已完结".equals(body.text("div.main > div.info > div.fl > span.eq(2)"));
-        String update = body.text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div:eq(0) > span", 7);
+        String update = body.text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
         comic.setInfo(title, cover, update, intro, author, status);
         return list;
     }
@@ -100,8 +98,7 @@ public class U17 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        Node body = MachiSoup.body(html);
-        return body.text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div:eq(0) > span", 7);
+        return MachiSoup.body(html).text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
     }
 
 }

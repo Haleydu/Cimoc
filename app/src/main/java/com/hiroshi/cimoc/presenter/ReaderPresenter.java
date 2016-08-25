@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.Parser;
+import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;

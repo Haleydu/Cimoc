@@ -42,12 +42,13 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     private void initSource(Database db) {
         SourceDao dao = new DaoMaster(db).newSession().getSourceDao();
-        Source[] array = new Source[5];
+        Source[] array = new Source[6];
         array[0] = new Source(null, SourceManager.SOURCE_IKANMAN, true);
         array[1] = new Source(null, SourceManager.SOURCE_DMZJ, true);
         array[2] = new Source(null, SourceManager.SOURCE_HHAAZZ, true);
         array[3] = new Source(null, SourceManager.SOURCE_CCTUKU, true);
         array[4] = new Source(null, SourceManager.SOURCE_U17, true);
+        array[5] = new Source(null, SourceManager.SOURCE_DM5, true);
         dao.insertInTx(array);
     }
 

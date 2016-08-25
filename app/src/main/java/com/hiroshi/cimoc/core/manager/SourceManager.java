@@ -3,16 +3,17 @@ package com.hiroshi.cimoc.core.manager;
 import android.util.SparseArray;
 
 import com.hiroshi.cimoc.CimocApplication;
-import com.hiroshi.cimoc.core.source.CCTuku;
-import com.hiroshi.cimoc.core.source.Dmzj;
-import com.hiroshi.cimoc.core.source.EHentai;
-import com.hiroshi.cimoc.core.source.ExHentai;
-import com.hiroshi.cimoc.core.source.HHAAZZ;
-import com.hiroshi.cimoc.core.source.IKanman;
-import com.hiroshi.cimoc.core.source.NHentai;
-import com.hiroshi.cimoc.core.source.U17;
-import com.hiroshi.cimoc.core.source.Wnacg;
-import com.hiroshi.cimoc.core.source.base.Parser;
+import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.DM5;
+import com.hiroshi.cimoc.source.Dmzj;
+import com.hiroshi.cimoc.source.EHentai;
+import com.hiroshi.cimoc.source.ExHentai;
+import com.hiroshi.cimoc.source.HHAAZZ;
+import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.NHentai;
+import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Wnacg;
+import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
@@ -31,6 +32,7 @@ public class SourceManager {
     public static final int SOURCE_HHAAZZ = 2;
     public static final int SOURCE_CCTUKU = 3;
     public static final int SOURCE_U17 = 4;
+    public static final int SOURCE_DM5 = 5;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -83,6 +85,8 @@ public class SourceManager {
                 return "CC图库";
             case SOURCE_U17:
                 return "有妖气";
+            case SOURCE_DM5:
+                return "动漫屋";
             case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
@@ -107,6 +111,8 @@ public class SourceManager {
                 return SOURCE_CCTUKU;
             case "U17":
                 return SOURCE_U17;
+            case "DM5":
+                return SOURCE_DM5;
             case "EHentai":
                 return SOURCE_EHENTAI;
             case "ExHentai":
@@ -123,60 +129,40 @@ public class SourceManager {
 
     public static Parser getParser(int source) {
         Parser parser = sparseArray.get(source);
-        switch (source) {
-            case SOURCE_IKANMAN:
-                if (parser == null) {
+        if (parser == null) {
+            switch (source) {
+                case SOURCE_IKANMAN:
                     parser = new IKanman();
-                    sparseArray.put(SOURCE_IKANMAN, parser);
-                }
-                break;
-            case SOURCE_DMZJ:
-                if (parser == null) {
+                    break;
+                case SOURCE_DMZJ:
                     parser = new Dmzj();
-                    sparseArray.put(SOURCE_DMZJ, parser);
-                }
-                break;
-            case SOURCE_HHAAZZ:
-                if (parser == null) {
+                    break;
+                case SOURCE_HHAAZZ:
                     parser = new HHAAZZ();
-                    sparseArray.put(SOURCE_HHAAZZ, parser);
-                }
-                break;
-            case SOURCE_CCTUKU:
-                if (parser == null) {
+                    break;
+                case SOURCE_CCTUKU:
                     parser = new CCTuku();
-                    sparseArray.put(SOURCE_CCTUKU, parser);
-                }
-                break;
-            case SOURCE_U17:
-                if (parser == null) {
+                    break;
+                case SOURCE_DM5:
+                    parser = new DM5();
+                    break;
+                case SOURCE_U17:
                     parser = new U17();
-                    sparseArray.put(SOURCE_U17, parser);
-                }
-                break;
-            case SOURCE_EHENTAI:
-                if (parser == null) {
+                    break;
+                case SOURCE_EHENTAI:
                     parser = new EHentai();
-                    sparseArray.put(SOURCE_EHENTAI, parser);
-                }
-                break;
-            case SOURCE_EXHENTAI:
-                if (parser == null) {
+                    break;
+                case SOURCE_EXHENTAI:
                     parser = new ExHentai();
-                    sparseArray.put(SOURCE_EXHENTAI, parser);
-                }
-                break;
-            case SOURCE_NHENTAI:
-                if (parser == null) {
+                    break;
+                case SOURCE_NHENTAI:
                     parser = new NHentai();
-                    sparseArray.put(SOURCE_NHENTAI, parser);
-                }
-                break;
-            case SOURCE_WNACG:
-                if (parser == null) {
+                    break;
+                case SOURCE_WNACG:
                     parser = new Wnacg();
-                    sparseArray.put(SOURCE_WNACG, parser);
-                }
+                    break;
+            }
+            sparseArray.put(source, parser);
         }
         return parser;
     }

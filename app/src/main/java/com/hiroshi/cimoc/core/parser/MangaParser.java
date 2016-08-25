@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core.source.base;
+package com.hiroshi.cimoc.core.parser;
 
 import okhttp3.Request;
 
@@ -23,7 +23,7 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public String parseCheck(String cid) {
+    public String parseCheck(String html) {
         return null;
     }
 

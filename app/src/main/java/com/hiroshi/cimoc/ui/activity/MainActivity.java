@@ -79,9 +79,8 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onDrawerClosed(View drawerView) {
                         super.onDrawerClosed(drawerView);
-                        BaseFragment fragment = mCurrentFragment;
                         mCurrentFragment = mFragmentArray.get(mCheckItem);
-                        mFragmentManager.beginTransaction().hide(fragment).show(mCurrentFragment).commit();
+                        mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
                         mProgressBar.setVisibility(View.GONE);
                         mFrameLayout.setVisibility(View.VISIBLE);
                     }
@@ -98,6 +97,7 @@ public class MainActivity extends BaseActivity {
                 mNavigationView.setCheckedItem(mCheckItem);
                 mFrameLayout.setVisibility(View.INVISIBLE);
                 mProgressBar.setVisibility(View.VISIBLE);
+                mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
                 mToolbar.setTitle(item.getTitle().toString());
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;

@@ -1,12 +1,11 @@
-package com.hiroshi.cimoc.core.source;
+package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.MangaParser;
+import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.MachiSoup;
-import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,7 +26,7 @@ public class Dmzj extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = String.format("http://s.acg.178.com/comicsum/search.php?s=%s", keyword);
+            String url = "http://s.acg.178.com/comicsum/search.php?s=".concat(keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -49,7 +48,7 @@ public class Dmzj extends MangaParser {
                     String title = object.getString("name");
                     String cover = object.getString("cover");
                     long time = object.getLong("last_updatetime") * 1000;
-                    String update = new SimpleDateFormat("yyyy-MM-dd").format(new Date(time));
+                    String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                     String author = object.getString("authors");
                     boolean status = object.getInt("status_tag_id") == 2310;
                     list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author, status));
@@ -86,14 +85,13 @@ public class Dmzj extends MangaParser {
             }
         }
 
-        Node body = MachiSoup.body(html);
-        String intro = body.text(".txtDesc", 3);
-        Node detail = body.select(".Introduct_Sub");
-        String title = detail.attr("#Cover > img", "title");
-        String cover = detail.attr("#Cover > img", "src");
-        String author = detail.text(".sub_r > p:eq(0) > a");
-        boolean status = "已完结".equals(detail.text(".sub_r > p:eq(2) > a:eq(3)"));
-        String update = detail.text(".sub_r > p:eq(3) > .date", " ", 0);
+        MachiSoup.Node body = MachiSoup.body(html);
+        String intro = body.text("p.txtDesc", 3);
+        String title = body.attr("#Cover > img", "title");
+        String cover = body.attr("#Cover > img", "src");
+        String author = body.text("div.Introduct_Sub > div.sub_r > p:eq(0) > a");
+        boolean status = "已完结".equals(body.text("iv.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
+        String update = body.text("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
         comic.setInfo(title, cover, update, intro, author, status);
 
         return list;
@@ -129,8 +127,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        Node doc = MachiSoup.body(html);
-        return doc.text(".Introduct_Sub > .sub_r > p:eq(3) > .date", " ", 0);
+        return MachiSoup.body(html).text("div.Introduct_Sub > .sub_r > p:eq(3) > .date", 0, 10);
     }
 
 }

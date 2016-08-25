@@ -102,8 +102,9 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     public void onComicLoad(Comic comic) {
-        mChapterAdapter = new ChapterAdapter(this, new LinkedList<Chapter>(), comic.getSource(), comic.getCover(), comic.getTitle(),
-                comic.getAuthor(), comic.getIntro(), comic.getStatus(), comic.getUpdate(), comic.getLast());
+        mChapterAdapter = new ChapterAdapter(this, new LinkedList<Chapter>());
+        mChapterAdapter.setInfo(comic.getSource(), comic.getCover(), comic.getTitle(), comic.getAuthor(),
+                comic.getIntro(), comic.getStatus(), comic.getUpdate(), comic.getLast());
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         mRecyclerView.setAdapter(mChapterAdapter);

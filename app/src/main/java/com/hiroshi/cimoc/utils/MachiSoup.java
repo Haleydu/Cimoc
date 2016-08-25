@@ -22,6 +22,7 @@ public class MachiSoup {
                 return matcher.group(group);
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -38,6 +39,7 @@ public class MachiSoup {
                 return result;
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -51,6 +53,7 @@ public class MachiSoup {
                 list.add(matcher.group(group));
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return list;
     }
@@ -69,10 +72,6 @@ public class MachiSoup {
 
         public Node id(String id) {
             return new Node(element.getElementById(id));
-        }
-
-        public Node select(String cssQuery) {
-            return new Node(element.select(cssQuery).first());
         }
 
         public List<Node> list(String cssQuery) {
@@ -96,6 +95,7 @@ public class MachiSoup {
             try {
                 return element.select(cssQuery).first().text();
             } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -127,6 +127,7 @@ public class MachiSoup {
             try {
                 return element.attr(attr);
             } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -139,6 +140,7 @@ public class MachiSoup {
             try {
                 return element.select(cssQuery).first().attr(attr);
             } catch (Exception e) {
+                e.printStackTrace();
             }
             return null;
         }

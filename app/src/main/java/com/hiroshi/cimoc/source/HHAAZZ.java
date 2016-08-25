@@ -1,12 +1,11 @@
-package com.hiroshi.cimoc.core.source;
+package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.MangaParser;
+import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.MachiSoup;
-import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class HHAAZZ extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = String.format(Locale.getDefault(), "http://hhaazz.com/comicsearch/s.aspx?s=%s", keyword);
+            String url = "http://hhaazz.com/comicsearch/s.aspx?s=".concat(keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -30,15 +29,15 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        Node body = MachiSoup.body(html);
+        MachiSoup.Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (Node node : body.list(".se-list > li")) {
-            String cid = node.attr("a:eq(0)", "href", "/", 4);
-            String title = node.text("a:eq(0) > div > h3");
-            String cover = node.attr("a:eq(0) > img", "src");
-            String update = node.text("a:eq(0) > div > p:eq(4) > span", 0, 10);
-            String author = node.text("a:eq(0) > div > p:eq(1)");
-            boolean status = "完结".equals(node.text("a:eq(1) > span:eq(1)"));
+        for (MachiSoup.Node node : body.list("ul.se-list > li")) {
+            String cid = node.attr("a.pic", "href", "/", 4);
+            String title = node.text("a.pic > div > h3");
+            String cover = node.attr("a.pic > img", "src");
+            String update = node.text("a.pic > div > p:eq(4) > span", 0, 10);
+            String author = node.text("a.pic > div > p:eq(1)");
+            boolean status = node.text("a.tool > span.h").contains("完结");
             list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author, status));
         }
         return list;
@@ -46,28 +45,26 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.getDefault(), "http://hhaazz.com/comic/%s", cid);
+        String url = "http://hhaazz.com/comic/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Node body = MachiSoup.body(html);
-        List<Node> nodes = body.list("#sort_div_p > a");
-        for (Node node : nodes) {
+        MachiSoup.Node body = MachiSoup.body(html);
+        for (MachiSoup.Node node : body.list("#sort_div_p > a")) {
             String c_title = node.attr("title");
             String c_path = node.attr("href").substring(17);
             list.add(new Chapter(c_title, c_path));
         }
 
-        Node detail = body.select(".main > div > div.pic");
-        String title = detail.text("div:eq(1) > h3");
-        String cover = detail.attr("img:eq(0)", "src");
-        String update = detail.text("div:eq(1) > p:eq(5)", 5);
-        String author = detail.text("div:eq(1) > p:eq(1)", 3);
+        String title = body.text("div.main > div > div.pic > div.con > h3");
+        String cover = body.attr("div.main > div > div.pic > img", "src");
+        String update = body.text("div.main > div > div.pic > div.con > p:eq(5)", 5);
+        String author = body.text("div.main > div > div.pic > div.con > p:eq(1)", 3);
         String intro = body.text("#detail_block > div > p");
-        boolean status = detail.text("div:eq(1) > p:eq(4)").contains("完结");
+        boolean status = body.text("div.main > div > div.pic > div.con > p:eq(4)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
         return list;
@@ -75,7 +72,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.getDefault(), "http://hhaazz.com/%s", path);
+        String url = "http://hhaazz.com/".concat(path);
         return new Request.Builder().url(url).build();
     }
 
@@ -85,7 +82,7 @@ public class HHAAZZ extends MangaParser {
         String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
         if (str != null) {
             String[] result = unsuan(str[0]);
-            String domain = String.format(Locale.getDefault(), "http://x8.1112223333.com:9393/dm%02d", Integer.parseInt(str[1]));
+            String domain = String.format(Locale.getDefault(), "http://64.140.165.116:9393/dm%02d", Integer.parseInt(str[1]));
             for (int i = 0; i != result.length; ++i) {
                 list.add(new ImageUrl(i + 1, domain + result[i], false));
             }
@@ -116,8 +113,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        Node body = MachiSoup.body(html);
-        return body.text(".main > div > div.pic > div:eq(1) > p:eq(5)", 5);
+        return MachiSoup.body(html).text("div.main > div > div.pic > div:eq(1) > p:eq(5)", 5);
     }
 
 }

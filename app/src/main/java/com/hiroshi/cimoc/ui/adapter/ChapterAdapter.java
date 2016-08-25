@@ -29,7 +29,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     private String update;
     private String author;
     private String intro;
-    private boolean status;
+    private Boolean status;
 
     private String last;
 
@@ -54,16 +54,8 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list, int source, String image, String title, String author, String intro, Boolean status, String update, String last) {
+    public ChapterAdapter(Context context, List<Chapter> list) {
         super(context, list);
-        this.source = source;
-        this.image = image;
-        this.title = title;
-        this.intro = intro;
-        this.status = status;
-        this.update = update;
-        this.author = author;
-        this.last = last;
     }
 
     @Override
@@ -106,17 +98,32 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         return new ViewHolder(view);
     }
 
+    public void setInfo(int source, String image, String title, String author, String intro, Boolean status, String update, String last) {
+        this.source = source;
+        this.image = image;
+        this.title = title;
+        this.intro = intro;
+        this.status = status;
+        this.update = update;
+        this.author = author;
+        this.last = last;
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
             PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(source, mContext);
-            headerHolder.mComicImage.setController(builder.setUri(image).build());
-            headerHolder.mComicTitle.setText(title);
-            headerHolder.mComicIntro.setText(intro);
-            headerHolder.mComicStatus.setText(status ? "完结" : "连载中");
-            headerHolder.mComicUpdate.setText(update);
-            headerHolder.mComicAuthor.setText(author);
+            if (title != null) {
+                headerHolder.mComicImage.setController(builder.setUri(image).build());
+                headerHolder.mComicTitle.setText(title);
+                headerHolder.mComicIntro.setText(intro);
+                if (status != null) {
+                    headerHolder.mComicStatus.setText(status ? "完结" : "连载中");
+                }
+                headerHolder.mComicUpdate.setText(update);
+                headerHolder.mComicAuthor.setText(author);
+            }
         } else {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;

@@ -1,13 +1,12 @@
-package com.hiroshi.cimoc.core.source;
+package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.source.base.MangaParser;
+import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.MachiSoup;
-import com.hiroshi.cimoc.utils.MachiSoup.Node;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,9 +30,9 @@ public class IKanman extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        Node body = MachiSoup.body(html);
+        MachiSoup.Node body = MachiSoup.body(html);
         List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("#detail > li > a")) {
+        for (MachiSoup.Node node : body.list("#detail > li > a")) {
             String cid = node.attr("href", "/", 2);
             String title = node.text("h3");
             String cover = node.attr("div > img", "data-src");
@@ -47,28 +46,26 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.getDefault(), "http://m.ikanman.com/comic/%s", cid);
+        String url = "http://m.ikanman.com/comic/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        Node body = MachiSoup.body(html);
-        for (Node node : body.list("#chapterList > ul > li > a")) {
+        MachiSoup.Node body = MachiSoup.body(html);
+        for (MachiSoup.Node node : body.list("#chapterList > ul > li > a")) {
             String c_title = node.text("b");
             String c_path = node.attr("href", "/|\\.", 3);
             list.add(new Chapter(c_title, c_path));
         }
 
         String title = body.text("div.main-bar > h1");
-        Node detail = body.select("div.book-detail");
-        String cover = detail.attr("div:eq(0) > div:eq(0) > img", "src");
-        String update = detail.text("div:eq(0) > dl:eq(2) > dd");
-        String author = detail.attr("div:eq(0) > dl:eq(3) > dd > a", "title");
-        Node temp = detail.id("bookIntro");
-        String intro = temp.exist("p:eq(0)") ? temp.text() : temp.text("p:eq(0)");
-        boolean status = "完结".equals(detail.text("div:eq(0) > div:eq(0) > i"));
+        String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
+        String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
+        String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title");
+        String intro = body.exist("#bookIntro > p") ? body.text("#bookIntro > p") : body.text("#bookIntro");
+        boolean status = "完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
 
         return list;
@@ -92,8 +89,7 @@ public class IKanman extends MangaParser {
                 String result = DecryptionUtils.evalDecrypt(packed.substring(4));
 
                 String jsonString = result.substring(11, result.length() - 9);
-                JSONObject info = new JSONObject(jsonString);
-                JSONArray array = info.getJSONArray("images");
+                JSONArray array = new JSONObject(jsonString).getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
                     list.add(new ImageUrl(i + 1, "http://i.hamreus.com:8080".concat(array.getString(i)), false));
                 }
@@ -111,8 +107,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        Node body = MachiSoup.body(html);
-        return body.text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
+        return MachiSoup.body(html).text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
     }
 
 }
