@@ -1,18 +1,35 @@
 package com.hiroshi.cimoc.presenter;
 
-import org.greenrobot.eventbus.EventBus;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.view.BaseView;
+
+import rx.functions.Action1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by Hiroshi on 2016/7/4.
  */
-public abstract class BasePresenter {
+public abstract class BasePresenter<T extends BaseView> {
 
-    public void onCreate() {
-        EventBus.getDefault().register(this);
+    protected T mBaseView;
+    protected CompositeSubscription mCompositeSubscription;
+
+    public void attachView(T mBaseView) {
+        this.mBaseView = mBaseView;
+        this.mCompositeSubscription = new CompositeSubscription();
+        initSubscription();
     }
 
-    public void onDestroy() {
-        EventBus.getDefault().unregister(this);
+    protected void initSubscription() {}
+
+    protected void addSubscription(@RxEvent.EventType int type, Action1<RxEvent> action) {
+        mCompositeSubscription.add(RxBus.getInstance().toObservable(type).subscribe(action));
+    }
+
+    public void detachView() {
+        this.mCompositeSubscription.unsubscribe();
+        this.mCompositeSubscription = null;
     }
 
 }

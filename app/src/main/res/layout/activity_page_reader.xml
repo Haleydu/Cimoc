@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black">
-    <include layout="@layout/custom_reader_loading"/>
     <com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager
         android:id="@+id/reader_recycler_view"
         android:layout_width="match_parent"

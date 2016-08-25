@@ -8,8 +8,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.PreferenceMaster;
-import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 
 import butterknife.ButterKnife;
 
@@ -29,21 +28,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         initToolbar();
         initPresenter();
         initView();
-        if (getPresenter() != null) {
-            getPresenter().onCreate();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (getPresenter() != null) {
-            getPresenter().onDestroy();
-        }
+        initData();
     }
 
     protected void initTheme() {
-        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_NIGHT, false);
+        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
         if (nightly) {
             setTheme(R.style.AppThemeDark);
         } else {
@@ -68,24 +57,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    protected BasePresenter getPresenter() {
-        return null;
-    }
-
     protected void initPresenter() {}
 
     protected void initView() {}
 
+    protected void initData() {}
+
     protected abstract int getLayoutRes();
 
-    public void showSnackbar(String msg) {
+    protected void showSnackbar(String msg) {
         View layout = getLayoutView();
         if (layout != null && layout.isShown()) {
             Snackbar.make(layout, msg, Snackbar.LENGTH_SHORT).show();
         }
     }
 
-    public void showSnackbar(int resId) {
+    protected void showSnackbar(int resId) {
         showSnackbar(getString(resId));
     }
 

@@ -74,8 +74,10 @@ public class ControllerBuilderFactory {
                 return "http://m.tuku.cc";
             case SourceManager.SOURCE_U17:
                 return "http://www.u17.com";
+            case SourceManager.SOURCE_DM5:
+                return "http://www.dm5.com";
             case SourceManager.SOURCE_EHENTAI:
-                return "http://lofi.e-hentai.org";
+                return "http://g.e-hentai.org";
             case SourceManager.SOURCE_EXHENTAI:
                 return "https://exhentai.org";
             case SourceManager.SOURCE_NHENTAI:

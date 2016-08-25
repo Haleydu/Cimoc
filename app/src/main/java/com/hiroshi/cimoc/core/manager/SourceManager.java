@@ -3,22 +3,24 @@ package com.hiroshi.cimoc.core.manager;
 import android.util.SparseArray;
 
 import com.hiroshi.cimoc.CimocApplication;
-import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.source.CCTuku;
-import com.hiroshi.cimoc.core.source.Dmzj;
-import com.hiroshi.cimoc.core.source.EHentai;
-import com.hiroshi.cimoc.core.source.ExHentai;
-import com.hiroshi.cimoc.core.source.HHAAZZ;
-import com.hiroshi.cimoc.core.source.IKanman;
-import com.hiroshi.cimoc.core.source.NHentai;
-import com.hiroshi.cimoc.core.source.U17;
-import com.hiroshi.cimoc.core.source.Wnacg;
-import com.hiroshi.cimoc.core.source.base.Manga;
+import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.DM5;
+import com.hiroshi.cimoc.source.Dmzj;
+import com.hiroshi.cimoc.source.EHentai;
+import com.hiroshi.cimoc.source.ExHentai;
+import com.hiroshi.cimoc.source.HHAAZZ;
+import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.NHentai;
+import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Wnacg;
+import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 
 import java.util.List;
+
+import rx.Observable;
 
 /**
  * Created by Hiroshi on 2016/8/11.
@@ -30,6 +32,7 @@ public class SourceManager {
     public static final int SOURCE_HHAAZZ = 2;
     public static final int SOURCE_CCTUKU = 3;
     public static final int SOURCE_U17 = 4;
+    public static final int SOURCE_DM5 = 5;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -44,52 +47,56 @@ public class SourceManager {
         mSourceDao = CimocApplication.getDaoSession().getSourceDao();
     }
 
-    public List<Source> list() {
-        return mSourceDao.queryBuilder().orderAsc(Properties.Sid).list();
+    public Observable<List<Source>> list() {
+        return mSourceDao.queryBuilder()
+                .orderAsc(Properties.Sid)
+                .rx()
+                .list();
     }
 
     public List<Source> listEnable() {
-        return mSourceDao.queryBuilder().where(Properties.Enable.eq(true)).orderAsc(Properties.Sid).list();
+        return mSourceDao.queryBuilder()
+                .where(Properties.Enable.eq(true))
+                .orderAsc(Properties.Sid)
+                .list();
     }
 
-    public boolean exist(int sid) {
-        return mSourceDao.queryBuilder().where(Properties.Sid.eq(sid)).unique() != null;
+    public long insert(Source source) {
+        return mSourceDao.insert(source);
     }
 
-    public long insert(int sid) {
-        return mSourceDao.insert(new Source(null, sid, true));
-    }
-
-    public void delete(long id) {
-        mSourceDao.deleteByKey(id);
+    public void delete(Source source) {
+        mSourceDao.delete(source);
     }
 
     public void update(Source source) {
         mSourceDao.update(source);
     }
 
-    public static int getTitle(int id) {
+    public static String getTitle(int id) {
         switch (id) {
             case SOURCE_IKANMAN:
-                return R.string.source_ikanman;
+                return "看漫画";
             case SOURCE_DMZJ:
-                return R.string.source_dmzj;
+                return "动漫之家";
             case SOURCE_HHAAZZ:
-                return R.string.source_hhaazz;
+                return "汗汗漫画";
             case SOURCE_CCTUKU:
-                return R.string.source_cctuku;
+                return "CC图库";
             case SOURCE_U17:
-                return R.string.source_u17;
+                return "有妖气";
+            case SOURCE_DM5:
+                return "动漫屋";
             case SOURCE_EHENTAI:
-                return R.string.source_ehentai;
+                return "E-Hentai";
             case SOURCE_EXHENTAI:
-                return R.string.source_exhentai;
+                return "ExHentai";
             case SOURCE_NHENTAI:
-                return R.string.source_nhentai;
+                return "NHentai";
             case SOURCE_WNACG:
-                return R.string.source_wnacg;
+                return "绅士漫画";
         }
-        return R.string.common_null;
+        return "null";
     }
 
     public static int getId(String key) {
@@ -104,6 +111,8 @@ public class SourceManager {
                 return SOURCE_CCTUKU;
             case "U17":
                 return SOURCE_U17;
+            case "DM5":
+                return SOURCE_DM5;
             case "EHentai":
                 return SOURCE_EHENTAI;
             case "ExHentai":
@@ -116,66 +125,46 @@ public class SourceManager {
         return -1;
     }
 
-    private static SparseArray<Manga> sparseArray = new SparseArray<>();
+    private static SparseArray<Parser> sparseArray = new SparseArray<>();
 
-    public static Manga getManga(int source) {
-        Manga manga = sparseArray.get(source);
-        switch (source) {
-            case SOURCE_IKANMAN:
-                if (manga == null) {
-                    manga = new IKanman();
-                    sparseArray.put(SOURCE_IKANMAN, manga);
-                }
-                break;
-            case SOURCE_DMZJ:
-                if (manga == null) {
-                    manga = new Dmzj();
-                    sparseArray.put(SOURCE_DMZJ, manga);
-                }
-                break;
-            case SOURCE_HHAAZZ:
-                if (manga == null) {
-                    manga = new HHAAZZ();
-                    sparseArray.put(SOURCE_HHAAZZ, manga);
-                }
-                break;
-            case SOURCE_CCTUKU:
-                if (manga == null) {
-                    manga = new CCTuku();
-                    sparseArray.put(SOURCE_CCTUKU, manga);
-                }
-                break;
-            case SOURCE_U17:
-                if (manga == null) {
-                    manga = new U17();
-                    sparseArray.put(SOURCE_U17, manga);
-                }
-                break;
-            case SOURCE_EHENTAI:
-                if (manga == null) {
-                    manga = new EHentai();
-                    sparseArray.put(SOURCE_EHENTAI, manga);
-                }
-                break;
-            case SOURCE_EXHENTAI:
-                if (manga == null) {
-                    manga = new ExHentai();
-                    sparseArray.put(SOURCE_EXHENTAI, manga);
-                }
-                break;
-            case SOURCE_NHENTAI:
-                if (manga == null) {
-                    manga = new NHentai();
-                    sparseArray.put(SOURCE_NHENTAI, manga);
-                }
-                break;
-            case SOURCE_WNACG:
-                if (manga == null) {
-                    manga = new Wnacg();
-                    sparseArray.put(SOURCE_WNACG, manga);
-                }
+    public static Parser getParser(int source) {
+        Parser parser = sparseArray.get(source);
+        if (parser == null) {
+            switch (source) {
+                case SOURCE_IKANMAN:
+                    parser = new IKanman();
+                    break;
+                case SOURCE_DMZJ:
+                    parser = new Dmzj();
+                    break;
+                case SOURCE_HHAAZZ:
+                    parser = new HHAAZZ();
+                    break;
+                case SOURCE_CCTUKU:
+                    parser = new CCTuku();
+                    break;
+                case SOURCE_DM5:
+                    parser = new DM5();
+                    break;
+                case SOURCE_U17:
+                    parser = new U17();
+                    break;
+                case SOURCE_EHENTAI:
+                    parser = new EHentai();
+                    break;
+                case SOURCE_EXHENTAI:
+                    parser = new ExHentai();
+                    break;
+                case SOURCE_NHENTAI:
+                    parser = new NHentai();
+                    break;
+                case SOURCE_WNACG:
+                    parser = new Wnacg();
+                    break;
+            }
+            sparseArray.put(source, parser);
         }
-        return manga;
+        return parser;
     }
 
     public static SourceManager getInstance() {

@@ -17,7 +17,6 @@ package com.hiroshi.cimoc.ui.custom.photo;
  * limitations under the License.
  * *****************************************************************************
  */
-
 public interface OnScaleDragGestureListener {
     void onDrag(float dx, float dy);
 

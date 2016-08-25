@@ -10,11 +10,14 @@ import android.widget.EditText;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourcePresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
+import com.hiroshi.cimoc.ui.view.SourceView;
 import com.hiroshi.cimoc.utils.DialogFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -22,7 +25,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/8/11.
  */
-public class SourceFragment extends BaseFragment {
+public class SourceFragment extends BaseFragment implements SourceView {
 
     @BindView(R.id.source_recycler_view) RecyclerView mRecyclerView;
 
@@ -31,7 +34,7 @@ public class SourceFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        mSourceAdapter = new SourceAdapter(getActivity(), mPresenter.list());
+        mSourceAdapter = new SourceAdapter(getActivity(), new LinkedList<Source>());
         mSourceAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
@@ -60,6 +63,11 @@ public class SourceFragment extends BaseFragment {
         mRecyclerView.addItemDecoration(mSourceAdapter.getItemDecoration());
     }
 
+    @Override
+    protected void initData() {
+        mPresenter.load();
+    }
+
     @OnClick(R.id.source_add_btn) void onSourceAddClick() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_source, null);
@@ -72,6 +80,8 @@ public class SourceFragment extends BaseFragment {
                 int sid = SourceManager.getId(editText.getText().toString());
                 if (sid == -1) {
                     showSnackbar(R.string.source_add_error);
+                } else if (mSourceAdapter.contain(sid)) {
+                    showSnackbar(R.string.source_add_exist);
                 } else {
                     mPresenter.add(sid);
                 }
@@ -81,22 +91,31 @@ public class SourceFragment extends BaseFragment {
     }
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
+    public void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
     protected void initPresenter() {
-        mPresenter = new SourcePresenter(this);
+        mPresenter = new SourcePresenter();
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    public void onSourceAdd(Source source) {
+        mSourceAdapter.add(source);
+        showSnackbar(R.string.source_add_success);
+    }
+
+    @Override
+    public void onSourceLoad(List<Source> list) {
+        mSourceAdapter.addAll(list);
     }
 
     @Override
     protected int getLayoutView() {
         return R.layout.fragment_source;
-    }
-
-    public void addItem(Source source) {
-        mSourceAdapter.add(source);
     }
 
 }

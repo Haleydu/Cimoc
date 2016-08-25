@@ -11,9 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.CimocPresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
+import com.hiroshi.cimoc.ui.view.BaseView;
 import com.hiroshi.cimoc.utils.DialogFactory;
 
 import butterknife.BindView;
@@ -23,7 +23,7 @@ import butterknife.OnLongClick;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class CimocFragment extends BaseFragment {
+public class CimocFragment extends BaseFragment implements BaseView {
 
     @BindView(R.id.main_text_layout) TextInputLayout mInputLayout;
     @BindView(R.id.main_keyword_input) EditText mEditText;
@@ -32,6 +32,12 @@ public class CimocFragment extends BaseFragment {
     private CimocPresenter mPresenter;
 
     private int choice;
+
+    @Override
+    public void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
+    }
 
     @OnClick(R.id.main_search_btn) void onClick() {
         String keyword = mEditText.getText().toString();
@@ -48,7 +54,7 @@ public class CimocFragment extends BaseFragment {
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.getItems(), choice,
+        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.load(), choice,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -80,7 +86,12 @@ public class CimocFragment extends BaseFragment {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void initData() {
         choice = 0;
+        mPresenter.load();
     }
 
     @Override
@@ -90,12 +101,8 @@ public class CimocFragment extends BaseFragment {
 
     @Override
     protected void initPresenter() {
-        mPresenter = new CimocPresenter(this);
-    }
-
-    @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
+        mPresenter = new CimocPresenter();
+        mPresenter.attachView(this);
     }
 
 }

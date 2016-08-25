@@ -5,7 +5,8 @@ import android.support.v7.widget.RecyclerView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 
@@ -13,14 +14,10 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.util.List;
 
-import butterknife.BindView;
-
 /**
  * Created by Hiroshi on 2016/8/5.
  */
 public class StreamReaderActivity extends ReaderActivity {
-
-    @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
 
     private int position = 0;
 
@@ -29,7 +26,7 @@ public class StreamReaderActivity extends ReaderActivity {
         super.initView();
         mLayoutManager.setExtraSpace(6);
         mReaderAdapter.setPictureMode(ReaderAdapter.MODE_STREAM);
-        mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_SPLIT, false));
+        mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_SPLIT, false));
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
@@ -59,10 +56,10 @@ public class StreamReaderActivity extends ReaderActivity {
                         mPresenter.toNextChapter();
                     } else if (dy < 0 && progress == 1) {
                         mPresenter.toPrevChapter();
-                    } else {
-                        setReadProgress(progress + item - position);
                     }
+                    progress = mReaderAdapter.getItem(item).getNum();
                     position = item;
+                    updateProgress();
                 }
             }
         });
@@ -88,8 +85,8 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    public void setPrevImage(List<String> list) {
-        super.setPrevImage(list);
+    public void onPrevLoadSuccess(List<ImageUrl> list) {
+        super.onPrevLoadSuccess(list);
         if (position == 0) {
             position = list.size();
         }
@@ -98,18 +95,6 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_stream_reader;
-    }
-
-    @Override
-    public void initLoad(int progress, int max, String title) {
-        super.initLoad(progress, max, title);
-        if (progress != 1) {
-            position = progress - 1;
-            setReadProgress(progress);
-            mRecyclerView.scrollToPosition(progress - 1);
-        } else {
-           setReadProgress(1);
-        }
     }
 
 }

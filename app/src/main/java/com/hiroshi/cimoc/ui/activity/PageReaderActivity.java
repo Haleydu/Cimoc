@@ -7,21 +7,17 @@ import android.view.KeyEvent;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.PreferenceMaster;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager.OnPageChangedListener;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
-import butterknife.BindView;
-
 /**
  * Created by Hiroshi on 2016/7/7.
  */
 public class PageReaderActivity extends ReaderActivity implements OnPageChangedListener {
-
-    @BindView(R.id.reader_recycler_view) RecyclerViewPager mRecyclerView;
 
     private boolean volume;
     private boolean reverse;
@@ -31,10 +27,10 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         if (volume) {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
-                    mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() - 1);
+                    mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() - 1);
                     return true;
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() + 1);
+                    mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() + 1);
                     return true;
             }
         }
@@ -44,8 +40,8 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     protected void initView() {
         super.initView();
-        reverse = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_REVERSE, false);
-        volume = CimocApplication.getPreferences().getBoolean(PreferenceMaster.PREF_VOLUME, false);
+        reverse = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_REVERSE, false);
+        volume = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_VOLUME, false);
         mSeekBar.setReverse(reverse);
         mLayoutManager.setExtraSpace(4);
         mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -54,7 +50,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
-        mRecyclerView.addOnPageChangedListener(this);
+        ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -69,24 +65,30 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
 
     @Override
     public void OnPageChanged(int oldPosition, int newPosition) {
-        if (newPosition > oldPosition && progress == max) {
-            mPresenter.toNextChapter();
-        } else if (newPosition < oldPosition && progress == 1) {
-            mPresenter.toPrevChapter();
-        } else {
-            setReadProgress(progress + newPosition - oldPosition);
+        if (oldPosition == newPosition) {
+            return;
         }
+
         if (newPosition == 0) {
             mPresenter.loadPrev();
         } else if (newPosition == mReaderAdapter.getItemCount() - 1) {
             mPresenter.loadNext();
         }
+
+        int offset = newPosition - oldPosition;
+        if (oldPosition != -1 && offset > 0 && offset > max - progress) {
+            mPresenter.toNextChapter();
+        } else if (oldPosition != -1 && offset < 0 && -offset > progress - 1) {
+            mPresenter.toPrevChapter();
+        }
+        progress = mReaderAdapter.getItem(newPosition).getNum();
+        updateProgress();
     }
 
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() + value - progress);
+            mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress);
         }
     }
 
@@ -97,22 +99,24 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         float limitX = point.x / 3.0f;
         float limitY = point.y / 3.0f;
         if (x < limitX) {
+            int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
             hideToolLayout();
-            if (mRecyclerView.getCurrentPosition() == 0) {
+            if (position == 0) {
                 mPresenter.loadPrev();
             } else if (reverse) {
-                mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() + 1);
+                mRecyclerView.scrollToPosition(position + 1);
             } else {
-                mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() - 1);
+                mRecyclerView.scrollToPosition(position - 1);
             }
         } else if (x > 2 * limitX) {
+            int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
             hideToolLayout();
-            if (mRecyclerView.getCurrentPosition() == mReaderAdapter.getItemCount() - 1) {
+            if (position == mReaderAdapter.getItemCount() - 1) {
                 mPresenter.loadNext();
             } else if (reverse) {
-                mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() - 1);
+                mRecyclerView.scrollToPosition(position - 1);
             } else {
-                mRecyclerView.scrollToPosition(mRecyclerView.getCurrentPosition() + 1);
+                mRecyclerView.scrollToPosition(position + 1);
             }
         } else if (y >= 2 * limitY) {
             switchToolLayout();
@@ -124,16 +128,6 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_page_reader;
-    }
-
-    @Override
-    public void initLoad(int progress, int max, String title) {
-        super.initLoad(progress, max, title);
-        if (progress != 1) {
-            mRecyclerView.scrollToPosition(progress - 1);
-        } else {
-            setReadProgress(1);
-        }
     }
 
 }

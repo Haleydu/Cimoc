@@ -10,10 +10,10 @@ import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
+import com.hiroshi.cimoc.ui.view.ResultView;
 import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.LinkedList;
@@ -24,7 +24,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends BaseActivity {
+public class ResultActivity extends BaseActivity implements ResultView {
 
     @BindView(R.id.result_comic_list) RecyclerView mRecyclerView;
     @BindView(R.id.result_progress_bar) ProgressBar mProgressBar;
@@ -40,7 +40,14 @@ public class ResultActivity extends BaseActivity {
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
         source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mPresenter = new ResultPresenter(this, source, keyword);
+        mPresenter = new ResultPresenter(source, keyword);
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
@@ -75,10 +82,12 @@ public class ResultActivity extends BaseActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (mLayoutManager.findLastVisibleItemPosition() >= mResultAdapter.getItemCount() - 4 && dy > 0) {
-                    mPresenter.loadNext();
+                    mPresenter.load();
                 }
             }
         });
+
+        mPresenter.load();
     }
 
     @Override
@@ -97,20 +106,31 @@ public class ResultActivity extends BaseActivity {
     }
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
+    public void onLoadSuccess(List<Comic> list) {
+        mResultAdapter.addAll(list);
     }
 
-    public void addResultSet(List<Comic> list) {
-        if (list == null) {
-            showSnackbar(R.string.common_network_error);
-        } else if (list.isEmpty() && mResultAdapter.getItemCount() == 0) {
-            showSnackbar(R.string.result_empty);
-        } else {
-            mResultAdapter.addAll(list);
-        }
+    @Override
+    public void onNetworkError() {
+        showLayout();
+        showSnackbar(R.string.common_network_error);
+    }
 
-        if (mProgressBar.isShown()) {
+    @Override
+    public void onParseError() {
+        showLayout();
+        showSnackbar(R.string.common_parse_error);
+    }
+
+    @Override
+    public void onEmptyResult() {
+        showLayout();
+        showSnackbar(R.string.result_empty);
+    }
+
+    @Override
+    public void showLayout() {
+        if (mProgressBar.isShown() || !mRecyclerView.isShown()) {
             mProgressBar.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.VISIBLE);
         }

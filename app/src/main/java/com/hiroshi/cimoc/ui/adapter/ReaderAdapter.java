@@ -22,6 +22,7 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
@@ -34,46 +35,72 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/8/5.
  */
-public class ReaderAdapter extends BaseAdapter<String> {
+public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public static final int MODE_PAGE = 0;
     public static final int MODE_STREAM = 1;
+
+    public static final int TYPE_LOADING = 0;
+    public static final int TYPE_IMAGE = 1;
 
     @IntDef({MODE_PAGE, MODE_STREAM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PictureMode {}
 
-    private PipelineDraweeControllerBuilder builder;
-    private OnSingleTapListener listener;
+    private PipelineDraweeControllerBuilder mControllerBuilder;
+    private OnSingleTapListener mSingleTapListener;
+    private OnLazyLoadListener mLazyLoadListener;
     private @PictureMode int mode;
     private boolean split = false;
 
-    public ReaderAdapter(Context context, List<String> list) {
+    public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
     }
 
-    public class ViewHolder extends BaseViewHolder {
+    public class ImageHolder extends BaseViewHolder {
         @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
+        public ImageHolder(View view) {
+            super(view);
+        }
+    }
 
-        public ViewHolder(View view) {
+    public class LoadingHolder extends BaseViewHolder {
+        public LoadingHolder(View view) {
             super(view);
         }
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return mDataSet.get(position).isLazy() ? TYPE_LOADING : TYPE_IMAGE;
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_picture, parent, false);
-        return new ViewHolder(view);
+        if (viewType == TYPE_IMAGE) {
+            View view = mInflater.inflate(R.layout.item_picture, parent, false);
+            return new ImageHolder(view);
+        }
+        View view = mInflater.inflate(R.layout.item_loading, parent, false);
+        return new LoadingHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        final PhotoDraweeView draweeView = ((ViewHolder) holder).photoView;
+        ImageUrl imageUrl = mDataSet.get(position);
+        if (imageUrl.isLazy()) {
+            if (!imageUrl.isLoading() && mLazyLoadListener != null) {
+                imageUrl.setLoading(true);
+                mLazyLoadListener.onLoad(imageUrl);
+            }
+            return;
+        }
+        final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
         switch (mode) {
             case MODE_PAGE:
                 draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 draweeView.setHorizontalMode();
-                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         super.onFinalImageSet(id, imageInfo, animatable);
@@ -87,7 +114,7 @@ public class ReaderAdapter extends BaseAdapter<String> {
             case MODE_STREAM:
                 draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 draweeView.setVerticalMode();
-                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
                         super.onIntermediateImageSet(id, imageInfo);
@@ -109,25 +136,29 @@ public class ReaderAdapter extends BaseAdapter<String> {
                 });
                 break;
         }
-        draweeView.setOnSingleTapListener(listener);
-        builder.setTapToRetryEnabled(true);
+        draweeView.setOnSingleTapListener(mSingleTapListener);
+        mControllerBuilder.setTapToRetryEnabled(true);
         if (split) {
             ImageRequest request = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(mDataSet.get(position)))
-                    .setPostprocessor(new SplitPostprocessor(mDataSet.get(position)))
+                    .newBuilderWithSource(Uri.parse(imageUrl.getUrl()))
+                    .setPostprocessor(new SplitPostprocessor(imageUrl.getUrl() + "split"))
                     .build();
-            draweeView.setController(builder.setImageRequest(request).build());
+            draweeView.setController(mControllerBuilder.setImageRequest(request).build());
         } else {
-            draweeView.setController(builder.setUri(mDataSet.get(position)).build());
+            draweeView.setController(mControllerBuilder.setUri(imageUrl.getUrl()).build());
         }
     }
 
     public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
-        this.builder = builder;
+        this.mControllerBuilder = builder;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {
-        this.listener = listener;
+        this.mSingleTapListener = listener;
+    }
+
+    public void setLazyLoadListener(OnLazyLoadListener listener) {
+        this.mLazyLoadListener = listener;
     }
 
     public void setAutoSplit(boolean split) {
@@ -201,6 +232,23 @@ public class ReaderAdapter extends BaseAdapter<String> {
                     }
                 };
         }
+    }
+
+    public void update(int id, String url) {
+        for (int i = 0; i != mDataSet.size(); ++i) {
+            ImageUrl imageUrl = mDataSet.get(i);
+            if (imageUrl.getId() == id && imageUrl.isLoading()) {
+                imageUrl.setUrl(url);
+                imageUrl.setLoading(false);
+                imageUrl.setLazy(false);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
+    public interface OnLazyLoadListener {
+        void onLoad(ImageUrl imageUrl);
     }
 
 }

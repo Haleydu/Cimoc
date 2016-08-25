@@ -1,6 +1,6 @@
 <img src="./screenshot/icon.png">  
 # 应用简介
-Android 平台在线漫画阅读器
+Android 平台在线漫画阅读器  
 Online manga reader based on Android
 
 # 功能简介
@@ -16,7 +16,12 @@ Online manga reader based on Android
 - [汗汗漫画](http://hhaazz.com)
 - [CC图库](http://m.tuku.cc)
 - [有妖气](http://www.u17.com)
+- [动漫屋](http://www.dm5.com)
 - ~~各种奇怪的网站~~
+
+# 可添加图源
+- IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5
+- EHentai、ExHentai、NHentai、Wnacg
 
 # 应用截图
 <img src="./screenshot/01.png" width="30%" height="30%">

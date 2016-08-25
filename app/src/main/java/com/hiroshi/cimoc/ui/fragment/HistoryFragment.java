@@ -8,13 +8,15 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+import com.hiroshi.cimoc.ui.view.HistoryView;
 import com.hiroshi.cimoc.utils.DialogFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -22,7 +24,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class HistoryFragment extends BaseFragment {
+public class HistoryFragment extends BaseFragment implements HistoryView {
 
     @BindView(R.id.history_comic_list) RecyclerView mRecyclerView;
 
@@ -31,7 +33,7 @@ public class HistoryFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        mComicAdapter = new ComicAdapter(getActivity(), mPresenter.getComic());
+        mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
         mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -60,25 +62,37 @@ public class HistoryFragment extends BaseFragment {
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
     }
 
+    @Override
+    protected void initData() {
+        mPresenter.loadComic();
+    }
+
     @OnClick(R.id.history_clear_btn) void onHistoryClearClick() {
         DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.history_clear_confirm,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ((MainActivity) getActivity()).showProgressDialog();
+                        showProgressDialog();
                         mPresenter.clearHistory();
                     }
                 }).show();
     }
 
     @Override
-    protected BasePresenter getPresenter() {
-        return mPresenter;
+    protected void initPresenter() {
+        mPresenter = new HistoryPresenter();
+        mPresenter.attachView(this);
     }
 
     @Override
-    protected void initPresenter() {
-        mPresenter = new HistoryPresenter(this);
+    public void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLoadSuccess(List<MiniComic> list) {
+        mComicAdapter.addAll(list);
     }
 
     @Override
@@ -86,19 +100,21 @@ public class HistoryFragment extends BaseFragment {
         return R.layout.fragment_history;
     }
 
-    public void updateItem(MiniComic comic) {
+    @Override
+    public void onHistoryClear() {
+        int count = mComicAdapter.getItemCount();
+        mComicAdapter.clear();
+        showSnackbar(R.string.history_clear_success, count);
+        hideProgressDialog();
+    }
+
+    @Override
+    public void onItemUpdate(MiniComic comic) {
         mComicAdapter.update(comic);
     }
 
-    public void clearItem() {
-        mComicAdapter.clear();
-    }
-
-    public void hideProgressDialog() {
-        ((MainActivity) getActivity()).hideProgressDialog();
-    }
-
-    public void removeItems(int source) {
+    @Override
+    public void onSourceRemove(int source) {
         mComicAdapter.removeBySource(source);
     }
 

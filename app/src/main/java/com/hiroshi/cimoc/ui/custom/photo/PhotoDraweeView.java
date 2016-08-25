@@ -10,6 +10,9 @@ import com.facebook.drawee.controller.AbstractDraweeController;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+/**
+ * https://github.com/ongakuer/PhotoDraweeView
+ */
 public class PhotoDraweeView extends SimpleDraweeView  {
 
     private PhotoDraweeViewController mPhotoDraweeViewController;

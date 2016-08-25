@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.ui.activity.MainActivity;
+
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 
@@ -22,22 +24,16 @@ public abstract class BaseFragment extends Fragment {
         ButterKnife.bind(this, view);
         initPresenter();
         initView();
-        if (getPresenter() != null) {
-            getPresenter().onCreate();
-        }
+        initData();
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (getPresenter() != null) {
-            getPresenter().onDestroy();
-        }
     }
 
     public void showSnackbar(int resId) {
         showSnackbar(getString(resId));
+    }
+
+    public void showSnackbar(int resId, Object... args) {
+        showSnackbar(String.format(Locale.CHINA, getString(resId), args));
     }
 
     public void showSnackbar(String msg) {
@@ -46,11 +42,17 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    protected void showProgressDialog() {
+        ((MainActivity) getActivity()).showProgressDialog();
+    }
+
+    protected void hideProgressDialog() {
+        ((MainActivity) getActivity()).hideProgressDialog();
+    }
+
     protected void initView() {}
 
-    protected BasePresenter getPresenter() {
-        return null;
-    }
+    protected void initData() {}
 
     protected void initPresenter() {}
 

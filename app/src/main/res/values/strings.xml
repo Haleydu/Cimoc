@@ -9,6 +9,8 @@
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 
+    <string name="main_double_click">再按一次推出</string>
+
     <string name="cimoc_search_hint">请输入漫画名</string>
     <string name="cimoc_empty_error">关键字不能为空</string>
     <string name="cimoc_select_source">图源选择</string>
@@ -24,13 +26,13 @@
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
 
-    <string name="favorite_delete_confirm">是否删除该漫画</string>
     <string name="favorite_update_confirm">是否检查更新</string>
-    <string name="favorite_update_doing">正在检查更新中</string>
+    <string name="favorite_update_doing">正在检查更新</string>
+    <string name="favorite_update_finish">检查更新完成</string>
 
     <string name="history_delete_confirm">是否删除该历史纪录</string>
     <string name="history_clear_confirm">是否清除所有历史纪录</string>
-    <string name="history_clear_success">删除成功 数量为 </string>
+    <string name="history_clear_success">删除成功 共 %d 条记录</string>
 
     <string name="reader_prev_none">前面没有了</string>
     <string name="reader_next_none">后面没有了</string>
@@ -43,12 +45,12 @@
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
     <string name="settings_backup_save_summary">备份到本地文件</string>
-    <string name="settings_backup_save_success">备份成功 数量为</string>
+    <string name="settings_backup_save_success">备份成功 共 %d 条记录</string>
     <string name="settings_backup_save_fail">备份失败</string>
     <string name="settings_backup_save_not_found">没有找到备份文件</string>
     <string name="settings_backup_restore">恢复</string>
     <string name="settings_backup_restore_summary">从本地文件中恢复</string>
-    <string name="settings_backup_restore_success">恢复成功 数量为</string>
+    <string name="settings_backup_restore_success">恢复成功 共 %d 条记录</string>
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
     <string name="settings_reader_volume">音量键翻页</string>
@@ -69,7 +71,7 @@
     <string name="settings_select_mode">阅读模式选择</string>
     <string name="settings_select_file">文件选择</string>
 
-    <string name="about_version">version: 1.2.0</string>
+    <string name="about_version">version: 1.3.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -78,6 +80,13 @@
     <string name="about_support_email">cimoc_app@163.com</string>
     <string name="about_support_feedback">该邮箱也用于意见反馈</string>
     <string name="about_already_clip">邮箱已复制到剪切板</string>
+    <string name="about_update">检查更新</string>
+    <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
+    <string name="about_update_summary">点击检查更新</string>
+    <string name="about_update_latest">当前已经是最新版本</string>
+    <string name="about_update_download">点击下载最新版本</string>
+    <string name="about_update_doing">正在检查更新</string>
+    <string name="about_update_fail">检查更新失败</string>
 
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
@@ -101,5 +110,6 @@
     <string name="source_wnacg">绅士漫画</string>
 
     <string name="common_network_error">网络错误</string>
+    <string name="common_parse_error">解析错误</string>
     <string name="common_null">null</string>
 </resources>

@@ -1,61 +1,140 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.model.EventMessage;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.view.FavoriteView;
 
 import java.util.List;
+
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/6.
  */
-public class FavoritePresenter extends BasePresenter {
+public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
-    private FavoriteFragment mFavoriteFragment;
     private ComicManager mComicManager;
 
-    public FavoritePresenter(FavoriteFragment fragment) {
-        mFavoriteFragment = fragment;
+    public FavoritePresenter() {
         mComicManager = ComicManager.getInstance();
     }
 
-    public List<MiniComic> getComicList() {
-        return mComicManager.listFavorite();
-    }
-
-    public MiniComic[] getComicArray() {
-        return mComicManager.arrayFavorite();
-    }
-
-    public void updateComic(List<MiniComic> list) {
-        mComicManager.updateFavorite(list);
-    }
-
-    public void deleteComic(MiniComic comic) {
-        mComicManager.deleteFavorite(comic.getId());
-    }
-
     @SuppressWarnings("unchecked")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(EventMessage msg) {
-        switch (msg.getType()) {
-            case EventMessage.FAVORITE_COMIC:
-                mFavoriteFragment.addItem((MiniComic) msg.getData());
-                break;
-            case EventMessage.UN_FAVORITE_COMIC:
-                mFavoriteFragment.removeItem((long) msg.getData());
-                break;
-            case EventMessage.RESTORE_FAVORITE:
-                mFavoriteFragment.addItems((List<MiniComic>) msg.getData());
-                break;
-            case EventMessage.COMIC_DELETE:
-                mFavoriteFragment.removeItems((int) msg.getData());
-                break;
-        }
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.FAVORITE_COMIC, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onItemAdd((MiniComic) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.UN_FAVORITE_COMIC, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onItemRemove((long) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.RESTORE_FAVORITE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onItemAdd((List<MiniComic>) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.COMIC_DELETE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onSourceRemove((int) rxEvent.getData());
+            }
+        });
+    }
+
+    public void checkUpdate() {
+        mComicManager.listFavorite()
+                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
+                    @Override
+                    public Observable<Comic> call(List<Comic> list) {
+                        return Manga.check(list);
+                    }
+                })
+                .doOnNext(new Action1<Comic>() {
+                    @Override
+                    public void call(Comic comic) {
+                        if (comic != null) {
+                            mComicManager.update(comic);
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Comic>() {
+                    private int count = 0;
+
+                    @Override
+                    public void onCompleted() {
+                        mBaseView.onCheckComplete();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {}
+
+                    @Override
+                    public void onNext(Comic comic) {
+                        if (comic != null) {
+                            mBaseView.onComicUpdate(new MiniComic(comic));
+                        }
+                        mBaseView.onProgressChange(++count);
+                    }
+                });
+    }
+
+    public void updateComic(long fromId, long toId, final boolean isBack) {
+        Observable.concat(mComicManager.loadInRx(fromId), mComicManager.loadInRx(toId))
+                .observeOn(Schedulers.io())
+                .toList()
+                .subscribe(new Action1<List<Comic>>() {
+                    @Override
+                    public void call(List<Comic> list) {
+                        Comic fromComic = list.get(0);
+                        Comic toComic = list.get(1);
+                        if (isBack) {
+                            fromComic.setFavorite(toComic.getFavorite() - 1);
+                        } else {
+                            fromComic.setFavorite(toComic.getFavorite() + 1);
+                        }
+                        mComicManager.update(fromComic);
+                    }
+                });
+    }
+
+    public void loadComic() {
+        mComicManager.listFavorite()
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
+                    @Override
+                    public Observable<Comic> call(List<Comic> list) {
+                        return Observable.from(list);
+                    }
+                })
+                .map(new Func1<Comic, MiniComic>() {
+                    @Override
+                    public MiniComic call(Comic comic) {
+                        return new MiniComic(comic);
+                    }
+                })
+                .toList()
+                .subscribe(new Action1<List<MiniComic>>() {
+                    @Override
+                    public void call(List<MiniComic> list) {
+                        mBaseView.onItemAdd(list);
+                    }
+                });
     }
 
 }

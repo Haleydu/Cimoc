@@ -1,0 +1,99 @@
+package com.hiroshi.cimoc.source;
+
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.model.Chapter;
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.utils.MachiSoup;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+
+import okhttp3.Request;
+
+/**
+ * Created by Hiroshi on 2016/8/6.
+ */
+public class ExHentai extends MangaParser {
+
+    @Override
+    public Request getSearchRequest(String keyword, int page) {
+        String url = String.format(Locale.getDefault(), "https://exhentai.org?f_search=%s&page=%d", keyword, (page - 1));
+        return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
+    }
+
+    @Override
+    public List<Comic> parseSearch(String html, int page) {
+        MachiSoup.Node body = MachiSoup.body(html);
+        List<Comic> list = new LinkedList<>();
+        for (MachiSoup.Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
+            String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
+            cid = cid.substring(23, cid.length() - 1);
+            String title = node.text("td:eq(2) > div > div:eq(2) > a");
+            String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
+            if (cover == null) {
+                String temp = node.text("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
+                cover = "https://exhentai.org/" + temp;
+            }
+            String update = node.text("td:eq(1)", 0, 10);
+            String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s+", "");
+            list.add(new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author, true));
+        }
+        return list;
+    }
+
+    @Override
+    public Request getInfoRequest(String cid) {
+        String url = String.format(Locale.getDefault(), "https://exhentai.org/g/%s", cid);
+        return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e;").build();
+    }
+
+    @Override
+    public List<Chapter> parseInfo(String html, Comic comic) {
+        List<Chapter> list = new LinkedList<>();
+        MachiSoup.Node body = MachiSoup.body(html);
+        String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
+        int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
+        for (int i = 0; i != size; ++i) {
+            list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
+        }
+
+        String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
+        String title = body.text("#gn");
+        String intro = body.text("#gj");
+        String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
+        String cover = body.attr("#gd1 > img", "src");
+        comic.setInfo(title, cover, update, intro, author, true);
+
+        return list;
+    }
+
+    @Override
+    public Request getImagesRequest(String cid, String path) {
+        String url = String.format(Locale.getDefault(), "https://exhentai.org/g/%s?p=%s", cid, path);
+        return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e;").build();
+    }
+
+    @Override
+    public List<ImageUrl> parseImages(String html) {
+        List<ImageUrl> list = new LinkedList<>();
+        MachiSoup.Node body = MachiSoup.body(html);
+        int count = 0;
+        for (MachiSoup.Node node : body.list("#gdt > div > div > a")) {
+            list.add(new ImageUrl(++count, node.attr("href"), true));
+        }
+        return list;
+    }
+
+    public Request getLazyRequest(String url) {
+        return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
+    }
+
+    public String parseLazy(String html) {
+        return MachiSoup.body(html).attr("#img", "src");
+    }
+
+}
