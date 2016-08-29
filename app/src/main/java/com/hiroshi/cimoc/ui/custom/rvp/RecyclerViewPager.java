@@ -37,12 +37,9 @@ public class RecyclerViewPager extends RecyclerView {
 
     boolean mNeedAdjust;
     int mFirstLeftWhenDragging;
-    int mFirstTopWhenDragging;
     View mCurView;
     int mMaxLeftWhenDragging = Integer.MIN_VALUE;
     int mMinLeftWhenDragging = Integer.MAX_VALUE;
-    int mMaxTopWhenDragging = Integer.MIN_VALUE;
-    int mMinTopWhenDragging = Integer.MAX_VALUE;
     private int mPositionOnTouchDown = -1;
     private boolean mHasCalledOnPageChanged = true;
     private boolean reverseLayout = false;
@@ -102,14 +99,9 @@ public class RecyclerViewPager extends RecyclerView {
         return null;
     }
 
-    public RecyclerViewPagerAdapter getWrapperAdapter() {
-        return mViewPagerAdapter;
-    }
-
     @Override
     public void setLayoutManager(LayoutManager layout) {
         super.setLayoutManager(layout);
-
         if (layout instanceof LinearLayoutManager) {
             reverseLayout = ((LinearLayoutManager) layout).getReverseLayout();
         }
@@ -119,13 +111,8 @@ public class RecyclerViewPager extends RecyclerView {
     public boolean fling(int velocityX, int velocityY) {
         boolean flinging = super.fling((int) (velocityX * FLING_FACTOR), (int) (velocityY * FLING_FACTOR));
         if (flinging) {
-            if (getLayoutManager().canScrollHorizontally()) {
-                adjustPositionX(velocityX);
-            } else {
-                adjustPositionY(velocityY);
-            }
+            adjustPositionX(velocityX);
         }
-
         return flinging;
     }
 
@@ -222,12 +209,7 @@ public class RecyclerViewPager extends RecyclerView {
      * get item position in center of viewpager
      */
     public int getCurrentPosition() {
-        int curPosition;
-        if (getLayoutManager().canScrollHorizontally()) {
-            curPosition = ViewUtils.getCenterXChildPosition(this);
-        } else {
-            curPosition = ViewUtils.getCenterYChildPosition(this);
-        }
+        int curPosition = ViewUtils.getCenterXChildPosition(this);
         if (curPosition < 0) {
             curPosition = mSmoothScrollTargetPosition;
         }
@@ -283,55 +265,35 @@ public class RecyclerViewPager extends RecyclerView {
         }
     }
 
-    /***
-     * adjust position before Touch event complete and fling action start.
-     */
-    protected void adjustPositionY(int velocityY) {
-        if (reverseLayout) velocityY *= -1;
-
-        int childCount = getChildCount();
-        if (childCount > 0) {
-            int curPosition = ViewUtils.getCenterYChildPosition(this);
-            int childHeight = getHeight() - getPaddingTop() - getPaddingBottom();
-            int flingCount = Math.max(-1, Math.min(1, getFlingCount(velocityY, childHeight)));
-            int targetPosition = flingCount == 0 ? curPosition : mPositionOnTouchDown + flingCount;
-            targetPosition = Math.max(targetPosition, 0);
-            targetPosition = Math.min(targetPosition, getItemCount() - 1);
-            if (targetPosition == curPosition && mPositionOnTouchDown == curPosition) {
-                View centerYChild = ViewUtils.getCenterYChild(this);
-                if (centerYChild != null) {
-                    if (mTouchSpan > centerYChild.getHeight() * TRIGGER_OFFSET && targetPosition != 0) {
-                        if (!reverseLayout) targetPosition--;
-                        else targetPosition++;
-                    } else if (mTouchSpan < centerYChild.getHeight() * -TRIGGER_OFFSET && targetPosition != getItemCount() - 1) {
-                        if (!reverseLayout) targetPosition++;
-                        else targetPosition--;
-                    }
-                }
-            }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
-        }
-    }
+    private boolean isScaling = false;
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (ev.getAction() == MotionEvent.ACTION_DOWN && getLayoutManager() != null) {
-            mPositionOnTouchDown = getLayoutManager().canScrollHorizontally()
-                    ? ViewUtils.getCenterXChildPosition(this)
-                    : ViewUtils.getCenterYChildPosition(this);
+        switch (ev.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+                if (getLayoutManager() != null) {
+                    mPositionOnTouchDown = ViewUtils.getCenterXChildPosition(this);
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                isScaling = true;
+                break;
+            case MotionEvent.ACTION_UP:
+                isScaling = false;
+                break;
         }
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        // recording the max/min value in touch track
+        if (isScaling) {
+            return true;
+        }
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
             if (mCurView != null) {
                 mMaxLeftWhenDragging = Math.max(mCurView.getLeft(), mMaxLeftWhenDragging);
-                mMaxTopWhenDragging = Math.max(mCurView.getTop(), mMaxTopWhenDragging);
                 mMinLeftWhenDragging = Math.min(mCurView.getLeft(), mMinLeftWhenDragging);
-                mMinTopWhenDragging = Math.min(mCurView.getTop(), mMinTopWhenDragging);
             }
         }
         return super.onTouchEvent(e);
@@ -342,8 +304,7 @@ public class RecyclerViewPager extends RecyclerView {
         super.onScrollStateChanged(state);
         if (state == SCROLL_STATE_DRAGGING) {
             mNeedAdjust = true;
-            mCurView = getLayoutManager().canScrollHorizontally() ? ViewUtils.getCenterXChild(this) :
-                    ViewUtils.getCenterYChild(this);
+            mCurView = ViewUtils.getCenterXChild(this);
             if (mCurView != null) {
                 if (mHasCalledOnPageChanged) {
                     // While rvp is scrolling, mPositionBeforeScroll will be previous value.
@@ -351,7 +312,6 @@ public class RecyclerViewPager extends RecyclerView {
                     mHasCalledOnPageChanged = false;
                 }
                 mFirstLeftWhenDragging = mCurView.getLeft();
-                mFirstTopWhenDragging = mCurView.getTop();
             } else {
                 mPositionBeforeScroll = -1;
             }
@@ -359,40 +319,24 @@ public class RecyclerViewPager extends RecyclerView {
         } else if (state == SCROLL_STATE_SETTLING) {
             mNeedAdjust = false;
             if (mCurView != null) {
-                if (getLayoutManager().canScrollHorizontally()) {
-                    mTouchSpan = mCurView.getLeft() - mFirstLeftWhenDragging;
-                } else {
-                    mTouchSpan = mCurView.getTop() - mFirstTopWhenDragging;
-                }
+                mTouchSpan = mCurView.getLeft() - mFirstLeftWhenDragging;
             } else {
                 mTouchSpan = 0;
             }
             mCurView = null;
         } else if (state == SCROLL_STATE_IDLE) {
             if (mNeedAdjust) {
-                int targetPosition = getLayoutManager().canScrollHorizontally() ? ViewUtils.getCenterXChildPosition(this) :
-                        ViewUtils.getCenterYChildPosition(this);
+                int targetPosition = ViewUtils.getCenterXChildPosition(this);
                 if (mCurView != null) {
                     targetPosition = getChildAdapterPosition(mCurView);
-                    if (getLayoutManager().canScrollHorizontally()) {
-                        int spanX = mCurView.getLeft() - mFirstLeftWhenDragging;
-                        // if user is tending to cancel paging action, don't perform position changing
-                        if (spanX > mCurView.getWidth() * TRIGGER_OFFSET && mCurView.getLeft() >= mMaxLeftWhenDragging) {
-                            if (!reverseLayout) targetPosition--;
-                            else targetPosition++;
-                        } else if (spanX < mCurView.getWidth() * -TRIGGER_OFFSET && mCurView.getLeft() <= mMinLeftWhenDragging) {
-                            if (!reverseLayout) targetPosition++;
-                            else targetPosition--;
-                        }
-                    } else {
-                        int spanY = mCurView.getTop() - mFirstTopWhenDragging;
-                        if (spanY > mCurView.getHeight() * TRIGGER_OFFSET && mCurView.getTop() >= mMaxTopWhenDragging) {
-                            if (!reverseLayout) targetPosition--;
-                            else targetPosition++;
-                        } else if (spanY < mCurView.getHeight() * -TRIGGER_OFFSET && mCurView.getTop() <= mMinTopWhenDragging) {
-                            if (!reverseLayout) targetPosition++;
-                            else targetPosition--;
-                        }
+                    int spanX = mCurView.getLeft() - mFirstLeftWhenDragging;
+                    // if user is tending to cancel paging action, don't perform position changing
+                    if (spanX > mCurView.getWidth() * TRIGGER_OFFSET && mCurView.getLeft() >= mMaxLeftWhenDragging) {
+                        if (!reverseLayout) targetPosition--;
+                        else targetPosition++;
+                    } else if (spanX < mCurView.getWidth() * -TRIGGER_OFFSET && mCurView.getLeft() <= mMinLeftWhenDragging) {
+                        if (!reverseLayout) targetPosition++;
+                        else targetPosition--;
                     }
                 }
                 smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
@@ -409,10 +353,9 @@ public class RecyclerViewPager extends RecyclerView {
                 mPositionBeforeScroll = mSmoothScrollTargetPosition;
             }
             // reset
+            mNeedAdjust = false;
             mMaxLeftWhenDragging = Integer.MIN_VALUE;
             mMinLeftWhenDragging = Integer.MAX_VALUE;
-            mMaxTopWhenDragging = Integer.MIN_VALUE;
-            mMinTopWhenDragging = Integer.MAX_VALUE;
         }
     }
 
