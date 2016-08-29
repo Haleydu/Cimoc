@@ -9,7 +9,7 @@
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 
-    <string name="main_double_click">再按一次推出</string>
+    <string name="main_double_click">再按一次退出</string>
 
     <string name="cimoc_search_hint">请输入漫画名</string>
     <string name="cimoc_empty_error">关键字不能为空</string>
@@ -71,7 +71,7 @@
     <string name="settings_select_mode">阅读模式选择</string>
     <string name="settings_select_file">文件选择</string>
 
-    <string name="about_version">version: 1.3.0</string>
+    <string name="about_version">version: 1.3.1</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

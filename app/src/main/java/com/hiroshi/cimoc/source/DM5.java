@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
@@ -53,20 +51,28 @@ public class DM5 extends MangaParser {
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         MachiSoup.Node body = MachiSoup.body(html);
+        int count = 0;
         for (MachiSoup.Node node : body.list("ul[id^=cbc_] > li > a")) {
             String c_title = node.text();
             try {
                 String c_path = node.attr("href", "/", 1);
+                if (count % 4 == 0) {
+                    String[] array = c_title.split(" ", 2);
+                    if (array.length == 2) {
+                        c_title = array[1];
+                    }
+                }
                 list.add(new Chapter(c_title, c_path));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            ++count;
         }
 
         String title = body.text("#mhinfo > div.inbt > h1.new_h2");
         String cover = body.attr("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img", "src");
         String update = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
-        String author = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(3) > a");
+        String author = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(2) > a");
         String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p").replace("[+展开]", "").replace("[-折叠]", "");
         boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
         comic.setInfo(title, cover, update, intro, author, status);

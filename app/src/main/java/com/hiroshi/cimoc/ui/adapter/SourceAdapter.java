@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
@@ -27,7 +27,7 @@ public class SourceAdapter extends BaseAdapter<Source> {
 
     public class SourceViewHolder extends BaseViewHolder {
         @BindView(R.id.source_title) TextView sourceTitle;
-        @BindView(R.id.source_switch) Switch sourceSwitch;
+        @BindView(R.id.source_switch) SwitchCompat sourceSwitch;
 
         public SourceViewHolder(final View view) {
             super(view);

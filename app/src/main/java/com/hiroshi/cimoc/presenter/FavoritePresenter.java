@@ -72,6 +72,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                         }
                     }
                 })
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Comic>() {
                     private int count = 0;
