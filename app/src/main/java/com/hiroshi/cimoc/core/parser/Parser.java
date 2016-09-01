@@ -27,7 +27,7 @@ public interface Parser {
 
     Request getLazyRequest(String url);
 
-    String parseLazy(String html);
+    String parseLazy(String html, String url);
 
     Request getCheckRequest(String cid);
 

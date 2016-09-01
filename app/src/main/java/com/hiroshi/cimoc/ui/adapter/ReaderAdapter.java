@@ -238,6 +238,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         for (int i = 0; i != mDataSet.size(); ++i) {
             ImageUrl imageUrl = mDataSet.get(i);
             if (imageUrl.getId() == id && imageUrl.isLoading()) {
+                if (url == null) {
+                    imageUrl.setLoading(false);
+                    return;
+                }
                 imageUrl.setUrl(url);
                 imageUrl.setLoading(false);
                 imageUrl.setLazy(false);

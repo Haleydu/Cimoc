@@ -88,11 +88,13 @@ public class ExHentai extends MangaParser {
         return list;
     }
 
+    @Override
     public Request getLazyRequest(String url) {
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
     }
 
-    public String parseLazy(String html) {
+    @Override
+    public String parseLazy(String html, String url) {
         return MachiSoup.body(html).attr("#img", "src");
     }
 

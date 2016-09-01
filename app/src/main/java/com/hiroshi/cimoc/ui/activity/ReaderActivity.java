@@ -229,6 +229,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
+    public void onImageLoadFail(int id) {
+        mReaderAdapter.update(id, null);
+    }
+
+    @Override
     public void showMessage(int resId) {
         showToast(resId);
     }

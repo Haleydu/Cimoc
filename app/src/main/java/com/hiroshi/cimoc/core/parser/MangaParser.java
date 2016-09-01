@@ -13,7 +13,7 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public String parseLazy(String html) {
+    public String parseLazy(String html, String url) {
         return null;
     }
 

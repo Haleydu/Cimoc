@@ -9,7 +9,6 @@ import com.hiroshi.cimoc.utils.MachiSoup;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -17,6 +16,8 @@ import okhttp3.Request;
  * Created by Hiroshi on 2016/7/26.
  */
 public class HHAAZZ extends MangaParser {
+
+    private String[] server = null;
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -82,15 +83,16 @@ public class HHAAZZ extends MangaParser {
         String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
         if (str != null) {
             String[] result = unsuan(str[0]);
-            String domain = String.format(Locale.getDefault(), "http://64.140.165.116:9393/dm%02d", Integer.parseInt(str[1]));
+            boolean empty = server == null;
+            String prefix = empty ? str[1].concat(" ") : server[Integer.parseInt(str[1]) - 1];
             for (int i = 0; i != result.length; ++i) {
-                list.add(new ImageUrl(i + 1, domain + result[i], false));
+                list.add(new ImageUrl(i + 1, prefix.concat(result[i]), empty));
             }
         }
         return list;
     }
 
-    private static String[] unsuan(String str) {
+    private String[] unsuan(String str) {
         int num = str.length() - str.charAt(str.length() - 1) + 'a';
         String code = str.substring(num - 13, num - 3);
         String cut = str.substring(num - 3, num - 2);
@@ -104,6 +106,28 @@ public class HHAAZZ extends MangaParser {
             builder.append((char) Integer.parseInt(array[i]));
         }
         return builder.toString().split("\\|");
+    }
+
+    @Override
+    public Request getLazyRequest(String url) {
+        if (server != null) {
+            return null;
+        }
+        return new Request.Builder().url("http://goxiee.com/js/ds.js").build();
+    }
+
+    @Override
+    public String parseLazy(String html, String url) {
+        if (html != null) {
+            String str = MachiSoup.match("sDS = \"(.*?)\";", html, 1);
+            if (str != null) {
+                server = str.split("\\|");
+            } else {
+                return null;
+            }
+        }
+        String[] rs = url.split(" ");
+        return server[Integer.parseInt(rs[0]) - 1].concat(rs[1]);
     }
 
     @Override

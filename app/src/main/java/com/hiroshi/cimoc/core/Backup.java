@@ -48,7 +48,7 @@ public class Backup {
                         array.put(object);
                     }
                     if (FileUtils.mkDirsIfNotExist(dirPath)) {
-                        String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat("cimoc");
+                        String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat(".cimoc");
                         if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
                             subscriber.onNext(array.length());
                             subscriber.onCompleted();
@@ -67,7 +67,7 @@ public class Backup {
         return Observable.create(new Observable.OnSubscribe<String[]>() {
             @Override
             public void call(Subscriber<? super String[]> subscriber) {
-                String[] files = FileUtils.listFilesNameHaveSuffix(dirPath, "cimoc");
+                String[] files = FileUtils.listFilesNameHaveSuffix(dirPath, ".cimoc");
                 if (files == null || files.length == 0) {
                     subscriber.onError(new Exception());
                 } else {

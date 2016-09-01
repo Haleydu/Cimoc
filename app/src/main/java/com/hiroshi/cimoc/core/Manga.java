@@ -58,18 +58,21 @@ public class Manga {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
+                String html = null;
                 try {
                     Request request = parser.getLazyRequest(url);
-                    Response response = mClient.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        String html = response.body().string();
-                        String newUrl = parser.parseLazy(html);
-                        subscriber.onNext(newUrl);
+                    if (request != null) {
+                        Response response = mClient.newCall(request).execute();
+                        if (response.isSuccessful()) {
+                            html = response.body().string();
+                        }
+                        response.close();
                     }
-                    response.close();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                String newUrl = parser.parseLazy(html, url);
+                subscriber.onNext(newUrl);
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());

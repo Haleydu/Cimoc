@@ -88,7 +88,7 @@ public class Wnacg extends MangaParser {
     }
 
     @Override
-    public String parseLazy(String html) {
+    public String parseLazy(String html, String url) {
         return MachiSoup.body(html).attr("#picarea", "src");
     }
 

@@ -48,19 +48,23 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         this.parser = SourceManager.getParser(source);
     }
 
-    public void lazyLoad(ImageUrl imageUrl) {
-        final int id = imageUrl.getId();
+    public void lazyLoad(final ImageUrl imageUrl) {
         Manga.load(parser, imageUrl.getUrl())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String url) {
-                        mBaseView.onImageLoadSuccess(id, url);
+                        if (url == null) {
+                            mBaseView.onImageLoadFail(imageUrl.getId());
+                        } else {
+                            mBaseView.onImageLoadSuccess(imageUrl.getId(), url);
+                        }
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        mBaseView.onImageLoadFail(imageUrl.getId());
                     }
                 });
     }

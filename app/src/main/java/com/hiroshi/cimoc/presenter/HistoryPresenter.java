@@ -66,20 +66,14 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 });
     }
 
-    public void deleteHistory(MiniComic comic) {
-        mComicManager.loadInRx(comic.getId())
-                .observeOn(Schedulers.io())
-                .subscribe(new Action1<Comic>() {
-                    @Override
-                    public void call(Comic comic) {
-                        if (comic.getFavorite() == null) {
-                            mComicManager.delete(comic);
-                        } else {
-                            comic.setHistory(null);
-                            mComicManager.update(comic);
-                        }
-                    }
-                });
+    public void deleteHistory(MiniComic history) {
+        Comic comic = mComicManager.load(history.getId());
+        if (comic.getFavorite() == null) {
+            mComicManager.delete(comic);
+        } else {
+            comic.setHistory(null);
+            mComicManager.update(comic);
+        }
     }
 
     public void clearHistory() {

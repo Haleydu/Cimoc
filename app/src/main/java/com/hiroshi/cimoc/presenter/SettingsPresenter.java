@@ -95,7 +95,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         return mComicManager.callInTx(new Callable<List<MiniComic>>() {
                             @Override
                             public List<MiniComic> call() throws Exception {
-                                long favorite = System.currentTimeMillis() - list.size() * 10;
+                                long favorite = System.currentTimeMillis() + list.size() * 10;
                                 List<MiniComic> result = new LinkedList<>();
                                 for (Comic comic : list) {
                                     Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
@@ -103,13 +103,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                         comic.setFavorite(favorite);
                                         long id = mComicManager.insert(comic);
                                         comic.setId(id);
-                                        result.add(0, new MiniComic(comic));
+                                        result.add(new MiniComic(comic));
                                     } else if (temp.getFavorite() == null) {
                                         temp.setFavorite(favorite);
                                         mComicManager.update(temp);
-                                        result.add(0, new MiniComic(temp));
+                                        result.add(new MiniComic(temp));
                                     }
-                                    favorite += 20;
+                                    favorite -= 20;
                                 }
                                 return result;
                             }

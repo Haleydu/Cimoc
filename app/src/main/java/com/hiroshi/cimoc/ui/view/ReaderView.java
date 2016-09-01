@@ -26,4 +26,6 @@ public interface ReaderView extends BaseView {
 
     void onImageLoadSuccess(int id, String url);
 
+    void onImageLoadFail(int id);
+
 }

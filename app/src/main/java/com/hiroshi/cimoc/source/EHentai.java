@@ -94,7 +94,7 @@ public class EHentai extends MangaParser {
     }
 
     @Override
-    public String parseLazy(String html) {
+    public String parseLazy(String html, String url) {
         return MachiSoup.body(html).attr("a > img[style]", "src");
     }
 

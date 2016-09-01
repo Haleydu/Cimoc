@@ -14,7 +14,6 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/6.
@@ -95,28 +94,19 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 });
     }
 
-    public void updateComic(long fromId, long toId, final boolean isBack) {
-        Observable.concat(mComicManager.loadInRx(fromId), mComicManager.loadInRx(toId))
-                .observeOn(Schedulers.io())
-                .toList()
-                .subscribe(new Action1<List<Comic>>() {
-                    @Override
-                    public void call(List<Comic> list) {
-                        Comic fromComic = list.get(0);
-                        Comic toComic = list.get(1);
-                        if (isBack) {
-                            fromComic.setFavorite(toComic.getFavorite() - 1);
-                        } else {
-                            fromComic.setFavorite(toComic.getFavorite() + 1);
-                        }
-                        mComicManager.update(fromComic);
-                    }
-                });
+    public void updateComic(long fromId, long toId, boolean isBack) {
+        Comic fromComic = mComicManager.load(fromId);
+        Comic toComic = mComicManager.load(toId);
+        if (isBack) {
+            fromComic.setFavorite(toComic.getFavorite() - 1);
+        } else {
+            fromComic.setFavorite(toComic.getFavorite() + 1);
+        }
+        mComicManager.update(fromComic);
     }
 
     public void loadComic() {
         mComicManager.listFavorite()
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -130,6 +120,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     }
                 })
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {

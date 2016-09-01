@@ -63,6 +63,10 @@ public class ComicManager {
         return mComicDao.rx().load(id);
     }
 
+    public Comic load(long id) {
+        return mComicDao.load(id);
+    }
+
     public Comic load(int source, String cid) {
         return mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
