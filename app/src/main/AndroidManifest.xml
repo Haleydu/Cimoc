@@ -49,6 +49,9 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/ReaderTheme"/>
 
+        <service
+            android:name=".service.DownloadService"/>
+
     </application>
 
 </manifest>

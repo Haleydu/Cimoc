@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -52,6 +53,38 @@ public class Manga {
                         return parser.parseImages(html);
                     }
                 });
+    }
+
+    public static List<ImageUrl> fetch(OkHttpClient client, int source, String cid, String path) {
+        List<ImageUrl> list = new LinkedList<>();
+        Parser parser = SourceManager.getParser(source);
+        try {
+            Response response = client.newCall(parser.getImagesRequest(cid, path)).execute();
+            if (response.isSuccessful()) {
+                String html = response.body().string();
+                list = parser.parseImages(html);
+            }
+            response.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static String fetch(OkHttpClient client, int source, String url) {
+        String image = null;
+        Parser parser = SourceManager.getParser(source);
+        try {
+            Response response = client.newCall(parser.getLazyRequest(url)).execute();
+            if (response.isSuccessful()) {
+                String html = response.body().string();
+                image = parser.parseLazy(html, url);
+            }
+            response.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 
     public static Observable<String> load(final Parser parser, final String url) {

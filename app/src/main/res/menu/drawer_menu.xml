@@ -15,6 +15,9 @@
             android:id="@+id/drawer_source"
             android:title="@string/drawer_source"/>
         <item
+            android:id="@+id/drawer_download"
+            android:title="@string/drawer_download"/>
+        <item
             android:title="@string/drawer_system">
             <menu>
                 <item

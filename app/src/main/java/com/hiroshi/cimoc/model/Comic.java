@@ -21,6 +21,7 @@ public class Comic {
     @NotNull private boolean highlight;
     private Long favorite;
     private Long history;
+    private Long download;
     private String last;
     private Integer page;
 
@@ -28,9 +29,9 @@ public class Comic {
     @Transient private String author;
     @Transient private Boolean status;
 
-    @Generated(hash = 562563607)
+    @Generated(hash = 537400450)
     public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
-            @NotNull String update, boolean highlight, Long favorite, Long history, String last, Integer page) {
+            @NotNull String update, boolean highlight, Long favorite, Long history, Long download, String last, Integer page) {
         this.id = id;
         this.source = source;
         this.cid = cid;
@@ -40,6 +41,7 @@ public class Comic {
         this.highlight = highlight;
         this.favorite = favorite;
         this.history = history;
+        this.download = download;
         this.last = last;
         this.page = page;
     }
@@ -188,6 +190,14 @@ public class Comic {
 
     public void setHighlight(boolean highlight) {
         this.highlight = highlight;
+    }
+
+    public Long getDownload() {
+        return this.download;
+    }
+
+    public void setDownload(Long download) {
+        this.download = download;
     }
 
 }

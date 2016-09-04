@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
+import com.hiroshi.cimoc.model.DownloadTaskDao;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 
@@ -33,43 +35,47 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
         switch (oldVersion) {
             case 1:
-                SourceDao.createTable(db, false);
                 initSource(db);
             case 2:
-                updateHighlight(db);
+                initHighlight(db);
+            case 3:
+                initDownload(db);
         }
     }
 
     private void initSource(Database db) {
+        db.beginTransaction();
+        SourceDao.createTable(db, false);
         SourceDao dao = new DaoMaster(db).newSession().getSourceDao();
-        Source[] array = new Source[6];
-        array[0] = new Source(null, SourceManager.SOURCE_IKANMAN, true);
-        array[1] = new Source(null, SourceManager.SOURCE_DMZJ, true);
-        array[2] = new Source(null, SourceManager.SOURCE_HHAAZZ, true);
-        array[3] = new Source(null, SourceManager.SOURCE_CCTUKU, true);
-        array[4] = new Source(null, SourceManager.SOURCE_U17, true);
-        array[5] = new Source(null, SourceManager.SOURCE_DM5, true);
-        dao.insertInTx(array);
+        dao.insert(new Source(null, SourceManager.SOURCE_IKANMAN, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_DMZJ, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_HHAAZZ, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_CCTUKU, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_U17, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_DM5, true));
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
-    private void updateHighlight(Database db) {
+    private void initDownload(Database db) {
         db.beginTransaction();
-        db.execSQL("CREATE TABLE \"COMIC2\" (" +
-                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                "\"SOURCE\" INTEGER NOT NULL ," +
-                "\"CID\" TEXT NOT NULL ," +
-                "\"TITLE\" TEXT NOT NULL ," +
-                "\"COVER\" TEXT NOT NULL ," +
-                "\"UPDATE\" TEXT NOT NULL ," +
-                "\"HIGHLIGHT\" INTEGER NOT NULL ," +
-                "\"FAVORITE\" INTEGER," +
-                "\"HISTORY\" INTEGER," +
-                "\"LAST\" TEXT," +
-                "\"PAGE\" INTEGER)");
-        db.execSQL("INSERT INTO \"COMIC2\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC\"");
-        db.execSQL("DROP TABLE \"COMIC\"");
-        db.execSQL("ALTER TABLE \"COMIC2\" RENAME TO \"COMIC\"");
+        DownloadTaskDao.createTable(db, false);
+        db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
+        ComicDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("DROP TABLE \"COMIC2\"");
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    private void initHighlight(Database db) {
+        db.beginTransaction();
+        db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
+        ComicDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("DROP TABLE \"COMIC2\"");
         db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " + System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
         db.setTransactionSuccessful();
         db.endTransaction();

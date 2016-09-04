@@ -6,6 +6,7 @@
     <string name="drawer_history">历史浏览</string>
     <string name="drawer_system">系统选项</string>
     <string name="drawer_source">图源管理</string>
+    <string name="drawer_download">下载管理</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 
@@ -99,15 +100,11 @@
     <string name="source_add_success">添加成功</string>
     <string name="source_add_error">添加失败</string>
     <string name="source_source_none">未开启图源</string>
-    <string name="source_ikanman">看漫画</string>
-    <string name="source_dmzj">动漫之家</string>
-    <string name="source_hhaazz">汗汗漫画</string>
-    <string name="source_cctuku">CC图库</string>
-    <string name="source_u17">有妖气</string>
-    <string name="source_ehentai">E-Hentai</string>
-    <string name="source_exhentai">ExHentai</string>
-    <string name="source_nhentai">NHentai</string>
-    <string name="source_wnacg">绅士漫画</string>
+
+    <string name="download_parse">正在解析</string>
+    <string name="download_pause">暂停下载</string>
+    <string name="download_doing">正在下载</string>
+    <string name="download_finish">下载完成</string>
 
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>

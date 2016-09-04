@@ -25,10 +25,10 @@ public class Backup {
 
     public static String dirPath =
             Environment.getExternalStorageDirectory().getAbsolutePath()
-            .concat(File.separator)
-            .concat("Cimoc")
-            .concat(File.separator)
-            .concat("backup");
+                    .concat(File.separator)
+                    .concat("Cimoc")
+                    .concat(File.separator)
+                    .concat("backup");
 
     public static Observable<Integer> save(final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
@@ -47,14 +47,12 @@ public class Backup {
                         object.put("p", comic.getPage());
                         array.put(object);
                     }
-                    if (FileUtils.mkDirsIfNotExist(dirPath)) {
-                        String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat(".cimoc");
-                        if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
-                            subscriber.onNext(array.length());
-                            subscriber.onCompleted();
-                        } else {
-                            subscriber.onError(new Exception());
-                        }
+                    String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat(".cimoc");
+                    if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
+                        subscriber.onNext(array.length());
+                        subscriber.onCompleted();
+                    } else {
+                        subscriber.onError(new Exception());
                     }
                 } catch (Exception e) {
                     subscriber.onError(new Exception());
@@ -95,7 +93,7 @@ public class Backup {
                         String update = object.getString("u");
                         String last = object.has("l") ? object.getString("l") : null;
                         Integer page = object.has("p") ? object.getInt("p") : null;
-                        list.add(new Comic(null, source, cid, title, cover, update, false, null, null, last, page));
+                        list.add(new Comic(null, source, cid, title, cover, update, false, null, null, null, last, page));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();

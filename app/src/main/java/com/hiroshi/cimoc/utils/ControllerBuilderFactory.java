@@ -62,7 +62,7 @@ public class ControllerBuilderFactory {
         return new ImagePipelineFactory(config);
     }
 
-    private static String getReferer(int id) {
+    public static String getReferer(int id) {
         switch (id) {
             case SourceManager.SOURCE_IKANMAN:
                 return "http://m.ikanman.com";

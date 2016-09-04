@@ -20,6 +20,7 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
+import com.hiroshi.cimoc.ui.fragment.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
@@ -33,7 +34,7 @@ import butterknife.BindView;
  */
 public class MainActivity extends BaseActivity {
 
-    private static final int FRAGMENT_NUM = 6;
+    private static final int FRAGMENT_NUM = 7;
 
     @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
@@ -114,6 +115,7 @@ public class MainActivity extends BaseActivity {
         mFragmentArray.put(R.id.drawer_favorite, new FavoriteFragment());
         mFragmentArray.put(R.id.drawer_history, new HistoryFragment());
         mFragmentArray.put(R.id.drawer_source, new SourceFragment());
+        mFragmentArray.put(R.id.drawer_download, new DownloadFragment());
         mFragmentArray.put(R.id.drawer_settings, new SettingsFragment());
         mFragmentArray.put(R.id.drawer_about, new AboutFragment());
 
