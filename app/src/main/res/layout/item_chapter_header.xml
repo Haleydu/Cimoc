@@ -44,7 +44,7 @@
             android:layout_alignLeft="@id/item_header_comic_title"
             android:layout_below="@id/item_header_comic_author"
             android:layout_marginTop="6dp"
-            android:maxLines="4"
+            android:maxLines="5"
             android:ellipsize="end"
             android:textColor="@color/white"
             android:textSize="12sp"/>

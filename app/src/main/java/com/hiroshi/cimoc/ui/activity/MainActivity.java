@@ -12,7 +12,6 @@ import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -39,7 +38,6 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
-    @BindView(R.id.main_progress_bar) ProgressBar mProgressBar;
 
     private AlertDialog mProgressDialog;
     private long mExitTime = 0;
@@ -105,6 +103,7 @@ public class MainActivity extends BaseActivity {
             }
         });
         initFragment();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void initFragment() {

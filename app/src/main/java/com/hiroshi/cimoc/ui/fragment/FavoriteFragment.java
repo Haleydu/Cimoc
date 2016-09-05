@@ -12,6 +12,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
@@ -32,7 +33,7 @@ import butterknife.OnClick;
  */
 public class FavoriteFragment extends BaseFragment implements FavoriteView {
 
-    @BindView(R.id.favorite_comic_list) RecyclerView mRecyclerView;
+    @BindView(R.id.favorite_recycler_view) RecyclerView mRecyclerView;
 
     private FavoriteAdapter mFavoriteAdapter;
     private FavoritePresenter mPresenter;
@@ -54,6 +55,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
                 startActivity(intent);
             }
         });
+        mFavoriteAdapter.setProvider(new ControllerBuilderProvider(getActivity()));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {

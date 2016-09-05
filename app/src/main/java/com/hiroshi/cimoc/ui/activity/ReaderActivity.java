@@ -11,9 +11,12 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -24,7 +27,7 @@ import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
@@ -53,6 +56,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     protected PreCacheLayoutManager mLayoutManager;
     protected ReaderAdapter mReaderAdapter;
+    protected ImagePipeline mImagePipeline;
 
     protected ReaderPresenter mPresenter;
     protected int progress = 1;
@@ -73,7 +77,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         list.add(new ImageUrl(0, null, true));
         mReaderAdapter = new ReaderAdapter(this, list);
         mReaderAdapter.setSingleTapListener(this);
-        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
+        ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(this, source);
+        mImagePipeline = factory.getImagePipeline();
+        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, factory));
         mReaderAdapter.setLazyLoadListener(this);
         mLayoutManager = new PreCacheLayoutManager(this);
     }

@@ -90,7 +90,7 @@ public class Dmzj extends MangaParser {
         String title = body.attr("#Cover > img", "title");
         String cover = body.attr("#Cover > img", "src");
         String author = body.text("div.Introduct_Sub > div.sub_r > p:eq(0) > a");
-        boolean status = "已完结".equals(body.text("iv.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
+        boolean status = "已完结".equals(body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
         String update = body.text("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
         comic.setInfo(title, cover, update, intro, author, status);
 

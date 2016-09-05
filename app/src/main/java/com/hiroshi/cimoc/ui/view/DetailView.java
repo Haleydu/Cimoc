@@ -18,6 +18,8 @@ public interface DetailView extends BaseView {
 
     void onChapterChange(String chapter);
 
+    void onCheckSuccess(boolean[] select);
+
     void onParseError();
 
     void onNetworkError();

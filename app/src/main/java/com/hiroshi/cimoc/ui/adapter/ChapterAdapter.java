@@ -11,9 +11,11 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
+import com.hiroshi.cimoc.ui.activity.StreamReaderActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -84,11 +86,6 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     }
 
     @Override
-    public Chapter getItem(int position) {
-        return super.getItem(position - 1);
-    }
-
-    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0) {
             View view = mInflater.inflate(R.layout.item_chapter_header, parent, false);
@@ -113,7 +110,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(source, mContext);
+            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.get(mContext, source);
             if (title != null) {
                 headerHolder.mComicImage.setController(builder.setUri(image).build());
                 headerHolder.mComicTitle.setText(title);
@@ -163,6 +160,23 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
                 notifyItemChanged(i + 1);
             }
         }
+    }
+
+    public List<String> getTitles() {
+        List<String> list = new ArrayList<>(mDataSet.size());
+        for (Chapter chapter : mDataSet) {
+            list.add(chapter.getTitle());
+        }
+        return list;
+    }
+
+    public String[] getPaths() {
+        int size = mDataSet.size();
+        String[] paths = new String[size];
+        for (int i = 0; i != size; ++i) {
+            paths[i] = mDataSet.get(i).getPath();
+        }
+        return paths;
     }
 
 }

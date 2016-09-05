@@ -2,35 +2,36 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp"
+    android:layout_height="60dp"
+    android:padding="10dp"
     android:clickable="true"
     android:background="?attr/colorBackgroundAccent"
     android:foreground="?android:attr/selectableItemBackground">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <CheckBox
-            android:id="@+id/download_chapter_checkbox"
+        <TextView
+            android:id="@+id/download_chapter_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:clickable="false"
-            android:focusable="false"
-            android:background="@null"/>
+            android:textSize="18sp"/>
         <TextView
             android:id="@+id/download_chapter_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/download_chapter_checkbox"
-            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/download_chapter_progress"
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/download_chapter_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/colorAccent"
+            android:textSize="14sp"/>
     </RelativeLayout>
 </FrameLayout>

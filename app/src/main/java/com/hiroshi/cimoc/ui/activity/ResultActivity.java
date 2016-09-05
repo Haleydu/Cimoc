@@ -6,15 +6,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,20 +25,17 @@ import butterknife.BindView;
  */
 public class ResultActivity extends BaseActivity implements ResultView {
 
-    @BindView(R.id.result_comic_list) RecyclerView mRecyclerView;
-    @BindView(R.id.result_progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.result_layout) LinearLayout mLinearLayout;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
 
-    private int source;
-
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
     }
@@ -73,7 +69,8 @@ public class ResultActivity extends BaseActivity implements ResultView {
                 startActivity(intent);
             }
         });
-        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, source));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mResultAdapter);
@@ -130,9 +127,8 @@ public class ResultActivity extends BaseActivity implements ResultView {
 
     @Override
     public void showLayout() {
-        if (mProgressBar.isShown() || !mRecyclerView.isShown()) {
+        if (mProgressBar.isShown()) {
             mProgressBar.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
         }
     }
 

@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -160,6 +161,11 @@ public class RecyclerViewPager extends RecyclerView {
                             if (time > 0) {
                                 action.update(-dx, -dy, time, mDecelerateInterpolator);
                             }
+                        }
+
+                        @Override
+                        protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                            return getContext().getResources().getDisplayMetrics().density * 0.14f / displayMetrics.density;
                         }
                     };
             linearSmoothScroller.setTargetPosition(position);

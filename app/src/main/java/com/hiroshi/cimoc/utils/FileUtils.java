@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * Created by Hiroshi on 2016/7/25.
@@ -23,7 +22,6 @@ public class FileUtils {
         }
         return builder.toString();
     }
-
 
     public static void deleteDir(File dir) {
         if (dir.exists() && dir.isDirectory()) {
@@ -42,6 +40,14 @@ public class FileUtils {
         deleteDir(new File(dirPath));
     }
 
+    public static boolean mkDirsIfNotExist(File dir) {
+        return dir.exists() || dir.mkdirs();
+    }
+
+    public static boolean mkDirsIfNotExist(String dirPath) {
+        return mkDirsIfNotExist(new File(dirPath));
+    }
+
     public static boolean writeStringToFile(File file, String data) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
@@ -54,8 +60,8 @@ public class FileUtils {
         return false;
     }
 
-    public static boolean writeStringToFile(String dirPath, String name, String data) {
-        return writeStringToFile(new File(dirPath, name), data);
+    public static boolean writeStringToFile(String dirPath, String filename, String data) {
+        return writeStringToFile(new File(dirPath, filename), data);
     }
 
     public static String readSingleLineFromFile(File file) {

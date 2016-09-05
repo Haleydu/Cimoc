@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include layout="@layout/custom_toolbar"/>
-    <include layout="@layout/custom_progress_bar"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chapter_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:paddingTop="10dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"/>
+</FrameLayout>

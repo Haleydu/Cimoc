@@ -12,11 +12,10 @@ import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -132,9 +132,9 @@ public class DownloadService extends Service {
         public Integer call() throws Exception {
             OkHttpClient client = new OkHttpClient();
             String parent = FileUtils.getPath(dirPath, String.valueOf(source), comic, chapter);
-            String referer = ControllerBuilderFactory.getReferer(source);
+            Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
             List<ImageUrl> list = Manga.fetch(client, source, cid, path);
-            if (!list.isEmpty()) {
+            if (!list.isEmpty() && FileUtils.mkDirsIfNotExist(parent)) {
                 int count = 1;
                 for (ImageUrl image : list) {
                     String url = image.getUrl();
@@ -142,7 +142,7 @@ public class DownloadService extends Service {
                         url = Manga.fetch(client, source, url);
                     }
                     Request request = new Request.Builder()
-                            .header("Referer", referer)
+                            .headers(headers)
                             .url(url)
                             .build();
                     try {
@@ -185,7 +185,7 @@ public class DownloadService extends Service {
     private static final String EXTRA_COMIC = "e";
     private static final String EXTRA_CHAPTER = "f";
 
-    public static Intent createIntent(Context context, long id, String cid, String path, int source, String comic, String chapter) {
+    public static Intent createIntent(Context context, long id, int source, String cid, String path, String comic, String chapter) {
         Intent intent = new Intent(context, DownloadService.class);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_CID, cid);

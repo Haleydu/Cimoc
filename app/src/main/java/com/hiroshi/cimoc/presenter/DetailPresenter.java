@@ -1,12 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.DownloadManager;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.DownloadTask;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -25,12 +25,14 @@ import rx.functions.Func1;
 public class DetailPresenter extends BasePresenter<DetailView> {
 
     private ComicManager mComicManager;
+    private DownloadManager mDownloadManager;
     private Comic mComic;
     private int source;
 
     public DetailPresenter(int source) {
         this.source = source;
         this.mComicManager = ComicManager.getInstance();
+        this.mDownloadManager = DownloadManager.getInstance();
     }
 
     @Override
@@ -103,6 +105,37 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                             mBaseView.onComicLoad(mComic);
                             mBaseView.onParseError();
                         }
+                    }
+                });
+    }
+
+    public void checkDownload(long id, final String[] array) {
+        mDownloadManager.listSelectable(id)
+                .flatMap(new Func1<List<DownloadTask>, Observable<DownloadTask>>() {
+                    @Override
+                    public Observable<DownloadTask> call(List<DownloadTask> list) {
+                        return Observable.from(list);
+                    }
+                })
+                .map(new Func1<DownloadTask, String>() {
+                    @Override
+                    public String call(DownloadTask task) {
+                        return task.getPath();
+                    }
+                })
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> list) {
+                        boolean[] select = new boolean[array.length];
+                        for (String path : array) {
+                            int position = list.indexOf(path);
+                            if (position != -1) {
+                                select[position] = true;
+                            }
+                        }
+                        mBaseView.onCheckSuccess(select);
                     }
                 });
     }

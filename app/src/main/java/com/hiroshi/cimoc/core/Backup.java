@@ -47,10 +47,14 @@ public class Backup {
                         object.put("p", comic.getPage());
                         array.put(object);
                     }
-                    String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat(".cimoc");
-                    if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
-                        subscriber.onNext(array.length());
-                        subscriber.onCompleted();
+                    if (FileUtils.mkDirsIfNotExist(dirPath)) {
+                        String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat(".cimoc");
+                        if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
+                            subscriber.onNext(array.length());
+                            subscriber.onCompleted();
+                        } else {
+                            subscriber.onError(new Exception());
+                        }
                     } else {
                         subscriber.onError(new Exception());
                     }

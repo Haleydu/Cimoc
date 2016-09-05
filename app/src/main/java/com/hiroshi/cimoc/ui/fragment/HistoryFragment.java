@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
@@ -55,6 +56,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
                         }).show();
             }
         });
+        mComicAdapter.setProvider(new ControllerBuilderProvider(getActivity()));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));

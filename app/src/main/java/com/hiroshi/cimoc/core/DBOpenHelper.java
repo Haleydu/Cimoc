@@ -35,6 +35,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
         switch (oldVersion) {
             case 1:
+                SourceDao.createTable(db, false);
                 initSource(db);
             case 2:
                 initHighlight(db);
@@ -45,7 +46,6 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     private void initSource(Database db) {
         db.beginTransaction();
-        SourceDao.createTable(db, false);
         SourceDao dao = new DaoMaster(db).newSession().getSourceDao();
         dao.insert(new Source(null, SourceManager.SOURCE_IKANMAN, true));
         dao.insert(new Source(null, SourceManager.SOURCE_DMZJ, true));

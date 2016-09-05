@@ -8,12 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +23,8 @@ import butterknife.BindView;
  * Created by Hiroshi on 2016/7/1.
  */
 public class ComicAdapter extends BaseAdapter<MiniComic> {
+
+    private ControllerBuilderProvider mProvider;
 
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
@@ -52,8 +53,11 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getCoverControllerBuilder(comic.getSource(), mContext);
-        viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
+        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
+    }
+
+    public void setProvider(ControllerBuilderProvider provider) {
+        mProvider = provider;
     }
 
     @Override
