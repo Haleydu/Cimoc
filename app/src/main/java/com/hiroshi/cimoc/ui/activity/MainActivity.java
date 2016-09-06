@@ -24,7 +24,7 @@ import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
 import com.hiroshi.cimoc.ui.fragment.SourceFragment;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
 
@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        mProgressDialog = DialogFactory.buildCancelableFalseDialog(this);
+        mProgressDialog = DialogUtils.buildCancelableFalseDialog(this);
         mProgressDialog.setMessage(getString(R.string.dialog_doing));
         ActionBarDrawerToggle drawerToggle =
                 new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {

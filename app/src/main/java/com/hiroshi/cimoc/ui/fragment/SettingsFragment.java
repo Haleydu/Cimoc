@@ -11,7 +11,7 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -105,7 +105,7 @@ public class SettingsFragment extends BaseFragment implements SettingsView {
     }
 
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_home, R.array.home_items, mHomeChoice, mSingleChoiceListener,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_home, R.array.home_items, mHomeChoice, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -117,7 +117,7 @@ public class SettingsFragment extends BaseFragment implements SettingsView {
     }
 
     @OnClick(R.id.settings_reader_mode_btn) void onModeBtnClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_mode, R.array.mode_items, mModeChoice, mSingleChoiceListener,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_mode, R.array.mode_items, mModeChoice, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -177,7 +177,7 @@ public class SettingsFragment extends BaseFragment implements SettingsView {
     @Override
     public void onFilesLoadSuccess(final String[] files) {
         hideProgressDialog();
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.settings_select_file, files, -1, mSingleChoiceListener,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_file, files, -1, mSingleChoiceListener,
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

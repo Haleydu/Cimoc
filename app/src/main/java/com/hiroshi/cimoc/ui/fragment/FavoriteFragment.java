@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -19,7 +18,8 @@ import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.FavoriteAdapter;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
+import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -45,7 +45,6 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     @Override
     protected void initView() {
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        mBuilder = new Notification.Builder(getActivity());
         mFavoriteAdapter = new FavoriteAdapter(getActivity(), new LinkedList<MiniComic>());
         mFavoriteAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
@@ -110,19 +109,15 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
 
     @OnClick(R.id.favorite_check_btn) void onCheckClick() {
         if (max == -1) {
-            DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.favorite_update_confirm,
+            DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.favorite_update_confirm,
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             max = mFavoriteAdapter.getItemCount();
                             mPresenter.checkUpdate();
-                            mBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp)
-                                    .setContentTitle(getString(R.string.app_name))
-                                    .setContentText(getString(R.string.favorite_update_doing))
-                                    .setTicker(getString(R.string.favorite_update_doing))
-                                    .setOngoing(true)
-                                    .setProgress(0, 0, true);
-                            notifyBuilder();
+                            mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
+                                    R.string.favorite_update_doing, true, 0, 0, true);
+                            NotificationUtils.notifyBuilder(mManager, mBuilder);
                         }
                     }).show();
         } else {
@@ -170,7 +165,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     @Override
     public void onProgressChange(int progress) {
         mBuilder.setProgress(max, progress, false);
-        notifyBuilder();
+        NotificationUtils.notifyBuilder(mManager, mBuilder);
     }
 
     @Override
@@ -180,20 +175,9 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
 
     @Override
     public void onCheckComplete() {
-        mBuilder.setOngoing(false)
-                .setTicker(getString(R.string.favorite_update_finish))
-                .setContentText(getString(R.string.favorite_update_finish))
-                .setProgress(0, 0, false);
-        notifyBuilder();
+        NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_update_finish, false);
+        NotificationUtils.notifyBuilder(mManager, mBuilder);
         max = -1;
-    }
-
-    private void notifyBuilder() {
-        if (Build.VERSION.SDK_INT >= 16) {
-            mManager.notify(1, mBuilder.build());
-        } else {
-            mManager.notify(1, mBuilder.getNotification());
-        }
     }
 
 }

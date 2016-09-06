@@ -9,7 +9,7 @@ import com.hiroshi.cimoc.R;
 /**
  * Created by Hiroshi on 2016/8/4.
  */
-public class DialogFactory {
+public class DialogUtils {
 
     public static AlertDialog buildPositiveDialog(Context context, int titleId, int messageId, OnClickListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

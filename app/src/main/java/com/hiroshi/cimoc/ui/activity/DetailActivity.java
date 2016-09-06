@@ -83,8 +83,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.detail_download:
-                long id = getIntent().getLongExtra(EXTRA_ID, -1);
-                mPresenter.checkDownload(id, mChapterAdapter.getPaths());
+                if (!mProgressBar.isShown()) {
+                    long id = getIntent().getLongExtra(EXTRA_ID, -1);
+                    mPresenter.checkDownload(id, mChapterAdapter.getPaths());
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -130,8 +132,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
         final List<Chapter> list = new LinkedList<>();
         View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
         RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
-        final DownloadAdapter chapterAdapter = new DownloadAdapter(this, mChapterAdapter.getTitles(), select);
-        chapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        final DownloadAdapter downloadAdapter = new DownloadAdapter(this, mChapterAdapter.getTitles(), select);
+        downloadAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 CheckBox choice = ButterKnife.findById(view, R.id.download_chapter_checkbox);
@@ -144,25 +146,30 @@ public class DetailActivity extends BaseActivity implements DetailView {
                     }
                     choice.setChecked(checked);
                 }
+                downloadAdapter.onClick(position);
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(chapterAdapter);
+        recyclerView.setAdapter(downloadAdapter);
         builder.setTitle(R.string.detail_select_chapter);
         builder.setView(view);
         builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                long id = getIntent().getLongExtra(EXTRA_ID, -1);
-                int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-                String cid = getIntent().getStringExtra(EXTRA_CID);
-                for (Chapter chapter : list) {
-                    Intent intent =
-                            DownloadService.createIntent(DetailActivity.this, id, source, cid, chapter.getPath(), null, chapter.getTitle());
-                    startService(intent);
+                if (!list.isEmpty()) {
+                    long key = getIntent().getLongExtra(EXTRA_ID, -1);
+                    int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+                    String cid = getIntent().getStringExtra(EXTRA_CID);
+                    for (Chapter chapter : list) {
+                        String path = chapter.getPath();
+                        long id = mPresenter.addDownload(key, path);
+                        Intent intent =
+                                DownloadService.createIntent(DetailActivity.this, id, source, cid, path, mPresenter.getComic().getTitle(), chapter.getTitle());
+                        startService(intent);
+                    }
+                    showSnackbar(R.string.detail_download_queue);
                 }
-                showSnackbar(R.string.detail_download_queue);
             }
         });
         builder.show();

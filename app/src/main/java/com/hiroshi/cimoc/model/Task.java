@@ -10,7 +10,7 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by Hiroshi on 2016/9/1.
  */
 @Entity
-public class DownloadTask {
+public class Task {
 
     @Id(autoincrement = true) private Long id;
     @NotNull private long key;
@@ -21,8 +21,9 @@ public class DownloadTask {
     @Transient private int source;
     @Transient private boolean download;
 
-    @Generated(hash = 1741252099)
-    public DownloadTask(Long id, long key, @NotNull String path, int progress,
+
+    @Generated(hash = 933696271)
+    public Task(Long id, long key, @NotNull String path, int progress,
             boolean finish) {
         this.id = id;
         this.key = key;
@@ -31,9 +32,10 @@ public class DownloadTask {
         this.finish = finish;
     }
 
-    @Generated(hash = 1999398913)
-    public DownloadTask() {
+    @Generated(hash = 733837707)
+    public Task() {
     }
+    
 
     public int getSource() {
         return this.source;

@@ -104,6 +104,8 @@
     <string name="source_add_error">添加失败</string>
     <string name="source_source_none">未开启图源</string>
 
+    <string name="download_service_doing">正在下载漫画</string>
+    <string name="download_service_complete">所有任务已完成</string>
     <string name="download_parse">正在解析</string>
     <string name="download_pause">暂停下载</string>
     <string name="download_doing">正在下载</string>

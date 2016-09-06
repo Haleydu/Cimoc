@@ -6,9 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
-import com.hiroshi.cimoc.model.DownloadTaskDao;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
+import com.hiroshi.cimoc.model.TaskDao;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -59,7 +59,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     private void initDownload(Database db) {
         db.beginTransaction();
-        DownloadTaskDao.createTable(db, false);
+        TaskDao.createTable(db, false);
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
         db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +

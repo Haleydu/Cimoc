@@ -7,6 +7,8 @@ import com.hiroshi.cimoc.ui.view.DownloadView;
  */
 public class DownloadPresenter extends BasePresenter<DownloadView> {
 
+    private DownloadPresenter() {
 
+    }
 
 }

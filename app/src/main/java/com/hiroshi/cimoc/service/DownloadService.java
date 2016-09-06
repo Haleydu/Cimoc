@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -8,18 +10,18 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.rx.RxBus;
-import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.FileUtils;
+import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -34,12 +36,15 @@ import okhttp3.Response;
  */
 public class DownloadService extends Service {
 
-    private static String dirPath =
+    private String dirPath =
             FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
 
     private HashMap<Long, Task> hashMap;
     private ExecutorService executor;
-    private Future<Integer> future;
+    private Future future;
+    private OkHttpClient client;
+    private Notification.Builder builder;
+    private NotificationManager manager;
 
     @Nullable
     @Override
@@ -52,6 +57,11 @@ public class DownloadService extends Service {
         super.onCreate();
         hashMap = new HashMap<>();
         executor = Executors.newCachedThreadPool();
+        client = new OkHttpClient();
+        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        builder = NotificationUtils.getBuilder(this, R.drawable.ic_file_download_white_24dp,
+                R.string.download_service_doing, false);
+        NotificationUtils.notifyBuilder(manager, builder);
     }
 
     @Override
@@ -64,9 +74,12 @@ public class DownloadService extends Service {
             String comic = intent.getStringExtra(EXTRA_COMIC);
             String chapter = intent.getStringExtra(EXTRA_CHAPTER);
             if (id != -1 && source != -1 && !StringUtils.isEmpty(cid, path, comic, path)) {
-                addTask(id, new Task(id, source, cid, path, comic, chapter, false));
-                Task task = nextTask();
-                if (task != null && future == null) {
+                Request request = Manga.downloadRequest(source, cid, path);
+                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, chapter);
+                Task task = new Task(id, source, request, dir, false);
+                addTask(id, task);
+                if (future == null) {
+                    task.download = true;
                     future = executor.submit(task);
                 }
             }
@@ -74,8 +87,11 @@ public class DownloadService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public synchronized boolean isEmpty() {
-        return hashMap.isEmpty();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        NotificationUtils.setBuilder(this, builder, R.string.download_service_complete, false);
+        NotificationUtils.notifyBuilder(manager, builder);
     }
 
     private synchronized Task nextTask() {
@@ -100,72 +116,66 @@ public class DownloadService extends Service {
         }
     }
 
-    public static class Task implements Callable<Integer> {
+    public class Task implements Runnable {
 
         private long id;
         private int source;
-        private String cid;
-        private String path;
-        private String comic;
-        private String chapter;
+        private Request request;
+        private String dir;
         private boolean download;
 
-        public Task(long id, int source, String cid, String path, String comic, String chapter, boolean download) {
+        public Task(long id, int source, Request request, String dir, boolean download) {
             this.id = id;
             this.source = source;
-            this.cid = cid;
-            this.path = path;
-            this.comic = comic;
-            this.chapter = chapter;
+            this.request = request;
+            this.dir = dir;
             this.download = download;
-        }
-
-        public void setDownload(boolean download) {
-            this.download = download;
-        }
-
-        public boolean isDownload() {
-            return this.download;
         }
 
         @Override
-        public Integer call() throws Exception {
-            OkHttpClient client = new OkHttpClient();
-            String parent = FileUtils.getPath(dirPath, String.valueOf(source), comic, chapter);
+        public void run() {
             Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
-            List<ImageUrl> list = Manga.fetch(client, source, cid, path);
-            if (!list.isEmpty() && FileUtils.mkDirsIfNotExist(parent)) {
-                int count = 1;
-                for (ImageUrl image : list) {
-                    String url = image.getUrl();
-                    if (image.isLazy()) {
-                        url = Manga.fetch(client, source, url);
-                    }
-                    Request request = new Request.Builder()
-                            .headers(headers)
-                            .url(url)
-                            .build();
-                    try {
-                        Response response = client.newCall(request).execute();
-                        if (response.isSuccessful()) {
-                            String suffix = StringUtils.getSplit(url, "\\.", -1);
-                            if (suffix == null) {
-                                suffix = "jpg";
-                            }
-                            if (FileUtils.writeToBinaryFile(parent,
-                                    String.format(Locale.getDefault(), "%03d.%s", count, suffix),
-                                    response.body().byteStream())) {
-                                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, id, count));
-                            }
+            List<ImageUrl> list = Manga.downloadImages(client, source, request);
+            int size = list.size();
+            for (int i = 1; i <= size; ++i) {
+                ImageUrl image = list.get(i - 1);
+                String url = image.isLazy() ? Manga.downloadLazy(client, source, image.getUrl()) : image.getUrl();
+                Request request = new Request.Builder()
+                        .headers(headers)
+                        .url(url)
+                        .build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        InputStream byteStream = response.body().byteStream();
+                        if (writeToFile(byteStream, i, url)) {
+                           // RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, id, i));
                         }
-                        response.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                    ++count;
+                    response.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-            return null;
+            onDownloadComplete();
+        }
+
+        private boolean writeToFile(InputStream byteStream, int count, String url) {
+            String suffix = StringUtils.getSplit(url, "\\.", -1);
+            if (suffix == null) {
+                suffix = "jpg";
+            }
+            return FileUtils.writeBinaryToFile(dir, StringUtils.format("%03d.%s", count, suffix), byteStream);
+        }
+
+        private void onDownloadComplete() {
+            removeTask(id);
+            Task task = nextTask();
+            if (task != null) {
+                future = executor.submit(task);
+            } else {
+                stopSelf();
+            }
         }
 
     }

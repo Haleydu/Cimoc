@@ -17,9 +17,10 @@ public class FileUtils {
 
     public static String getPath(String... filename) {
         StringBuilder builder = new StringBuilder();
-        for (String name : filename) {
-            builder.append(name).append(File.separator);
+        for (int i = 0; i != filename.length - 1; ++i) {
+            builder.append(filename[i]).append(File.separator);
         }
+        builder.append(filename[filename.length - 1]);
         return builder.toString();
     }
 
@@ -48,7 +49,7 @@ public class FileUtils {
         return mkDirsIfNotExist(new File(dirPath));
     }
 
-    public static boolean writeStringToFile(File file, String data) {
+    private static boolean writeStringToFile(File file, String data) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
             writer.write(data);
@@ -61,7 +62,7 @@ public class FileUtils {
     }
 
     public static boolean writeStringToFile(String dirPath, String filename, String data) {
-        return writeStringToFile(new File(dirPath, filename), data);
+        return mkDirsIfNotExist(dirPath) && writeStringToFile(new File(dirPath, filename), data);
     }
 
     public static String readSingleLineFromFile(File file) {
@@ -96,9 +97,9 @@ public class FileUtils {
         return listFilesNameHaveSuffix(new File(dirPath), suffix);
     }
 
-    public static boolean writeToBinaryFile(String path, String filename, InputStream byteStream) {
+    private static boolean writeBinaryToFile(File file, InputStream byteStream) {
         try {
-            FileOutputStream out = new FileOutputStream(new File(path, filename), false);
+            FileOutputStream out = new FileOutputStream(file, false);
             int length;
             byte[] buffer = new byte[1024];
             while ((length = byteStream.read(buffer)) != -1){
@@ -107,11 +108,15 @@ public class FileUtils {
             out.flush();
             out.close();
             byteStream.close();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
-        return true;
+        return false;
+    }
+
+    public static boolean writeBinaryToFile(String dirPath, String filename, InputStream byteStream) {
+        return mkDirsIfNotExist(dirPath) && writeBinaryToFile(new File(dirPath, filename), byteStream);
     }
 
 }

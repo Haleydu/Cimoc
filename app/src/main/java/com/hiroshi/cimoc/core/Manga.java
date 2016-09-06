@@ -55,11 +55,15 @@ public class Manga {
                 });
     }
 
-    public static List<ImageUrl> fetch(OkHttpClient client, int source, String cid, String path) {
+    public static Request downloadRequest(int source, String cid, String path) {
+        return SourceManager.getParser(source).getImagesRequest(cid, path);
+    }
+
+    public static List<ImageUrl> downloadImages(OkHttpClient client, int source, Request request) {
         List<ImageUrl> list = new LinkedList<>();
         Parser parser = SourceManager.getParser(source);
         try {
-            Response response = client.newCall(parser.getImagesRequest(cid, path)).execute();
+            Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 String html = response.body().string();
                 list = parser.parseImages(html);
@@ -71,7 +75,7 @@ public class Manga {
         return list;
     }
 
-    public static String fetch(OkHttpClient client, int source, String url) {
+    public static String downloadLazy(OkHttpClient client, int source, String url) {
         String image = null;
         Parser parser = SourceManager.getParser(source);
         try {

@@ -18,6 +18,7 @@ import butterknife.BindView;
  */
 public class DownloadAdapter extends BaseAdapter<String> {
 
+    private boolean[] disable;
     private boolean[] select;
 
     public class ChapterHolder extends BaseAdapter.BaseViewHolder {
@@ -31,6 +32,7 @@ public class DownloadAdapter extends BaseAdapter<String> {
 
     public DownloadAdapter(Context context, List<String> list, boolean[] select) {
         super(context, list);
+        this.disable = select;
         this.select = select;
     }
 
@@ -49,9 +51,13 @@ public class DownloadAdapter extends BaseAdapter<String> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ChapterHolder viewHolder = (ChapterHolder) holder;
         viewHolder.chapterTitle.setText(mDataSet.get(position));
-        if (select[position]) {
-            viewHolder.chapterChoice.setEnabled(false);
-            viewHolder.chapterChoice.setChecked(true);
+        viewHolder.chapterChoice.setEnabled(!disable[position]);
+        viewHolder.chapterChoice.setChecked(select[position]);
+    }
+
+    public void onClick(int position) {
+        if (!disable[position]) {
+            select[position] = !select[position];
         }
     }
 

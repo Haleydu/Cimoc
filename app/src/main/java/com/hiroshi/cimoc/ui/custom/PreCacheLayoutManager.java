@@ -1,12 +1,8 @@
 package com.hiroshi.cimoc.ui.custom;
 
 import android.content.Context;
-import android.graphics.PointF;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.util.Log;
 
 /**
  * Created by Hiroshi on 2016/8/13.

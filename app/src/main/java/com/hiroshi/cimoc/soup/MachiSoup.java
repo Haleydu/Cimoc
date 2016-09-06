@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.utils;
+package com.hiroshi.cimoc.soup;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;

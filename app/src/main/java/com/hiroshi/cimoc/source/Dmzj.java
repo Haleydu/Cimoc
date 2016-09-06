@@ -5,7 +5,7 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.soup.MachiSoup;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

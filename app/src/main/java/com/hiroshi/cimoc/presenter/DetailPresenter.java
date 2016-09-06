@@ -2,12 +2,12 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.DownloadManager;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.DownloadTask;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DetailView;
@@ -25,14 +25,14 @@ import rx.functions.Func1;
 public class DetailPresenter extends BasePresenter<DetailView> {
 
     private ComicManager mComicManager;
-    private DownloadManager mDownloadManager;
+    private TaskManager mTaskManager;
     private Comic mComic;
     private int source;
 
     public DetailPresenter(int source) {
         this.source = source;
         this.mComicManager = ComicManager.getInstance();
-        this.mDownloadManager = DownloadManager.getInstance();
+        this.mTaskManager = TaskManager.getInstance();
     }
 
     @Override
@@ -91,9 +91,9 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .subscribe(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
-                        mBaseView.showLayout();
                         mBaseView.onComicLoad(mComic);
                         mBaseView.onChapterLoad(list);
+                        mBaseView.showLayout();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -110,16 +110,16 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void checkDownload(long id, final String[] array) {
-        mDownloadManager.listSelectable(id)
-                .flatMap(new Func1<List<DownloadTask>, Observable<DownloadTask>>() {
+        mTaskManager.listSelectable(id)
+                .flatMap(new Func1<List<Task>, Observable<Task>>() {
                     @Override
-                    public Observable<DownloadTask> call(List<DownloadTask> list) {
+                    public Observable<Task> call(List<Task> list) {
                         return Observable.from(list);
                     }
                 })
-                .map(new Func1<DownloadTask, String>() {
+                .map(new Func1<Task, String>() {
                     @Override
-                    public String call(DownloadTask task) {
+                    public String call(Task task) {
                         return task.getPath();
                     }
                 })
@@ -129,15 +129,19 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     @Override
                     public void call(List<String> list) {
                         boolean[] select = new boolean[array.length];
-                        for (String path : array) {
-                            int position = list.indexOf(path);
-                            if (position != -1) {
-                                select[position] = true;
+                        for (int i = 0; i != array.length; ++i) {
+                            if (list.indexOf(array[i]) != -1) {
+                                select[i] = true;
                             }
                         }
                         mBaseView.onCheckSuccess(select);
                     }
                 });
+    }
+
+    public long addDownload(long key, String path) {
+        Task task = new Task(null, key, path, 0, false);
+        return mTaskManager.insert(task);
     }
 
     public void updateComic() {

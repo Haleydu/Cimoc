@@ -14,7 +14,7 @@ import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 import com.hiroshi.cimoc.ui.view.HistoryView;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
         mComicAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.history_delete_confirm,
+                DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.history_delete_confirm,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -70,7 +70,7 @@ public class HistoryFragment extends BaseFragment implements HistoryView {
     }
 
     @OnClick(R.id.history_clear_btn) void onHistoryClearClick() {
-        DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.history_clear_confirm,
+        DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.history_clear_confirm,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
