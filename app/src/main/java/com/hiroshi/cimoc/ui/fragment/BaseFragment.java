@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +66,6 @@ public abstract class BaseFragment extends Fragment {
 
     protected void initPresenter() {}
 
-    protected abstract int getLayoutView();
+    protected abstract @LayoutRes int getLayoutView();
 
 }

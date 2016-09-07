@@ -16,7 +16,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/9/4.
  */
-public class DownloadAdapter extends BaseAdapter<String> {
+public class SelectAdapter extends BaseAdapter<String> {
 
     private boolean[] disable;
     private boolean[] select;
@@ -30,7 +30,7 @@ public class DownloadAdapter extends BaseAdapter<String> {
         }
     }
 
-    public DownloadAdapter(Context context, List<String> list, boolean[] select) {
+    public SelectAdapter(Context context, List<String> list, boolean[] select) {
         super(context, list);
         this.disable = select;
         this.select = select;

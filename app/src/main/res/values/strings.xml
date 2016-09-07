@@ -5,8 +5,8 @@
     <string name="drawer_comic">我的漫画</string>
     <string name="drawer_history">历史浏览</string>
     <string name="drawer_system">系统选项</string>
-    <string name="drawer_source">图源管理</string>
     <string name="drawer_download">下载管理</string>
+    <string name="drawer_source">图源管理</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
 
@@ -75,7 +75,7 @@
     <string name="settings_select_mode">阅读模式选择</string>
     <string name="settings_select_file">文件选择</string>
 
-    <string name="about_version">version: 1.3.2</string>
+    <string name="about_version">version: 1.4.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -108,8 +108,10 @@
     <string name="download_service_complete">所有任务已完成</string>
     <string name="download_parse">正在解析</string>
     <string name="download_pause">暂停下载</string>
+    <string name="download_wait">等待下载</string>
     <string name="download_doing">正在下载</string>
     <string name="download_finish">下载完成</string>
+    <string name="download_list">下载列表</string>
 
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>

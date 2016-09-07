@@ -13,8 +13,12 @@ import android.support.annotation.Nullable;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -39,17 +43,18 @@ public class DownloadService extends Service {
     private String dirPath =
             FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
 
-    private HashMap<Long, Task> hashMap;
+    private HashMap<Long, DownTask> hashMap;
     private ExecutorService executor;
     private Future future;
     private OkHttpClient client;
     private Notification.Builder builder;
     private NotificationManager manager;
+    private TaskManager taskManager;
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new DownloadServiceBinder();
     }
 
     @Override
@@ -58,6 +63,7 @@ public class DownloadService extends Service {
         hashMap = new HashMap<>();
         executor = Executors.newCachedThreadPool();
         client = new OkHttpClient();
+        taskManager = TaskManager.getInstance();
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         builder = NotificationUtils.getBuilder(this, R.drawable.ic_file_download_white_24dp,
                 R.string.download_service_doing, false);
@@ -66,22 +72,22 @@ public class DownloadService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent != null) {
-            long id = intent.getLongExtra(EXTRA_ID, -1);
-            int source = intent.getIntExtra(EXTRA_SOURCE, -1);
-            String cid = intent.getStringExtra(EXTRA_CID);
-            String path = intent.getStringExtra(EXTRA_PATH);
-            String comic = intent.getStringExtra(EXTRA_COMIC);
-            String chapter = intent.getStringExtra(EXTRA_CHAPTER);
-            if (id != -1 && source != -1 && !StringUtils.isEmpty(cid, path, comic, path)) {
-                Request request = Manga.downloadRequest(source, cid, path);
-                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, chapter);
-                Task task = new Task(id, source, request, dir, false);
-                addTask(id, task);
-                if (future == null) {
-                    task.download = true;
-                    future = executor.submit(task);
-                }
+        long id = intent.getLongExtra(EXTRA_ID, -1);
+        long key = intent.getLongExtra(EXTRA_KEY, -1);
+        String title = intent.getStringExtra(EXTRA_TITLE);
+        String path = intent.getStringExtra(EXTRA_PATH);
+
+        int source = intent.getIntExtra(EXTRA_SOURCE, -1);
+        String cid = intent.getStringExtra(EXTRA_CID);
+        String comic = intent.getStringExtra(EXTRA_COMIC);
+        if (id != -1 && source != -1 && key != -1 && !StringUtils.isEmpty(cid, path, comic, path)) {
+            Request request = Manga.downloadRequest(source, cid, path);
+            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
+            DownTask task = new DownTask(id, source, request, dir);
+            addTask(id, task);
+            if (future == null) {
+                task.download = true;
+                future = executor.submit(task);
             }
         }
         return super.onStartCommand(intent, flags, startId);
@@ -94,8 +100,8 @@ public class DownloadService extends Service {
         NotificationUtils.notifyBuilder(manager, builder);
     }
 
-    private synchronized Task nextTask() {
-        for (Task task : hashMap.values()) {
+    private synchronized DownTask nextTask() {
+        for (DownTask task : hashMap.values()) {
             if (!task.download) {
                 task.download = true;
                 return task;
@@ -104,7 +110,7 @@ public class DownloadService extends Service {
         return null;
     }
 
-    public synchronized void addTask(long id, Task task) {
+    public synchronized void addTask(long id, DownTask task) {
         if (!hashMap.containsKey(id)) {
             hashMap.put(id, task);
         }
@@ -116,7 +122,7 @@ public class DownloadService extends Service {
         }
     }
 
-    public class Task implements Runnable {
+    public class DownTask implements Runnable {
 
         private long id;
         private int source;
@@ -124,21 +130,24 @@ public class DownloadService extends Service {
         private String dir;
         private boolean download;
 
-        public Task(long id, int source, Request request, String dir, boolean download) {
+        public DownTask(long id, int source, Request request, String dir) {
             this.id = id;
             this.source = source;
             this.request = request;
             this.dir = dir;
-            this.download = download;
+            this.download = false;
         }
 
         @Override
         public void run() {
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PARSE, id));
             Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
             List<ImageUrl> list = Manga.downloadImages(client, source, request);
             int size = list.size();
-            for (int i = 1; i <= size; ++i) {
-                ImageUrl image = list.get(i - 1);
+            // Todo 写数据库
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_DOING, id, size));
+            for (int i = 0; i != size; ++i) {
+                ImageUrl image = list.get(i);
                 String url = image.isLazy() ? Manga.downloadLazy(client, source, image.getUrl()) : image.getUrl();
                 Request request = new Request.Builder()
                         .headers(headers)
@@ -148,8 +157,9 @@ public class DownloadService extends Service {
                     Response response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         InputStream byteStream = response.body().byteStream();
-                        if (writeToFile(byteStream, i, url)) {
-                           // RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, id, i));
+                        if (writeToFile(byteStream, i + 1, url)) {
+                            // Todo 写数据库
+                            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, id, i + 1, size));
                         }
                     }
                     response.close();
@@ -157,6 +167,8 @@ public class DownloadService extends Service {
                     e.printStackTrace();
                 }
             }
+            // Todo 写数据库
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_FINISH, id));
             onDownloadComplete();
         }
 
@@ -170,7 +182,7 @@ public class DownloadService extends Service {
 
         private void onDownloadComplete() {
             removeTask(id);
-            Task task = nextTask();
+            DownTask task = nextTask();
             if (task != null) {
                 future = executor.submit(task);
             } else {
@@ -180,7 +192,7 @@ public class DownloadService extends Service {
 
     }
 
-    public class DownloadServiceBinder extends Binder {
+    private class DownloadServiceBinder extends Binder {
 
         public DownloadService getService() {
             return DownloadService.this;
@@ -189,20 +201,22 @@ public class DownloadService extends Service {
     }
 
     private static final String EXTRA_ID = "a";
-    private static final String EXTRA_CID = "b";
-    private static final String EXTRA_PATH = "c";
-    private static final String EXTRA_SOURCE = "d";
-    private static final String EXTRA_COMIC = "e";
-    private static final String EXTRA_CHAPTER = "f";
+    private static final String EXTRA_KEY = "b";
+    private static final String EXTRA_CID = "c";
+    private static final String EXTRA_PATH = "d";
+    private static final String EXTRA_SOURCE = "e";
+    private static final String EXTRA_COMIC = "f";
+    private static final String EXTRA_TITLE = "g";
 
-    public static Intent createIntent(Context context, long id, int source, String cid, String path, String comic, String chapter) {
+    public static Intent createIntent(Context context, Task task) {
         Intent intent = new Intent(context, DownloadService.class);
-        intent.putExtra(EXTRA_ID, id);
-        intent.putExtra(EXTRA_CID, cid);
-        intent.putExtra(EXTRA_PATH, path);
-        intent.putExtra(EXTRA_SOURCE, source);
-        intent.putExtra(EXTRA_COMIC, comic);
-        intent.putExtra(EXTRA_CHAPTER, chapter);
+        intent.putExtra(EXTRA_ID, task.getId());
+        intent.putExtra(EXTRA_KEY, task.getKey());
+        intent.putExtra(EXTRA_TITLE, task.getTitle());
+        intent.putExtra(EXTRA_PATH, task.getPath());
+        intent.putExtra(EXTRA_SOURCE, task.getSource());
+        intent.putExtra(EXTRA_CID, task.getCid());
+        intent.putExtra(EXTRA_COMIC, task.getComic());
         return intent;
     }
 

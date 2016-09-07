@@ -28,4 +28,8 @@ public class StringUtils {
         return String.format(Locale.getDefault(), format, args);
     }
 
+    public static String progress(int progress, int max) {
+        return format("%d/%d", progress, max);
+    }
+
 }

@@ -22,7 +22,7 @@
             android:layout_alignParentTop="true"
             android:padding="2dp"
             android:visibility="invisible"
-            android:src="@drawable/flag_comic_new"/>
+            android:src="@drawable/sign_comic_update"/>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"

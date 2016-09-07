@@ -17,11 +17,12 @@ import android.widget.CheckBox;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
-import com.hiroshi.cimoc.ui.adapter.DownloadAdapter;
+import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.LinkedList;
@@ -132,8 +133,8 @@ public class DetailActivity extends BaseActivity implements DetailView {
         final List<Chapter> list = new LinkedList<>();
         View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
         RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
-        final DownloadAdapter downloadAdapter = new DownloadAdapter(this, mChapterAdapter.getTitles(), select);
-        downloadAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        final SelectAdapter selectAdapter = new SelectAdapter(this, mChapterAdapter.getTitles(), select);
+        selectAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 CheckBox choice = ButterKnife.findById(view, R.id.download_chapter_checkbox);
@@ -146,26 +147,21 @@ public class DetailActivity extends BaseActivity implements DetailView {
                     }
                     choice.setChecked(checked);
                 }
-                downloadAdapter.onClick(position);
+                selectAdapter.onClick(position);
             }
         });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(downloadAdapter);
+        recyclerView.setAdapter(selectAdapter);
         builder.setTitle(R.string.detail_select_chapter);
         builder.setView(view);
         builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (!list.isEmpty()) {
-                    long key = getIntent().getLongExtra(EXTRA_ID, -1);
-                    int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-                    String cid = getIntent().getStringExtra(EXTRA_CID);
                     for (Chapter chapter : list) {
-                        String path = chapter.getPath();
-                        long id = mPresenter.addDownload(key, path);
-                        Intent intent =
-                                DownloadService.createIntent(DetailActivity.this, id, source, cid, path, mPresenter.getComic().getTitle(), chapter.getTitle());
+                        Task task = mPresenter.addTask(chapter.getPath(), chapter.getTitle());
+                        Intent intent = DownloadService.createIntent(DetailActivity.this, task);
                         startService(intent);
                     }
                     showSnackbar(R.string.detail_download_queue);

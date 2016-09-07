@@ -7,7 +7,7 @@
     <include layout="@layout/custom_toolbar"/>
     <include layout="@layout/custom_progress_bar"/>
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/chapter_recycler_view"
+        android:id="@+id/task_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

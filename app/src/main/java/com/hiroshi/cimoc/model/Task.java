@@ -12,45 +12,39 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class Task {
 
+    public static final int STATE_FINISH = 0;
+    public static final int STATE_PAUSE = 1;
+    public static final int STATE_PARSE = 2;
+    public static final int STATE_DOING = 3;
+    public static final int STATE_WAIT = 4;
+
     @Id(autoincrement = true) private Long id;
     @NotNull private long key;
     @NotNull private String path;
+    @NotNull private String title;
     @NotNull private int progress;
+    @NotNull private int max;
     @NotNull private boolean finish;
 
     @Transient private int source;
-    @Transient private boolean download;
+    @Transient private String cid;
+    @Transient private String comic;
+    @Transient private int state;
 
-
-    @Generated(hash = 933696271)
-    public Task(Long id, long key, @NotNull String path, int progress,
-            boolean finish) {
+    @Generated(hash = 727503274)
+    public Task(Long id, long key, @NotNull String path, @NotNull String title,
+            int progress, int max, boolean finish) {
         this.id = id;
         this.key = key;
         this.path = path;
+        this.title = title;
         this.progress = progress;
+        this.max = max;
         this.finish = finish;
     }
 
     @Generated(hash = 733837707)
     public Task() {
-    }
-    
-
-    public int getSource() {
-        return this.source;
-    }
-
-    public void setSource(int source) {
-        this.source = source;
-    }
-
-    public boolean getDownload() {
-        return this.download;
-    }
-
-    public void setDownload(boolean download) {
-        this.download = download;
     }
 
     public Long getId() {
@@ -91,6 +85,48 @@ public class Task {
 
     public void setFinish(boolean finish) {
         this.finish = finish;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public int getMax() {
+        return this.max;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    public int getState() {
+        return this.state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    public int getSource() {
+        return this.source;
+    }
+
+    public String getCid() {
+        return cid;
+    }
+
+    public String getComic() {
+        return comic;
+    }
+
+    public void setInfo(int source, String cid, String comic) {
+        this.source = source;
+        this.cid = cid;
+        this.comic = comic;
     }
 
 }

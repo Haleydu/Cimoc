@@ -68,7 +68,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     public void deleteHistory(MiniComic history) {
         Comic comic = mComicManager.load(history.getId());
-        if (comic.getFavorite() == null) {
+        if (comic.getFavorite() == null && comic.getDownload() == null) {
             mComicManager.delete(comic);
         } else {
             comic.setHistory(null);
