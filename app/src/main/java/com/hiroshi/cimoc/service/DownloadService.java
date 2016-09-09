@@ -176,6 +176,7 @@ public class DownloadService extends Service {
                                 onDownloadProgress(i + 1);
                             } else {
                                 interrupt = true;
+                                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
                                 break;
                             }
                         }
@@ -183,6 +184,7 @@ public class DownloadService extends Service {
                     } catch (Exception e) {
                         e.printStackTrace();
                         interrupt = true;
+                        RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
                         break;
                     }
                 }
@@ -190,6 +192,8 @@ public class DownloadService extends Service {
                 if (!interrupt) {
                     onDownloadFinish();
                 }
+            } else {
+                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
             }
 
             removeDownload(task.getId());
@@ -220,7 +224,7 @@ public class DownloadService extends Service {
             if (suffix == null) {
                 suffix = "jpg";
             }
-            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(task.getSource()), task.getComic(), task.getComic());
+            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(task.getSource()), task.getComic(), task.getTitle());
             return FileUtils.writeBinaryToFile(dir, StringUtils.format("%03d.%s", count, suffix), byteStream);
         }
 

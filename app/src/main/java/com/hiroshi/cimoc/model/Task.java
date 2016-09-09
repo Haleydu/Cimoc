@@ -2,13 +2,12 @@ package com.hiroshi.cimoc.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Transient;
-import org.greenrobot.greendao.annotation.Generated;
 
 /**
  * Created by Hiroshi on 2016/9/1.
@@ -60,6 +59,11 @@ public class Task implements Parcelable {
 
     @Generated(hash = 733837707)
     public Task() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Task && ((Task) o).id.equals(id);
     }
 
     public Long getId() {

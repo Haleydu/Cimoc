@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.Index;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -11,6 +12,7 @@ import com.hiroshi.cimoc.ui.view.ReaderView;
 
 import java.util.List;
 
+import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -34,12 +36,14 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private int source;
     private String cid;
+    private String comic;
     private int status;
 
-    public ReaderPresenter(int source, String cid, Chapter[] chapter, int position) {
+    public ReaderPresenter(int source, String cid, String comic, Chapter[] chapter, int position) {
         this.mPreloadAdapter = new PreloadAdapter(chapter, position);
         this.source = source;
         this.cid = cid;
+        this.comic = comic;
         this.isShowNext = true;
         this.isShowPrev = true;
         this.count = 0;
@@ -74,7 +78,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void loadInit(String last, int page) {
         status = LOAD_INIT;
-        images(mPreloadAdapter.getNextChapter().getPath(), last, page);
+        Chapter chapter = mPreloadAdapter.getNextChapter();
+        images(chapter.isDownload() ?
+                Index.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()),
+                last, page);
     }
 
     public void loadNext() {
@@ -82,7 +89,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             Chapter chapter = mPreloadAdapter.getNextChapter();
             if (chapter != null) {
                 status = LOAD_NEXT;
-                images(chapter.getPath());
+                images(chapter.isDownload() ?
+                                Index.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()));
                 mBaseView.showMessage(R.string.reader_load_next);
             } else {
                 isShowNext = false;
@@ -96,7 +104,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             Chapter chapter = mPreloadAdapter.getPrevChapter();
             if (chapter != null) {
                 status = LOAD_PREV;
-                images(chapter.getPath());
+                images(chapter.isDownload() ?
+                        Index.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()));
                 mBaseView.showMessage(R.string.reader_load_prev);
             } else {
                 isShowPrev = false;
@@ -121,12 +130,12 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         }
     }
 
-    private void images(final String path) {
-        images(path, null, -1);
+    private void images(Observable<List<ImageUrl>> observable) {
+        images(observable, null, -1);
     }
 
-    private void images(final String path, final String last, final int page) {
-        Manga.images(source, cid, path)
+    private void images(Observable<List<ImageUrl>> observable, final String last, final int page) {
+        observable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<ImageUrl>>() {
                     @Override
@@ -163,14 +172,14 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                                 }
                                 break;
                             case LOAD_PREV:
-                                mBaseView.onPrevLoadSuccess(list);
                                 chapter = mPreloadAdapter.movePrev();
                                 chapter.setCount(list.size());
+                                mBaseView.onPrevLoadSuccess(list);
                                 break;
                             case LOAD_NEXT:
-                                mBaseView.onNextLoadSuccess(list);
                                 chapter = mPreloadAdapter.moveNext();
                                 chapter.setCount(list.size());
+                                mBaseView.onNextLoadSuccess(list);
                                 break;
                         }
                     }

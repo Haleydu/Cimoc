@@ -28,7 +28,7 @@ import java.util.List;
 public class RecyclerViewPager extends RecyclerView {
     
     private static final float TRIGGER_OFFSET = 0.05f;
-    private static final float FLING_FACTOR = 0.05f;
+    private static final float FLING_FACTOR = 0.10f;
 
     private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
     private float mTouchSpan;
@@ -359,7 +359,6 @@ public class RecyclerViewPager extends RecyclerView {
                 mPositionBeforeScroll = mSmoothScrollTargetPosition;
             }
             // reset
-            mNeedAdjust = false;
             mMaxLeftWhenDragging = Integer.MIN_VALUE;
             mMinLeftWhenDragging = Integer.MAX_VALUE;
         }

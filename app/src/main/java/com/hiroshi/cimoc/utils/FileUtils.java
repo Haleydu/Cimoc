@@ -81,7 +81,11 @@ public class FileUtils {
         return readSingleLineFromFile(new File(dirPath, name));
     }
 
-    public static String[] listFilesNameHaveSuffix(File dir, final String suffix) {
+    public static String[] listFilesName(String dirPath) {
+        return listFilesNameHaveSuffix(new File(dirPath), "");
+    }
+
+    private static String[] listFilesNameHaveSuffix(File dir, final String suffix) {
         if (dir.exists() && dir.isDirectory()) {
             return dir.list(new FilenameFilter() {
                 @Override

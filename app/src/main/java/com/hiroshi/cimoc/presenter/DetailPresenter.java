@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Index;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.ui.view.DetailView;
 import java.util.List;
 
 import rx.Observable;
+import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -72,7 +73,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         });
     }
 
-    public void load(long id, final String cid) {
+    public void loadDetail(long id, final String cid) {
         Observable<Comic> observable =
                 id == -1 ? mComicManager.loadInRx(source, cid) : mComicManager.loadInRx(id);
         observable.flatMap(new Func1<Comic, Observable<List<Chapter>>>() {
@@ -88,53 +89,63 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 return Manga.info(source, comic);
             }
         }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Chapter>>() {
+                .subscribe(new Observer<List<Chapter>>() {
                     @Override
-                    public void call(List<Chapter> list) {
-                        mBaseView.onComicLoad(mComic);
-                        mBaseView.onChapterLoad(list);
-                        mBaseView.showLayout();
+                    public void onCompleted() {
+                        mBaseView.onDetailLoadSuccess();
                     }
-                }, new Action1<Throwable>() {
+
                     @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.showLayout();
-                        if (throwable instanceof Manga.NetworkErrorException) {
+                    public void onError(Throwable e) {
+                        if (e instanceof Manga.NetworkErrorException) {
                             mBaseView.onNetworkError();
                         } else {
                             mBaseView.onComicLoad(mComic);
                             mBaseView.onParseError();
                         }
                     }
+
+                    @Override
+                    public void onNext(List<Chapter> list) {
+                        mBaseView.onComicLoad(mComic);
+                        mBaseView.onChapterLoad(list);
+                    }
                 });
     }
 
-    public void checkDownload(long key, final String[] array) {
-        mTaskManager.list(key)
-                .flatMap(new Func1<List<Task>, Observable<Task>>() {
-                    @Override
-                    public Observable<Task> call(List<Task> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .map(new Func1<Task, String>() {
-                    @Override
-                    public String call(Task task) {
-                        return task.getPath();
-                    }
-                })
-                .toList()
+    public void updateIndex(List<Chapter> list) {
+        Index.update(list, mComic.getSource(), mComic.getTitle())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<String>>() {
+                .subscribe(new Action1<Void>() {
                     @Override
-                    public void call(List<String> list) {
-                        boolean[] select = new boolean[array.length];
+                    public void call(Void aVoid) {
+                        mBaseView.onUpdateIndexSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onUpdateIndexFail();
+                    }
+                });
+    }
+
+    public void loadDownload(long key, final String[] array) {
+        mTaskManager.list(key)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Task>>() {
+                    @Override
+                    public void call(List<Task> list) {
+                        boolean[] download = new boolean[array.length];
+                        boolean[] complete = new boolean[array.length];
                         for (int i = 0; i != array.length; ++i) {
-                            if (list.indexOf(array[i]) != -1) {
-                                select[i] = true;
+                            for (Task task : list) {
+                                if (task.getPath().equals(array[i])) {
+                                    download[i] = true;
+                                    complete[i] = task.getMax() != 0 && task.getProgress() == task.getMax();
+                                }
                             }
                         }
-                        mBaseView.onCheckSuccess(select);
+                        mBaseView.onDownloadLoadSuccess(download, complete);
                     }
                 });
     }

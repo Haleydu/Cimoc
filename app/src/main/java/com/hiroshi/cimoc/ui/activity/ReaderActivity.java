@@ -132,13 +132,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initPresenter() {
         source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
+        String comic = getIntent().getStringExtra(EXTRA_COMIC);
         Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
         Chapter[] chapter = new Chapter[array.length];
         for (int i = 0; i != array.length; ++i) {
             chapter[i] = (Chapter) array[i];
         }
         int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        mPresenter = new ReaderPresenter(source, cid, chapter, position);
+        mPresenter = new ReaderPresenter(source, cid, comic, chapter, position);
         mPresenter.attachView(this);
     }
 
@@ -251,19 +252,33 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private static final String EXTRA_CID = "b";
     private static final String EXTRA_LAST = "c";
     private static final String EXTRA_PAGE = "d";
-    private static final String EXTRA_CHAPTER = "e";
+    private static final String EXTRA_COMIC = "e";
+    private static final String EXTRA_CHAPTER = "f";
     private static final String EXTRA_POSITION = "g";
 
-    protected static void putExtras(Intent intent, Comic comic, List<Chapter> list, int position) {
+    public static Intent createIntent(Context context, int source, String cid, String comic, List<Chapter> list, int position) {
+        Intent intent = getIntent(context);
+        intent.putExtra(EXTRA_SOURCE, source);
+        intent.putExtra(EXTRA_CID, cid);
+        intent.putExtra(EXTRA_COMIC, comic);
+        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
+        intent.putExtra(EXTRA_POSITION, position);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
+        Intent intent = getIntent(context);
         intent.putExtra(EXTRA_SOURCE, comic.getSource());
         intent.putExtra(EXTRA_CID, comic.getCid());
         intent.putExtra(EXTRA_LAST, comic.getLast());
         intent.putExtra(EXTRA_PAGE, comic.getPage());
+        intent.putExtra(EXTRA_COMIC, comic.getTitle());
         intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
         intent.putExtra(EXTRA_POSITION, position);
+        return intent;
     }
 
-    public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
+    private static Intent getIntent(Context context) {
         int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
         Intent intent = null;
         switch (mode) {
@@ -277,7 +292,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                 intent = new Intent(context, LandscapeStreamReaderActivity.class);
                 break;
         }
-        putExtras(intent, comic, list, position);
         return intent;
     }
 

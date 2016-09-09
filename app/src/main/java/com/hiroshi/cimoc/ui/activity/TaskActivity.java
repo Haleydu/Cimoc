@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
@@ -48,14 +49,27 @@ public class TaskActivity extends BaseActivity implements TaskView {
                 Task task = mTaskAdapter.getItem(position);
                 switch (task.getState()) {
                     case Task.STATE_FINISH:
-                        // Todo 阅读漫画
+                        int pos = 0;
+                        List<Chapter> list = new LinkedList<>();
+                        List<Task> dataSet = mTaskAdapter.getDateSet();
+                        for (int i = 0; i != dataSet.size(); ++i) {
+                            Task temp = dataSet.get(i);
+                            if (temp.getState() == Task.STATE_FINISH) {
+                                list.add(new Chapter(temp.getTitle(), temp.getPath(), temp.getMax(), true));
+                                if (temp.equals(task)) {
+                                    pos = list.size() - 1;
+                                }
+                            }
+                        }
+                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, source, cid, comic, list, pos);
+                        startActivity(readerIntent);
                         break;
                     case Task.STATE_PAUSE:
                         task.setInfo(source, cid, comic);
                         task.setState(Task.STATE_WAIT);
                         mTaskAdapter.notifyItemChanged(position);
-                        Intent intent = DownloadService.createIntent(TaskActivity.this, task);
-                        startService(intent);
+                        Intent taskIntent = DownloadService.createIntent(TaskActivity.this, task);
+                        startService(taskIntent);
                         break;
                     case Task.STATE_DOING:
                     case Task.STATE_WAIT:

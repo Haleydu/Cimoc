@@ -3,6 +3,10 @@ package com.hiroshi.cimoc.core.manager;
 import android.util.SparseArray;
 
 import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.core.parser.Parser;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.model.SourceDao;
+import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
@@ -13,10 +17,6 @@ import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.NHentai;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Wnacg;
-import com.hiroshi.cimoc.core.parser.Parser;
-import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.model.SourceDao;
-import com.hiroshi.cimoc.model.SourceDao.Properties;
 
 import java.util.List;
 

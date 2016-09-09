@@ -11,17 +11,21 @@ public class Chapter implements Parcelable {
     private String title;
     private String path;
     private int count;
+    private boolean download;
 
-    public Chapter(String title, String path) {
+    public Chapter(String title, String path, int count, boolean download) {
         this.title = title;
         this.path = path;
-        this.count = 0;
+        this.count = count;
+        this.download = download;
+    }
+
+    public Chapter(String title, String path) {
+        this(title, path, 0, false);
     }
 
     public Chapter(Parcel source) {
-        this.title = source.readString();
-        this.path = source.readString();
-        this.count = source.readInt();
+        this(source.readString(), source.readString(), source.readInt(), source.readByte() == 1);
     }
 
     public String getTitle() {
@@ -40,6 +44,14 @@ public class Chapter implements Parcelable {
         this.count = count;
     }
 
+    public boolean isDownload() {
+        return download;
+    }
+
+    public void setDownload(boolean download) {
+        this.download = download;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -50,6 +62,7 @@ public class Chapter implements Parcelable {
         dest.writeString(title);
         dest.writeString(path);
         dest.writeInt(count);
+        dest.writeByte((byte) (download ? 1 : 0));
     }
 
     public final static Parcelable.Creator<Chapter> CREATOR = new Parcelable.Creator<Chapter>() {

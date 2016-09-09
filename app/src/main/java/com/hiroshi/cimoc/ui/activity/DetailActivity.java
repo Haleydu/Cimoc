@@ -42,6 +42,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
 
     private ChapterAdapter mChapterAdapter;
+    private SelectAdapter mSelectAdapter;
     private DetailPresenter mPresenter;
 
     @OnClick(R.id.detail_star_btn) void onClick() {
@@ -57,10 +58,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     @Override
-    protected void initView() {
+    protected void initData() {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
-        mPresenter.load(id, cid);
+        mPresenter.loadDetail(id, cid);
     }
 
     @Override
@@ -84,10 +85,24 @@ public class DetailActivity extends BaseActivity implements DetailView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.detail_download:
-                if (!mProgressBar.isShown()) {
-                    long id = getIntent().getLongExtra(EXTRA_ID, -1);
-                    mPresenter.checkDownload(id, mChapterAdapter.getPaths());
-                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
+                RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                recyclerView.setHasFixedSize(true);
+                recyclerView.setAdapter(mSelectAdapter);
+                builder.setTitle(R.string.detail_select_chapter);
+                builder.setView(view);
+                builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        List<Integer> list = mSelectAdapter.getCheckedList();
+                        if (!list.isEmpty()) {
+                            mPresenter.updateIndex(mChapterAdapter.getDateSet());
+                        }
+                    }
+                });
+                builder.show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -128,47 +143,46 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     @Override
-    public void onCheckSuccess(boolean[] select) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final List<Chapter> list = new LinkedList<>();
-        View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
-        RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
-        final SelectAdapter selectAdapter = new SelectAdapter(this, mChapterAdapter.getTitles(), select);
-        selectAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+    public void onDownloadLoadSuccess(boolean[] download, boolean[] complete) {
+        mSelectAdapter = new SelectAdapter(this, mChapterAdapter.getTitles());
+        mSelectAdapter.initState(download);
+        mSelectAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 CheckBox choice = ButterKnife.findById(view, R.id.download_chapter_checkbox);
                 if (choice.isEnabled()) {
                     boolean checked = !choice.isChecked();
-                    if (checked) {
-                        list.add(mChapterAdapter.getItem(position));
-                    } else {
-                        list.remove(mChapterAdapter.getItem(position));
-                    }
                     choice.setChecked(checked);
-                }
-                selectAdapter.onClick(position);
-            }
-        });
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(selectAdapter);
-        builder.setTitle(R.string.detail_select_chapter);
-        builder.setView(view);
-        builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (!list.isEmpty()) {
-                    for (Chapter chapter : list) {
-                        Task task = mPresenter.addTask(chapter.getPath(), chapter.getTitle());
-                        Intent intent = DownloadService.createIntent(DetailActivity.this, task);
-                        startService(intent);
-                    }
-                    showSnackbar(R.string.detail_download_queue);
+                    mSelectAdapter.onClick(position, checked);
                 }
             }
         });
-        builder.show();
+        mChapterAdapter.setDownload(complete);
+        showLayout();
+    }
+
+    @Override
+    public void onUpdateIndexSuccess() {
+        for (int position : mSelectAdapter.getCheckedList()) {
+            Chapter chapter = mChapterAdapter.getItem(position);
+            Task task = mPresenter.addTask(chapter.getPath(), chapter.getTitle());
+            Intent intent = DownloadService.createIntent(DetailActivity.this, task);
+            startService(intent);
+        }
+        mSelectAdapter.clearCheckedList(true);
+        showSnackbar(R.string.detail_download_queue_success);
+    }
+
+    @Override
+    public void onUpdateIndexFail() {
+        mSelectAdapter.clearCheckedList(false);
+        showSnackbar(R.string.detail_download_queue_fail);
+    }
+
+    @Override
+    public void onDetailLoadSuccess() {
+        long id = getIntent().getLongExtra(EXTRA_ID, -1);
+        mPresenter.loadDownload(id, mChapterAdapter.getPaths());
     }
 
     @Override
@@ -206,8 +220,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
         mChapterAdapter.setData(list);
     }
 
-    @Override
-    public void showLayout() {
+    private void showLayout() {
         if (mProgressBar.isShown()) {
             mProgressBar.setVisibility(View.GONE);
         }
@@ -215,11 +228,13 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     public void onNetworkError() {
+        showLayout();
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
+        showLayout();
         showSnackbar(R.string.common_parse_error);
     }
 

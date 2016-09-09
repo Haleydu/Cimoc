@@ -1,12 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.utils.FileUtils;
 
 import java.io.File;

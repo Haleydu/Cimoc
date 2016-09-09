@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface DetailView extends BaseView {
 
-    void showLayout();
+    void onDetailLoadSuccess();
 
     void onComicLoad(Comic comic);
 
@@ -18,7 +18,11 @@ public interface DetailView extends BaseView {
 
     void onChapterChange(String chapter);
 
-    void onCheckSuccess(boolean[] select);
+    void onDownloadLoadSuccess(boolean[] download, boolean[] complete);
+
+    void onUpdateIndexSuccess();
+
+    void onUpdateIndexFail();
 
     void onParseError();
 

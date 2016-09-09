@@ -8,7 +8,6 @@ import com.hiroshi.cimoc.utils.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
@@ -24,11 +23,7 @@ import rx.schedulers.Schedulers;
 public class Backup {
 
     public static String dirPath =
-            Environment.getExternalStorageDirectory().getAbsolutePath()
-                    .concat(File.separator)
-                    .concat("Cimoc")
-                    .concat(File.separator)
-                    .concat("backup");
+            FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "backup");
 
     public static Observable<Integer> save(final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {

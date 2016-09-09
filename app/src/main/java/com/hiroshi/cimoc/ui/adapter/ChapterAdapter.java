@@ -13,7 +13,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.ui.activity.StreamReaderActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +105,12 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         this.last = last;
     }
 
+    public void setDownload(boolean[] download) {
+        for (int i = 0; i != download.length; ++i) {
+            mDataSet.get(i).setDownload(download[i]);
+        }
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
@@ -125,6 +130,9 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.chapterButton.setText(chapter.getTitle());
+            if (chapter.isDownload()) {
+                viewHolder.chapterButton.setBackgroundResource(R.drawable.button_chapter_download);
+            }
             if (chapter.getPath().equals(last)) {
                 viewHolder.chapterButton.setSelected(true);
             } else if (viewHolder.chapterButton.isSelected()) {

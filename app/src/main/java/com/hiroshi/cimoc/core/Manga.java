@@ -62,10 +62,12 @@ public class Manga {
 
     private static void beforeImages(Parser parser) {
         Request request = parser.getBeforeImagesRequest();
-        try {
-            parser.beforeImages(getResponseBody(mClient, request));
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (request != null) {
+            try {
+                parser.beforeImages(getResponseBody(mClient, request));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

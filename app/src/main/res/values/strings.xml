@@ -27,7 +27,8 @@
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
     <string name="detail_download">下载</string>
-    <string name="detail_download_queue">已加入下载队列</string>
+    <string name="detail_download_queue_success">已加入下载队列</string>
+    <string name="detail_download_queue_fail">加入下载队列失败</string>
     <string name="detail_select_chapter">选择章节</string>
 
     <string name="favorite_update_confirm">是否检查更新</string>

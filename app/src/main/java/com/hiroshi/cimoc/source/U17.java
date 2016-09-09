@@ -5,8 +5,8 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.soup.MachiSoup;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 
 import java.util.LinkedList;
 import java.util.List;
