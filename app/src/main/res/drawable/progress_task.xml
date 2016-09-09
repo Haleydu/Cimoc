@@ -7,7 +7,6 @@
             </shape>
         </clip>
     </item>
-    <!-- 进度条 -->
     <item android:id="@android:id/progress">
         <clip>
             <shape>

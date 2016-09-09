@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,8 @@ public class Manga {
 
     private static OkHttpClient mClient = CimocApplication.getHttpClient();
 
-    public static Observable<List<Comic>> search(final Parser parser, final String keyword, final int page) {
+    public static Observable<List<Comic>> search(final int source, final String keyword, final int page) {
+        final Parser parser = SourceManager.getParser(source);
         return create(parser.getSearchRequest(keyword, page),
                 new OnResponseSuccessHandler<Comic>() {
                     @Override
@@ -35,7 +37,8 @@ public class Manga {
                 });
     }
 
-    public static Observable<List<Chapter>> info(final Parser parser, final Comic comic) {
+    public static Observable<List<Chapter>> info(final int source, final Comic comic) {
+        final Parser parser = SourceManager.getParser(source);
         return create(parser.getInfoRequest(comic.getCid()),
                 new OnResponseSuccessHandler<Chapter>() {
                     @Override
@@ -45,30 +48,34 @@ public class Manga {
                 });
     }
 
-    public static Observable<List<ImageUrl>> images(final Parser parser, final String cid, final String path) {
+    public static Observable<List<ImageUrl>> images(final int source, final String cid, final String path) {
+        final Parser parser = SourceManager.getParser(source);
         return create(parser.getImagesRequest(cid, path),
                 new OnResponseSuccessHandler<ImageUrl>() {
                     @Override
                     public List<ImageUrl> onSuccess(String html) {
+                        beforeImages(parser);
                         return parser.parseImages(html);
                     }
                 });
     }
 
-    public static Request downloadRequest(int source, String cid, String path) {
-        return SourceManager.getParser(source).getImagesRequest(cid, path);
+    private static void beforeImages(Parser parser) {
+        Request request = parser.getBeforeImagesRequest();
+        try {
+            parser.beforeImages(getResponseBody(mClient, request));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static List<ImageUrl> downloadImages(OkHttpClient client, int source, Request request) {
+    public static List<ImageUrl> downloadImages(OkHttpClient client, int source, String cid, String path) {
         List<ImageUrl> list = new LinkedList<>();
         Parser parser = SourceManager.getParser(source);
+        beforeImages(parser);
+        Request request = parser.getImagesRequest(cid, path);
         try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String html = response.body().string();
-                list = parser.parseImages(html);
-            }
-            response.close();
+            list = parser.parseImages(getResponseBody(client, request));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,41 +83,29 @@ public class Manga {
     }
 
     public static String downloadLazy(OkHttpClient client, int source, String url) {
-        String image = null;
         Parser parser = SourceManager.getParser(source);
+        Request request = parser.getLazyRequest(url);
         try {
-            Response response = client.newCall(parser.getLazyRequest(url)).execute();
-            if (response.isSuccessful()) {
-                String html = response.body().string();
-                image = parser.parseLazy(html, url);
-            }
-            response.close();
+            return parser.parseLazy(getResponseBody(client, request), url);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return image;
+        return null;
     }
 
-    public static Observable<String> load(final Parser parser, final String url) {
+    public static Observable<String> load(final int source, final String url) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                String html = null;
+                Parser parser = SourceManager.getParser(source);
+                Request request = parser.getLazyRequest(url);
                 try {
-                    Request request = parser.getLazyRequest(url);
-                    if (request != null) {
-                        Response response = mClient.newCall(request).execute();
-                        if (response.isSuccessful()) {
-                            html = response.body().string();
-                        }
-                        response.close();
-                    }
+                    String newUrl = parser.parseLazy(getResponseBody(mClient, request), url);
+                    subscriber.onNext(newUrl);
+                    subscriber.onCompleted();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String newUrl = parser.parseLazy(html, url);
-                subscriber.onNext(newUrl);
-                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }
@@ -127,20 +122,15 @@ public class Manga {
                     int source = comic.getSource();
                     if (source < 100) {
                         Parser parser = SourceManager.getParser(source);
+                        Request request = parser.getCheckRequest(comic.getCid());
                         try {
-                            Request request = parser.getCheckRequest(comic.getCid());
-                            Response response = client.newCall(request).execute();
-                            if (response.isSuccessful()) {
-                                String html = response.body().string();
-                                String update = parser.parseCheck(html);
-                                if (!comic.getUpdate().equals(update)) {
-                                    comic.setUpdate(update);
-                                    comic.setHighlight(true);
-                                    subscriber.onNext(comic);
-                                    continue;
-                                }
+                            String update = parser.parseCheck(getResponseBody(client, request));
+                            if (!comic.getUpdate().equals(update)) {
+                                comic.setUpdate(update);
+                                comic.setHighlight(true);
+                                subscriber.onNext(comic);
+                                continue;
                             }
-                            response.close();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -157,26 +147,36 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<T>> subscriber) {
                 try {
-                    Response response = mClient.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        String html = response.body().string();
-                        List<T> list = handler.onSuccess(html);
-                        if (list.isEmpty()) {
-                            subscriber.onError(new EmptyResultException());
-                        } else {
-                            subscriber.onNext(list);
-                            subscriber.onCompleted();
-                        }
+                    List<T> list = handler.onSuccess(getResponseBody(mClient, request));
+                    if (list.isEmpty()) {
+                        subscriber.onError(new EmptyResultException());
                     } else {
-                        subscriber.onError(new ParseErrorException());
+                        subscriber.onNext(list);
+                        subscriber.onCompleted();
                     }
-                    response.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    subscriber.onError(new NetworkErrorException());
+                    subscriber.onError(e);
                 }
             }
         }).subscribeOn(Schedulers.io());
+    }
+
+    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException, ParseErrorException {
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                return response.body().string();
+            } else {
+                throw new ParseErrorException();
+            }
+        } catch (IOException e){
+            throw new NetworkErrorException();
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 
     private interface OnResponseSuccessHandler<T> {

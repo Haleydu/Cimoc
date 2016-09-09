@@ -76,4 +76,11 @@ public class DownloadFragment extends BaseFragment implements DownloadView {
         mComicAdapter.addAll(list);
     }
 
+    @Override
+    public void onTaskAdd(MiniComic comic) {
+        if (!mComicAdapter.exist(comic)) {
+            mComicAdapter.add(0, comic);
+        }
+    }
+
 }

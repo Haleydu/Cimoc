@@ -51,18 +51,15 @@ public class TaskPresenter extends BasePresenter<TaskView> {
 
     public void load(long key) {
         mTaskManager.list(key)
-                .doOnNext(new Action1<List<Task>>() {
-                    @Override
-                    public void call(List<Task> list) {
-                        for (Task task : list) {
-                            task.setState(task.getFinish() ? Task.STATE_FINISH : Task.STATE_PAUSE);
-                        }
-                    }
-                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
                     @Override
                     public void call(List<Task> list) {
+                        for (Task task : list) {
+                            int state = task.getMax() != 0 && task.getProgress() == task.getMax() ?
+                                    Task.STATE_FINISH : Task.STATE_PAUSE;
+                            task.setState(state);
+                        }
                         mBaseView.onLoadSuccess(list);
                     }
                 });

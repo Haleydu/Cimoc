@@ -13,16 +13,6 @@ public class MiniComic {
     private String update;
     private boolean highlight;
 
-    public MiniComic(Long id, int source, String cid, String title, String cover, String update, boolean highlight) {
-        this.id = id;
-        this.source = source;
-        this.cid = cid;
-        this.title = title;
-        this.cover = cover;
-        this.update = update;
-        this.highlight = highlight;
-    }
-
     public MiniComic(Comic comic) {
         this.id = comic.getId();
         this.source = comic.getSource();

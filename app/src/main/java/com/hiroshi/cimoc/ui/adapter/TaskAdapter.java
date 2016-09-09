@@ -79,6 +79,7 @@ public class TaskAdapter extends BaseAdapter<Task> {
     }
 
     private int getState(Task task) {
+
         switch (task.getState()) {
             default:
             case Task.STATE_PAUSE:

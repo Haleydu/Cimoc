@@ -44,6 +44,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyItemRangeInserted(location, location + data.size());
     }
 
+    public boolean exist(T data) {
+        return mDataSet.indexOf(data) != -1;
+    }
+
     public void remove(T data) {
         int position = mDataSet.indexOf(data);
         if (position != -1) {

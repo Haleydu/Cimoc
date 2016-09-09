@@ -1,8 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
@@ -19,19 +17,19 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private String keyword;
     private int page;
     private boolean isLoading;
-    private Parser parser;
+    private int source;
 
     public ResultPresenter(int source, String keyword) {
         this.keyword = keyword;
         this.page = 0;
         this.isLoading = false;
-        this.parser = SourceManager.getParser(source);
+        this.source = source;
     }
 
     public void load() {
         if (!isLoading) {
             isLoading = true;
-            Manga.search(parser, keyword, ++page)
+            Manga.search(source, keyword, ++page)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<List<Comic>>() {
                         @Override

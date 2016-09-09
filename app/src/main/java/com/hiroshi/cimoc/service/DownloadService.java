@@ -43,13 +43,13 @@ public class DownloadService extends Service {
     private String dirPath =
             FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
 
-    private HashMap<Long, DownTask> hashMap;
+    private HashMap<Long, Download> hashMap;
     private ExecutorService executor;
     private Future future;
     private OkHttpClient client;
     private Notification.Builder builder;
-    private NotificationManager manager;
-    private TaskManager taskManager;
+    private NotificationManager notification;
+    private TaskManager manager;
 
     @Nullable
     @Override
@@ -61,115 +61,158 @@ public class DownloadService extends Service {
     public void onCreate() {
         super.onCreate();
         hashMap = new HashMap<>();
-        executor = Executors.newCachedThreadPool();
+        executor = Executors.newSingleThreadExecutor();
         client = new OkHttpClient();
-        taskManager = TaskManager.getInstance();
-        manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        builder = NotificationUtils.getBuilder(this, R.drawable.ic_file_download_white_24dp,
-                R.string.download_service_doing, false);
-        NotificationUtils.notifyBuilder(manager, builder);
+        manager = TaskManager.getInstance();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        long id = intent.getLongExtra(EXTRA_ID, -1);
-        long key = intent.getLongExtra(EXTRA_KEY, -1);
-        String title = intent.getStringExtra(EXTRA_TITLE);
-        String path = intent.getStringExtra(EXTRA_PATH);
-
-        int source = intent.getIntExtra(EXTRA_SOURCE, -1);
-        String cid = intent.getStringExtra(EXTRA_CID);
-        String comic = intent.getStringExtra(EXTRA_COMIC);
-        if (id != -1 && source != -1 && key != -1 && !StringUtils.isEmpty(cid, path, comic, path)) {
-            Request request = Manga.downloadRequest(source, cid, path);
-            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
-            DownTask task = new DownTask(id, source, request, dir);
-            addTask(id, task);
-            if (future == null) {
-                task.download = true;
-                future = executor.submit(task);
+        if (intent != null) {
+            Task task =  intent.getParcelableExtra(EXTRA_TASK);
+            if (task != null) {
+                Download download = new Download(task);
+                addDownload(task.getId(), download);
+                if (future == null) {
+                    download.running = true;
+                    future = executor.submit(download);
+                    if (notification == null) {
+                        notification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        builder = NotificationUtils.getBuilder(this, R.drawable.ic_file_download_white_24dp,
+                                R.string.download_service_doing, true);
+                        NotificationUtils.notifyBuilder(1, notification, builder);
+                    }
+                }
             }
         }
         return super.onStartCommand(intent, flags, startId);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        NotificationUtils.setBuilder(this, builder, R.string.download_service_complete, false);
-        NotificationUtils.notifyBuilder(manager, builder);
-    }
-
-    private synchronized DownTask nextTask() {
-        for (DownTask task : hashMap.values()) {
-            if (!task.download) {
-                task.download = true;
-                return task;
+    private Download nextDownload() {
+        for (Download download : hashMap.values()) {
+            if (!download.running) {
+                download.running = true;
+                return download;
             }
         }
         return null;
     }
 
-    public synchronized void addTask(long id, DownTask task) {
+    public synchronized void addDownload(long id, Download task) {
         if (!hashMap.containsKey(id)) {
             hashMap.put(id, task);
         }
     }
 
-    public synchronized void removeTask(long id) {
+    public synchronized void removeDownload(long id) {
         if (hashMap.containsKey(id)) {
+            if (hashMap.get(id).running) {
+                future.cancel(true);
+                Download download = nextDownload();
+                if (download != null) {
+                    future = executor.submit(download);
+                } else {
+                    NotificationUtils.setBuilder(this, builder, R.string.download_service_complete, false);
+                    NotificationUtils.notifyBuilder(1, notification, builder);
+                    notification = null;
+                    future = null;
+                    stopSelf();
+                }
+            }
             hashMap.remove(id);
         }
     }
 
-    public class DownTask implements Runnable {
+    public synchronized void initTask(List<Task> list) {
+        for (Task task : list) {
+            Download download = hashMap.get(task.getId());
+            if (download != null) {
+                task.setState(download.task.getState());
+            }
+        }
+    }
 
-        private long id;
-        private int source;
-        private Request request;
-        private String dir;
-        private boolean download;
+    public class Download implements Runnable {
 
-        public DownTask(long id, int source, Request request, String dir) {
-            this.id = id;
-            this.source = source;
-            this.request = request;
-            this.dir = dir;
-            this.download = false;
+        private Task task;
+        private boolean running;
+
+        public Download(Task task) {
+            this.task = task;
         }
 
         @Override
         public void run() {
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PARSE, id));
+            boolean interrupt = false;
+            int source = task.getSource();
+
+            task.setState(Task.STATE_PARSE);
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PARSE, task.getId()));
+
             Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
-            List<ImageUrl> list = Manga.downloadImages(client, source, request);
+            List<ImageUrl> list = Manga.downloadImages(client, source, task.getCid(), task.getPath());
             int size = list.size();
-            // Todo 写数据库
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_DOING, id, size));
-            for (int i = 0; i != size; ++i) {
-                ImageUrl image = list.get(i);
-                String url = image.isLazy() ? Manga.downloadLazy(client, source, image.getUrl()) : image.getUrl();
-                Request request = new Request.Builder()
-                        .headers(headers)
-                        .url(url)
-                        .build();
-                try {
-                    Response response = client.newCall(request).execute();
-                    if (response.isSuccessful()) {
-                        InputStream byteStream = response.body().byteStream();
-                        if (writeToFile(byteStream, i + 1, url)) {
-                            // Todo 写数据库
-                            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, id, i + 1, size));
-                        }
+
+            if (size != 0) {
+                onDownloadDoing(size);
+
+                for (int i = task.getProgress(); i != size; ++i) {
+                    ImageUrl image = list.get(i);
+                    String url = image.isLazy() ? Manga.downloadLazy(client, source, image.getUrl()) : image.getUrl();
+                    if (url == null) {
+                        interrupt = true;
+                        break;
                     }
-                    response.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                    Request request = new Request.Builder()
+                            .headers(headers)
+                            .url(url)
+                            .build();
+                    try {
+                        Response response = client.newCall(request).execute();
+                        if (response.isSuccessful()) {
+                            InputStream byteStream = response.body().byteStream();
+                            if (writeToFile(byteStream, i + 1, url)) {
+                                onDownloadProgress(i + 1);
+                            } else {
+                                interrupt = true;
+                                break;
+                            }
+                        }
+                        response.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        interrupt = true;
+                        break;
+                    }
+                }
+
+                if (!interrupt) {
+                    onDownloadFinish();
                 }
             }
-            // Todo 写数据库
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_FINISH, id));
-            onDownloadComplete();
+
+            removeDownload(task.getId());
+        }
+
+        private void onDownloadDoing(int max) {
+            task.setMax(max);
+            task.setState(Task.STATE_DOING);
+            manager.update(task);
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_DOING, task.getId(), max));
+        }
+
+        private void onDownloadProgress(int progress) {
+            task.setProgress(progress);
+            manager.update(task);
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, task.getId(), progress, task.getMax()));
+        }
+
+        private void onDownloadFinish() {
+            task.setProgress(task.getMax());
+            task.setState(Task.STATE_FINISH);
+            manager.update(task);
+            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_FINISH, task.getId()));
         }
 
         private boolean writeToFile(InputStream byteStream, int count, String url) {
@@ -177,22 +220,13 @@ public class DownloadService extends Service {
             if (suffix == null) {
                 suffix = "jpg";
             }
+            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(task.getSource()), task.getComic(), task.getComic());
             return FileUtils.writeBinaryToFile(dir, StringUtils.format("%03d.%s", count, suffix), byteStream);
-        }
-
-        private void onDownloadComplete() {
-            removeTask(id);
-            DownTask task = nextTask();
-            if (task != null) {
-                future = executor.submit(task);
-            } else {
-                stopSelf();
-            }
         }
 
     }
 
-    private class DownloadServiceBinder extends Binder {
+    public class DownloadServiceBinder extends Binder {
 
         public DownloadService getService() {
             return DownloadService.this;
@@ -200,23 +234,11 @@ public class DownloadService extends Service {
 
     }
 
-    private static final String EXTRA_ID = "a";
-    private static final String EXTRA_KEY = "b";
-    private static final String EXTRA_CID = "c";
-    private static final String EXTRA_PATH = "d";
-    private static final String EXTRA_SOURCE = "e";
-    private static final String EXTRA_COMIC = "f";
-    private static final String EXTRA_TITLE = "g";
+    private static final String EXTRA_TASK = "a";
 
     public static Intent createIntent(Context context, Task task) {
         Intent intent = new Intent(context, DownloadService.class);
-        intent.putExtra(EXTRA_ID, task.getId());
-        intent.putExtra(EXTRA_KEY, task.getKey());
-        intent.putExtra(EXTRA_TITLE, task.getTitle());
-        intent.putExtra(EXTRA_PATH, task.getPath());
-        intent.putExtra(EXTRA_SOURCE, task.getSource());
-        intent.putExtra(EXTRA_CID, task.getCid());
-        intent.putExtra(EXTRA_COMIC, task.getComic());
+        intent.putExtra(EXTRA_TASK, task);
         return intent;
     }
 

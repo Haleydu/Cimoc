@@ -6,7 +6,6 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.model.TaskDao.Properties;
-import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,9 +26,9 @@ public class TaskManager {
         mTaskDao = CimocApplication.getDaoSession().getTaskDao();
     }
 
-    public Observable<List<Task>> listSelectable(long id) {
+    public Observable<List<Task>> list(long key) {
         return mTaskDao.queryBuilder()
-                .where(Properties.Key.eq(id))
+                .where(Properties.Key.eq(key))
                 .rx()
                 .list();
     }
@@ -54,11 +53,8 @@ public class TaskManager {
         });
     }
 
-    public Observable<List<Task>> list(long key) {
-        return mTaskDao.queryBuilder()
-                .where(Properties.Key.eq(key))
-                .rx()
-                .list();
+    public void update(Task task) {
+        mTaskDao.update(task);
     }
 
     public static TaskManager getInstance() {

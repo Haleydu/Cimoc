@@ -21,6 +21,10 @@ public interface Parser {
 
     List<Chapter> parseInfo(String html, Comic comic);
 
+    Request getBeforeImagesRequest();
+
+    void beforeImages(String html);
+
     Request getImagesRequest(String cid, String path);
 
     List<ImageUrl> parseImages(String html);

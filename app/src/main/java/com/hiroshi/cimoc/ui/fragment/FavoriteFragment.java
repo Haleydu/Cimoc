@@ -117,7 +117,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
                             mPresenter.checkUpdate();
                             mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
                                     R.string.favorite_update_doing, true, 0, 0, true);
-                            NotificationUtils.notifyBuilder(mManager, mBuilder);
+                            NotificationUtils.notifyBuilder(0, mManager, mBuilder);
                         }
                     }).show();
         } else {
@@ -165,7 +165,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     @Override
     public void onProgressChange(int progress) {
         mBuilder.setProgress(max, progress, false);
-        NotificationUtils.notifyBuilder(mManager, mBuilder);
+        NotificationUtils.notifyBuilder(0, mManager, mBuilder);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     @Override
     public void onCheckComplete() {
         NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_update_finish, false);
-        NotificationUtils.notifyBuilder(mManager, mBuilder);
+        NotificationUtils.notifyBuilder(0, mManager, mBuilder);
         max = -1;
     }
 

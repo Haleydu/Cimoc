@@ -85,7 +85,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     comic.setFavorite(System.currentTimeMillis());
                 }
                 mComic = comic;
-                return Manga.info(SourceManager.getParser(source), comic);
+                return Manga.info(source, comic);
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Chapter>>() {
@@ -109,8 +109,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 });
     }
 
-    public void checkDownload(long id, final String[] array) {
-        mTaskManager.listSelectable(id)
+    public void checkDownload(long key, final String[] array) {
+        mTaskManager.list(key)
                 .flatMap(new Func1<List<Task>, Observable<Task>>() {
                     @Override
                     public Observable<Task> call(List<Task> list) {
@@ -140,7 +140,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public Task addTask(String path, String title) {
-        Task task = new Task(null, -1, path, title, 0, 0, false);
+        Task task = new Task(null, -1, path, title, 0, 0);
 
         Long key = mComic.getId();
         mComic.setDownload(System.currentTimeMillis());
@@ -158,7 +158,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         task.setInfo(mComic.getSource(), mComic.getCid(), mComic.getTitle());
         task.setState(Task.STATE_WAIT);
 
-        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, task));
+        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, new MiniComic(mComic)));
         return task;
     }
 

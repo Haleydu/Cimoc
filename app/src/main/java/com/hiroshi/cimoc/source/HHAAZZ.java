@@ -72,6 +72,24 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
+    public Request getBeforeImagesRequest() {
+        if (server != null) {
+            return null;
+        }
+        return new Request.Builder().url("http://goxiee.com/js/ds.js").build();
+    }
+
+    @Override
+    public void beforeImages(String html) {
+        if (html != null) {
+            String str = MachiSoup.match("sDS = \"(.*?)\";", html, 1);
+            if (str != null) {
+                server = str.split("\\|");
+            }
+        }
+    }
+
+    @Override
     public Request getImagesRequest(String cid, String path) {
         String url = "http://hhaazz.com/".concat(path);
         return new Request.Builder().url(url).build();
@@ -80,13 +98,13 @@ public class HHAAZZ extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
-        if (str != null) {
-            String[] result = unsuan(str[0]);
-            boolean empty = server == null;
-            String prefix = empty ? str[1].concat(" ") : server[Integer.parseInt(str[1]) - 1];
-            for (int i = 0; i != result.length; ++i) {
-                list.add(new ImageUrl(i + 1, prefix.concat(result[i]), empty));
+        if (server != null) {
+            String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
+            if (str != null) {
+                String[] result = unsuan(str[0]);
+                for (int i = 0; i != result.length; ++i) {
+                    list.add(new ImageUrl(i + 1, server[Integer.parseInt(str[1]) - 1].concat(result[i]), false));
+                }
             }
         }
         return list;
@@ -106,28 +124,6 @@ public class HHAAZZ extends MangaParser {
             builder.append((char) Integer.parseInt(array[i]));
         }
         return builder.toString().split("\\|");
-    }
-
-    @Override
-    public Request getLazyRequest(String url) {
-        if (server != null) {
-            return null;
-        }
-        return new Request.Builder().url("http://goxiee.com/js/ds.js").build();
-    }
-
-    @Override
-    public String parseLazy(String html, String url) {
-        if (html != null) {
-            String str = MachiSoup.match("sDS = \"(.*?)\";", html, 1);
-            if (str != null) {
-                server = str.split("\\|");
-            } else {
-                return null;
-            }
-        }
-        String[] rs = url.split(" ");
-        return server[Integer.parseInt(rs[0]) - 1].concat(rs[1]);
     }
 
     @Override

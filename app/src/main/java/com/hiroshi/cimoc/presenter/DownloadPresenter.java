@@ -3,9 +3,12 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -25,6 +28,16 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     public DownloadPresenter() {
         mTaskManager = TaskManager.getInstance();
         mComicManager = ComicManager.getInstance();
+    }
+
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.TASK_ADD, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onTaskAdd((MiniComic) rxEvent.getData());
+            }
+        });
     }
 
     public void load() {

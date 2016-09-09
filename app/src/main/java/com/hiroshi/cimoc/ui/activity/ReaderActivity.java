@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,6 +18,7 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -27,7 +29,6 @@ import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
-import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
@@ -131,11 +132,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initPresenter() {
         source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
-        String[] title = getIntent().getStringArrayExtra(EXTRA_TITLE);
-        String[] path = getIntent().getStringArrayExtra(EXTRA_PATH);
-        Chapter[] array = fromArray(title, path);
+        Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
+        Chapter[] chapter = new Chapter[array.length];
+        for (int i = 0; i != array.length; ++i) {
+            chapter[i] = (Chapter) array[i];
+        }
         int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        mPresenter = new ReaderPresenter(source, cid, array, position);
+        mPresenter = new ReaderPresenter(source, cid, chapter, position);
         mPresenter.attachView(this);
     }
 
@@ -248,8 +251,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private static final String EXTRA_CID = "b";
     private static final String EXTRA_LAST = "c";
     private static final String EXTRA_PAGE = "d";
-    private static final String EXTRA_TITLE = "e";
-    private static final String EXTRA_PATH = "f";
+    private static final String EXTRA_CHAPTER = "e";
     private static final String EXTRA_POSITION = "g";
 
     protected static void putExtras(Intent intent, Comic comic, List<Chapter> list, int position) {
@@ -257,30 +259,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         intent.putExtra(EXTRA_CID, comic.getCid());
         intent.putExtra(EXTRA_LAST, comic.getLast());
         intent.putExtra(EXTRA_PAGE, comic.getPage());
-        String[][] array = fromList(list);
-        intent.putExtra(EXTRA_TITLE, array[0]);
-        intent.putExtra(EXTRA_PATH, array[1]);
+        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
         intent.putExtra(EXTRA_POSITION, position);
-    }
-
-    private static String[][] fromList(List<Chapter> list) {
-        int size = list.size();
-        String[] title = new String[size];
-        String[] path = new String[size];
-        for (int i = 0; i != size; ++i) {
-            title[i] = list.get(i).getTitle();
-            path[i] = list.get(i).getPath();
-        }
-        return new String[][] { title, path };
-    }
-
-    private static Chapter[] fromArray(String[] title, String[] path) {
-        int size = title.length;
-        Chapter[] array = new Chapter[size];
-        for (int i = 0; i != size; ++i) {
-            array[i] = new Chapter(title[i], path[i]);
-        }
-        return array;
     }
 
     public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {

@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
+import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
 import com.hiroshi.cimoc.ui.view.TaskView;
@@ -32,7 +33,7 @@ public class TaskActivity extends BaseActivity implements TaskView {
     private TaskAdapter mTaskAdapter;
     private TaskPresenter mPresenter;
     private ServiceConnection mConnection;
-    private IBinder mBinder;
+    private DownloadServiceBinder mBinder;
 
     private int source;
     private String cid;
@@ -59,7 +60,9 @@ public class TaskActivity extends BaseActivity implements TaskView {
                     case Task.STATE_DOING:
                     case Task.STATE_WAIT:
                     case Task.STATE_PARSE:
-                        // Todo 暂停下载
+                        mBinder.getService().removeDownload(task.getId());
+                        task.setState(Task.STATE_PAUSE);
+                        mTaskAdapter.notifyItemChanged(task);
                         break;
                 }
             }
@@ -67,19 +70,7 @@ public class TaskActivity extends BaseActivity implements TaskView {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mTaskAdapter);
         mRecyclerView.addItemDecoration(mTaskAdapter.getItemDecoration());
-
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mBinder = service;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {}
-        };
-        bindService(new Intent(this, DownloadService.class), mConnection, 0);
     }
 
     @Override
@@ -111,7 +102,9 @@ public class TaskActivity extends BaseActivity implements TaskView {
 
     @Override
     protected void onDestroy() {
-        unbindService(mConnection);
+        if (mConnection != null) {
+            unbindService(mConnection);
+        }
         mPresenter.detachView();
         super.onDestroy();
     }
@@ -127,9 +120,21 @@ public class TaskActivity extends BaseActivity implements TaskView {
     }
 
     @Override
-    public void onLoadSuccess(List<Task> list) {
-        mTaskAdapter.addAll(list);
-        mProgressBar.setVisibility(View.GONE);
+    public void onLoadSuccess(final List<Task> list) {
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mBinder = (DownloadServiceBinder) service;
+                mBinder.getService().initTask(list);
+                mTaskAdapter.addAll(list);
+                mRecyclerView.setAdapter(mTaskAdapter);
+                mProgressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {}
+        };
+        bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -143,7 +148,7 @@ public class TaskActivity extends BaseActivity implements TaskView {
         if (task != null) {
             task.setMax(max);
             task.setState(Task.STATE_DOING);
-            mTaskAdapter.notifyItemChanged(task);
+            notifyItemChanged(task);
         }
     }
 
@@ -151,9 +156,8 @@ public class TaskActivity extends BaseActivity implements TaskView {
     public void onTaskFinish(long id) {
         Task task = mTaskAdapter.getItemById(id);
         if (task != null) {
-            task.setFinish(true);
             task.setState(Task.STATE_FINISH);
-            mTaskAdapter.notifyItemChanged(task);
+            notifyItemChanged(task);
         }
     }
 
@@ -162,7 +166,7 @@ public class TaskActivity extends BaseActivity implements TaskView {
         Task task = mTaskAdapter.getItemById(id);
         if (task != null) {
             task.setState(Task.STATE_PARSE);
-            mTaskAdapter.notifyItemChanged(task);
+            notifyItemChanged(task);
         }
     }
 
@@ -172,6 +176,12 @@ public class TaskActivity extends BaseActivity implements TaskView {
         if (task != null) {
             task.setProgress(progress);
             task.setMax(max);
+            notifyItemChanged(task);
+        }
+    }
+
+    private void notifyItemChanged(Task task) {
+        if (!mRecyclerView.isComputingLayout()) {
             mTaskAdapter.notifyItemChanged(task);
         }
     }

@@ -27,4 +27,12 @@ public abstract class MangaParser implements Parser {
         return null;
     }
 
+    @Override
+    public Request getBeforeImagesRequest() {
+        return null;
+    }
+
+    @Override
+    public void beforeImages(String html) {}
+
 }

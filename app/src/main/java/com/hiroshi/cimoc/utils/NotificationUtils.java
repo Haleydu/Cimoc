@@ -14,11 +14,11 @@ import com.hiroshi.cimoc.R;
  */
 public class NotificationUtils {
 
-    public static void notifyBuilder(NotificationManager manager, Notification.Builder builder) {
+    public static void notifyBuilder(int id, NotificationManager manager, Notification.Builder builder) {
         if (Build.VERSION.SDK_INT >= 16) {
-            manager.notify(1, builder.build());
+            manager.notify(id, builder.build());
         } else {
-            manager.notify(1, builder.getNotification());
+            manager.notify(id, builder.getNotification());
         }
     }
 

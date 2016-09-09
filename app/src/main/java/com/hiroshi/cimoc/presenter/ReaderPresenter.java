@@ -2,8 +2,6 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
@@ -34,22 +32,21 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private boolean isShowPrev;
     private int count;
 
-    private Parser parser;
+    private int source;
     private String cid;
     private int status;
 
-    public ReaderPresenter(int source, String cid, Chapter[] array, int position) {
-        this.mPreloadAdapter = new PreloadAdapter(array, position);
+    public ReaderPresenter(int source, String cid, Chapter[] chapter, int position) {
+        this.mPreloadAdapter = new PreloadAdapter(chapter, position);
+        this.source = source;
         this.cid = cid;
         this.isShowNext = true;
         this.isShowPrev = true;
         this.count = 0;
-
-        this.parser = SourceManager.getParser(source);
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        Manga.load(parser, imageUrl.getUrl())
+        Manga.load(source, imageUrl.getUrl())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
@@ -129,7 +126,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private void images(final String path, final String last, final int page) {
-        Manga.images(parser, cid, path)
+        Manga.images(source, cid, path)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<ImageUrl>>() {
                     @Override

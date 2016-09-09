@@ -1,5 +1,9 @@
 package com.hiroshi.cimoc.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
@@ -10,7 +14,7 @@ import org.greenrobot.greendao.annotation.Generated;
  * Created by Hiroshi on 2016/9/1.
  */
 @Entity
-public class Task {
+public class Task implements Parcelable {
 
     public static final int STATE_FINISH = 0;
     public static final int STATE_PAUSE = 1;
@@ -24,23 +28,34 @@ public class Task {
     @NotNull private String title;
     @NotNull private int progress;
     @NotNull private int max;
-    @NotNull private boolean finish;
 
     @Transient private int source;
     @Transient private String cid;
     @Transient private String comic;
     @Transient private int state;
 
-    @Generated(hash = 727503274)
-    public Task(Long id, long key, @NotNull String path, @NotNull String title,
-            int progress, int max, boolean finish) {
+    public Task(Parcel source) {
+        this.id = source.readLong();
+        this.key = source.readLong();
+        this.path = source.readString();
+        this.title = source.readString();
+        this.progress = source.readInt();
+        this.max = source.readInt();
+        this.source = source.readInt();
+        this.cid = source.readString();
+        this.comic = source.readString();
+        this.state = source.readInt();
+    }
+
+    @Generated(hash = 1668809946)
+    public Task(Long id, long key, @NotNull String path, @NotNull String title, int progress,
+            int max) {
         this.id = id;
         this.key = key;
         this.path = path;
         this.title = title;
         this.progress = progress;
         this.max = max;
-        this.finish = finish;
     }
 
     @Generated(hash = 733837707)
@@ -77,14 +92,6 @@ public class Task {
 
     public void setProgress(int progress) {
         this.progress = progress;
-    }
-
-    public boolean getFinish() {
-        return this.finish;
-    }
-
-    public void setFinish(boolean finish) {
-        this.finish = finish;
     }
 
     public String getTitle() {
@@ -128,5 +135,36 @@ public class Task {
         this.cid = cid;
         this.comic = comic;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeLong(key);
+        dest.writeString(path);
+        dest.writeString(title);
+        dest.writeInt(progress);
+        dest.writeInt(max);
+        dest.writeInt(source);
+        dest.writeString(cid);
+        dest.writeString(comic);
+        dest.writeInt(state);
+    }
+
+    public final static Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel source) {
+            return new Task(source);
+        }
+
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
 
 }
