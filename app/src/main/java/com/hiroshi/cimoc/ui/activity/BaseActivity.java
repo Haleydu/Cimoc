@@ -68,6 +68,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract int getLayoutRes();
 
+    protected void hideProgressBar() {
+        if (mProgressBar.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
     protected void showSnackbar(String msg) {
         View layout = getLayoutView();
         if (layout != null && layout.isShown()) {

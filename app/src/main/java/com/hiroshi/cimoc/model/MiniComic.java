@@ -11,6 +11,7 @@ public class MiniComic {
     private String title;
     private String cover;
     private String update;
+    private boolean finish;
     private boolean highlight;
 
     public MiniComic(Comic comic) {
@@ -20,12 +21,21 @@ public class MiniComic {
         this.title = comic.getTitle();
         this.cover = comic.getCover();
         this.update = comic.getUpdate();
+        this.finish = comic.getFinish();
         this.highlight = comic.getHighlight();
     }
 
     @Override
     public boolean equals(Object o) {
         return o instanceof MiniComic && ((MiniComic) o).id.equals(id);
+    }
+
+    public boolean isFinish() {
+        return this.finish;
+    }
+
+    public void setFinish(boolean finish) {
+        this.finish = finish;
     }
 
     public boolean isHighlight() {

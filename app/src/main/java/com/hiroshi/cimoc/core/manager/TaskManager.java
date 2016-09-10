@@ -1,17 +1,13 @@
 package com.hiroshi.cimoc.core.manager;
 
-import android.database.Cursor;
-
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.model.TaskDao.Properties;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 
 /**
  * Created by Hiroshi on 2016/9/4.
@@ -37,24 +33,12 @@ public class TaskManager {
         return mTaskDao.insert(task);
     }
 
-    public Observable<List<Long>> listKey() {
-        return Observable.create(new Observable.OnSubscribe<List<Long>>() {
-            @Override
-            public void call(Subscriber<? super List<Long>> subscriber) {
-                String sql = "SELECT DISTINCT ".concat(Properties.Key.columnName).concat(" FROM ").concat(TaskDao.TABLENAME);
-                Cursor cursor = mTaskDao.getDatabase().rawQuery(sql, null);
-                List<Long> list = new LinkedList<>();
-                while (cursor.moveToNext()) {
-                    list.add(cursor.getLong(0));
-                }
-                subscriber.onNext(list);
-                subscriber.onCompleted();
-            }
-        });
-    }
-
     public void update(Task task) {
         mTaskDao.update(task);
+    }
+
+    public void delete(Task task) {
+        mTaskDao.delete(task);
     }
 
     public static TaskManager getInstance() {

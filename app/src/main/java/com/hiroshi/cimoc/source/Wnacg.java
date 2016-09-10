@@ -33,8 +33,8 @@ public class Wnacg extends MangaParser {
             String title = node.text("div.info > div.title > a");
             String cover = node.attr("div.pic_box > a > img", "data-original");
             String update = node.text("div.info > div.info_col").trim();
-            update = MachiSoup.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
-            list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, null, true));
+            // update = MachiSoup.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
+            list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, null));
         }
         return list;
     }

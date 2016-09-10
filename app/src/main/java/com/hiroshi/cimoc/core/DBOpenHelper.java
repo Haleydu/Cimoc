@@ -62,8 +62,8 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         TaskDao.createTable(db, false);
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"FINISH\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.setTransactionSuccessful();
         db.endTransaction();

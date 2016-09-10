@@ -2,8 +2,10 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 
@@ -21,9 +23,11 @@ import rx.functions.Func1;
 public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     private ComicManager mComicManager;
+    private SourceManager mSourceManager;
 
     public FavoritePresenter() {
         mComicManager = ComicManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -125,6 +129,23 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     @Override
                     public void call(List<MiniComic> list) {
                         mBaseView.onItemAdd(list);
+                    }
+                });
+    }
+
+    public void loadFilter() {
+        mSourceManager.list()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Source>>() {
+                    @Override
+                    public void call(List<Source> list) {
+                        String[] filter = new String[list.size() + 2];
+                        filter[0] = "连载中";
+                        filter[1] = "已完结";
+                        for (int i = 0; i != list.size(); ++i) {
+                            filter[i + 2] = SourceManager.getTitle(list.get(i).getSid());
+                        }
+                        mBaseView.onFilterLoad(filter);
                     }
                 });
     }

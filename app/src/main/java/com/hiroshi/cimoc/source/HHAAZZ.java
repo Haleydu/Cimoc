@@ -39,7 +39,7 @@ public class HHAAZZ extends MangaParser {
             String update = node.text("a.pic > div > p:eq(4) > span", 0, 10);
             String author = node.text("a.pic > div > p:eq(1)");
             boolean status = node.text("a.tool > span.h").contains("完结");
-            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author, status));
+            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
         }
         return list;
     }

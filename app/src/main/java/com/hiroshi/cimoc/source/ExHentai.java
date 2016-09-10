@@ -40,7 +40,7 @@ public class ExHentai extends MangaParser {
             String update = node.text("td:eq(1)", 0, 10);
             String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s+", "");
-            list.add(new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author, true));
+            list.add(new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author));
         }
         return list;
     }

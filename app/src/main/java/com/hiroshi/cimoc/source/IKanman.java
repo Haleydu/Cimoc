@@ -38,8 +38,8 @@ public class IKanman extends MangaParser {
             String cover = node.attr("div > img", "data-src");
             String update = node.text("dl:eq(5) > dd");
             String author = node.text("dl:eq(2) > dd");
-            boolean status = "完结".equals(node.text("div > i"));
-            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author, status));
+            // boolean status = "完结".equals(node.text("div > i"));
+            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author));
         }
         return list;
     }

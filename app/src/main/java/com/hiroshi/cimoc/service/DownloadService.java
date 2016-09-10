@@ -176,7 +176,7 @@ public class DownloadService extends Service {
                                 onDownloadProgress(i + 1);
                             } else {
                                 interrupt = true;
-                                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
+                                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                                 break;
                             }
                         }
@@ -184,7 +184,7 @@ public class DownloadService extends Service {
                     } catch (Exception e) {
                         e.printStackTrace();
                         interrupt = true;
-                        RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                         break;
                     }
                 }
@@ -193,7 +193,7 @@ public class DownloadService extends Service {
                     onDownloadFinish();
                 }
             } else {
-                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
+                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
             }
 
             removeDownload(task.getId());

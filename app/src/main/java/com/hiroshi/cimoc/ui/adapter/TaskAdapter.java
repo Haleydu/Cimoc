@@ -79,19 +79,20 @@ public class TaskAdapter extends BaseAdapter<Task> {
     }
 
     private int getState(Task task) {
-
         switch (task.getState()) {
             default:
             case Task.STATE_PAUSE:
-                return R.string.download_pause;
+                return R.string.task_pause;
             case Task.STATE_PARSE:
-                return R.string.download_parse;
+                return R.string.task_parse;
             case Task.STATE_DOING:
-                return R.string.download_doing;
+                return R.string.task_doing;
             case Task.STATE_FINISH:
-                return R.string.download_finish;
+                return R.string.task_finish;
             case Task.STATE_WAIT:
-                return R.string.download_wait;
+                return R.string.task_wait;
+            case Task.STATE_ERROR:
+                return R.string.task_error;
         }
     }
 

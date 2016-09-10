@@ -36,8 +36,8 @@ public class U17 extends MangaParser {
             String update = node.text("div:eq(1) > h3 > span.fr", 7);
             String author = node.text("div:eq(1) > h3 > a[title]");
             String[] array = node.text("div:eq(1) > p.cf > i.fl").split("/");
-            boolean status = "已完结".equals(array[array.length - 1].trim());
-            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author, status));
+            // boolean status = "已完结".equals(array[array.length - 1].trim());
+            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author));
         }
         return list;
     }

@@ -22,7 +22,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-public class DownloadFragment extends BaseFragment implements DownloadView {
+public class DownloadFragment extends BaseFragment implements DownloadView, BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.download_recycler_view) RecyclerView mRecyclerView;
 
@@ -37,21 +37,21 @@ public class DownloadFragment extends BaseFragment implements DownloadView {
     @Override
     protected void initView() {
         mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
-        mComicAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                MiniComic comic = mComicAdapter.getItem(position);
-                Intent intent =
-                        TaskActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle());
-                startActivity(intent);
-            }
-        });
+        mComicAdapter.setOnItemClickListener(this);
         mComicAdapter.setProvider(new ControllerBuilderProvider(getActivity()));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.setAdapter(mComicAdapter);
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
+        mRecyclerView.setAdapter(mComicAdapter);
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        MiniComic comic = mComicAdapter.getItem(position);
+        Intent intent =
+                TaskActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle());
+        startActivity(intent);
     }
 
     @Override

@@ -27,10 +27,13 @@
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
     <string name="detail_download">下载</string>
+    <string name="detail_download_all">全选</string>
     <string name="detail_download_queue_success">已加入下载队列</string>
     <string name="detail_download_queue_fail">加入下载队列失败</string>
     <string name="detail_select_chapter">选择章节</string>
 
+    <string name="favorite_filter">过滤</string>
+    <string name="favorite_filter_select">过滤选择</string>
     <string name="favorite_update_confirm">是否检查更新</string>
     <string name="favorite_update_doing">正在检查更新</string>
     <string name="favorite_update_finish">检查更新完成</string>
@@ -107,12 +110,15 @@
 
     <string name="download_service_doing">正在下载漫画</string>
     <string name="download_service_complete">所有任务已完成</string>
-    <string name="download_parse">正在解析</string>
-    <string name="download_pause">暂停下载</string>
-    <string name="download_wait">等待下载</string>
-    <string name="download_doing">正在下载</string>
-    <string name="download_finish">下载完成</string>
-    <string name="download_list">下载列表</string>
+
+    <string name="task_parse">正在解析</string>
+    <string name="task_pause">暂停下载</string>
+    <string name="task_wait">等待下载</string>
+    <string name="task_doing">正在下载</string>
+    <string name="task_finish">下载完成</string>
+    <string name="task_error">下载错误</string>
+    <string name="task_list">任务列表</string>
+    <string name="task_delete_confirm">是否删除下载内容</string>
 
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>

@@ -22,7 +22,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class ChapterAdapter extends BaseAdapter<Chapter> {
+public class DetailAdapter extends BaseAdapter<Chapter> {
 
     private int source;
     private String title;
@@ -55,7 +55,7 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list) {
+    public DetailAdapter(Context context, List<Chapter> list) {
         super(context, list);
     }
 

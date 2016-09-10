@@ -1,14 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -21,10 +19,8 @@ import rx.functions.Func1;
 public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     private ComicManager mComicManager;
-    private TaskManager mTaskManager;
 
     public DownloadPresenter() {
-        mTaskManager = TaskManager.getInstance();
         mComicManager = ComicManager.getInstance();
     }
 
@@ -39,22 +35,20 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     }
 
     public void load() {
-        mTaskManager.listKey()
-                .flatMap(new Func1<List<Long>, Observable<List<MiniComic>>>() {
+        mComicManager.listDownload()
+                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
-                    public Observable<List<MiniComic>> call(final List<Long> list) {
-                        return mComicManager.callInTx(new Callable<List<MiniComic>>() {
-                            @Override
-                            public List<MiniComic> call() throws Exception {
-                                List<MiniComic> result = new ArrayList<>(list.size());
-                                for (long id : list) {
-                                    result.add(new MiniComic(mComicManager.load(id)));
-                                }
-                                return result;
-                            }
-                        });
+                    public Observable<Comic> call(List<Comic> list) {
+                        return Observable.from(list);
                     }
                 })
+                .map(new Func1<Comic, MiniComic>() {
+                    @Override
+                    public MiniComic call(Comic comic) {
+                        return new MiniComic(comic);
+                    }
+                })
+                .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override

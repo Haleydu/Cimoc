@@ -52,6 +52,15 @@ public class ComicManager {
                 .list();
     }
 
+    public Observable<List<Comic>> listDownload() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Download.isNotNull())
+                .orderDesc(Properties.Download)
+                .rx()
+                .list();
+    }
+
+
     public Observable<Comic> loadInRx(int source, String cid) {
         return mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source), Properties.Cid.eq(cid))

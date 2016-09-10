@@ -34,7 +34,7 @@ public class NHentai extends MangaParser {
             String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s+", "");
             String cover = "https:".concat(node.attr("img", "src"));
-            list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, "", author, true));
+            list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, "", author));
         }
         return list;
     }

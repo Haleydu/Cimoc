@@ -38,6 +38,7 @@ public class Backup {
                         object.put("t", comic.getTitle());
                         object.put("c", comic.getCover());
                         object.put("u", comic.getUpdate());
+                        object.put("f", comic.getFinish());
                         object.put("l", comic.getLast());
                         object.put("p", comic.getPage());
                         array.put(object);
@@ -86,9 +87,10 @@ public class Backup {
                         String title = object.getString("t");
                         String cover = object.getString("c");
                         String update = object.getString("u");
+                        boolean finish = object.has("f") && object.getBoolean("f");
                         String last = object.has("l") ? object.getString("l") : null;
                         Integer page = object.has("p") ? object.getInt("p") : null;
-                        list.add(new Comic(null, source, cid, title, cover, update, false, null, null, null, last, page));
+                        list.add(new Comic(null, source, cid, title, cover, update, finish, false, null, null, null, last, page));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();

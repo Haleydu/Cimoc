@@ -20,6 +20,7 @@ public class Task implements Parcelable {
     public static final int STATE_PARSE = 2;
     public static final int STATE_DOING = 3;
     public static final int STATE_WAIT = 4;
+    public static final int STATE_ERROR = 5;
 
     @Id(autoincrement = true) private Long id;
     @NotNull private long key;

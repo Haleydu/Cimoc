@@ -23,7 +23,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends BaseActivity implements ResultView {
+public class ResultActivity extends BaseActivity implements ResultView, BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.result_layout) LinearLayout mLinearLayout;
@@ -61,19 +61,11 @@ public class ResultActivity extends BaseActivity implements ResultView {
     protected void initView() {
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
-        mResultAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Comic comic = mResultAdapter.getItem(position);
-                Intent intent = DetailActivity.createIntent(ResultActivity.this, comic.getId(), comic.getSource(), comic.getCid());
-                startActivity(intent);
-            }
-        });
+        mResultAdapter.setOnItemClickListener(this);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         mResultAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, source));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mResultAdapter);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -83,8 +75,19 @@ public class ResultActivity extends BaseActivity implements ResultView {
                 }
             }
         });
+        mRecyclerView.setAdapter(mResultAdapter);
+    }
 
+    @Override
+    protected void initData() {
         mPresenter.load();
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Comic comic = mResultAdapter.getItem(position);
+        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        startActivity(intent);
     }
 
     @Override
@@ -109,27 +112,25 @@ public class ResultActivity extends BaseActivity implements ResultView {
 
     @Override
     public void onNetworkError() {
-        showLayout();
+        hideProgressBar();
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
-        showLayout();
+        hideProgressBar();
         showSnackbar(R.string.common_parse_error);
     }
 
     @Override
     public void onEmptyResult() {
-        showLayout();
+        hideProgressBar();
         showSnackbar(R.string.result_empty);
     }
 
     @Override
     public void showLayout() {
-        if (mProgressBar.isShown()) {
-            mProgressBar.setVisibility(View.GONE);
-        }
+        hideProgressBar();
     }
 
     public static final String EXTRA_KEYWORD = "a";

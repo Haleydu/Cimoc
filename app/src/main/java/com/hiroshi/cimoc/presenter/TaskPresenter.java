@@ -1,10 +1,15 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Index;
+import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TaskView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -16,9 +21,11 @@ import rx.functions.Action1;
 public class TaskPresenter extends BasePresenter<TaskView> {
 
     private TaskManager mTaskManager;
+    private ComicManager mComicManager;
 
     public TaskPresenter() {
         mTaskManager = TaskManager.getInstance();
+        mComicManager = ComicManager.getInstance();
     }
 
     @Override
@@ -37,6 +44,9 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     case Task.STATE_FINISH:
                         mBaseView.onTaskFinish(id);
                         break;
+                    case Task.STATE_ERROR:
+                        mBaseView.onTaskError(id);
+                        break;
                 }
             }
         });
@@ -49,7 +59,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         });
     }
 
-    public void load(long key) {
+    public void loadTask(long key) {
         mTaskManager.list(key)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
@@ -63,6 +73,36 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         mBaseView.onLoadSuccess(list);
                     }
                 });
+    }
+
+    public void sortTask(final List<Task> list, int source, String comic) {
+        Index.get(source, comic)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(final List<String> paths) {
+                        Collections.sort(list, new Comparator<Task>() {
+                            @Override
+                            public int compare(Task lhs, Task rhs) {
+                                return paths.indexOf(lhs.getPath()) - paths.indexOf(rhs.getPath());
+                            }
+                        });
+                        mBaseView.onSortSuccess(list);
+                    }
+                });
+    }
+
+    public void deleteTask(Task task, boolean isEmpty) {
+        mTaskManager.delete(task);
+        if (isEmpty) {
+            Comic comic = mComicManager.load(task.getId());
+            if (comic.getFavorite() == null && comic.getHistory() == null) {
+                mComicManager.delete(comic);
+            } else {
+                comic.setDownload(null);
+                mComicManager.update(comic);
+            }
+        }
     }
 
 }

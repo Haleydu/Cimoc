@@ -51,6 +51,33 @@ public class Index {
         }).observeOn(Schedulers.io());
     }
 
+    public static Observable<List<String>> get(final int source, final String comic) {
+        return Observable.create(new Observable.OnSubscribe<List<String>>() {
+            @Override
+            public void call(Subscriber<? super List<String>> subscriber) {
+                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic);
+                String jsonString = FileUtils.readSingleLineFromFile(dir, "index");
+                if (jsonString != null) {
+                    try {
+                        JSONArray array = new JSONArray(jsonString);
+                        int size = array.length();
+                        List<String> list = new ArrayList<>(size);
+                        for (int i = 0; i != size; ++i) {
+                            JSONObject object = array.getJSONObject(i);
+                            list.add(object.getString("p"));
+                        }
+                        subscriber.onNext(list);
+                        subscriber.onCompleted();
+                    } catch (Exception e) {
+                        subscriber.onError(new Exception());
+                    }
+                } else {
+                    subscriber.onError(new Exception());
+                }
+            }
+        }).observeOn(Schedulers.io());
+    }
+
     public static Observable<List<ImageUrl>> images(final int source, final String comic, final String title) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override

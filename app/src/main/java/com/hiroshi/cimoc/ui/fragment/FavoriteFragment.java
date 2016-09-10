@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -22,7 +25,6 @@ import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,7 +33,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class FavoriteFragment extends BaseFragment implements FavoriteView {
+public class FavoriteFragment extends BaseFragment implements FavoriteView, BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.favorite_recycler_view) RecyclerView mRecyclerView;
 
@@ -41,24 +43,21 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     private NotificationManager mManager;
 
     private int max;
+    private String[] filter;
+    private boolean[] checked;
 
     @Override
     protected void initView() {
+        setHasOptionsMenu(true);
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        mFavoriteAdapter = new FavoriteAdapter(getActivity(), new LinkedList<MiniComic>());
-        mFavoriteAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                MiniComic comic = mFavoriteAdapter.cancelHighlight(position);
-                Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
-                startActivity(intent);
-            }
-        });
+        mFavoriteAdapter = new FavoriteAdapter(getActivity());
+        mFavoriteAdapter.setOnItemClickListener(this);
         mFavoriteAdapter.setProvider(new ControllerBuilderProvider(getActivity()));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                int flag = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                int flag = mFavoriteAdapter.isFull() ?
+                        (ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) : 0;
                 return makeMovementFlags(flag, 0);
             }
 
@@ -89,22 +88,59 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-            }
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {}
         });
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.setAdapter(mFavoriteAdapter);
         mRecyclerView.addItemDecoration(mFavoriteAdapter.getItemDecoration());
+        mRecyclerView.setAdapter(mFavoriteAdapter);
     }
 
     @Override
     protected void initData() {
         max = -1;
         mPresenter.loadComic();
+        mPresenter.loadFilter();
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        MiniComic comic = mFavoriteAdapter.cancelHighlight(position);
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.favorite_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.favorite_filter:
+                final boolean[] temp = checked;
+                if (filter != null) {
+                    DialogUtils.buildMultiChoiceDialog(getActivity(), R.string.favorite_filter_select, filter, checked,
+                            new DialogInterface.OnMultiChoiceClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                    temp[which] = isChecked;
+                                }
+                            }, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    checked = temp;
+                                    mFavoriteAdapter.updateFilter(filter, checked);
+                                }
+                            }).show();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick(R.id.favorite_check_btn) void onCheckClick() {
@@ -113,7 +149,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            max = mFavoriteAdapter.getItemCount();
+                            max = mFavoriteAdapter.getFullSize();
                             mPresenter.checkUpdate();
                             mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
                                     R.string.favorite_update_doing, true, 0, 0, true);
@@ -144,12 +180,12 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
 
     @Override
     public void onItemAdd(MiniComic comic) {
-        mFavoriteAdapter.add(0, comic);
+        mFavoriteAdapter.add(comic);
     }
 
     @Override
     public void onItemAdd(List<MiniComic> list) {
-        mFavoriteAdapter.addAll(0, list);
+        mFavoriteAdapter.addAll(list);
     }
 
     @Override
@@ -169,8 +205,16 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView {
     }
 
     @Override
+    public void onFilterLoad(String[] filter) {
+        checked = new boolean[filter.length];
+        checked[0] = true;
+        checked[1] = true;
+        this.filter = filter;
+    }
+
+    @Override
     public void onComicUpdate(MiniComic comic) {
-        mFavoriteAdapter.update(comic);
+        mFavoriteAdapter.moveToFirst(comic);
     }
 
     @Override

@@ -18,6 +18,7 @@ public class Comic {
     @NotNull private String title;
     @NotNull private String cover;
     @NotNull private String update;
+    @NotNull private boolean finish;
     @NotNull private boolean highlight;
     private Long favorite;
     private Long history;
@@ -27,17 +28,32 @@ public class Comic {
 
     @Transient private String intro;
     @Transient private String author;
-    @Transient private Boolean status;
 
-    @Generated(hash = 537400450)
+    public Comic(int source, String cid, String title, String cover, String update, String author) {
+        this.source = source;
+        this.cid = cid;
+        this.title = title;
+        this.cover = cover;
+        this.update = update;
+        this.author = author;
+    }
+
+    public Comic(int source, String cid) {
+        this.source = source;
+        this.cid = cid;
+    }
+
+    @Generated(hash = 310491570)
     public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
-            @NotNull String update, boolean highlight, Long favorite, Long history, Long download, String last, Integer page) {
+            @NotNull String update, boolean finish, boolean highlight, Long favorite, Long history,
+            Long download, String last, Integer page) {
         this.id = id;
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
         this.update = update;
+        this.finish = finish;
         this.highlight = highlight;
         this.favorite = favorite;
         this.history = history;
@@ -50,33 +66,18 @@ public class Comic {
     public Comic() {
     }
 
-    public Comic(int source, String cid, String title, String cover, String update, String author, Boolean status) {
-        this.source = source;
-        this.cid = cid;
-        this.title = title;
-        this.cover = cover;
-        this.update = update;
-        this.author = author;
-        this.status = status;
-    }
-
-    public Comic(int source, String cid) {
-        this.source = source;
-        this.cid = cid;
-    }
-
     @Override
     public boolean equals(Object o) {
         return o instanceof Comic && ((Comic) o).id.equals(id);
     }
 
-    public void setInfo(String title, String cover, String update, String intro, String author, boolean status) {
+    public void setInfo(String title, String cover, String update, String intro, String author, boolean finish) {
         this.title = title;
         this.cover = cover;
         this.update = update;
         this.intro = intro;
         this.author = author;
-        this.status = status;
+        this.finish = finish;
         this.highlight = false;
     }
 
@@ -94,14 +95,6 @@ public class Comic {
 
     public void setAuthor(String author) {
         this.author = author;
-    }
-
-    public Boolean getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
     }
 
     public Integer getPage() {
@@ -198,6 +191,14 @@ public class Comic {
 
     public void setDownload(Long download) {
         this.download = download;
+    }
+
+    public boolean getFinish() {
+        return this.finish;
+    }
+
+    public void setFinish(boolean finish) {
+        this.finish = finish;
     }
 
 }

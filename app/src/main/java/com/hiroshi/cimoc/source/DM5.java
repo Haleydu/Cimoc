@@ -35,8 +35,8 @@ public class DM5 extends MangaParser {
             String cover = node.attr("dl > a > img", "src");
             String update = node.text("dt > p > span.date", 6, -7);
             String author = node.text("dt > a:eq(2)");
-            boolean status = "已完结".equals(node.text("dt > p > span.date > span.red", 1, -2));
-            list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author, status));
+            // boolean status = "已完结".equals(node.text("dt > p > span.date > span.red", 1, -2));
+            list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
         }
         return list;
     }

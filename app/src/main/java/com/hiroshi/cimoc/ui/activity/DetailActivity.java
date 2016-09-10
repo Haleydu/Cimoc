@@ -21,7 +21,7 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
+import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
@@ -41,7 +41,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @BindView(R.id.detail_coordinator_layout) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
 
-    private ChapterAdapter mChapterAdapter;
+    private DetailAdapter mDetailAdapter;
     private SelectAdapter mSelectAdapter;
     private DetailPresenter mPresenter;
 
@@ -98,7 +98,7 @@ public class DetailActivity extends BaseActivity implements DetailView {
                     public void onClick(DialogInterface dialog, int which) {
                         List<Integer> list = mSelectAdapter.getCheckedList();
                         if (!list.isEmpty()) {
-                            mPresenter.updateIndex(mChapterAdapter.getDateSet());
+                            mPresenter.updateIndex(mDetailAdapter.getDateSet());
                         }
                     }
                 });
@@ -139,12 +139,12 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     public void onChapterChange(String last) {
-        mChapterAdapter.setLast(last);
+        mDetailAdapter.setLast(last);
     }
 
     @Override
     public void onDownloadLoadSuccess(boolean[] download, boolean[] complete) {
-        mSelectAdapter = new SelectAdapter(this, mChapterAdapter.getTitles());
+        mSelectAdapter = new SelectAdapter(this, mDetailAdapter.getTitles());
         mSelectAdapter.initState(download);
         mSelectAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
@@ -157,14 +157,14 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 }
             }
         });
-        mChapterAdapter.setDownload(complete);
-        showLayout();
+        mDetailAdapter.setDownload(complete);
+        hideProgressBar();
     }
 
     @Override
     public void onUpdateIndexSuccess() {
         for (int position : mSelectAdapter.getCheckedList()) {
-            Chapter chapter = mChapterAdapter.getItem(position);
+            Chapter chapter = mDetailAdapter.getItem(position);
             Task task = mPresenter.addTask(chapter.getPath(), chapter.getTitle());
             Intent intent = DownloadService.createIntent(DetailActivity.this, task);
             startService(intent);
@@ -182,18 +182,18 @@ public class DetailActivity extends BaseActivity implements DetailView {
     @Override
     public void onDetailLoadSuccess() {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.loadDownload(id, mChapterAdapter.getPaths());
+        mPresenter.loadDownload(id, mDetailAdapter.getPaths());
     }
 
     @Override
     public void onComicLoad(Comic comic) {
-        mChapterAdapter = new ChapterAdapter(this, new LinkedList<Chapter>());
-        mChapterAdapter.setInfo(comic.getSource(), comic.getCover(), comic.getTitle(), comic.getAuthor(),
-                comic.getIntro(), comic.getStatus(), comic.getUpdate(), comic.getLast());
+        mDetailAdapter = new DetailAdapter(this, new LinkedList<Chapter>());
+        mDetailAdapter.setInfo(comic.getSource(), comic.getCover(), comic.getTitle(), comic.getAuthor(),
+                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        mRecyclerView.setAdapter(mChapterAdapter);
-        mRecyclerView.addItemDecoration(mChapterAdapter.getItemDecoration());
+        mRecyclerView.setAdapter(mDetailAdapter);
+        mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
 
         if (comic.getTitle() != null && comic.getCover() != null && comic.getUpdate() != null) {
             if (comic.getFavorite() != null) {
@@ -207,34 +207,28 @@ public class DetailActivity extends BaseActivity implements DetailView {
 
     @Override
     public void onChapterLoad(List<Chapter> list) {
-        mChapterAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+        mDetailAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (position != 0) {
                     Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
-                            mChapterAdapter.getDateSet(), position - 1);
+                            mDetailAdapter.getDateSet(), position - 1);
                     startActivity(intent);
                 }
             }
         });
-        mChapterAdapter.setData(list);
-    }
-
-    private void showLayout() {
-        if (mProgressBar.isShown()) {
-            mProgressBar.setVisibility(View.GONE);
-        }
+        mDetailAdapter.setData(list);
     }
 
     @Override
     public void onNetworkError() {
-        showLayout();
+        hideProgressBar();
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
-        showLayout();
+        hideProgressBar();
         showSnackbar(R.string.common_parse_error);
     }
 

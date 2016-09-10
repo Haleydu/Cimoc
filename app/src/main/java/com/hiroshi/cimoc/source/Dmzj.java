@@ -50,8 +50,8 @@ public class Dmzj extends MangaParser {
                     long time = object.getLong("last_updatetime") * 1000;
                     String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                     String author = object.getString("authors");
-                    boolean status = object.getInt("status_tag_id") == 2310;
-                    list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author, status));
+                    // boolean status = object.getInt("status_tag_id") == 2310;
+                    list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author));
                 }
                 return list;
             } catch (Exception e) {

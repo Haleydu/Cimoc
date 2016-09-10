@@ -39,7 +39,7 @@ public class CCTuku extends MangaParser {
             String cover = node.attr("div:eq(0) > a > img", "src");
             String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
             String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-            list.add(new Comic(SourceManager.SOURCE_CCTUKU, cid, title, cover, update, author, null));
+            list.add(new Comic(SourceManager.SOURCE_CCTUKU, cid, title, cover, update, author));
         }
         return list;
     }
