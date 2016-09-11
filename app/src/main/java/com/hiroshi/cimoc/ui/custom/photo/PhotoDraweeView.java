@@ -73,6 +73,10 @@ public class PhotoDraweeView extends SimpleDraweeView  {
         mPhotoDraweeViewController.setOnSingleTapListener(listener);
     }
 
+    public void setOnLongPressListener(PhotoDraweeViewController.OnLongPressListener listener) {
+        mPhotoDraweeViewController.setOnLongPressListener(listener);
+    }
+
     public void setHorizontalMode() {
         mPhotoDraweeViewController.setHorizontalMode();
     }

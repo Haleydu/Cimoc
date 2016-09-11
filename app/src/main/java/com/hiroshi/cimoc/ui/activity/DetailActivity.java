@@ -1,10 +1,15 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,26 +40,21 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class DetailActivity extends BaseActivity implements DetailView {
+public class DetailActivity extends BackActivity implements DetailView {
 
     @BindView(R.id.detail_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.detail_coordinator_layout) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.detail_layout) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
 
     private DetailAdapter mDetailAdapter;
     private SelectAdapter mSelectAdapter;
     private DetailPresenter mPresenter;
 
-    @OnClick(R.id.detail_star_btn) void onClick() {
-        if (mPresenter.isComicFavorite()) {
-            mPresenter.unfavoriteComic();
-            mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-            showSnackbar(R.string.detail_unfavorite);
-        } else {
-            mPresenter.favoriteComic();
-            mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
-            showSnackbar(R.string.detail_favorite);
-        }
+    @Override
+    protected void initPresenter() {
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        mPresenter = new DetailPresenter(source);
+        mPresenter.attachView(this);
     }
 
     @Override
@@ -65,14 +65,10 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     @Override
-    protected void initToolbar() {
-        super.initToolbar();
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+    protected void onDestroy() {
+        mPresenter.updateComic();
+        mPresenter.detachView();
+        super.onDestroy();
     }
 
     @Override
@@ -96,10 +92,14 @@ public class DetailActivity extends BaseActivity implements DetailView {
                 builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        List<Integer> list = mSelectAdapter.getCheckedList();
-                        if (!list.isEmpty()) {
-                            mPresenter.updateIndex(mDetailAdapter.getDateSet());
-                        }
+                        download();
+                    }
+                });
+                builder.setNeutralButton(R.string.detail_download_all, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSelectAdapter.checkAll();
+                        download();
                     }
                 });
                 builder.show();
@@ -109,32 +109,43 @@ public class DetailActivity extends BaseActivity implements DetailView {
     }
 
     @Override
-    protected void initPresenter() {
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mPresenter = new DetailPresenter(source);
-        mPresenter.attachView(this);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mPresenter.updateIndex(mDetailAdapter.getDateSet());
+                } else {
+                    onUpdateIndexFail();
+                }
+                break;
+        }
     }
 
-    @Override
-    protected void onDestroy() {
-        mPresenter.updateComic();
-        mPresenter.detachView();
-        super.onDestroy();
+    private void download() {
+        List<Integer> list = mSelectAdapter.getCheckedList();
+        if (!list.isEmpty()) {
+            mProgressDialog.show();
+            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
+                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            } else {
+                mPresenter.updateIndex(mDetailAdapter.getDateSet());
+            }
+        }
     }
 
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.activity_detail;
-    }
-
-    @Override
-    protected String getDefaultTitle() {
-        return getString(R.string.detail);
-    }
-
-    @Override
-    protected View getLayoutView() {
-        return mCoordinatorLayout;
+    @OnClick(R.id.detail_star_btn) void onClick() {
+        if (mPresenter.getComic().getFavorite() != null) {
+            mPresenter.unfavoriteComic();
+            mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+            showSnackbar(R.string.detail_unfavorite);
+        } else {
+            mPresenter.favoriteComic();
+            mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
+            showSnackbar(R.string.detail_favorite);
+        }
     }
 
     @Override
@@ -149,16 +160,22 @@ public class DetailActivity extends BaseActivity implements DetailView {
         mSelectAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                CheckBox choice = ButterKnife.findById(view, R.id.download_chapter_checkbox);
-                if (choice.isEnabled()) {
-                    boolean checked = !choice.isChecked();
-                    choice.setChecked(checked);
+                CheckBox box = ButterKnife.findById(view, R.id.download_chapter_checkbox);
+                if (box.isEnabled()) {
+                    boolean checked = !box.isChecked();
+                    box.setChecked(checked);
                     mSelectAdapter.onClick(position, checked);
                 }
             }
         });
         mDetailAdapter.setDownload(complete);
         hideProgressBar();
+    }
+
+    @Override
+    public void onDownloadLoadFail() {
+        hideProgressBar();
+        showSnackbar(R.string.detail_download_load_fail);
     }
 
     @Override
@@ -169,13 +186,14 @@ public class DetailActivity extends BaseActivity implements DetailView {
             Intent intent = DownloadService.createIntent(DetailActivity.this, task);
             startService(intent);
         }
-        mSelectAdapter.clearCheckedList(true);
+        mSelectAdapter.refreshChecked();
+        mProgressDialog.hide();
         showSnackbar(R.string.detail_download_queue_success);
     }
 
     @Override
     public void onUpdateIndexFail() {
-        mSelectAdapter.clearCheckedList(false);
+        mProgressDialog.hide();
         showSnackbar(R.string.detail_download_queue_fail);
     }
 
@@ -230,6 +248,21 @@ public class DetailActivity extends BaseActivity implements DetailView {
     public void onParseError() {
         hideProgressBar();
         showSnackbar(R.string.common_parse_error);
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_detail;
+    }
+
+    @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.detail);
+    }
+
+    @Override
+    protected View getLayoutView() {
+        return mCoordinatorLayout;
     }
 
     public static final String EXTRA_ID = "a";

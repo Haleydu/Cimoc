@@ -1,10 +1,11 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.Index;
+import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TaskView;
 
@@ -12,8 +13,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/9/7.
@@ -30,7 +33,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
 
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.DOWNLOAD_STATE_CHANGE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.TASK_STATE_CHANGE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 long id = (long) rxEvent.getData(1);
@@ -50,7 +53,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 }
             }
         });
-        addSubscription(RxEvent.DOWNLOAD_PROCESS, new Action1<RxEvent>() {
+        addSubscription(RxEvent.TASK_PROCESS, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 long id = (long) rxEvent.getData();
@@ -76,7 +79,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     }
 
     public void sortTask(final List<Task> list, int source, String comic) {
-        Index.get(source, comic)
+        Download.get(source, comic)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<String>>() {
                     @Override
@@ -92,17 +95,88 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 });
     }
 
-    public void deleteTask(Task task, boolean isEmpty) {
-        mTaskManager.delete(task);
-        if (isEmpty) {
-            Comic comic = mComicManager.load(task.getId());
-            if (comic.getFavorite() == null && comic.getHistory() == null) {
-                mComicManager.delete(comic);
-            } else {
-                comic.setDownload(null);
-                mComicManager.update(comic);
-            }
-        }
+    public void deleteTask(final Task task, final boolean isEmpty) {
+        Download.delete(task.getSource(), task.getComic(), task.getTitle())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        if (isEmpty) {
+                            Comic comic = mComicManager.load(task.getKey());
+                            if (comic.getFavorite() == null && comic.getHistory() == null) {
+                                mComicManager.delete(comic);
+                            } else {
+                                comic.setDownload(null);
+                                mComicManager.update(comic);
+                            }
+                            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_DELETE, task.getKey()));
+                        }
+                        mTaskManager.delete(task);
+                        mBaseView.onTaskDeleteSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTaskDeleteFail();
+                    }
+                });
+    }
+
+    public void deleteTask(final List<Task> list, final int source, final String comic, final long key, final boolean isEmpty) {
+        Observable.from(list)
+                .map(new Func1<Task, String>() {
+                    @Override
+                    public String call(Task task) {
+                        return task.getTitle();
+                    }
+                })
+                .toList()
+                .flatMap(new Func1<List<String>, Observable<Void>>() {
+                    @Override
+                    public Observable<Void> call(List<String> strings) {
+                        return Download.delete(source, comic, strings);
+                    }
+                })
+                .flatMap(new Func1<Object, Observable<Void>>() {
+                    @Override
+                    public Observable<Void> call(Object o) {
+                        return mComicManager.runInTx(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isEmpty) {
+                                    for (Task task : list) {
+                                        Comic comic = mComicManager.load(task.getKey());
+                                        if (comic.getFavorite() == null && comic.getHistory() == null) {
+                                            mComicManager.delete(comic);
+                                        } else {
+                                            comic.setDownload(null);
+                                            mComicManager.update(comic);
+                                        }
+                                    }
+                                    RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_DELETE, key));
+                                }
+                            }
+                        });
+                    }
+                })
+                .doOnNext(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        mTaskManager.deleteInTx(list);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        mBaseView.onTaskDeleteSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTaskDeleteFail();
+                    }
+                });
     }
 
 }

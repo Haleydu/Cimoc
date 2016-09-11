@@ -29,6 +29,12 @@ public class ComicManager {
                 .call(callable);
     }
 
+    public Observable<Void> runInTx(Runnable runnable) {
+        return mComicDao.getSession()
+                .rxTx()
+                .run(runnable);
+    }
+
     public Observable<List<Comic>> listSource(int source) {
         return mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source))
@@ -59,7 +65,6 @@ public class ComicManager {
                 .rx()
                 .list();
     }
-
 
     public Observable<Comic> loadInRx(int source, String cid) {
         return mComicDao.queryBuilder()

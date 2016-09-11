@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -25,7 +25,6 @@ public class SelectAdapter extends BaseAdapter<String> {
     }
 
     private BoxState[] mStateArray;
-    private List<Integer> mCheckList;
 
     public class ChapterHolder extends BaseAdapter.BaseViewHolder {
         @BindView(R.id.download_chapter_title) TextView chapterTitle;
@@ -41,7 +40,6 @@ public class SelectAdapter extends BaseAdapter<String> {
     }
 
     public void initState(boolean[] array) {
-        mCheckList = new LinkedList<>();
         mStateArray = new BoxState[array.length];
         for (int i = 0; i != array.length; ++i) {
             mStateArray[i] = new BoxState();
@@ -71,24 +69,30 @@ public class SelectAdapter extends BaseAdapter<String> {
 
     public void onClick(int position, boolean checked) {
         mStateArray[position].checked = checked;
-        if (checked) {
-            mCheckList.add(position);
-        } else {
-            mCheckList.remove(position);
-        }
     }
 
     public List<Integer> getCheckedList() {
-        return mCheckList;
-    }
-
-    public void clearCheckedList(boolean download) {
-        if (download) {
-            for (int position : mCheckList) {
-                mStateArray[position].disable = true;
+        List<Integer> list = new ArrayList<>(mStateArray.length);
+        for (int i = 0; i != mStateArray.length; ++i) {
+            if (mStateArray[i].checked && !mStateArray[i].disable) {
+                list.add(i);
             }
         }
-        mCheckList.clear();
+        return list;
+    }
+
+    public void checkAll() {
+        for (BoxState state : mStateArray) {
+            state.checked = true;
+        }
+    }
+
+    public void refreshChecked() {
+        for (BoxState state : mStateArray) {
+            if (state.checked && !state.disable) {
+                state.disable = true;
+            }
+        }
     }
 
 }

@@ -20,7 +20,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Hiroshi on 2016/9/9.
  */
-public class Index {
+public class Download {
 
     public static String dirPath =
             FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
@@ -94,6 +94,32 @@ public class Index {
                     subscriber.onNext(list);
                     subscriber.onCompleted();
                 }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<Void> delete(final int source, final String comic, final String title) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
+                FileUtils.deleteDir(dir);
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<Void> delete(final int source, final String comic, final List<String> list) {
+        return Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                for (String title : list) {
+                    String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
+                    FileUtils.deleteDir(dir);
+                }
+                subscriber.onNext(null);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }

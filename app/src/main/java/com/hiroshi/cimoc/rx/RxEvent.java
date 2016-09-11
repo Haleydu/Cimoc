@@ -18,12 +18,13 @@ public class RxEvent {
     public static final int COMIC_CHAPTER_CHANGE = 6;
     public static final int RESTORE_FAVORITE = 7;
     public static final int COMIC_DELETE = 8;
-    public static final int DOWNLOAD_STATE_CHANGE = 9;
-    public static final int DOWNLOAD_PROCESS = 10;
+    public static final int TASK_STATE_CHANGE = 9;
+    public static final int TASK_PROCESS = 10;
     public static final int TASK_ADD = 11;
+    public static final int DOWNLOAD_DELETE = 12;
 
     @IntDef({NETWORK_ERROR, FAVORITE_COMIC, UN_FAVORITE_COMIC, HISTORY_COMIC, COMIC_PAGE_CHANGE, COMIC_CHAPTER_CHANGE,
-            RESTORE_FAVORITE, COMIC_DELETE, DOWNLOAD_STATE_CHANGE, DOWNLOAD_PROCESS, TASK_ADD})
+            RESTORE_FAVORITE, COMIC_DELETE, TASK_STATE_CHANGE, TASK_PROCESS, TASK_ADD, DOWNLOAD_DELETE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventType {}
 

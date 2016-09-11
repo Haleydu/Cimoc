@@ -84,7 +84,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                             @Override
                             public Void call() throws Exception {
                                 for (Comic comic : list) {
-                                    if (comic.getFavorite() == null) {
+                                    if (comic.getFavorite() == null && comic.getDownload() == null) {
                                         mComicManager.delete(comic);
                                     } else {
                                         comic.setHistory(null);

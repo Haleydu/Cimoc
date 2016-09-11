@@ -48,8 +48,8 @@ public class DialogUtils {
         return builder.create();
     }
 
-    public static AlertDialog buildCancelableFalseDialog(Context context) {
-        return new AlertDialog.Builder(context).setCancelable(false).create();
+    public static AlertDialog buildCancelableFalseDialog(Context context, int messageId) {
+        return new AlertDialog.Builder(context).setCancelable(false).setMessage(messageId).create();
     }
 
 }

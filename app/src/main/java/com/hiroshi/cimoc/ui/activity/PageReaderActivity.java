@@ -8,11 +8,14 @@ import android.view.KeyEvent;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager.OnPageChangedListener;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
+import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/7/7.
@@ -86,6 +89,13 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     }
 
     @Override
+    public void onPrevLoadSuccess(List<ImageUrl> list) {
+        mReaderAdapter.addAll(0, list);
+        ((RecyclerViewPager) mRecyclerView).refreshBeforePosition(list.size());
+        showToast(R.string.reader_load_success);
+    }
+
+    @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
             mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress);
@@ -123,6 +133,12 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         } else if (y >= limitY) {
             draweeView.retry();
         }
+    }
+
+    @Override
+    public void onLongPress(PhotoDraweeView draweeView) {
+        int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
+        savePicture(position);
     }
 
     @Override

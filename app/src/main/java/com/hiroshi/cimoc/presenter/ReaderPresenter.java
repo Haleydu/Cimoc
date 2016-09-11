@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Index;
+import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.core.Picture;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.adapter.PreloadAdapter;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 
+import java.io.InputStream;
 import java.util.List;
 
 import rx.Observable;
@@ -80,7 +81,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         status = LOAD_INIT;
         Chapter chapter = mPreloadAdapter.getNextChapter();
         images(chapter.isDownload() ?
-                Index.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()),
+                Download.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()),
                 last, page);
     }
 
@@ -90,11 +91,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             if (chapter != null) {
                 status = LOAD_NEXT;
                 images(chapter.isDownload() ?
-                                Index.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()));
-                mBaseView.showMessage(R.string.reader_load_next);
+                                Download.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()));
+                mBaseView.onNextLoading();
             } else {
                 isShowNext = false;
-                mBaseView.showMessage(R.string.reader_next_none);
+                mBaseView.onNextLoadNone();
             }
         }
     }
@@ -105,11 +106,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             if (chapter != null) {
                 status = LOAD_PREV;
                 images(chapter.isDownload() ?
-                        Index.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()));
-                mBaseView.showMessage(R.string.reader_load_prev);
+                        Download.images(source, comic, chapter.getTitle()) : Manga.images(source, cid, chapter.getPath()));
+                mBaseView.onPrevLoading();
             } else {
                 isShowPrev = false;
-                mBaseView.showMessage(R.string.reader_prev_none);
+                mBaseView.onPrevLoadNone();
             }
         }
     }
@@ -128,6 +129,22 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             mBaseView.onChapterChange(chapter);
             RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
         }
+    }
+
+    public void savePicture(InputStream inputStream, String suffix) {
+        Picture.save(inputStream, suffix)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        mBaseView.onPictureSaveSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onPictureSaveFail();
+                    }
+                });
     }
 
     private void images(Observable<List<ImageUrl>> observable) {

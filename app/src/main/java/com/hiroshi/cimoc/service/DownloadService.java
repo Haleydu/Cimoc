@@ -23,7 +23,9 @@ import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -143,11 +145,10 @@ public class DownloadService extends Service {
 
         @Override
         public void run() {
-            boolean interrupt = false;
             int source = task.getSource();
 
             task.setState(Task.STATE_PARSE);
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_PARSE, task.getId()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_PARSE, task.getId()));
 
             Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
             List<ImageUrl> list = Manga.downloadImages(client, source, task.getCid(), task.getPath());
@@ -160,7 +161,7 @@ public class DownloadService extends Service {
                     ImageUrl image = list.get(i);
                     String url = image.isLazy() ? Manga.downloadLazy(client, source, image.getUrl()) : image.getUrl();
                     if (url == null) {
-                        interrupt = true;
+                        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                         break;
                     }
 
@@ -175,25 +176,24 @@ public class DownloadService extends Service {
                             if (writeToFile(byteStream, i + 1, url)) {
                                 onDownloadProgress(i + 1);
                             } else {
-                                interrupt = true;
-                                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
+                                RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                                 break;
                             }
                         }
                         response.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        interrupt = true;
-                        RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
+                    } catch (InterruptedIOException e) {
+                        break;
+                    } catch (IOException e) {
+                        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                         break;
                     }
                 }
 
-                if (!interrupt) {
+                if (task.getMax() == task.getProgress()) {
                     onDownloadFinish();
                 }
             } else {
-                RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
+                RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
             }
 
             removeDownload(task.getId());
@@ -203,26 +203,28 @@ public class DownloadService extends Service {
             task.setMax(max);
             task.setState(Task.STATE_DOING);
             manager.update(task);
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_DOING, task.getId(), max));
+            RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_DOING, task.getId(), max));
         }
 
         private void onDownloadProgress(int progress) {
             task.setProgress(progress);
             manager.update(task);
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_PROCESS, task.getId(), progress, task.getMax()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.TASK_PROCESS, task.getId(), progress, task.getMax()));
         }
 
         private void onDownloadFinish() {
             task.setProgress(task.getMax());
             task.setState(Task.STATE_FINISH);
             manager.update(task);
-            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STATE_CHANGE, Task.STATE_FINISH, task.getId()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_FINISH, task.getId()));
         }
 
         private boolean writeToFile(InputStream byteStream, int count, String url) {
             String suffix = StringUtils.getSplit(url, "\\.", -1);
             if (suffix == null) {
                 suffix = "jpg";
+            } else {
+                suffix = suffix.split("\\?")[0];
             }
             String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(task.getSource()), task.getComic(), task.getTitle());
             return FileUtils.writeBinaryToFile(dir, StringUtils.format("%03d.%s", count, suffix), byteStream);

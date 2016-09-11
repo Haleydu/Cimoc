@@ -38,6 +38,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             public void call(Subscriber<? super Void> subscriber) {
                 FileUtils.deleteDir(dir);
                 subscriber.onNext(null);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -45,6 +46,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     @Override
                     public void call(Void aVoid) {
                         mBaseView.onCacheClearSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onCacheClearFail();
                     }
                 });
     }
@@ -122,6 +128,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     public void call(List<MiniComic> list) {
                         RxBus.getInstance().post(new RxEvent(RxEvent.RESTORE_FAVORITE, list));
                         mBaseView.onRestoreSuccess(list.size());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onRestoreFail();
                     }
                 });
     }

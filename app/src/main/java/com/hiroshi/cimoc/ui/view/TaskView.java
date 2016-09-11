@@ -23,4 +23,8 @@ public interface TaskView extends BaseView {
 
     void onTaskError(long id);
 
+    void onTaskDeleteSuccess();
+
+    void onTaskDeleteFail();
+
 }

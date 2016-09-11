@@ -67,8 +67,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        mProgressDialog = DialogUtils.buildCancelableFalseDialog(this);
-        mProgressDialog.setMessage(getString(R.string.dialog_doing));
+        mProgressDialog = DialogUtils.buildCancelableFalseDialog(this, R.string.dialog_doing);
         ActionBarDrawerToggle drawerToggle =
                 new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
                     @Override

@@ -29,7 +29,13 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
         addSubscription(RxEvent.TASK_ADD, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onTaskAdd((MiniComic) rxEvent.getData());
+                mBaseView.onDownloadAdd((MiniComic) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.DOWNLOAD_DELETE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onDownloadDelete((long) rxEvent.getData());
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -28,8 +30,13 @@ public class StringUtils {
         return String.format(Locale.getDefault(), format, args);
     }
 
-    public static String progress(int progress, int max) {
+    public static String getProgress(int progress, int max) {
         return format("%d/%d", progress, max);
     }
+
+    public static String getDateStringWithSuffix(String suffix) {
+        return new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date()).concat(".").concat(suffix);
+    }
+
 
 }

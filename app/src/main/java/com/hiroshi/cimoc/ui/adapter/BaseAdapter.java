@@ -35,13 +35,13 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyItemInserted(location);
     }
 
-    public void addAll(List<T> data) {
-        addAll(mDataSet.size(), data);
+    public void addAll(List<T> list) {
+        addAll(mDataSet.size(), list);
     }
 
-    public void addAll(int location, List<T> data) {
-        mDataSet.addAll(location, data);
-        notifyItemRangeInserted(location, location + data.size());
+    public void addAll(int location, List<T> list) {
+        mDataSet.addAll(location, list);
+        notifyItemRangeInserted(location, location + list.size());
     }
 
     public boolean exist(T data) {
@@ -58,6 +58,11 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     public void remove(int position) {
         mDataSet.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public void removeAll(List<T> list) {
+        mDataSet.removeAll(list);
+        notifyDataSetChanged();
     }
 
     public void clear() {

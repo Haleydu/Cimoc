@@ -24,6 +24,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
 import java.lang.annotation.Retention;
@@ -49,6 +50,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     private PipelineDraweeControllerBuilder mControllerBuilder;
     private OnSingleTapListener mSingleTapListener;
+    private OnLongPressListener mLongPressListener;
     private OnLazyLoadListener mLazyLoadListener;
     private @PictureMode int mode;
     private boolean split = false;
@@ -137,11 +139,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 break;
         }
         draweeView.setOnSingleTapListener(mSingleTapListener);
+        draweeView.setOnLongPressListener(mLongPressListener);
         mControllerBuilder.setTapToRetryEnabled(true);
         if (split) {
             ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(imageUrl.getUrl()))
-                    .setPostprocessor(new SplitPostprocessor(imageUrl.getUrl() + "split"))
+                    .setPostprocessor(new SplitPostprocessor(imageUrl.getUrl()))
                     .build();
             draweeView.setController(mControllerBuilder.setImageRequest(request).build());
         } else {
@@ -155,6 +158,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setSingleTapListener(OnSingleTapListener listener) {
         this.mSingleTapListener = listener;
+    }
+
+    public void setLongPressListener(OnLongPressListener listener) {
+        this.mLongPressListener = listener;
     }
 
     public void setLazyLoadListener(OnLazyLoadListener listener) {
@@ -209,7 +216,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
         @Override
         public CacheKey getPostprocessorCacheKey() {
-            return new SimpleCacheKey(url + "split");
+            return new SimpleCacheKey(url.concat("split"));
         }
     }
 

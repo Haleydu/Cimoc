@@ -20,6 +20,8 @@ public interface DetailView extends BaseView {
 
     void onDownloadLoadSuccess(boolean[] download, boolean[] complete);
 
+    void onDownloadLoadFail();
+
     void onUpdateIndexSuccess();
 
     void onUpdateIndexFail();

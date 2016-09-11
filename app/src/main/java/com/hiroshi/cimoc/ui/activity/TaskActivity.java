@@ -8,6 +8,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -25,12 +27,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
+public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
 
+    @BindView(R.id.task_layout) View mTaskLayout;
     @BindView(R.id.task_recycler_view) RecyclerView mRecyclerView;
 
     private TaskAdapter mTaskAdapter;
@@ -38,12 +42,20 @@ public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.
     private ServiceConnection mConnection;
     private DownloadServiceBinder mBinder;
 
+    private long key;
     private int source;
     private String cid;
     private String comic;
 
     @Override
+    protected void initPresenter() {
+        mPresenter = new TaskPresenter();
+        mPresenter.attachView(this);
+    }
+
+    @Override
     protected void initView() {
+        super.initView();
         mTaskAdapter = new TaskAdapter(this, new LinkedList<Task>());
         mTaskAdapter.setOnItemClickListener(this);
         mTaskAdapter.setOnItemLongClickListener(this);
@@ -51,6 +63,62 @@ public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(mTaskAdapter.getItemDecoration());
+    }
+
+    @Override
+    protected void initData() {
+        key = getIntent().getLongExtra(EXTRA_KEY, -1);
+        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        cid = getIntent().getStringExtra(EXTRA_CID);
+        comic = getIntent().getStringExtra(EXTRA_COMIC);
+        mPresenter.loadTask(key);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mConnection != null) {
+            unbindService(mConnection);
+        }
+        mPresenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.task_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.task_delete_multi:
+                String[] title = mTaskAdapter.getTaskTitle();
+                final boolean[] array = new boolean[title.length];
+                DialogUtils.buildMultiChoiceDialog(this, R.string.task_delete_multi, title, array,
+                        new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                array[which] = isChecked;
+
+                            }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mProgressDialog.show();
+                                List<Task> list = new LinkedList<>();
+                                for (int i = 0; i != array.length; ++i) {
+                                    if (array[i]) {
+                                        list.add(mTaskAdapter.getItem(i));
+                                    }
+                                }
+                                mTaskAdapter.removeAll(list);
+                                mPresenter.deleteTask(list, source, comic, key, mTaskAdapter.getItemCount() == 0);
+                            }
+                        }).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -75,7 +143,6 @@ public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.
                 break;
             case Task.STATE_PAUSE:
             case Task.STATE_ERROR:
-                task.setInfo(source, cid, comic);
                 task.setState(Task.STATE_WAIT);
                 mTaskAdapter.notifyItemChanged(position);
                 Intent taskIntent = DownloadService.createIntent(this, task);
@@ -97,59 +164,24 @@ public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mPresenter.deleteTask(mTaskAdapter.getItem(position), mTaskAdapter.getItemCount() == 1);
+                        mProgressDialog.show();
+                        Task task = mTaskAdapter.getItem(position);
                         mTaskAdapter.remove(position);
+                        mPresenter.deleteTask(task, mTaskAdapter.getItemCount() == 0);
                     }
                 }).show();
     }
 
-    @Override
-    protected void initToolbar() {
-        super.initToolbar();
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-    }
-
-    @Override
-    protected void initData() {
-        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        cid = getIntent().getStringExtra(EXTRA_CID);
-        comic = getIntent().getStringExtra(EXTRA_COMIC);
-        long key = getIntent().getLongExtra(EXTRA_KEY, -1);
-        mPresenter.loadTask(key);
-    }
-
-    @Override
-    protected void initPresenter() {
-        mPresenter = new TaskPresenter();
-        mPresenter.attachView(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mConnection != null) {
-            unbindService(mConnection);
-        }
-        mPresenter.detachView();
-        super.onDestroy();
-    }
-
-    @Override
-    protected String getDefaultTitle() {
-        return getString(R.string.task_list);
-    }
-
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.activity_task;
+    @OnClick(R.id.task_launch_btn) void onLaunchClick() {
+        Intent intent = DetailActivity.createIntent(this, key, source, cid);
+        startActivity(intent);
     }
 
     @Override
     public void onLoadSuccess(final List<Task> list) {
+        for (Task task : list) {
+            task.setInfo(source, cid, comic);
+        }
         mPresenter.sortTask(list, source, comic);
     }
 
@@ -169,6 +201,18 @@ public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.
             public void onServiceDisconnected(ComponentName name) {}
         };
         bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onTaskDeleteSuccess() {
+        mProgressDialog.hide();
+        showSnackbar(R.string.task_delete_success);
+    }
+
+    @Override
+    public void onTaskDeleteFail() {
+        mProgressDialog.hide();
+        showSnackbar(R.string.task_delete_fail);
     }
 
     @Override
@@ -222,6 +266,21 @@ public class TaskActivity extends BaseActivity implements TaskView, BaseAdapter.
         if (!mRecyclerView.isComputingLayout()) {
             mTaskAdapter.notifyItemChanged(task);
         }
+    }
+
+    @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.task_list);
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_task;
+    }
+
+    @Override
+    protected View getLayoutView() {
+        return mTaskLayout;
     }
 
     public static final String EXTRA_KEY = "a";

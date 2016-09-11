@@ -4,12 +4,11 @@ import android.os.Environment;
 
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.FileUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class Backup {
                         object.put("p", comic.getPage());
                         array.put(object);
                     }
-                    String name = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()).concat(".cimoc");
+                    String name = StringUtils.getDateStringWithSuffix("cimoc");
                     if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
                         subscriber.onNext(array.length());
                         subscriber.onCompleted();

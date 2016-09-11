@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -33,6 +34,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     private Boolean status;
 
     private String last;
+    private int backgroundId;
+    private int colorId;
 
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.item_chapter_button) TextView chapterButton;
@@ -57,6 +60,11 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
     public DetailAdapter(Context context, List<Chapter> list) {
         super(context, list);
+        TypedValue typedValue = new TypedValue();
+        mContext.getTheme().resolveAttribute(R.attr.backgroundChapter, typedValue, true);
+        backgroundId = typedValue.resourceId;
+        mContext.getTheme().resolveAttribute(R.attr.colorChapterText, typedValue, true);
+        colorId = typedValue.resourceId;
     }
 
     @Override
@@ -132,6 +140,10 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             viewHolder.chapterButton.setText(chapter.getTitle());
             if (chapter.isDownload()) {
                 viewHolder.chapterButton.setBackgroundResource(R.drawable.button_chapter_download);
+                viewHolder.chapterButton.setTextColor(mContext.getResources().getColorStateList(R.color.button_chapter_color_download));
+            } else {
+                viewHolder.chapterButton.setBackgroundResource(backgroundId);
+                viewHolder.chapterButton.setTextColor(mContext.getResources().getColorStateList(colorId));
             }
             if (chapter.getPath().equals(last)) {
                 viewHolder.chapterButton.setSelected(true);

@@ -11,6 +11,8 @@ public interface DownloadView extends BaseView {
 
     void onLoadSuccess(List<MiniComic> list);
 
-    void onTaskAdd(MiniComic comic);
+    void onDownloadAdd(MiniComic comic);
+
+    void onDownloadDelete(long id);
 
 }

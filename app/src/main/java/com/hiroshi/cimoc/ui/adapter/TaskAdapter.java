@@ -50,7 +50,7 @@ public class TaskAdapter extends BaseAdapter<Task> {
         viewHolder.taskState.setText(getState(task));
         int progress = task.getProgress();
         int max = task.getMax();
-        viewHolder.taskPage.setText(StringUtils.progress(progress, max));
+        viewHolder.taskPage.setText(StringUtils.getProgress(progress, max));
         viewHolder.taskProgress.setProgress(progress);
         viewHolder.taskProgress.setMax(max);
     }
@@ -72,6 +72,15 @@ public class TaskAdapter extends BaseAdapter<Task> {
             }
         }
         return null;
+    }
+
+    public String[] getTaskTitle() {
+        int size = mDataSet.size();
+        String[] array = new String[size];
+        for (int i = 0; i != size; ++i) {
+            array[i] = mDataSet.get(i).getTitle();
+        }
+        return array;
     }
 
     public void notifyItemChanged(Task task) {

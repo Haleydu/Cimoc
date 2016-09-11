@@ -271,6 +271,12 @@ public class RecyclerViewPager extends RecyclerView {
         }
     }
 
+    public void refreshBeforePosition(int offset) {
+        if (mPositionBeforeScroll != -1) {
+            mPositionBeforeScroll += offset;
+        }
+    }
+
     private boolean isScaling = false;
 
     @Override

@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.Index;
+import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
@@ -34,12 +34,6 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         this.source = source;
         this.mComicManager = ComicManager.getInstance();
         this.mTaskManager = TaskManager.getInstance();
-    }
-
-    @Override
-    public void attachView(DetailView mBaseView) {
-        super.attachView(mBaseView);
-        initSubscription();
     }
 
     @Override
@@ -114,7 +108,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void updateIndex(List<Chapter> list) {
-        Index.update(list, mComic.getSource(), mComic.getTitle())
+        Download.update(list, mComic.getSource(), mComic.getTitle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
@@ -146,6 +140,11 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                             }
                         }
                         mBaseView.onDownloadLoadSuccess(download, complete);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onDownloadLoadFail();
                     }
                 });
     }
@@ -181,10 +180,6 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     public Comic getComic() {
         return mComic;
-    }
-
-    public boolean isComicFavorite() {
-        return mComic.getFavorite() != null;
     }
 
     public void favoriteComic() {
