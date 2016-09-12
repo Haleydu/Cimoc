@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,20 +13,29 @@ import com.hiroshi.cimoc.ui.activity.MainActivity;
 import java.util.Locale;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * Created by Hiroshi on 2016/7/1.
  */
 public abstract class BaseFragment extends Fragment {
 
+    private Unbinder unbinder;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutView(), container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         initPresenter();
         initView();
         initData();
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
     public void showSnackbar(int resId) {
@@ -56,6 +66,6 @@ public abstract class BaseFragment extends Fragment {
 
     protected void initPresenter() {}
 
-    protected abstract int getLayoutView();
+    protected abstract @LayoutRes int getLayoutView();
 
 }

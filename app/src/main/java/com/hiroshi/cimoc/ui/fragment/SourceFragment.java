@@ -14,7 +14,7 @@ import com.hiroshi.cimoc.presenter.SourcePresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
 import com.hiroshi.cimoc.ui.view.SourceView;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class SourceFragment extends BaseFragment implements SourceView {
         mSourceAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {
-                DialogFactory.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.source_delete_confirm,
+                DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.source_delete_confirm,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

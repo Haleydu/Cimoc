@@ -5,7 +5,8 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,15 +27,15 @@ public class NHentai extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("#content > div.index-container > div > a")) {
+        for (Node node : body.list("#content > div.index-container > div > a")) {
             String cid = node.attr("href", "/", 2);
             String title = node.text("div.caption");
-            String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
+            String author = StringUtils.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s+", "");
             String cover = "https:".concat(node.attr("img", "src"));
-            list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, "", author, true));
+            list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author));
         }
         return list;
     }
@@ -48,14 +49,14 @@ public class NHentai extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         list.add(new Chapter("全一话", ""));
 
         String title = body.text("#info > h1");
         String intro = body.text("#info > h2");
         String author = body.text("#tags > div > span > a[href^=/artist/]");
         String cover = "https:" + body.attr("#cover > a > img", "src");
-        comic.setInfo(title, cover, "", intro, author, true);
+        comic.setInfo(title, cover, null, intro, author, true);
 
         return list;
     }
@@ -67,10 +68,10 @@ public class NHentai extends MangaParser {
 
     @Override
     public List<ImageUrl> parseImages(String html) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<ImageUrl> list = new LinkedList<>();
         int count = 0;
-        for (MachiSoup.Node node : body.list("#thumbnail-container > div > a > img")) {
+        for (Node node : body.list("#thumbnail-container > div > a > img")) {
             String url = "https:".concat(node.attr("data-src"));
             list.add(new ImageUrl(++count, url.replace("t.jpg", ".jpg"), false));
         }

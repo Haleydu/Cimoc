@@ -11,13 +11,7 @@
         android:layout_height="match_parent"
         android:background="?android:attr/colorBackground">
         <include layout="@layout/custom_toolbar"/>
-        <ProgressBar
-            android:id="@+id/main_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:indeterminateDrawable="?attr/progressDrawable"/>
+        <include layout="@layout/custom_progress_bar"/>
         <FrameLayout
             android:id="@+id/main_fragment_container"
             android:layout_width="match_parent"

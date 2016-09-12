@@ -14,7 +14,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.CimocPresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.view.BaseView;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -54,7 +54,7 @@ public class CimocFragment extends BaseFragment implements BaseView {
     }
 
     @OnLongClick(R.id.main_search_btn) boolean onLongClick() {
-        DialogFactory.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.load(), choice,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.cimoc_select_source, mPresenter.load(), choice,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

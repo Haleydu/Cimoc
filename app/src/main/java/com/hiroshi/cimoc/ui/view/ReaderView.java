@@ -10,11 +10,17 @@ import java.util.List;
  */
 public interface ReaderView extends BaseView {
 
-    void showMessage(int resId);
-
     void onParseError();
 
     void onNetworkError();
+
+    void onNextLoadNone();
+
+    void onPrevLoadNone();
+
+    void onNextLoading();
+
+    void onPrevLoading();
 
     void onNextLoadSuccess(List<ImageUrl> list);
 
@@ -25,5 +31,11 @@ public interface ReaderView extends BaseView {
     void onChapterChange(Chapter chapter);
 
     void onImageLoadSuccess(int id, String url);
+
+    void onImageLoadFail(int id);
+
+    void onPictureSaveSuccess();
+
+    void onPictureSaveFail();
 
 }

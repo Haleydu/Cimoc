@@ -5,15 +5,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.binaryresource.BinaryResource;
+import com.facebook.cache.common.SimpleCacheKey;
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -22,16 +28,17 @@ import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
 import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -40,7 +47,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/8/6.
  */
 public abstract class ReaderActivity extends BaseActivity implements OnSingleTapListener,
-        OnProgressChangeListener, OnLazyLoadListener, ReaderView {
+        OnProgressChangeListener, OnLongPressListener, OnLazyLoadListener, ReaderView {
 
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
@@ -53,6 +60,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     protected PreCacheLayoutManager mLayoutManager;
     protected ReaderAdapter mReaderAdapter;
+    protected ImagePipelineFactory mImagePipelineFactory;
 
     protected ReaderPresenter mPresenter;
     protected int progress = 1;
@@ -73,8 +81,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         list.add(new ImageUrl(0, null, true));
         mReaderAdapter = new ReaderAdapter(this, list);
         mReaderAdapter.setSingleTapListener(this);
-        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
         mReaderAdapter.setLazyLoadListener(this);
+        if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_PICTURE, false)) {
+            mReaderAdapter.setLongPressListener(this);
+        }
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
+        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, mImagePipelineFactory));
         mLayoutManager = new PreCacheLayoutManager(this);
     }
 
@@ -125,11 +137,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initPresenter() {
         source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
-        String[] title = getIntent().getStringArrayExtra(EXTRA_TITLE);
-        String[] path = getIntent().getStringArrayExtra(EXTRA_PATH);
-        Chapter[] array = fromArray(title, path);
+        String comic = getIntent().getStringExtra(EXTRA_COMIC);
+        Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
+        Chapter[] chapter = new Chapter[array.length];
+        for (int i = 0; i != array.length; ++i) {
+            chapter[i] = (Chapter) array[i];
+        }
         int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        mPresenter = new ReaderPresenter(source, cid, array, position);
+        mPresenter = new ReaderPresenter(source, cid, comic, chapter, position);
         mPresenter.attachView(this);
     }
 
@@ -176,8 +191,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     protected void updateProgress() {
-        String text = String.format(Locale.getDefault(), "%d/%d", progress, max);
-        mChapterPage.setText(text);
+        mChapterPage.setText(StringUtils.getProgress(progress, max));
     }
 
     protected void showToast(int resId) {
@@ -229,65 +243,95 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void showMessage(int resId) {
-        showToast(resId);
+    public void onImageLoadFail(int id) {
+        mReaderAdapter.update(id, null);
+    }
+
+    @Override
+    public void onPictureSaveSuccess() {
+        showToast(R.string.reader_picture_save_success);
+    }
+
+    @Override
+    public void onPictureSaveFail() {
+        showToast(R.string.reader_picture_save_fail);
+    }
+
+    @Override
+    public void onPrevLoading() {
+        showToast(R.string.reader_load_prev);
+    }
+
+    @Override
+    public void onPrevLoadNone() {
+        showToast(R.string.reader_prev_none);
+    }
+
+    @Override
+    public void onNextLoading() {
+        showToast(R.string.reader_load_next);
+    }
+
+    @Override
+    public void onNextLoadNone() {
+        showToast(R.string.reader_next_none);
+    }
+
+    protected void savePicture(int position) {
+        String url = mReaderAdapter.getItem(position).getUrl();
+        try {
+            String suffix = StringUtils.getSplit(url, "\\.", -1);
+            BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
+            if (resource != null) {
+                mPresenter.savePicture(resource.openStream(), suffix);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showToast(R.string.reader_picture_save_fail);
+        }
     }
 
     private static final String EXTRA_SOURCE = "a";
     private static final String EXTRA_CID = "b";
     private static final String EXTRA_LAST = "c";
     private static final String EXTRA_PAGE = "d";
-    private static final String EXTRA_TITLE = "e";
-    private static final String EXTRA_PATH = "f";
+    private static final String EXTRA_COMIC = "e";
+    private static final String EXTRA_CHAPTER = "f";
     private static final String EXTRA_POSITION = "g";
 
-    protected static void putExtras(Intent intent, Comic comic, List<Chapter> list, int position) {
+    public static Intent createIntent(Context context, int source, String cid, String comic, List<Chapter> list, int position) {
+        Intent intent = getIntent(context);
+        intent.putExtra(EXTRA_SOURCE, source);
+        intent.putExtra(EXTRA_CID, cid);
+        intent.putExtra(EXTRA_COMIC, comic);
+        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
+        intent.putExtra(EXTRA_POSITION, position);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
+        Intent intent = getIntent(context);
         intent.putExtra(EXTRA_SOURCE, comic.getSource());
         intent.putExtra(EXTRA_CID, comic.getCid());
         intent.putExtra(EXTRA_LAST, comic.getLast());
         intent.putExtra(EXTRA_PAGE, comic.getPage());
-        String[][] array = fromList(list);
-        intent.putExtra(EXTRA_TITLE, array[0]);
-        intent.putExtra(EXTRA_PATH, array[1]);
+        intent.putExtra(EXTRA_COMIC, comic.getTitle());
+        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
         intent.putExtra(EXTRA_POSITION, position);
-    }
-
-    private static String[][] fromList(List<Chapter> list) {
-        int size = list.size();
-        String[] title = new String[size];
-        String[] path = new String[size];
-        for (int i = 0; i != size; ++i) {
-            title[i] = list.get(i).getTitle();
-            path[i] = list.get(i).getPath();
-        }
-        return new String[][] { title, path };
-    }
-
-    private static Chapter[] fromArray(String[] title, String[] path) {
-        int size = title.length;
-        Chapter[] array = new Chapter[size];
-        for (int i = 0; i != size; ++i) {
-            array[i] = new Chapter(title[i], path[i]);
-        }
-        return array;
-    }
-
-    public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
-        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
-        Intent intent = null;
-        switch (mode) {
-            case PreferenceManager.MODE_HORIZONTAL_PAGE:
-                intent = new Intent(context, PageReaderActivity.class);
-                break;
-            case PreferenceManager.MODE_PORTRAIT_STREAM:
-                intent = new Intent(context, StreamReaderActivity.class);
-                break;
-            case PreferenceManager.MODE_LANDSCAPE_STREAM:
-                intent = new Intent(context, LandscapeStreamReaderActivity.class);
-                break;
-        }
-        putExtras(intent, comic, list, position);
         return intent;
+    }
+
+    private static Intent getIntent(Context context) {
+        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
+        switch (mode) {
+            default:
+            case PreferenceManager.MODE_HORIZONTAL_PAGE:
+                return new Intent(context, PageReaderActivity.class);
+            case PreferenceManager.MODE_PORTRAIT_STREAM:
+                return new Intent(context, StreamReaderActivity.class);
+            case PreferenceManager.MODE_LANDSCAPE_STREAM:
+                return new Intent(context, LandscapeStreamReaderActivity.class);
+        }
     }
 
 }

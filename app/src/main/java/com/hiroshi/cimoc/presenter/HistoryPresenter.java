@@ -13,7 +13,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/18.
@@ -66,20 +65,14 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 });
     }
 
-    public void deleteHistory(MiniComic comic) {
-        mComicManager.loadInRx(comic.getId())
-                .observeOn(Schedulers.io())
-                .subscribe(new Action1<Comic>() {
-                    @Override
-                    public void call(Comic comic) {
-                        if (comic.getFavorite() == null) {
-                            mComicManager.delete(comic);
-                        } else {
-                            comic.setHistory(null);
-                            mComicManager.update(comic);
-                        }
-                    }
-                });
+    public void deleteHistory(MiniComic history) {
+        Comic comic = mComicManager.load(history.getId());
+        if (comic.getFavorite() == null && comic.getDownload() == null) {
+            mComicManager.delete(comic);
+        } else {
+            comic.setHistory(null);
+            mComicManager.update(comic);
+        }
     }
 
     public void clearHistory() {
@@ -91,7 +84,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                             @Override
                             public Void call() throws Exception {
                                 for (Comic comic : list) {
-                                    if (comic.getFavorite() == null) {
+                                    if (comic.getFavorite() == null && comic.getDownload() == null) {
                                         mComicManager.delete(comic);
                                     } else {
                                         comic.setHistory(null);

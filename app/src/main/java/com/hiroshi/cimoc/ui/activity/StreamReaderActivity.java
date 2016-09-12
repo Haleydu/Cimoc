@@ -85,6 +85,12 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
+    public void onLongPress(PhotoDraweeView draweeView) {
+        int position = mRecyclerView.getChildAdapterPosition(draweeView);
+        savePicture(position);
+    }
+
+    @Override
     public void onPrevLoadSuccess(List<ImageUrl> list) {
         super.onPrevLoadSuccess(list);
         if (position == 0) {

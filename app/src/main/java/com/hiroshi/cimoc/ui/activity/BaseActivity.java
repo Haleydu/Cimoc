@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -18,6 +19,7 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected Toolbar mToolbar;
+    protected ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +43,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.custom_toolbar);
+        mToolbar = ButterKnife.findById(this, R.id.custom_toolbar);
+        mProgressBar = ButterKnife.findById(this, R.id.custom_progress_bar);
         mToolbar.setTitle(getDefaultTitle());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -64,6 +67,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void initData() {}
 
     protected abstract int getLayoutRes();
+
+    protected void hideProgressBar() {
+        if (mProgressBar.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
 
     protected void showSnackbar(String msg) {
         View layout = getLayoutView();

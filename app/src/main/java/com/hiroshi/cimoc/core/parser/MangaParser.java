@@ -13,7 +13,7 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public String parseLazy(String html) {
+    public String parseLazy(String html, String url) {
         return null;
     }
 
@@ -26,5 +26,13 @@ public abstract class MangaParser implements Parser {
     public String parseCheck(String html) {
         return null;
     }
+
+    @Override
+    public Request getBeforeImagesRequest() {
+        return null;
+    }
+
+    @Override
+    public void beforeImages(String html) {}
 
 }

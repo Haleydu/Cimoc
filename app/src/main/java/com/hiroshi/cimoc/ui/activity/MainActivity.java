@@ -12,7 +12,6 @@ import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -20,11 +19,12 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.fragment.AboutFragment;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
+import com.hiroshi.cimoc.ui.fragment.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
 import com.hiroshi.cimoc.ui.fragment.SourceFragment;
-import com.hiroshi.cimoc.utils.DialogFactory;
+import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
 
@@ -33,12 +33,11 @@ import butterknife.BindView;
  */
 public class MainActivity extends BaseActivity {
 
-    private static final int FRAGMENT_NUM = 6;
+    private static final int FRAGMENT_NUM = 7;
 
     @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
-    @BindView(R.id.main_progress_bar) ProgressBar mProgressBar;
 
     private AlertDialog mProgressDialog;
     private long mExitTime = 0;
@@ -68,8 +67,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        mProgressDialog = DialogFactory.buildCancelableFalseDialog(this);
-        mProgressDialog.setMessage(getString(R.string.dialog_doing));
+        mProgressDialog = DialogUtils.buildCancelableFalseDialog(this, R.string.dialog_doing);
         ActionBarDrawerToggle drawerToggle =
                 new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
                     @Override
@@ -104,6 +102,7 @@ public class MainActivity extends BaseActivity {
             }
         });
         initFragment();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     private void initFragment() {
@@ -114,6 +113,7 @@ public class MainActivity extends BaseActivity {
         mFragmentArray.put(R.id.drawer_favorite, new FavoriteFragment());
         mFragmentArray.put(R.id.drawer_history, new HistoryFragment());
         mFragmentArray.put(R.id.drawer_source, new SourceFragment());
+        mFragmentArray.put(R.id.drawer_download, new DownloadFragment());
         mFragmentArray.put(R.id.drawer_settings, new SettingsFragment());
         mFragmentArray.put(R.id.drawer_about, new AboutFragment());
 

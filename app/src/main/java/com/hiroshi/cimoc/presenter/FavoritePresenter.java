@@ -2,8 +2,10 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 
@@ -14,7 +16,6 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/6.
@@ -22,9 +23,11 @@ import rx.schedulers.Schedulers;
 public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     private ComicManager mComicManager;
+    private SourceManager mSourceManager;
 
     public FavoritePresenter() {
         mComicManager = ComicManager.getInstance();
+        mSourceManager = SourceManager.getInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -72,6 +75,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                         }
                     }
                 })
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Comic>() {
                     private int count = 0;
@@ -94,28 +98,19 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 });
     }
 
-    public void updateComic(long fromId, long toId, final boolean isBack) {
-        Observable.concat(mComicManager.loadInRx(fromId), mComicManager.loadInRx(toId))
-                .observeOn(Schedulers.io())
-                .toList()
-                .subscribe(new Action1<List<Comic>>() {
-                    @Override
-                    public void call(List<Comic> list) {
-                        Comic fromComic = list.get(0);
-                        Comic toComic = list.get(1);
-                        if (isBack) {
-                            fromComic.setFavorite(toComic.getFavorite() - 1);
-                        } else {
-                            fromComic.setFavorite(toComic.getFavorite() + 1);
-                        }
-                        mComicManager.update(fromComic);
-                    }
-                });
+    public void updateComic(long fromId, long toId, boolean isBack) {
+        Comic fromComic = mComicManager.load(fromId);
+        Comic toComic = mComicManager.load(toId);
+        if (isBack) {
+            fromComic.setFavorite(toComic.getFavorite() - 1);
+        } else {
+            fromComic.setFavorite(toComic.getFavorite() + 1);
+        }
+        mComicManager.update(fromComic);
     }
 
     public void loadComic() {
         mComicManager.listFavorite()
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -129,10 +124,28 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     }
                 })
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {
                         mBaseView.onItemAdd(list);
+                    }
+                });
+    }
+
+    public void loadFilter() {
+        mSourceManager.list()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Source>>() {
+                    @Override
+                    public void call(List<Source> list) {
+                        String[] filter = new String[list.size() + 2];
+                        filter[0] = "连载中";
+                        filter[1] = "已完结";
+                        for (int i = 0; i != list.size(); ++i) {
+                            filter[i + 2] = SourceManager.getTitle(list.get(i).getSid());
+                        }
+                        mBaseView.onFilterLoad(filter);
                     }
                 });
     }

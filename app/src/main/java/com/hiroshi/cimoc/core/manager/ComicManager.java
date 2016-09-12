@@ -29,6 +29,12 @@ public class ComicManager {
                 .call(callable);
     }
 
+    public Observable<Void> runInTx(Runnable runnable) {
+        return mComicDao.getSession()
+                .rxTx()
+                .run(runnable);
+    }
+
     public Observable<List<Comic>> listSource(int source) {
         return mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source))
@@ -52,6 +58,14 @@ public class ComicManager {
                 .list();
     }
 
+    public Observable<List<Comic>> listDownload() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Download.isNotNull())
+                .orderDesc(Properties.Download)
+                .rx()
+                .list();
+    }
+
     public Observable<Comic> loadInRx(int source, String cid) {
         return mComicDao.queryBuilder()
                 .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
@@ -61,6 +75,10 @@ public class ComicManager {
 
     public Observable<Comic> loadInRx(long id) {
         return mComicDao.rx().load(id);
+    }
+
+    public Comic load(long id) {
+        return mComicDao.load(id);
     }
 
     public Comic load(int source, String cid) {

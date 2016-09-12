@@ -40,12 +40,8 @@
         android:id="@+id/main_search_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="14dp"
+        android:layout_margin="16dp"
         android:src="@drawable/ic_search_white_24dp"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
-        app:borderWidth="0dp"
         app:layout_anchor="@id/relative_layout"
         app:layout_anchorGravity="bottom|end"/>
 </android.support.design.widget.CoordinatorLayout>

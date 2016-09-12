@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -56,7 +55,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        if (comic.getUpdate().isEmpty()) {
+        if (comic.getUpdate() == null) {
             viewHolder.tabUpdate.setVisibility(View.INVISIBLE);
         } else {
             viewHolder.comicUpdate.setText(comic.getUpdate());

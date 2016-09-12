@@ -8,6 +8,7 @@ Online manga reader based on Android
 - 卷纸阅读（Scroll Reader）
 - 夜间模式（Night Mode）
 - 检查漫画更新（Check Manga For Update）
+- 下载漫画（Download Manga）
 - 本地备份恢复（Local Backup）
 
 # 支持网站
@@ -22,6 +23,20 @@ Online manga reader based on Android
 # 可添加图源
 - IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5
 - EHentai、ExHentai、NHentai、Wnacg
+
+# 感谢以下的开源项目及作者
+- [Android Open Source Project](http://source.android.com/)
+- [ButterKnife](http://jakewharton.github.io/butterknife/)
+- [GreenDAO](http://greenrobot.org/greendao/)
+- [OkHttp](http://square.github.io/okhttp/)
+- [Fresco](http://frescolib.org/)
+- [Jsoup](https://jsoup.org/)
+- [DiscreteSeekBar](https://github.com/AnderWeb/discreteSeekBar)
+- [RxJava](https://github.com/ReactiveX/RxJava)
+- [RxAndroid](https://github.com/ReactiveX/RxAndroid)
+- [RecyclerViewPager](https://github.com/lsjwzh/RecyclerViewPager)
+- [PhotoDraweeView](https://github.com/ongakuer/PhotoDraweeView)
+- [Rhino](https://www.mozilla.org/rhino/)
 
 # 应用截图
 <img src="./screenshot/01.png" width="30%" height="30%">

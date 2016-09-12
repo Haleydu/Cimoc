@@ -5,7 +5,7 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,15 +26,15 @@ public class Wnacg extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
+        for (Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
             String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
             String title = node.text("div.info > div.title > a");
             String cover = node.attr("div.pic_box > a > img", "data-original");
             String update = node.text("div.info > div.info_col").trim();
-            update = MachiSoup.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
-            list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, null, true));
+            // update = match("\\d{4}-\\d{2}-\\d{2}", update, 0);
+            list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, null));
         }
         return list;
     }
@@ -48,7 +48,7 @@ public class Wnacg extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         String length = body.text("#bodywrap > div > div.uwconn > label:eq(1)", 3, -2);
         int size = Integer.parseInt(length) % 12 == 0 ? Integer.parseInt(length) / 12 : Integer.parseInt(length) / 12 + 1;
         for (int i = 1; i <= size; ++i) {
@@ -59,7 +59,7 @@ public class Wnacg extends MangaParser {
         String intro = body.text("#bodywrap > div > div.uwconn > p", 3);
         String author = body.text("#bodywrap > div > div.uwuinfo > p");
         String cover = body.attr("#bodywrap > div > div.uwthumb > img", "data-original");
-        comic.setInfo(title, cover, "", intro, author, true);
+        comic.setInfo(title, cover, null, intro, author, true);
 
         return list;
     }
@@ -73,9 +73,9 @@ public class Wnacg extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         int count = 0;
-        for (MachiSoup.Node node : body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a")) {
+        for (Node node : body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a")) {
             String url = "http://www.wnacg.com/".concat(node.attr("href"));
             list.add(new ImageUrl(++count, url, true));
         }
@@ -88,8 +88,8 @@ public class Wnacg extends MangaParser {
     }
 
     @Override
-    public String parseLazy(String html) {
-        return MachiSoup.body(html).attr("#picarea", "src");
+    public String parseLazy(String html, String url) {
+        return new Node(html).attr("#picarea", "src");
     }
 
 }

@@ -32,6 +32,10 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.TaskActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.PageReaderActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"
@@ -48,6 +52,9 @@
             android:screenOrientation="landscape"
             android:configChanges="orientation|screenSize"
             android:theme="@style/ReaderTheme"/>
+
+        <service
+            android:name=".service.DownloadService"/>
 
     </application>
 

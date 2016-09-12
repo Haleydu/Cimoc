@@ -5,8 +5,9 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
-import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,17 +28,17 @@ public class U17 extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("#comiclist > div.search_list > div.comiclist > ul > li > div")) {
+        for (Node node : body.list("#comiclist > div.search_list > div.comiclist > ul > li > div")) {
             String cid = node.attr("div:eq(1) > h3 > strong > a", "href", "/|\\.", 6);
             String title = node.attr("div:eq(1) > h3 > strong > a", "title");
             String cover = node.attr("div:eq(0) > a > img", "src");
             String update = node.text("div:eq(1) > h3 > span.fr", 7);
             String author = node.text("div:eq(1) > h3 > a[title]");
             String[] array = node.text("div:eq(1) > p.cf > i.fl").split("/");
-            boolean status = "已完结".equals(array[array.length - 1].trim());
-            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author, status));
+            // boolean status = "已完结".equals(array[array.length - 1].trim());
+            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author));
         }
         return list;
     }
@@ -51,8 +52,8 @@ public class U17 extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
-        for (MachiSoup.Node node : body.list("#chapter > li > a")) {
+        Node body = new Node(html);
+        for (Node node : body.list("#chapter > li > a")) {
             String c_title = node.text().trim();
             String c_path = node.attr("href", "/|\\.", 6);
             list.add(0, new Chapter(c_title, c_path));
@@ -77,7 +78,7 @@ public class U17 extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        List<String> result = MachiSoup.matchAll("\"src\":\"(.*?)\"", html, 1);
+        List<String> result = StringUtils.matchAll("\"src\":\"(.*?)\"", html, 1);
         if (!result.isEmpty()) {
             try {
                 int count = 0;
@@ -98,7 +99,7 @@ public class U17 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return MachiSoup.body(html).text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
+        return new Node(html).text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
     }
 
 }

@@ -5,11 +5,11 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -17,6 +17,8 @@ import okhttp3.Request;
  * Created by Hiroshi on 2016/7/26.
  */
 public class HHAAZZ extends MangaParser {
+
+    private String[] server = null;
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -29,16 +31,16 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("ul.se-list > li")) {
+        for (Node node : body.list("ul.se-list > li")) {
             String cid = node.attr("a.pic", "href", "/", 4);
             String title = node.text("a.pic > div > h3");
             String cover = node.attr("a.pic > img", "src");
             String update = node.text("a.pic > div > p:eq(4) > span", 0, 10);
             String author = node.text("a.pic > div > p:eq(1)");
             boolean status = node.text("a.tool > span.h").contains("完结");
-            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author, status));
+            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
         }
         return list;
     }
@@ -52,8 +54,8 @@ public class HHAAZZ extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
-        for (MachiSoup.Node node : body.list("#sort_div_p > a")) {
+        Node body = new Node(html);
+        for (Node node : body.list("#sort_div_p > a")) {
             String c_title = node.attr("title");
             String c_path = node.attr("href").substring(17);
             list.add(new Chapter(c_title, c_path));
@@ -71,6 +73,24 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
+    public Request getBeforeImagesRequest() {
+        if (server != null) {
+            return null;
+        }
+        return new Request.Builder().url("http://hhaazz.com/js/ds.js").build();
+    }
+
+    @Override
+    public void beforeImages(String html) {
+        if (html != null) {
+            String str = StringUtils.match("sDS = \"(.*?)\";", html, 1);
+            if (str != null) {
+                server = str.split("\\|");
+            }
+        }
+    }
+
+    @Override
     public Request getImagesRequest(String cid, String path) {
         String url = "http://hhaazz.com/".concat(path);
         return new Request.Builder().url(url).build();
@@ -79,18 +99,19 @@ public class HHAAZZ extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String[] str = MachiSoup.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
-        if (str != null) {
-            String[] result = unsuan(str[0]);
-            String domain = String.format(Locale.getDefault(), "http://64.140.165.116:9393/dm%02d", Integer.parseInt(str[1]));
-            for (int i = 0; i != result.length; ++i) {
-                list.add(new ImageUrl(i + 1, domain + result[i], false));
+        if (server != null) {
+            String[] str = StringUtils.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
+            if (str != null) {
+                String[] result = unsuan(str[0]);
+                for (int i = 0; i != result.length; ++i) {
+                    list.add(new ImageUrl(i + 1, server[Integer.parseInt(str[1]) - 1].concat(result[i]), false));
+                }
             }
         }
         return list;
     }
 
-    private static String[] unsuan(String str) {
+    private String[] unsuan(String str) {
         int num = str.length() - str.charAt(str.length() - 1) + 'a';
         String code = str.substring(num - 13, num - 3);
         String cut = str.substring(num - 3, num - 2);
@@ -113,7 +134,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return MachiSoup.body(html).text("div.main > div > div.pic > div:eq(1) > p:eq(5)", 5);
+        return new Node(html).text("div.main > div > div.pic > div:eq(1) > p:eq(5)", 5);
     }
 
 }

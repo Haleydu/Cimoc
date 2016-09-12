@@ -1,12 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.utils.FileUtils;
 
 import java.io.File;
@@ -38,6 +38,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             public void call(Subscriber<? super Void> subscriber) {
                 FileUtils.deleteDir(dir);
                 subscriber.onNext(null);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -45,6 +46,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     @Override
                     public void call(Void aVoid) {
                         mBaseView.onCacheClearSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onCacheClearFail();
                     }
                 });
     }
@@ -95,7 +101,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         return mComicManager.callInTx(new Callable<List<MiniComic>>() {
                             @Override
                             public List<MiniComic> call() throws Exception {
-                                long favorite = System.currentTimeMillis() - list.size() * 10;
+                                long favorite = System.currentTimeMillis() + list.size() * 10;
                                 List<MiniComic> result = new LinkedList<>();
                                 for (Comic comic : list) {
                                     Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
@@ -103,13 +109,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                                         comic.setFavorite(favorite);
                                         long id = mComicManager.insert(comic);
                                         comic.setId(id);
-                                        result.add(0, new MiniComic(comic));
+                                        result.add(new MiniComic(comic));
                                     } else if (temp.getFavorite() == null) {
                                         temp.setFavorite(favorite);
                                         mComicManager.update(temp);
-                                        result.add(0, new MiniComic(temp));
+                                        result.add(new MiniComic(temp));
                                     }
-                                    favorite += 20;
+                                    favorite -= 20;
                                 }
                                 return result;
                             }
@@ -122,6 +128,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     public void call(List<MiniComic> list) {
                         RxBus.getInstance().post(new RxEvent(RxEvent.RESTORE_FAVORITE, list));
                         mBaseView.onRestoreSuccess(list.size());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onRestoreFail();
                     }
                 });
     }

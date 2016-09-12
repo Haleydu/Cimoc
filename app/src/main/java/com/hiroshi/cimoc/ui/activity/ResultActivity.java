@@ -6,15 +6,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,59 +23,33 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends BaseActivity implements ResultView {
+public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
 
-    @BindView(R.id.result_comic_list) RecyclerView mRecyclerView;
-    @BindView(R.id.result_progress_bar) ProgressBar mProgressBar;
+    @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.result_layout) LinearLayout mLinearLayout;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
 
-    private int source;
-
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
     }
 
     @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void initToolbar() {
-        super.initToolbar();
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-    }
-
-    @Override
     protected void initView() {
+        super.initView();
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
-        mResultAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Comic comic = mResultAdapter.getItem(position);
-                Intent intent = DetailActivity.createIntent(ResultActivity.this, comic.getId(), comic.getSource(), comic.getCid());
-                startActivity(intent);
-            }
-        });
-        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.getControllerBuilder(source, this));
+        mResultAdapter.setOnItemClickListener(this);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, source));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mResultAdapter);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -86,8 +59,53 @@ public class ResultActivity extends BaseActivity implements ResultView {
                 }
             }
         });
+        mRecyclerView.setAdapter(mResultAdapter);
+    }
 
+    @Override
+    protected void initData() {
         mPresenter.load();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Comic comic = mResultAdapter.getItem(position);
+        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onLoadSuccess(List<Comic> list) {
+        mResultAdapter.addAll(list);
+    }
+
+    @Override
+    public void onNetworkError() {
+        hideProgressBar();
+        showSnackbar(R.string.common_network_error);
+    }
+
+    @Override
+    public void onParseError() {
+        hideProgressBar();
+        showSnackbar(R.string.common_parse_error);
+    }
+
+    @Override
+    public void onEmptyResult() {
+        hideProgressBar();
+        showSnackbar(R.string.result_empty);
+    }
+
+    @Override
+    public void onFirstLoadSuccess() {
+        hideProgressBar();
     }
 
     @Override
@@ -103,37 +121,6 @@ public class ResultActivity extends BaseActivity implements ResultView {
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.result);
-    }
-
-    @Override
-    public void onLoadSuccess(List<Comic> list) {
-        mResultAdapter.addAll(list);
-    }
-
-    @Override
-    public void onNetworkError() {
-        showLayout();
-        showSnackbar(R.string.common_network_error);
-    }
-
-    @Override
-    public void onParseError() {
-        showLayout();
-        showSnackbar(R.string.common_parse_error);
-    }
-
-    @Override
-    public void onEmptyResult() {
-        showLayout();
-        showSnackbar(R.string.result_empty);
-    }
-
-    @Override
-    public void showLayout() {
-        if (mProgressBar.isShown() || !mRecyclerView.isShown()) {
-            mProgressBar.setVisibility(View.GONE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
     }
 
     public static final String EXTRA_KEYWORD = "a";

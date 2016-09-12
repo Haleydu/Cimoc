@@ -39,6 +39,10 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
         void onScaleChange(float scaleFactor, float focusX, float focusY);
     }
 
+    public interface OnLongPressListener {
+        void onLongPress(PhotoDraweeView draweeView);
+    }
+
     private static final int EDGE_NONE = -1;
     private static final int EDGE_LEFT = 0;
     private static final int EDGE_RIGHT = 1;
@@ -70,13 +74,22 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
 
     private OnSingleTapListener mSingleTapListener;
     private OnScaleChangeListener mScaleChangeListener;
+    private OnLongPressListener mOnLongPressListener;
 
     public PhotoDraweeViewController(PhotoDraweeView draweeView) {
         mDraweeView = new WeakReference<>(draweeView);
         draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
         draweeView.setOnTouchListener(this);
         mScaleDragDetector = new ScaleDragDetector(draweeView.getContext(), this);
-        mGestureDetector = new GestureDetectorCompat(draweeView.getContext(), new GestureDetector.SimpleOnGestureListener());
+        mGestureDetector = new GestureDetectorCompat(draweeView.getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public void onLongPress(MotionEvent e) {
+                PhotoDraweeView draweeView = mDraweeView.get();
+                if (draweeView != null && mOnLongPressListener != null) {
+                    mOnLongPressListener.onLongPress(draweeView);
+                }
+            }
+        });
         mGestureDetector.setOnDoubleTapListener(this);
     }
 
@@ -128,6 +141,10 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
 
     public void setOnSingleTapListener(OnSingleTapListener listener) {
         mSingleTapListener = listener;
+    }
+
+    public void setOnLongPressListener(OnLongPressListener listener) {
+        mOnLongPressListener = listener;
     }
 
     public OnSingleTapListener getOnSingleTapListener() {

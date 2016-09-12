@@ -6,19 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/custom_toolbar"/>
-    <ProgressBar
-        android:id="@+id/detail_progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:indeterminateDrawable="?attr/progressDrawable"/>
+    <include layout="@layout/custom_progress_bar"/>
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/detail_coordinator_layout"
-        android:visibility="invisible"
+        android:id="@+id/detail_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/detail_chapter_list"
+            android:id="@+id/detail_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never"/>

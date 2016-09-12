@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -11,9 +12,10 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.utils.ControllerBuilderFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,7 +23,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class ChapterAdapter extends BaseAdapter<Chapter> {
+public class DetailAdapter extends BaseAdapter<Chapter> {
 
     private int source;
     private String title;
@@ -29,9 +31,11 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     private String update;
     private String author;
     private String intro;
-    private Boolean status;
+    private Boolean finish;
 
     private String last;
+    private int backgroundId;
+    private int colorId;
 
     public class ViewHolder extends BaseViewHolder {
         @BindView(R.id.item_chapter_button) TextView chapterButton;
@@ -54,8 +58,13 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         }
     }
 
-    public ChapterAdapter(Context context, List<Chapter> list) {
+    public DetailAdapter(Context context, List<Chapter> list) {
         super(context, list);
+        TypedValue typedValue = new TypedValue();
+        mContext.getTheme().resolveAttribute(R.attr.backgroundChapter, typedValue, true);
+        backgroundId = typedValue.resourceId;
+        mContext.getTheme().resolveAttribute(R.attr.colorChapterText, typedValue, true);
+        colorId = typedValue.resourceId;
     }
 
     @Override
@@ -84,11 +93,6 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
     }
 
     @Override
-    public Chapter getItem(int position) {
-        return super.getItem(position - 1);
-    }
-
-    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 0) {
             View view = mInflater.inflate(R.layout.item_chapter_header, parent, false);
@@ -98,28 +102,34 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
         return new ViewHolder(view);
     }
 
-    public void setInfo(int source, String image, String title, String author, String intro, Boolean status, String update, String last) {
+    public void setInfo(int source, String image, String title, String author, String intro, Boolean finish, String update, String last) {
         this.source = source;
         this.image = image;
         this.title = title;
         this.intro = intro;
-        this.status = status;
+        this.finish = finish;
         this.update = update;
         this.author = author;
         this.last = last;
+    }
+
+    public void setDownload(boolean[] download) {
+        for (int i = 0; i != download.length; ++i) {
+            mDataSet.get(i).setDownload(download[i]);
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.getControllerBuilder(source, mContext);
+            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.get(mContext, source);
             if (title != null) {
                 headerHolder.mComicImage.setController(builder.setUri(image).build());
                 headerHolder.mComicTitle.setText(title);
                 headerHolder.mComicIntro.setText(intro);
-                if (status != null) {
-                    headerHolder.mComicStatus.setText(status ? "完结" : "连载中");
+                if (finish != null) {
+                    headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
                 }
                 headerHolder.mComicUpdate.setText(update);
                 headerHolder.mComicAuthor.setText(author);
@@ -128,6 +138,13 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.chapterButton.setText(chapter.getTitle());
+            if (chapter.isDownload()) {
+                viewHolder.chapterButton.setBackgroundResource(R.drawable.button_chapter_download);
+                viewHolder.chapterButton.setTextColor(mContext.getResources().getColorStateList(R.color.button_chapter_color_download));
+            } else {
+                viewHolder.chapterButton.setBackgroundResource(backgroundId);
+                viewHolder.chapterButton.setTextColor(mContext.getResources().getColorStateList(colorId));
+            }
             if (chapter.getPath().equals(last)) {
                 viewHolder.chapterButton.setSelected(true);
             } else if (viewHolder.chapterButton.isSelected()) {
@@ -163,6 +180,23 @@ public class ChapterAdapter extends BaseAdapter<Chapter> {
                 notifyItemChanged(i + 1);
             }
         }
+    }
+
+    public List<String> getTitles() {
+        List<String> list = new ArrayList<>(mDataSet.size());
+        for (Chapter chapter : mDataSet) {
+            list.add(chapter.getTitle());
+        }
+        return list;
+    }
+
+    public String[] getPaths() {
+        int size = mDataSet.size();
+        String[] paths = new String[size];
+        for (int i = 0; i != size; ++i) {
+            paths[i] = mDataSet.get(i).getPath();
+        }
+        return paths;
     }
 
 }

@@ -5,8 +5,9 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
-import com.hiroshi.cimoc.utils.MachiSoup;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,16 +31,16 @@ public class IKanman extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("#detail > li > a")) {
+        for (Node node : body.list("#detail > li > a")) {
             String cid = node.attr("href", "/", 2);
             String title = node.text("h3");
             String cover = node.attr("div > img", "data-src");
             String update = node.text("dl:eq(5) > dd");
             String author = node.text("dl:eq(2) > dd");
-            boolean status = "完结".equals(node.text("div > i"));
-            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author, status));
+            // boolean status = "完结".equals(node.text("div > i"));
+            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author));
         }
         return list;
     }
@@ -53,8 +54,8 @@ public class IKanman extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
-        for (MachiSoup.Node node : body.list("#chapterList > ul > li > a")) {
+        Node body = new Node(html);
+        for (Node node : body.list("#chapterList > ul > li > a")) {
             String c_title = node.text("b");
             String c_path = node.attr("href", "/|\\.", 3);
             list.add(new Chapter(c_title, c_path));
@@ -80,7 +81,7 @@ public class IKanman extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String str = MachiSoup.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
+        String str = StringUtils.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
         if (str != null) {
             try {
                 String cipherStr = str.substring(8);
@@ -107,7 +108,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return MachiSoup.body(html).text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
+        return new Node(html).text("div.book-detail > div:eq(0) > dl:eq(2) > dd");
     }
 
 }

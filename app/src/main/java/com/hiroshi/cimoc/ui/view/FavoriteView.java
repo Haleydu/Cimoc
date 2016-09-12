@@ -23,4 +23,6 @@ public interface FavoriteView extends BaseView {
 
     void onProgressChange(int progress);
 
+    void onFilterLoad(String[] filter);
+
 }

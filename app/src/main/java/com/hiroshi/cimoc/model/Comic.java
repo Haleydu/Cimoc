@@ -17,45 +17,25 @@ public class Comic {
     @NotNull private String cid;
     @NotNull private String title;
     @NotNull private String cover;
-    @NotNull private String update;
     @NotNull private boolean highlight;
+    private String update;
+    private Boolean finish;
     private Long favorite;
     private Long history;
+    private Long download;
     private String last;
     private Integer page;
 
     @Transient private String intro;
     @Transient private String author;
-    @Transient private Boolean status;
 
-    @Generated(hash = 562563607)
-    public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
-            @NotNull String update, boolean highlight, Long favorite, Long history, String last, Integer page) {
-        this.id = id;
-        this.source = source;
-        this.cid = cid;
-        this.title = title;
-        this.cover = cover;
-        this.update = update;
-        this.highlight = highlight;
-        this.favorite = favorite;
-        this.history = history;
-        this.last = last;
-        this.page = page;
-    }
-
-    @Generated(hash = 1347984162)
-    public Comic() {
-    }
-
-    public Comic(int source, String cid, String title, String cover, String update, String author, Boolean status) {
+    public Comic(int source, String cid, String title, String cover, String update, String author) {
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
         this.update = update;
         this.author = author;
-        this.status = status;
     }
 
     public Comic(int source, String cid) {
@@ -63,18 +43,42 @@ public class Comic {
         this.cid = cid;
     }
 
+    @Generated(hash = 1222404104)
+    public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
+            boolean highlight, String update, Boolean finish, Long favorite, Long history, Long download,
+            String last, Integer page) {
+        this.id = id;
+        this.source = source;
+        this.cid = cid;
+        this.title = title;
+        this.cover = cover;
+        this.highlight = highlight;
+        this.update = update;
+        this.finish = finish;
+        this.favorite = favorite;
+        this.history = history;
+        this.download = download;
+        this.last = last;
+        this.page = page;
+    }
+
+    @Generated(hash = 1347984162)
+    public Comic() {
+    }
+    
+
     @Override
     public boolean equals(Object o) {
         return o instanceof Comic && ((Comic) o).id.equals(id);
     }
 
-    public void setInfo(String title, String cover, String update, String intro, String author, boolean status) {
+    public void setInfo(String title, String cover, String update, String intro, String author, boolean finish) {
         this.title = title;
         this.cover = cover;
         this.update = update;
         this.intro = intro;
         this.author = author;
-        this.status = status;
+        this.finish = finish;
         this.highlight = false;
     }
 
@@ -92,14 +96,6 @@ public class Comic {
 
     public void setAuthor(String author) {
         this.author = author;
-    }
-
-    public Boolean getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
     }
 
     public Integer getPage() {
@@ -188,6 +184,26 @@ public class Comic {
 
     public void setHighlight(boolean highlight) {
         this.highlight = highlight;
+    }
+
+    public Long getDownload() {
+        return this.download;
+    }
+
+    public void setDownload(Long download) {
+        this.download = download;
+    }
+
+    public Boolean getFinish() {
+        return this.finish;
+    }
+
+    public void setFinish(boolean finish) {
+        this.finish = finish;
+    }
+
+    public void setFinish(Boolean finish) {
+        this.finish = finish;
     }
 
 }
