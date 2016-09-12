@@ -55,7 +55,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        if (comic.getUpdate().isEmpty()) {
+        if (comic.getUpdate() == null) {
             viewHolder.tabUpdate.setVisibility(View.INVISIBLE);
         } else {
             viewHolder.comicUpdate.setText(comic.getUpdate());

@@ -33,19 +33,25 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
+        db.beginTransaction();
         switch (oldVersion) {
             case 1:
                 SourceDao.createTable(db, false);
                 initSource(db);
             case 2:
-                initHighlight(db);
+                updateHighlight(db);
             case 3:
-                initDownload(db);
+                TaskDao.createTable(db, false);
+                updateDownload(db);
+                break;
+            case 4:
+                updateTest(db);
         }
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     private void initSource(Database db) {
-        db.beginTransaction();
         SourceDao dao = new DaoMaster(db).newSession().getSourceDao();
         dao.insert(new Source(null, SourceManager.SOURCE_IKANMAN, true));
         dao.insert(new Source(null, SourceManager.SOURCE_DMZJ, true));
@@ -53,32 +59,31 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         dao.insert(new Source(null, SourceManager.SOURCE_CCTUKU, true));
         dao.insert(new Source(null, SourceManager.SOURCE_U17, true));
         dao.insert(new Source(null, SourceManager.SOURCE_DM5, true));
-        db.setTransactionSuccessful();
-        db.endTransaction();
     }
 
-    private void initDownload(Database db) {
-        db.beginTransaction();
-        TaskDao.createTable(db, false);
+    private void updateDownload(Database db) {
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"FINISH\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", null, \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
-        db.setTransactionSuccessful();
-        db.endTransaction();
     }
 
-    private void initHighlight(Database db) {
-        db.beginTransaction();
+    private void updateHighlight(Database db) {
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
         db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
                 " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " + System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
-        db.setTransactionSuccessful();
-        db.endTransaction();
+    }
+
+    private void updateTest(Database db) {
+        db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
+        ComicDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("DROP TABLE \"COMIC2\"");
     }
 
 }

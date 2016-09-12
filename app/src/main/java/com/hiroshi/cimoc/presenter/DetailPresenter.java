@@ -108,7 +108,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void updateIndex(List<Chapter> list) {
-        Download.update(list, mComic.getSource(), mComic.getTitle())
+        Download.update(list, mComic.getSource(), mComic.getCid(), mComic.getTitle(), mComic.getCover())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
@@ -167,8 +167,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         task.setId(id);
         task.setInfo(mComic.getSource(), mComic.getCid(), mComic.getTitle());
         task.setState(Task.STATE_WAIT);
-
-        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, new MiniComic(mComic)));
+        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, new MiniComic(mComic), task));
         return task;
     }
 

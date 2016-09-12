@@ -8,9 +8,11 @@ import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import rx.Observable;
@@ -25,20 +27,15 @@ public class Download {
     public static String dirPath =
             FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
 
-    public static Observable<Void> update(final List<Chapter> list, final int source, final String comic) {
+    public static Observable<Void> update(final List<Chapter> list, final int source, final String cid, final String comic, final String cover) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
                 try {
-                    JSONArray array = new JSONArray();
-                    for (Chapter chapter : list) {
-                        JSONObject object = new JSONObject();
-                        object.put("t", chapter.getTitle());
-                        object.put("p", chapter.getPath());
-                        array.put(object);
-                    }
+                    FileUtils.createFile(dirPath, ".nomedia");
+                    String jsonString = writeInfoToJson(list, source, cid, comic, cover);
                     String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic);
-                    if (FileUtils.writeStringToFile(dir, "index", array.toString())) {
+                    if (FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString))) {
                         subscriber.onNext(null);
                         subscriber.onCompleted();
                     } else {
@@ -51,31 +48,60 @@ public class Download {
         }).observeOn(Schedulers.io());
     }
 
+    private static String writeInfoToJson(List<Chapter> list, int source, String cid, String comic, String cover) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put("s", source);
+        object.put("i", cid);
+        object.put("m", comic);
+        object.put("o", cover);
+        JSONArray array = new JSONArray();
+        for (Chapter chapter : list) {
+            JSONObject temp = new JSONObject();
+            temp.put("t", chapter.getTitle());
+            temp.put("p", chapter.getPath());
+            array.put(temp);
+        }
+        object.put("c", array);
+        return object.toString();
+    }
+
     public static Observable<List<String>> get(final int source, final String comic) {
         return Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
                 String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic);
-                String jsonString = FileUtils.readSingleLineFromFile(dir, "index");
-                if (jsonString != null) {
-                    try {
-                        JSONArray array = new JSONArray(jsonString);
-                        int size = array.length();
-                        List<String> list = new ArrayList<>(size);
-                        for (int i = 0; i != size; ++i) {
-                            JSONObject object = array.getJSONObject(i);
-                            list.add(object.getString("p"));
+
+                char[] magic = FileUtils.readCharFromFile(dir, "index.cdif", 5);
+                if (!Arrays.equals(magic, "cimoc".toCharArray())) {
+                    subscriber.onError(new Exception());
+                } else {
+                    String jsonString = FileUtils.readSingleLineFromFile(dir, "index.cdif");
+                    if (jsonString != null) {
+                        try {
+                            List<String> list = readPathFromJson(jsonString.substring(5));
+                            subscriber.onNext(list);
+                            subscriber.onCompleted();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            subscriber.onError(new Exception());
                         }
-                        subscriber.onNext(list);
-                        subscriber.onCompleted();
-                    } catch (Exception e) {
+                    } else {
                         subscriber.onError(new Exception());
                     }
-                } else {
-                    subscriber.onError(new Exception());
                 }
             }
         }).observeOn(Schedulers.io());
+    }
+
+    private static List<String> readPathFromJson(String jsonString) throws JSONException {
+        JSONArray array = new JSONObject(jsonString).getJSONArray("c");
+        int size = array.length();
+        List<String> list = new ArrayList<>(size);
+        for (int i = 0; i != size; ++i) {
+            JSONObject object = array.getJSONObject(i);
+            list.add(object.getString("p"));
+        }
+        return list;
     }
 
     public static Observable<List<ImageUrl>> images(final int source, final String comic, final String title) {

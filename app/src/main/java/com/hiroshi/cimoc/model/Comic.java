@@ -17,9 +17,9 @@ public class Comic {
     @NotNull private String cid;
     @NotNull private String title;
     @NotNull private String cover;
-    @NotNull private String update;
-    @NotNull private boolean finish;
     @NotNull private boolean highlight;
+    private String update;
+    private Boolean finish;
     private Long favorite;
     private Long history;
     private Long download;
@@ -43,18 +43,18 @@ public class Comic {
         this.cid = cid;
     }
 
-    @Generated(hash = 310491570)
+    @Generated(hash = 1222404104)
     public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
-            @NotNull String update, boolean finish, boolean highlight, Long favorite, Long history,
-            Long download, String last, Integer page) {
+            boolean highlight, String update, Boolean finish, Long favorite, Long history, Long download,
+            String last, Integer page) {
         this.id = id;
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
+        this.highlight = highlight;
         this.update = update;
         this.finish = finish;
-        this.highlight = highlight;
         this.favorite = favorite;
         this.history = history;
         this.download = download;
@@ -65,6 +65,7 @@ public class Comic {
     @Generated(hash = 1347984162)
     public Comic() {
     }
+    
 
     @Override
     public boolean equals(Object o) {
@@ -193,11 +194,15 @@ public class Comic {
         this.download = download;
     }
 
-    public boolean getFinish() {
+    public Boolean getFinish() {
         return this.finish;
     }
 
     public void setFinish(boolean finish) {
+        this.finish = finish;
+    }
+
+    public void setFinish(Boolean finish) {
         this.finish = finish;
     }
 

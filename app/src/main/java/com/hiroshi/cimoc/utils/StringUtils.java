@@ -2,7 +2,11 @@ package com.hiroshi.cimoc.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Hiroshi on 2016/9/3.
@@ -38,5 +42,48 @@ public class StringUtils {
         return new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date()).concat(".").concat(suffix);
     }
 
+    public static String match(String regex, String input, int group) {
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.find()) {
+                return matcher.group(group);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String[] match(String regex, String input, int... group) {
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            if (matcher.find()) {
+                String[] result = new String[group.length];
+                for (int i = 0; i != result.length; ++i) {
+                    result[i] = matcher.group(group[i]);
+                }
+                return result;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<String> matchAll(String regex, String input, int group) {
+        LinkedList<String> list = new LinkedList<>();
+        try {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+            while (matcher.find()) {
+                list.add(matcher.group(group));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 }

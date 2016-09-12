@@ -141,6 +141,10 @@ public class Task implements Parcelable {
         this.comic = comic;
     }
 
+    public boolean isFinish() {
+        return max != 0 && progress == max;
+    }
+
     @Override
     public int describeContents() {
         return 0;

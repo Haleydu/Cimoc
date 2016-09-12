@@ -81,28 +81,30 @@ public class DetailActivity extends BackActivity implements DetailView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.detail_download:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
-                RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                recyclerView.setHasFixedSize(true);
-                recyclerView.setAdapter(mSelectAdapter);
-                builder.setTitle(R.string.detail_select_chapter);
-                builder.setView(view);
-                builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        download();
-                    }
-                });
-                builder.setNeutralButton(R.string.detail_download_all, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mSelectAdapter.checkAll();
-                        download();
-                    }
-                });
-                builder.show();
+                if (mSelectAdapter != null && mSelectAdapter.getItemCount() != 0) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
+                    RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setAdapter(mSelectAdapter);
+                    builder.setTitle(R.string.detail_select_chapter);
+                    builder.setView(view);
+                    builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            download();
+                        }
+                    });
+                    builder.setNeutralButton(R.string.detail_download_all, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mSelectAdapter.checkAll();
+                            download();
+                        }
+                    });
+                    builder.show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -213,7 +215,7 @@ public class DetailActivity extends BackActivity implements DetailView {
         mRecyclerView.setAdapter(mDetailAdapter);
         mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
 
-        if (comic.getTitle() != null && comic.getCover() != null && comic.getUpdate() != null) {
+        if (comic.getTitle() != null && comic.getCover() != null) {
             if (comic.getFavorite() != null) {
                 mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
             } else {

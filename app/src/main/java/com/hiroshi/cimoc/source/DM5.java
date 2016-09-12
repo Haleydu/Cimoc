@@ -5,8 +5,9 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,9 +28,9 @@ public class DM5 extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("div.midBar > div.item")) {
+        for (Node node : body.list("div.midBar > div.item")) {
             String cid = node.attr("dt > p > a.title", "href", "/", 1);
             String title = node.text("dt > p > a.title");
             String cover = node.attr("dl > a > img", "src");
@@ -50,9 +51,9 @@ public class DM5 extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         int count = 0;
-        for (MachiSoup.Node node : body.list("ul[id^=cbc_] > li > a")) {
+        for (Node node : body.list("ul[id^=cbc_] > li > a")) {
             String c_title = node.text();
             try {
                 String c_path = node.attr("href", "/", 1);
@@ -89,12 +90,12 @@ public class DM5 extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String[] rs = MachiSoup.match("var DM5_CID=(.*?);\\s*var DM5_IMAGE_COUNT=(\\d+);", html, 1, 2);
+        String[] rs = StringUtils.match("var DM5_CID=(.*?);\\s*var DM5_IMAGE_COUNT=(\\d+);", html, 1, 2);
         if (rs != null) {
             String format = "http://www.dm5.com/m%s/chapterfun.ashx?cid=%s&page=%d";
-            String packed = MachiSoup.match("eval(.*?)\\s*</script>", html, 1);
+            String packed = StringUtils.match("eval(.*?)\\s*</script>", html, 1);
             if (packed != null) {
-                String key = MachiSoup.match("comic=(.*?);", DecryptionUtils.evalDecrypt(packed), 1);
+                String key = StringUtils.match("comic=(.*?);", DecryptionUtils.evalDecrypt(packed), 1);
                 if (key != null) {
                     key = key.replaceAll("'|\\+", "");
                     format = format.concat("&key=").concat(key);
@@ -129,7 +130,7 @@ public class DM5 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return MachiSoup.body(html).text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
+        return new Node(html).text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
     }
 
 }

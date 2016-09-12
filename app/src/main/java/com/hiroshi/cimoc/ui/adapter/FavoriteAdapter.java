@@ -142,7 +142,7 @@ public class FavoriteAdapter extends ComicAdapter {
     }
 
     private boolean isFilter(MiniComic comic) {
-        return mFilterSet.contains(comic.isFinish() ? "已完结" : "连载中") ||
+        return mFilterSet.contains(comic.isFinish() != null && comic.isFinish() ? "已完结" : "连载中") ||
                 mFilterSet.contains(SourceManager.getTitle(comic.getSource()));
     }
 

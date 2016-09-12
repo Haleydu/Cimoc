@@ -49,6 +49,19 @@ public class FileUtils {
         return mkDirsIfNotExist(new File(dirPath));
     }
 
+    public static boolean createFile(String dirPath, String filename) {
+        File file = new File(dirPath, filename);
+        if (!file.exists()) {
+            try {
+                return mkDirsIfNotExist(dirPath) && file.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+        return true;
+    }
+
     private static boolean writeStringToFile(File file, String data) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
@@ -63,6 +76,23 @@ public class FileUtils {
 
     public static boolean writeStringToFile(String dirPath, String filename, String data) {
         return mkDirsIfNotExist(dirPath) && writeStringToFile(new File(dirPath, filename), data);
+    }
+
+    public static char[] readCharFromFile(File file, int count) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            char[] buffer = new char[count];
+            reader.read(buffer, 0, count);
+            reader.close();
+            return buffer;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static char[] readCharFromFile(String dirPath, String name, int count) {
+        return readCharFromFile(new File(dirPath, name), count);
     }
 
     public static String readSingleLineFromFile(File file) {

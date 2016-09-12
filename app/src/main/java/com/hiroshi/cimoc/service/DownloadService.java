@@ -25,7 +25,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -76,6 +75,7 @@ public class DownloadService extends Service {
                 Download download = new Download(task);
                 addDownload(task.getId(), download);
                 if (future == null) {
+                    RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_START));
                     download.running = true;
                     future = executor.submit(download);
                     if (notification == null) {
@@ -88,6 +88,17 @@ public class DownloadService extends Service {
             }
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (notification != null) {
+            if (future != null) {
+                future.cancel(true);
+            }
+            notifyCompleted();
+        }
     }
 
     private Download nextDownload() {
@@ -114,15 +125,20 @@ public class DownloadService extends Service {
                 if (download != null) {
                     future = executor.submit(download);
                 } else {
-                    NotificationUtils.setBuilder(this, builder, R.string.download_service_complete, false);
-                    NotificationUtils.notifyBuilder(1, notification, builder);
-                    notification = null;
-                    future = null;
+                    notifyCompleted();
                     stopSelf();
                 }
             }
             hashMap.remove(id);
         }
+    }
+
+    private void notifyCompleted() {
+        NotificationUtils.setBuilder(this, builder, R.string.download_service_complete, false);
+        NotificationUtils.notifyBuilder(1, notification, builder);
+        future = null;
+        notification = null;
+        RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_STOP));
     }
 
     public synchronized void initTask(List<Task> list) {
@@ -174,23 +190,21 @@ public class DownloadService extends Service {
                         if (response.isSuccessful()) {
                             InputStream byteStream = response.body().byteStream();
                             if (writeToFile(byteStream, i + 1, url)) {
-                                onDownloadProgress(i + 1);
+                                if (i + 1 == size) {
+                                    onDownloadFinish();
+                                } else {
+                                    onDownloadProgress(i + 1);
+                                }
                             } else {
                                 RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                                 break;
                             }
                         }
                         response.close();
-                    } catch (InterruptedIOException e) {
-                        break;
                     } catch (IOException e) {
                         RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                         break;
                     }
-                }
-
-                if (task.getMax() == task.getProgress()) {
-                    onDownloadFinish();
                 }
             } else {
                 RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));

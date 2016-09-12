@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.rx;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
@@ -30,7 +31,7 @@ public class RxBus {
                     public Boolean call(RxEvent rxEvent) {
                         return rxEvent.getType() == type;
                     }
-                });
+                }).observeOn(AndroidSchedulers.mainThread());
     }
 
     public static RxBus getInstance() {

@@ -22,9 +22,11 @@ public class RxEvent {
     public static final int TASK_PROCESS = 10;
     public static final int TASK_ADD = 11;
     public static final int DOWNLOAD_DELETE = 12;
+    public static final int DOWNLOAD_START = 13;
+    public static final int DOWNLOAD_STOP = 14;
 
     @IntDef({NETWORK_ERROR, FAVORITE_COMIC, UN_FAVORITE_COMIC, HISTORY_COMIC, COMIC_PAGE_CHANGE, COMIC_CHAPTER_CHANGE,
-            RESTORE_FAVORITE, COMIC_DELETE, TASK_STATE_CHANGE, TASK_PROCESS, TASK_ADD, DOWNLOAD_DELETE})
+            RESTORE_FAVORITE, COMIC_DELETE, TASK_STATE_CHANGE, TASK_PROCESS, TASK_ADD, DOWNLOAD_DELETE, DOWNLOAD_START, DOWNLOAD_STOP})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventType {}
 

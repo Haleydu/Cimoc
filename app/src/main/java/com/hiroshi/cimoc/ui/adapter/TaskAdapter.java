@@ -51,8 +51,8 @@ public class TaskAdapter extends BaseAdapter<Task> {
         int progress = task.getProgress();
         int max = task.getMax();
         viewHolder.taskPage.setText(StringUtils.getProgress(progress, max));
-        viewHolder.taskProgress.setProgress(progress);
         viewHolder.taskProgress.setMax(max);
+        viewHolder.taskProgress.setProgress(progress);
     }
 
     @Override
@@ -65,13 +65,14 @@ public class TaskAdapter extends BaseAdapter<Task> {
         };
     }
 
-    public Task getItemById(long id) {
-        for (Task task : mDataSet) {
-            if (task.getId() == id) {
-                return task;
+    public int getPositionById(long id) {
+        int size = mDataSet.size();
+        for (int i = 0; i != size; ++i) {
+            if (mDataSet.get(i).getId() == id) {
+                return i;
             }
         }
-        return null;
+        return -1;
     }
 
     public String[] getTaskTitle() {

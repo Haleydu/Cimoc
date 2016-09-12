@@ -117,6 +117,11 @@
 
     <string name="download_service_doing">正在下载漫画</string>
     <string name="download_service_complete">所有任务已完成</string>
+    <string name="download_load_comic_fail">加载漫画失败</string>
+    <string name="download_start_success">已开始全部下载任务</string>
+    <string name="download_stop_success">已暂停全部下载任务</string>
+    <string name="download_task_empty">下载任务为空</string>
+    <string name="download_task_fail">读取任务失败</string>
 
     <string name="task_parse">正在解析</string>
     <string name="task_pause">暂停下载</string>
@@ -125,7 +130,9 @@
     <string name="task_finish">下载完成</string>
     <string name="task_error">下载错误</string>
     <string name="task_list">任务列表</string>
+    <string name="task_load_fail">找不到索引文件</string>
     <string name="task_delete_multi">批量删除</string>
+    <string name="task_delete_all">删除所有</string>
     <string name="task_delete_confirm">是否删除下载内容</string>
     <string name="task_delete_success">删除成功</string>
     <string name="task_delete_fail">删除失败</string>

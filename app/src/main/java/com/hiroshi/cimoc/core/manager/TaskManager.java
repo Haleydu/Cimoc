@@ -29,6 +29,12 @@ public class TaskManager {
                 .list();
     }
 
+    public Observable<List<Task>> list() {
+        return mTaskDao.queryBuilder()
+                .rx()
+                .list();
+    }
+
     public long insert(Task task) {
         return mTaskDao.insert(task);
     }
@@ -39,10 +45,6 @@ public class TaskManager {
 
     public void delete(Task task) {
         mTaskDao.delete(task);
-    }
-
-    public void deleteInTx(Iterable<Task> entities) {
-        mTaskDao.deleteInTx(entities);
     }
 
     public static TaskManager getInstance() {

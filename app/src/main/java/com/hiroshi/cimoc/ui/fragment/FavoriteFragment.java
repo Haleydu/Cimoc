@@ -130,7 +130,7 @@ public class FavoriteFragment extends BaseFragment implements FavoriteView, Base
                                 public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                                     temp[which] = isChecked;
                                 }
-                            }, new DialogInterface.OnClickListener() {
+                            }, -1, null, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     checked = temp;

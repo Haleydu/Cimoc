@@ -11,7 +11,7 @@ public class MiniComic {
     private String title;
     private String cover;
     private String update;
-    private boolean finish;
+    private Boolean finish;
     private boolean highlight;
 
     public MiniComic(Comic comic) {
@@ -30,7 +30,7 @@ public class MiniComic {
         return o instanceof MiniComic && ((MiniComic) o).id.equals(id);
     }
 
-    public boolean isFinish() {
+    public Boolean isFinish() {
         return this.finish;
     }
 

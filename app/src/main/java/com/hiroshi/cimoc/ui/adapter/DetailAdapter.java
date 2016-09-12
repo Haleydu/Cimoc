@@ -31,7 +31,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     private String update;
     private String author;
     private String intro;
-    private Boolean status;
+    private Boolean finish;
 
     private String last;
     private int backgroundId;
@@ -102,12 +102,12 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         return new ViewHolder(view);
     }
 
-    public void setInfo(int source, String image, String title, String author, String intro, Boolean status, String update, String last) {
+    public void setInfo(int source, String image, String title, String author, String intro, Boolean finish, String update, String last) {
         this.source = source;
         this.image = image;
         this.title = title;
         this.intro = intro;
-        this.status = status;
+        this.finish = finish;
         this.update = update;
         this.author = author;
         this.last = last;
@@ -128,8 +128,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 headerHolder.mComicImage.setController(builder.setUri(image).build());
                 headerHolder.mComicTitle.setText(title);
                 headerHolder.mComicIntro.setText(intro);
-                if (status != null) {
-                    headerHolder.mComicStatus.setText(status ? "完结" : "连载中");
+                if (finish != null) {
+                    headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
                 }
                 headerHolder.mComicUpdate.setText(update);
                 headerHolder.mComicAuthor.setText(author);

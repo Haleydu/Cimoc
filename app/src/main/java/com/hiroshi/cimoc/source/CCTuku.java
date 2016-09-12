@@ -5,8 +5,9 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,13 +28,13 @@ public class CCTuku extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
-        int total = Integer.parseInt(MachiSoup.match("\\d+", body.text("div.title-banner > div > h1"), 0));
+        Node body = new Node(html);
+        int total = Integer.parseInt(StringUtils.match("\\d+", body.text("div.title-banner > div > h1"), 0));
         if (page > total) {
             return null;
         }
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("div.main-list > div > div > div")) {
+        for (Node node : body.list("div.main-list > div > div > div")) {
             String cid = node.attr("div:eq(1) > div:eq(0) > a", "href", "/", 2);
             String title = node.text("div:eq(1) > div:eq(0) > a");
             String cover = node.attr("div:eq(0) > a > img", "src");
@@ -53,8 +54,8 @@ public class CCTuku extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
-        for (MachiSoup.Node node : body.list("ul.list-body > li > a")) {
+        Node body = new Node(html);
+        for (Node node : body.list("ul.list-body > li > a")) {
             String c_title = node.text();
             String c_path = node.attr("href", "/", 3);
             list.add(new Chapter(c_title, c_path));
@@ -80,11 +81,11 @@ public class CCTuku extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String[] rs = MachiSoup.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
+        String[] rs = StringUtils.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
         if (rs != null) {
             try {
                 String result = DecryptionUtils.evalDecrypt(rs[1]);
-                String[] array = MachiSoup.match("pic_url='(.*?)';.*?tpf=(\\d+?);.*pages=(\\d+?);.*?pid=(.*?);.*?pic_extname='(.*?)';", result, 1, 2, 3, 4, 5);
+                String[] array = StringUtils.match("pic_url='(.*?)';.*?tpf=(\\d+?);.*pages=(\\d+?);.*?pid=(.*?);.*?pic_extname='(.*?)';", result, 1, 2, 3, 4, 5);
                 if (array != null) {
                     int tpf = Integer.parseInt(array[1]) + 1;
                     int pages = Integer.parseInt(array[2]);
@@ -107,7 +108,7 @@ public class CCTuku extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return MachiSoup.body(html).text("div.book > div > div:eq(0) > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
+        return new Node(html).text("div.book > div > div:eq(0) > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
     }
 
 }

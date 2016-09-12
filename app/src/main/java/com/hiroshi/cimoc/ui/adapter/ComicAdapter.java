@@ -102,4 +102,13 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         }
     }
 
+    public MiniComic getItemById(long id) {
+        for (MiniComic comic : mDataSet) {
+            if (comic.getId() == id) {
+                return comic;
+            }
+        }
+        return null;
+    }
+
 }

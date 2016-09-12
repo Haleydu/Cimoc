@@ -100,7 +100,13 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                             @Override
                             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                                 array[which] = isChecked;
-
+                            }
+                        }, R.string.task_delete_all, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mProgressDialog.show();
+                                mPresenter.deleteTask(new LinkedList<>(mTaskAdapter.getDateSet()), source, comic, key, true);
+                                mTaskAdapter.clear();
                             }
                         }, new DialogInterface.OnClickListener() {
                             @Override
@@ -112,8 +118,8 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                                         list.add(mTaskAdapter.getItem(i));
                                     }
                                 }
+                                mPresenter.deleteTask(list, source, comic, key, mTaskAdapter.getItemCount() == list.size());
                                 mTaskAdapter.removeAll(list);
-                                mPresenter.deleteTask(list, source, comic, key, mTaskAdapter.getItemCount() == 0);
                             }
                         }).show();
                 break;
@@ -166,8 +172,8 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                     public void onClick(DialogInterface dialog, int which) {
                         mProgressDialog.show();
                         Task task = mTaskAdapter.getItem(position);
+                        mPresenter.deleteTask(task, mTaskAdapter.getItemCount() == 1);
                         mTaskAdapter.remove(position);
-                        mPresenter.deleteTask(task, mTaskAdapter.getItemCount() == 0);
                     }
                 }).show();
     }
@@ -182,6 +188,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         for (Task task : list) {
             task.setInfo(source, cid, comic);
         }
+        mTaskAdapter.addAll(list);
         mPresenter.sortTask(list, source, comic);
     }
 
@@ -191,8 +198,8 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mBinder = (DownloadServiceBinder) service;
-                mBinder.getService().initTask(list);
-                mTaskAdapter.addAll(list);
+                mBinder.getService().initTask(mTaskAdapter.getDateSet());
+                mTaskAdapter.setData(list);
                 mRecyclerView.setAdapter(mTaskAdapter);
                 hideProgressBar();
             }
@@ -201,6 +208,19 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
             public void onServiceDisconnected(ComponentName name) {}
         };
         bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public void onLoadIndexFail() {
+        hideProgressBar();
+        showSnackbar(R.string.task_load_fail);
+    }
+
+    @Override
+    public void onTaskAdd(Task task) {
+        if (task.getSource() == source && task.getComic().equals(comic)) {
+            mTaskAdapter.add(0, task);
+        }
     }
 
     @Override
@@ -217,54 +237,61 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     @Override
     public void onTaskError(long id) {
-        Task task = mTaskAdapter.getItemById(id);
-        if (task != null) {
-            task.setState(Task.STATE_ERROR);
-            notifyItemChanged(task);
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            Task task = mTaskAdapter.getItem(position);
+            if (task.getState() != Task.STATE_PAUSE) {
+                mTaskAdapter.getItem(position).setState(Task.STATE_ERROR);
+                notifyItemChanged(position);
+            }
         }
     }
 
     @Override
     public void onTaskDoing(long id, int max) {
-        Task task = mTaskAdapter.getItemById(id);
-        if (task != null) {
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            Task task = mTaskAdapter.getItem(position);
             task.setMax(max);
             task.setState(Task.STATE_DOING);
-            notifyItemChanged(task);
+            notifyItemChanged(position);
         }
     }
 
     @Override
     public void onTaskFinish(long id) {
-        Task task = mTaskAdapter.getItemById(id);
-        if (task != null) {
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            Task task = mTaskAdapter.getItem(position);
+            task.setProgress(task.getMax());
             task.setState(Task.STATE_FINISH);
-            notifyItemChanged(task);
+            notifyItemChanged(position);
         }
     }
 
     @Override
     public void onTaskParse(long id) {
-        Task task = mTaskAdapter.getItemById(id);
-        if (task != null) {
-            task.setState(Task.STATE_PARSE);
-            notifyItemChanged(task);
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            mTaskAdapter.getItem(position).setState(Task.STATE_PARSE);
+            notifyItemChanged(position);
         }
     }
 
     @Override
     public void onTaskProcess(long id, int progress, int max) {
-        Task task = mTaskAdapter.getItemById(id);
-        if (task != null) {
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            Task task = mTaskAdapter.getItem(position);
             task.setProgress(progress);
             task.setMax(max);
-            notifyItemChanged(task);
+            notifyItemChanged(position);
         }
     }
 
-    private void notifyItemChanged(Task task) {
+    private void notifyItemChanged(int position) {
         if (!mRecyclerView.isComputingLayout()) {
-            mTaskAdapter.notifyItemChanged(task);
+            mTaskAdapter.notifyItemChanged(position);
         }
     }
 

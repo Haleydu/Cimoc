@@ -5,7 +5,8 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,7 +35,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        String jsonString = MachiSoup.match("g_search_data = (.*);", html, 1);
+        String jsonString = StringUtils.match("g_search_data = (.*);", html, 1);
         List<Comic> list = new LinkedList<>();
         if (jsonString != null) {
             try {
@@ -69,7 +70,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
-        String jsonString = MachiSoup.match("\"data\":(\\[.*?\\])", html, 1);
+        String jsonString = StringUtils.match("\"data\":(\\[.*?\\])", html, 1);
         List<Chapter> list = new LinkedList<>();
         if (jsonString != null) {
             try {
@@ -85,7 +86,7 @@ public class Dmzj extends MangaParser {
             }
         }
 
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         String intro = body.text("p.txtDesc", 3);
         String title = body.attr("#Cover > img", "title");
         String cover = body.attr("#Cover > img", "src");
@@ -106,7 +107,7 @@ public class Dmzj extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String jsonString = MachiSoup.match("\"page_url\":(\\[.*?\\]),", html, 1);
+        String jsonString = StringUtils.match("\"page_url\":(\\[.*?\\]),", html, 1);
         if (jsonString != null) {
             try {
                 JSONArray array = new JSONArray(jsonString);
@@ -127,7 +128,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return MachiSoup.body(html).text("div.Introduct_Sub > .sub_r > p:eq(3) > .date", 0, 10);
+        return new Node(html).text("div.Introduct_Sub > .sub_r > p:eq(3) > .date", 0, 10);
     }
 
 }

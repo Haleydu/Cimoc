@@ -23,7 +23,7 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends BaseActivity implements ResultView, BaseAdapter.OnItemClickListener {
+public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.result_layout) LinearLayout mLinearLayout;
@@ -41,24 +41,8 @@ public class ResultActivity extends BaseActivity implements ResultView, BaseAdap
     }
 
     @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void initToolbar() {
-        super.initToolbar();
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-    }
-
-    @Override
     protected void initView() {
+        super.initView();
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
         mResultAdapter.setOnItemClickListener(this);
@@ -84,25 +68,16 @@ public class ResultActivity extends BaseActivity implements ResultView, BaseAdap
     }
 
     @Override
+    protected void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
     public void onItemClick(View view, int position) {
         Comic comic = mResultAdapter.getItem(position);
         Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
         startActivity(intent);
-    }
-
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.activtiy_result;
-    }
-
-    @Override
-    protected View getLayoutView() {
-        return mLinearLayout;
-    }
-
-    @Override
-    protected String getDefaultTitle() {
-        return getString(R.string.result);
     }
 
     @Override
@@ -129,8 +104,23 @@ public class ResultActivity extends BaseActivity implements ResultView, BaseAdap
     }
 
     @Override
-    public void showLayout() {
+    public void onFirstLoadSuccess() {
         hideProgressBar();
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activtiy_result;
+    }
+
+    @Override
+    protected View getLayoutView() {
+        return mLinearLayout;
+    }
+
+    @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.result);
     }
 
     public static final String EXTRA_KEYWORD = "a";

@@ -13,6 +13,10 @@ public interface TaskView extends BaseView {
 
     void onSortSuccess(List<Task> list);
 
+    void onLoadIndexFail();
+
+    void onTaskAdd(Task task);
+
     void onTaskParse(long id);
 
     void onTaskDoing(long id, int max);

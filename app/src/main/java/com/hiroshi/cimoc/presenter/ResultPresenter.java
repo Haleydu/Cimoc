@@ -35,7 +35,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                         @Override
                         public void onCompleted() {
                             if (page == 1) {
-                                mBaseView.showLayout();
+                                mBaseView.onFirstLoadSuccess();
                             }
                             isLoading = false;
                         }

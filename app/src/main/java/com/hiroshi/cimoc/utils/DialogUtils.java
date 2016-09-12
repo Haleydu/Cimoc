@@ -38,12 +38,16 @@ public class DialogUtils {
     }
 
     public static AlertDialog buildMultiChoiceDialog(Context context, int titleId, CharSequence[] items, boolean[] checkedItems,
-                                                     OnMultiChoiceClickListener listener, OnClickListener positive) {
+                                                     OnMultiChoiceClickListener listener, int textId, OnClickListener neutral,
+                                                     OnClickListener positive) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(titleId);
         builder.setMultiChoiceItems(items, checkedItems, listener);
         if (positive != null) {
             builder.setPositiveButton(R.string.dialog_positive, positive);
+        }
+        if (neutral != null) {
+            builder.setNeutralButton(textId, neutral);
         }
         return builder.create();
     }

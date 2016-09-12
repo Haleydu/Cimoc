@@ -60,6 +60,12 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 mBaseView.onTaskProcess(id, (int) rxEvent.getData(1), (int) rxEvent.getData(2));
             }
         });
+        addSubscription(RxEvent.TASK_ADD, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onTaskAdd((Task) rxEvent.getData(1));
+            }
+        });
     }
 
     public void loadTask(long key) {
@@ -69,8 +75,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     @Override
                     public void call(List<Task> list) {
                         for (Task task : list) {
-                            int state = task.getMax() != 0 && task.getProgress() == task.getMax() ?
-                                    Task.STATE_FINISH : Task.STATE_PAUSE;
+                            int state = task.isFinish() ? Task.STATE_FINISH : Task.STATE_PAUSE;
                             task.setState(state);
                         }
                         mBaseView.onLoadSuccess(list);
@@ -92,26 +97,41 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         });
                         mBaseView.onSortSuccess(list);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onLoadIndexFail();
+                    }
                 });
     }
 
     public void deleteTask(final Task task, final boolean isEmpty) {
         Download.delete(task.getSource(), task.getComic(), task.getTitle())
+                .flatMap(new Func1<Object, Observable<Void>>() {
+                    @Override
+                    public Observable<Void> call(Object o) {
+                        return mComicManager.runInTx(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isEmpty) {
+                                    Comic comic = mComicManager.load(task.getKey());
+                                    if (comic.getFavorite() == null && comic.getHistory() == null) {
+                                        mComicManager.delete(comic);
+                                    } else {
+                                        comic.setDownload(null);
+                                        mComicManager.update(comic);
+                                    }
+                                    RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_DELETE, task.getKey()));
+                                }
+                                mTaskManager.delete(task);
+                            }
+                        });
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        if (isEmpty) {
-                            Comic comic = mComicManager.load(task.getKey());
-                            if (comic.getFavorite() == null && comic.getHistory() == null) {
-                                mComicManager.delete(comic);
-                            } else {
-                                comic.setDownload(null);
-                                mComicManager.update(comic);
-                            }
-                            RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_DELETE, task.getKey()));
-                        }
-                        mTaskManager.delete(task);
                         mBaseView.onTaskDeleteSuccess();
                     }
                 }, new Action1<Throwable>() {
@@ -144,25 +164,20 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                             @Override
                             public void run() {
                                 if (isEmpty) {
-                                    for (Task task : list) {
-                                        Comic comic = mComicManager.load(task.getKey());
-                                        if (comic.getFavorite() == null && comic.getHistory() == null) {
-                                            mComicManager.delete(comic);
-                                        } else {
-                                            comic.setDownload(null);
-                                            mComicManager.update(comic);
-                                        }
+                                    Comic comic = mComicManager.load(key);
+                                    if (comic.getFavorite() == null && comic.getHistory() == null) {
+                                        mComicManager.delete(comic);
+                                    } else {
+                                        comic.setDownload(null);
+                                        mComicManager.update(comic);
                                     }
                                     RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_DELETE, key));
                                 }
+                                for (Task task : list) {
+                                    mTaskManager.delete(task);
+                                }
                             }
                         });
-                    }
-                })
-                .doOnNext(new Action1<Object>() {
-                    @Override
-                    public void call(Object o) {
-                        mTaskManager.deleteInTx(list);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

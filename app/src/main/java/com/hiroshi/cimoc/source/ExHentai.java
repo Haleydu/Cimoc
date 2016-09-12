@@ -5,7 +5,8 @@ import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.MachiSoup;
+import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,9 +27,9 @@ public class ExHentai extends MangaParser {
 
     @Override
     public List<Comic> parseSearch(String html, int page) {
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         List<Comic> list = new LinkedList<>();
-        for (MachiSoup.Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
+        for (Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
             String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
             cid = cid.substring(23, cid.length() - 1);
             String title = node.text("td:eq(2) > div > div:eq(2) > a");
@@ -38,7 +39,7 @@ public class ExHentai extends MangaParser {
                 cover = "https://exhentai.org/" + temp;
             }
             String update = node.text("td:eq(1)", 0, 10);
-            String author = MachiSoup.match("\\[(.*?)\\]", title, 1);
+            String author = StringUtils.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s+", "");
             list.add(new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author));
         }
@@ -54,7 +55,7 @@ public class ExHentai extends MangaParser {
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
         int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
         for (int i = 0; i != size; ++i) {
@@ -80,9 +81,9 @@ public class ExHentai extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        MachiSoup.Node body = MachiSoup.body(html);
+        Node body = new Node(html);
         int count = 0;
-        for (MachiSoup.Node node : body.list("#gdt > div > div > a")) {
+        for (Node node : body.list("#gdt > div > div > a")) {
             list.add(new ImageUrl(++count, node.attr("href"), true));
         }
         return list;
@@ -95,7 +96,7 @@ public class ExHentai extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
-        return MachiSoup.body(html).attr("#img", "src");
+        return new Node(html).attr("#img", "src");
     }
 
 }

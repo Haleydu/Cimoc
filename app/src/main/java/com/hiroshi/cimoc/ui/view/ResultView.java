@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface ResultView extends BaseView {
 
-    void showLayout();
+    void onFirstLoadSuccess();
 
     void onParseError();
 
