@@ -34,7 +34,12 @@ public class AboutFragment extends BaseFragment implements AboutView {
 
     @OnClick(R.id.about_resource_btn) void onResourceClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_resource_url)));
-        startActivity(intent);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showSnackbar(R.string.about_resource_fail);
+        }
     }
 
     @OnClick(R.id.about_update_btn) void onUpdateClick() {

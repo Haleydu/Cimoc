@@ -38,6 +38,13 @@ Online manga reader based on Android
 - [PhotoDraweeView](https://github.com/ongakuer/PhotoDraweeView)
 - [Rhino](https://www.mozilla.org/rhino/)
 
+# ToDo
+- 综合搜索
+- 漫画标签分类
+- 多线程下载
+- 更改下载路径
+- 扫描已下载漫画
+
 # 应用截图
 <img src="./screenshot/01.png" width="30%" height="30%">
 <img src="./screenshot/02.png" width="30%" height="30%">

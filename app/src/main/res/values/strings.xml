@@ -102,6 +102,7 @@
     <string name="about_update_download">点击下载最新版本</string>
     <string name="about_update_doing">正在检查更新</string>
     <string name="about_update_fail">检查更新失败</string>
+    <string name="about_resource_fail">打开网页失败</string>
 
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>

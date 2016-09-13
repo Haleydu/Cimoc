@@ -124,8 +124,13 @@ public class SettingsFragment extends BaseFragment implements SettingsView {
     }
 
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
-        showProgressDialog();
-        mPresenter.loadFiles();
+        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            showProgressDialog();
+            mPresenter.loadFiles();
+        }
     }
 
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {

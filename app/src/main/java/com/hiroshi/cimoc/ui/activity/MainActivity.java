@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -64,6 +65,9 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         mProgressDialog.dismiss();
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {}
 
     @Override
     protected void initView() {
