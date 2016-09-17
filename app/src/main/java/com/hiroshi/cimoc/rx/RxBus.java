@@ -31,7 +31,7 @@ public class RxBus {
                     public Boolean call(RxEvent rxEvent) {
                         return rxEvent.getType() == type;
                     }
-                }).observeOn(AndroidSchedulers.mainThread());
+                }).onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread());
     }
 
     public static RxBus getInstance() {

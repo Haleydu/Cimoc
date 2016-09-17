@@ -31,6 +31,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         mComicManager = ComicManager.getInstance();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.TASK_STATE_CHANGE, new Action1<RxEvent>() {
@@ -63,7 +64,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         addSubscription(RxEvent.TASK_ADD, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onTaskAdd((Task) rxEvent.getData(1));
+                mBaseView.onTaskAdd((List<Task>) rxEvent.getData(1));
             }
         });
     }

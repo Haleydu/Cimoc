@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
-        versionName "1.4.0"
+        versionName "1.4.1"
         resConfigs "en", "zh"
     }
     buildTypes {

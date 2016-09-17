@@ -118,8 +118,12 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                                         list.add(mTaskAdapter.getItem(i));
                                     }
                                 }
-                                mPresenter.deleteTask(list, source, comic, key, mTaskAdapter.getItemCount() == list.size());
-                                mTaskAdapter.removeAll(list);
+                                if (list.isEmpty()) {
+                                    mProgressDialog.hide();
+                                } else {
+                                    mPresenter.deleteTask(list, source, comic, key, mTaskAdapter.getItemCount() == list.size());
+                                    mTaskAdapter.removeAll(list);
+                                }
                             }
                         }).show();
                 break;
@@ -217,9 +221,10 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    public void onTaskAdd(Task task) {
+    public void onTaskAdd(List<Task> list) {
+        Task task = list.get(0);
         if (task.getSource() == source && task.getComic().equals(comic)) {
-            mTaskAdapter.add(0, task);
+            mTaskAdapter.addAll(0, list);
         }
     }
 

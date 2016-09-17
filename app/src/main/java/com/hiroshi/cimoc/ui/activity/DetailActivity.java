@@ -30,6 +30,7 @@ import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -181,16 +182,28 @@ public class DetailActivity extends BackActivity implements DetailView {
     }
 
     @Override
-    public void onUpdateIndexSuccess() {
-        for (int position : mSelectAdapter.getCheckedList()) {
-            Chapter chapter = mDetailAdapter.getItem(position);
-            Task task = mPresenter.addTask(chapter.getPath(), chapter.getTitle());
-            Intent intent = DownloadService.createIntent(DetailActivity.this, task);
-            startService(intent);
-        }
+    public void onTaskAddSuccess(ArrayList<Task> list) {
+        Intent intent = DownloadService.createIntent(DetailActivity.this, list);
+        startService(intent);
         mSelectAdapter.refreshChecked();
         mProgressDialog.hide();
         showSnackbar(R.string.detail_download_queue_success);
+    }
+
+    @Override
+    public void onTaskAddFail() {
+        mProgressDialog.hide();
+        showSnackbar(R.string.detail_download_queue_fail);
+    }
+
+    @Override
+    public void onUpdateIndexSuccess() {
+        List<Integer> checked = mSelectAdapter.getCheckedList();
+        List<Chapter> list = new ArrayList<>(checked.size());
+        for (int position : checked) {
+            list.add(mDetailAdapter.getItem(position));
+        }
+        mPresenter.addTask(list);
     }
 
     @Override

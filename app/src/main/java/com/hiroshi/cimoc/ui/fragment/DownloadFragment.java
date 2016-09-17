@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +19,7 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,6 +60,12 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
     @Override
     protected void initData() {
         start = false;
+        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo info : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (info.service.getClassName().equals(DownloadService.class.getName())) {
+                onDownloadStart();
+            }
+        }
         mPresenter.loadComic();
     }
 
@@ -104,7 +113,7 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
     }
 
     @Override
-    public void onTaskLoadSuccess(List<Task> list) {
+    public void onTaskLoadSuccess(ArrayList<Task> list) {
         if (list.isEmpty()) {
             showSnackbar(R.string.download_task_empty);
         } else {
@@ -114,9 +123,9 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
                     task.setInfo(comic.getSource(), comic.getCid(), comic.getTitle());
                 }
                 task.setState(Task.STATE_WAIT);
-                Intent intent = DownloadService.createIntent(getActivity(), task);
-                getActivity().startService(intent);
             }
+            Intent intent = DownloadService.createIntent(getActivity(), list);
+            getActivity().startService(intent);
             showSnackbar(R.string.download_start_success);
         }
         hideProgressDialog();

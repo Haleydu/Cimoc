@@ -163,14 +163,14 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException, ParseErrorException {
+    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException, EmptyResultException {
         Response response = null;
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 return response.body().string();
             } else {
-                throw new ParseErrorException();
+                throw new EmptyResultException();
             }
         } catch (IOException e){
             throw new NetworkErrorException();

@@ -2,7 +2,9 @@ package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +23,10 @@ public interface DetailView extends BaseView {
     void onDownloadLoadSuccess(boolean[] download, boolean[] complete);
 
     void onDownloadLoadFail();
+
+    void onTaskAddSuccess(ArrayList<Task> list);
+
+    void onTaskAddFail();
 
     void onUpdateIndexSuccess();
 

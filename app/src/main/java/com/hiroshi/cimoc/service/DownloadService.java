@@ -25,6 +25,7 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -70,8 +71,8 @@ public class DownloadService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            Task task =  intent.getParcelableExtra(EXTRA_TASK);
-            if (task != null) {
+            List<Task> list =  intent.getParcelableArrayListExtra(EXTRA_TASK);
+            for (Task task : list) {
                 Download download = new Download(task);
                 addDownload(task.getId(), download);
                 if (future == null) {
@@ -257,8 +258,14 @@ public class DownloadService extends Service {
     private static final String EXTRA_TASK = "a";
 
     public static Intent createIntent(Context context, Task task) {
+        ArrayList<Task> list = new ArrayList<>(1);
+        list.add(task);
+        return createIntent(context, list);
+    }
+
+    public static Intent createIntent(Context context, ArrayList<Task> list) {
         Intent intent = new Intent(context, DownloadService.class);
-        intent.putExtra(EXTRA_TASK, task);
+        intent.putParcelableArrayListExtra(EXTRA_TASK, list);
         return intent;
     }
 

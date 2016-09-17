@@ -15,7 +15,7 @@ public interface TaskView extends BaseView {
 
     void onLoadIndexFail();
 
-    void onTaskAdd(Task task);
+    void onTaskAdd(List<Task> list);
 
     void onTaskParse(long id);
 

@@ -183,8 +183,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mProgressLayout.setVisibility(View.INVISIBLE);
             mBackLayout.setVisibility(View.INVISIBLE);
         } else {
-            mSeekBar.setProgress(progress);
             mSeekBar.setMax(max);
+            mSeekBar.setProgress(progress);
             mProgressLayout.setVisibility(View.VISIBLE);
             mBackLayout.setVisibility(View.VISIBLE);
         }
