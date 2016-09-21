@@ -35,4 +35,10 @@ public abstract class BackActivity extends BaseActivity {
         mProgressDialog = DialogUtils.buildCancelableFalseDialog(this, R.string.dialog_doing);
     }
 
+    protected void hideProgressBar() {
+        if (mProgressBar.isShown()) {
+            mProgressBar.setVisibility(View.GONE);
+        }
+    }
+
 }

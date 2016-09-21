@@ -36,6 +36,14 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.AboutActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.PageReaderActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"

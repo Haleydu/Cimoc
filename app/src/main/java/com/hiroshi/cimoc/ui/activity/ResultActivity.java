@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import butterknife.BindView;
@@ -34,8 +35,8 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mPresenter = new ResultPresenter(new int[] {0, 1, 2, 3}, keyword);
+        ArrayList<Integer> source = getIntent().getIntegerArrayListExtra(EXTRA_SOURCE);
+        mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
     }
 
@@ -85,21 +86,15 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     }
 
     @Override
-    public void onNetworkError() {
-        hideProgressBar();
-        showSnackbar(R.string.common_network_error);
-    }
-
-    @Override
-    public void onParseError() {
-        hideProgressBar();
-        showSnackbar(R.string.common_parse_error);
-    }
-
-    @Override
-    public void onEmptyResult() {
+    public void onResultEmpty() {
         hideProgressBar();
         showSnackbar(R.string.result_empty);
+    }
+
+    @Override
+    public void onSearchError() {
+        hideProgressBar();
+        showSnackbar(R.string.result_error);
     }
 
     @Override
@@ -120,10 +115,10 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";
 
-    public static Intent createIntent(Context context, String keyword, int sid) {
+    public static Intent createIntent(Context context, String keyword, ArrayList<Integer> list) {
         Intent intent = new Intent(context, ResultActivity.class);
         intent.putExtra(EXTRA_KEYWORD, keyword);
-        intent.putExtra(EXTRA_SOURCE, sid);
+        intent.putIntegerArrayListExtra(EXTRA_SOURCE, list);
         return intent;
     }
 

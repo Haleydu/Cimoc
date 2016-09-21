@@ -36,14 +36,14 @@ public class Manga {
                 Request request = parser.getSearchRequest(keyword, page);
                 Random random = new Random();
                 try {
-                    String html = getResponseBody(new OkHttpClient(), request);
+                    String html = getResponseBody(mClient, request);
                     SearchIterator iterator = parser.getSearchIterator(html, page);
                     if (iterator == null || iterator.empty()) {
                         subscriber.onError(new EmptyResultException());
                     } else {
                         while (iterator.hasNext()) {
                             subscriber.onNext(iterator.next());
-                            Thread.sleep(random.nextInt(100));
+                            Thread.sleep(random.nextInt(200));
                         }
                         subscriber.onCompleted();
                     }

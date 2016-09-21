@@ -13,35 +13,41 @@ import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.ui.fragment.AboutFragment;
+import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.CimocFragment;
 import com.hiroshi.cimoc.ui.fragment.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
-import com.hiroshi.cimoc.ui.fragment.SettingsFragment;
 import com.hiroshi.cimoc.ui.fragment.SourceFragment;
+import com.hiroshi.cimoc.ui.view.MainView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MainView {
 
-    private static final int FRAGMENT_NUM = 7;
+    private static final int FRAGMENT_NUM = 5;
 
     @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
+    TextView mLastText;
 
     private AlertDialog mProgressDialog;
+    private MainPresenter mPresenter;
     private long mExitTime = 0;
+    private int mLastSource = -1;
+    private String mLastCid;
 
     private int mCheckItem;
     private SparseArray<BaseFragment> mFragmentArray;
@@ -49,25 +55,10 @@ public class MainActivity extends BaseActivity {
     private BaseFragment mCurrentFragment;
 
     @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else if (System.currentTimeMillis() - mExitTime > 2000) {
-            showSnackbar(R.string.main_double_click);
-            mExitTime = System.currentTimeMillis();
-        } else {
-            finish();
-        }
+    protected void initPresenter() {
+        mPresenter = new MainPresenter();
+        mPresenter.attachView(this);
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mProgressDialog.dismiss();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {}
 
     @Override
     protected void initView() {
@@ -81,29 +72,69 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onDrawerClosed(View drawerView) {
                         super.onDrawerClosed(drawerView);
+                        BaseFragment fragment = mCurrentFragment;
                         mCurrentFragment = mFragmentArray.get(mCheckItem);
-                        mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
+                        mFragmentManager.beginTransaction().hide(fragment).show(mCurrentFragment).commit();
                     }
                 };
         drawerToggle.syncState();
         mDrawerLayout.setDrawerListener(drawerToggle);
+        final boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+        mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                if (item.getItemId() == mCheckItem) {
-                    return false;
+                int itemId = item.getItemId();
+                if (itemId != mCheckItem) {
+                    if (mFragmentArray.get(itemId) != null) {
+                        mCheckItem = itemId;
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mToolbar.setTitle(item.getTitle().toString());
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    } else {
+                        switch (itemId) {
+                            case R.id.drawer_night:
+                                CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, !night);
+                                Intent intent = getIntent();
+                                overridePendingTransition(0, 0);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                finish();
+                                overridePendingTransition(0, 0);
+                                startActivity(intent);
+                                break;
+                            case R.id.drawer_settings:
+                                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                                break;
+                            case R.id.drawer_about:
+                                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                                break;
+                        }
+                    }
                 }
-                mCheckItem = item.getItemId();
-                mNavigationView.setCheckedItem(mCheckItem);
-                mProgressBar.setVisibility(View.VISIBLE);
-                mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
-                mToolbar.setTitle(item.getTitle().toString());
-                mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
+        initHeader(mNavigationView.getHeaderView(0));
         initFragment();
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void initData() {
+        mPresenter.load();
+    }
+
+    private void initHeader(View header) {
+        mLastText = ButterKnife.findById(header, R.id.drawer_last_read_text);
+        ButterKnife.findById(header, R.id.drawer_last_read_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLastSource != -1 && mLastCid != null) {
+                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private void initFragment() {
@@ -113,10 +144,8 @@ public class MainActivity extends BaseActivity {
         mFragmentArray.put(R.id.drawer_cimoc, new CimocFragment());
         mFragmentArray.put(R.id.drawer_favorite, new FavoriteFragment());
         mFragmentArray.put(R.id.drawer_history, new HistoryFragment());
-        mFragmentArray.put(R.id.drawer_source, new SourceFragment());
         mFragmentArray.put(R.id.drawer_download, new DownloadFragment());
-        mFragmentArray.put(R.id.drawer_settings, new SettingsFragment());
-        mFragmentArray.put(R.id.drawer_about, new AboutFragment());
+        mFragmentArray.put(R.id.drawer_source, new SourceFragment());
 
         mCurrentFragment = mFragmentArray.get(mCheckItem);
         mFragmentManager = getFragmentManager();
@@ -144,8 +173,56 @@ public class MainActivity extends BaseActivity {
             case PreferenceManager.HOME_HISTORY:
                 mCheckItem = R.id.drawer_history;
                 break;
+            case PreferenceManager.HOME_DOWNLOAD:
+                mCheckItem = R.id.drawer_download;
+                break;
         }
         mNavigationView.setCheckedItem(mCheckItem);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.detachView();
+        mProgressDialog.dismiss();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {}
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else if (System.currentTimeMillis() - mExitTime > 2000) {
+            showSnackbar(R.string.main_double_click);
+            mExitTime = System.currentTimeMillis();
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onLastLoadSuccess(int source, String cid, String title) {
+        mLastSource = source;
+        mLastCid = cid;
+        mLastText.setText(title);
+    }
+
+    @Override
+    public void onLastLoadFail() {
+        showSnackbar(R.string.main_last_read_fail);
+    }
+
+    @Override
+    public void onLastChange(int source, String cid, String title) {
+
+    }
+
+    @Override
+    protected String getDefaultTitle() {
+        int home = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
+        return getResources().getStringArray(R.array.home_items)[home];
     }
 
     @Override
@@ -156,21 +233,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected View getLayoutView() {
         return mDrawerLayout;
-    }
-
-    @Override
-    protected String getDefaultTitle() {
-        int home = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
-        return getResources().getStringArray(R.array.home_items)[home];
-    }
-
-    public void restart() {
-        Intent intent = getIntent();
-        overridePendingTransition(0, 0);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(intent);
     }
 
     public void showProgressDialog() {

@@ -9,17 +9,24 @@
     <string name="drawer_source">图源管理</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
+    <string name="drawer_light">日间模式</string>
+    <string name="drawer_night">夜间模式</string>
+    <string name="drawer_last_read">最后阅读：</string>
+    <string name="drawer_last_read_null">无</string>
 
     <string name="main_double_click">再按一次退出</string>
+    <string name="main_last_read_fail">读取最后阅读失败</string>
 
+    <string name="cimoc_filter">图源选择</string>
     <string name="cimoc_search_hint">请输入漫画名</string>
     <string name="cimoc_empty_error">关键字不能为空</string>
-    <string name="cimoc_select_source">图源选择</string>
+    <string name="cimoc_load_fail">读取图源失败</string>
 
     <string name="result">搜索结果</string>
     <string name="result_update">最后更新：</string>
     <string name="result_source">来源：</string>
     <string name="result_empty">搜索结果为空</string>
+    <string name="result_error">搜索错误</string>
 
     <string name="detail">详情</string>
     <string name="detail_header_update">最后更新：</string>
@@ -76,8 +83,6 @@
     <string name="settings_reader_bright">保持屏幕常亮</string>
     <string name="settings_reader_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_other">其他设置</string>
-    <string name="settings_other_nightly">夜间模式</string>
-    <string name="settings_other_nightly_summary">全局夜间模式</string>
     <string name="settings_other_home">首页设置</string>
     <string name="settings_other_cache">清除缓存</string>
     <string name="settings_other_cache_success">清除成功</string>

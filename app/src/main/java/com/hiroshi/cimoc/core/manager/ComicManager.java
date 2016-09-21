@@ -87,6 +87,14 @@ public class ComicManager {
                 .unique();
     }
 
+    public Observable<Comic> loadLast() {
+        return mComicDao.queryBuilder()
+                .orderDesc(Properties.History)
+                .limit(1)
+                .rx()
+                .unique();
+    }
+
     public void update(Comic comic) {
         mComicDao.update(comic);
     }

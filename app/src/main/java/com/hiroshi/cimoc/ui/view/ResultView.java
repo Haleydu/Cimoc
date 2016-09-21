@@ -7,11 +7,9 @@ import com.hiroshi.cimoc.model.Comic;
  */
 public interface ResultView extends BaseView {
 
-    void onParseError();
+    void onSearchError();
 
-    void onNetworkError();
-
-    void onEmptyResult();
+    void onResultEmpty();
 
     void onLoadSuccess(Comic comic);
 

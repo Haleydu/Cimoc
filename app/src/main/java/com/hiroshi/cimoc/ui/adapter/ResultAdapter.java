@@ -25,7 +25,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
 
     private ControllerBuilderProvider mProvider;
 
-    public class ResultViewHolder extends BaseViewHolder {
+    class ResultViewHolder extends BaseViewHolder {
         @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.result_comic_title) TextView comicTitle;
         @BindView(R.id.result_comic_author) TextView comicAuthor;
@@ -33,7 +33,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         @BindView(R.id.result_comic_source) TextView comicSource;
         @BindView(R.id.result_comic_update_tab) TextView tabUpdate;
 
-        public ResultViewHolder(View view) {
+        ResultViewHolder(View view) {
             super(view);
         }
     }

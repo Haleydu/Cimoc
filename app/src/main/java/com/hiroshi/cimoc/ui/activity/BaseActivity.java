@@ -11,6 +11,8 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 
+import java.util.Locale;
+
 import butterknife.ButterKnife;
 
 /**
@@ -28,28 +30,28 @@ public abstract class BaseActivity extends AppCompatActivity {
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
         initToolbar();
+        initProgressBar();
         initPresenter();
         initView();
         initData();
     }
 
     protected void initTheme() {
-        boolean nightly = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
-        if (nightly) {
-            setTheme(R.style.AppThemeDark);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
+        boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+        setTheme(night ? R.style.AppThemeDark : R.style.AppTheme);
     }
 
     protected void initToolbar() {
         mToolbar = ButterKnife.findById(this, R.id.custom_toolbar);
-        mProgressBar = ButterKnife.findById(this, R.id.custom_progress_bar);
         mToolbar.setTitle(getDefaultTitle());
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    protected void initProgressBar() {
+        mProgressBar = ButterKnife.findById(this, R.id.custom_progress_bar);
     }
 
     protected View getLayoutView() {
@@ -68,12 +70,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract int getLayoutRes();
 
-    protected void hideProgressBar() {
-        if (mProgressBar.isShown()) {
-            mProgressBar.setVisibility(View.GONE);
-        }
-    }
-
     protected void showSnackbar(String msg) {
         View layout = getLayoutView();
         if (layout != null && layout.isShown()) {
@@ -83,6 +79,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void showSnackbar(int resId) {
         showSnackbar(getString(resId));
+    }
+
+    protected void showSnackbar(int resId, Object... args) {
+        showSnackbar(String.format(Locale.CHINA, getString(resId), args));
     }
 
 }
