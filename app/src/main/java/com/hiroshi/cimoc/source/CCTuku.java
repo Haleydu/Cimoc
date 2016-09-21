@@ -2,6 +2,8 @@ package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -11,7 +13,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -22,27 +23,28 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.getDefault(), "http://m.tuku.cc/comic/search?word=%s&page=%d", keyword, page);
+        String url = StringUtils.format("http://m.tuku.cc/comic/search?word=%s&page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    public List<Comic> parseSearch(String html, int page) {
+    public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
         int total = Integer.parseInt(StringUtils.match("\\d+", body.text("div.title-banner > div > h1"), 0));
         if (page > total) {
             return null;
         }
-        List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("div.main-list > div > div > div")) {
-            String cid = node.attr("div:eq(1) > div:eq(0) > a", "href", "/", 2);
-            String title = node.text("div:eq(1) > div:eq(0) > a");
-            String cover = node.attr("div:eq(0) > a > img", "src");
-            String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
-            String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-            list.add(new Comic(SourceManager.SOURCE_CCTUKU, cid, title, cover, update, author));
-        }
-        return list;
+        return new NodeIterator(body.list("div.main-list > div > div > div")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.attr("div:eq(1) > div:eq(0) > a", "href", "/", 2);
+                String title = node.text("div:eq(1) > div:eq(0) > a");
+                String cover = node.attr("div:eq(0) > a > img", "src");
+                String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
+                String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
+                return new Comic(SourceManager.SOURCE_CCTUKU, cid, title, cover, update, author);
+            }
+        };
     }
 
     @Override
@@ -74,7 +76,7 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.getDefault(), "http://m.tuku.cc/comic/%s/%s", cid, path);
+        String url = StringUtils.format("http://m.tuku.cc/comic/%s/%s", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -91,7 +93,7 @@ public class CCTuku extends MangaParser {
                     int pages = Integer.parseInt(array[2]);
                     String format = rs[0] + "/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
                     for (int i = 0; i != pages; ++i) {
-                        list.add(new ImageUrl(i + 1, String.format(Locale.getDefault(), format, i + 1), false));
+                        list.add(new ImageUrl(i + 1, StringUtils.format(format, i + 1), false));
                     }
                 }
             } catch (Exception e) {

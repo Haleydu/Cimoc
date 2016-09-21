@@ -2,6 +2,8 @@ package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -10,7 +12,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -21,34 +22,35 @@ public class ExHentai extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.getDefault(), "https://exhentai.org?f_search=%s&page=%d", keyword, (page - 1));
+        String url = StringUtils.format("https://exhentai.org?f_search=%s&page=%d", keyword, (page - 1));
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e").build();
     }
 
     @Override
-    public List<Comic> parseSearch(String html, int page) {
+    public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
-            String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
-            cid = cid.substring(23, cid.length() - 1);
-            String title = node.text("td:eq(2) > div > div:eq(2) > a");
-            String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
-            if (cover == null) {
-                String temp = node.text("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
-                cover = "https://exhentai.org/" + temp;
+        return new NodeIterator(body.list("table.itg > tbody > tr[class^=gtr]")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
+                cid = cid.substring(23, cid.length() - 1);
+                String title = node.text("td:eq(2) > div > div:eq(2) > a");
+                String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
+                if (cover == null) {
+                    String temp = node.text("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
+                    cover = "https://exhentai.org/" + temp;
+                }
+                String update = node.text("td:eq(1)", 0, 10);
+                String author = StringUtils.match("\\[(.*?)\\]", title, 1);
+                title = title.replaceFirst("\\[.*?\\]\\s+", "");
+                return new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author);
             }
-            String update = node.text("td:eq(1)", 0, 10);
-            String author = StringUtils.match("\\[(.*?)\\]", title, 1);
-            title = title.replaceFirst("\\[.*?\\]\\s+", "");
-            list.add(new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author));
-        }
-        return list;
+        };
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.getDefault(), "https://exhentai.org/g/%s", cid);
+        String url = StringUtils.format("https://exhentai.org/g/%s", cid);
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e;").build();
     }
 
@@ -74,7 +76,7 @@ public class ExHentai extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.getDefault(), "https://exhentai.org/g/%s?p=%s", cid, path);
+        String url = StringUtils.format("https://exhentai.org/g/%s?p=%s", cid, path);
         return new Request.Builder().url(url).header("Cookie", "ipb_member_id=2145630; ipb_pass_hash=f883b5a9dd10234c9323957b96efbd8e;").build();
     }
 

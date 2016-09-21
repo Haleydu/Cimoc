@@ -27,8 +27,8 @@ public class Node {
     }
 
     public List<Node> list(String cssQuery) {
-        Elements elements = element.select(cssQuery);
         List<Node> list = new LinkedList<>();
+        Elements elements = element.select(cssQuery);
         for (Element e : elements) {
             list.add(new Node(e));
         }

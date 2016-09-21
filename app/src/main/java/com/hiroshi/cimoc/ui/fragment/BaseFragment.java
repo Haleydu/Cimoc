@@ -38,6 +38,13 @@ public abstract class BaseFragment extends Fragment {
         unbinder.unbind();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
+            ((MainActivity) getActivity()).hideProgressBar();
+        }
+    }
+
     public void showSnackbar(int resId) {
         showSnackbar(getString(resId));
     }

@@ -41,8 +41,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
             case 2:
                 updateHighlight(db);
             case 3:
-            case 4:
-                TaskDao.createTable(db, true);
+                TaskDao.createTable(db, false);
                 updateDownload(db);
         }
         db.setTransactionSuccessful();

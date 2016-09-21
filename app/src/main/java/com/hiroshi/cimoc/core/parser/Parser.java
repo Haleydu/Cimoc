@@ -15,7 +15,7 @@ public interface Parser {
 
     Request getSearchRequest(String keyword, int page);
 
-    List<Comic> parseSearch(String html, int page);
+    SearchIterator getSearchIterator(String html, int page);
 
     Request getInfoRequest(String cid);
 

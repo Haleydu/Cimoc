@@ -83,8 +83,6 @@ public class MainActivity extends BaseActivity {
                         super.onDrawerClosed(drawerView);
                         mCurrentFragment = mFragmentArray.get(mCheckItem);
                         mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
-                        mProgressBar.setVisibility(View.GONE);
-                        mFrameLayout.setVisibility(View.VISIBLE);
                     }
                 };
         drawerToggle.syncState();
@@ -97,7 +95,6 @@ public class MainActivity extends BaseActivity {
                 }
                 mCheckItem = item.getItemId();
                 mNavigationView.setCheckedItem(mCheckItem);
-                mFrameLayout.setVisibility(View.INVISIBLE);
                 mProgressBar.setVisibility(View.VISIBLE);
                 mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
                 mToolbar.setTitle(item.getTitle().toString());
@@ -126,9 +123,12 @@ public class MainActivity extends BaseActivity {
         FragmentTransaction transaction = mFragmentManager.beginTransaction();
         for (int i = 0; i != FRAGMENT_NUM; ++i) {
             BaseFragment fragment = mFragmentArray.valueAt(i);
-            transaction.add(R.id.main_fragment_container, fragment).hide(fragment);
+            transaction.add(R.id.main_fragment_container, fragment);
+            if (fragment != mCurrentFragment) {
+                transaction.hide(fragment);
+            }
         }
-        transaction.show(mCurrentFragment).commit();
+        transaction.commit();
     }
 
     private void initCheckItem() {
@@ -179,6 +179,10 @@ public class MainActivity extends BaseActivity {
 
     public void hideProgressDialog() {
         mProgressDialog.hide();
+    }
+
+    public void hideProgressBar() {
+        mProgressBar.setVisibility(View.GONE);
     }
 
 }

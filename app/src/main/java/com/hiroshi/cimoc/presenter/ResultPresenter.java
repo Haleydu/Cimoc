@@ -4,60 +4,66 @@ import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
-import java.util.List;
-
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/4.
  */
 public class ResultPresenter extends BasePresenter<ResultView> {
 
+    private int[] source;
+    private int[] page;
+    private boolean[] loading;
     private String keyword;
-    private int page;
-    private boolean isLoading;
-    private int source;
 
-    public ResultPresenter(int source, String keyword) {
+    public ResultPresenter(int[] source, String keyword) {
         this.keyword = keyword;
-        this.page = 0;
-        this.isLoading = false;
         this.source = source;
+        this.page = new int[source.length];
+        this.loading = new boolean[source.length];
     }
 
     public void load() {
-        if (!isLoading) {
-            isLoading = true;
-            Manga.search(source, keyword, ++page)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<List<Comic>>() {
-                        @Override
-                        public void onCompleted() {
-                            if (page == 1) {
-                                mBaseView.onFirstLoadSuccess();
+        for (int i = 0; i != source.length; ++i) {
+            final int pos = i;
+            if (!loading[pos]) {
+                loading[pos] = true;
+                Manga.search(source[pos], keyword, ++page[pos])
+                        .filter(new Func1<Comic, Boolean>() {
+                            @Override
+                            public Boolean call(Comic comic) {
+                                return comic != null;
                             }
-                            isLoading = false;
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            if (page == 1) {
-                                if (e instanceof Manga.NetworkErrorException) {
-                                    mBaseView.onNetworkError();
-                                } else if (e instanceof Manga.EmptyResultException) {
-                                    mBaseView.onEmptyResult();
-                                } else {
-                                    mBaseView.onParseError();
-                                }
+                        })
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<Comic>() {
+                            @Override
+                            public void onCompleted() {
+                                loading[pos] = false;
                             }
-                        }
 
-                        @Override
-                        public void onNext(List<Comic> list) {
-                            mBaseView.onLoadSuccess(list);
-                        }
-                    });
+                            @Override
+                            public void onError(Throwable e) {
+                                /*if (page[pos] == 1) {
+                                    if (e instanceof Manga.NetworkErrorException) {
+                                        mBaseView.onNetworkError();
+                                    } else if (e instanceof Manga.EmptyResultException) {
+                                        mBaseView.onEmptyResult();
+                                    } else {
+                                        mBaseView.onParseError();
+                                    }
+                                }   */
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onNext(Comic comic) {
+                                mBaseView.onLoadSuccess(comic);
+                            }
+                        });
+            }
         }
     }
 

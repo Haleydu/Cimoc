@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -16,7 +16,6 @@ import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -36,7 +35,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mPresenter = new ResultPresenter(source, keyword);
+        mPresenter = new ResultPresenter(new int[] {0, 1, 2, 3}, keyword);
         mPresenter.attachView(this);
     }
 
@@ -46,8 +45,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
         mResultAdapter.setOnItemClickListener(this);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, source));
+        mResultAdapter.setProvider(new ControllerBuilderProvider(this));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
@@ -81,8 +79,9 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     }
 
     @Override
-    public void onLoadSuccess(List<Comic> list) {
-        mResultAdapter.addAll(list);
+    public void onLoadSuccess(Comic comic) {
+        hideProgressBar();
+        mResultAdapter.add(comic);
     }
 
     @Override
@@ -101,11 +100,6 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public void onEmptyResult() {
         hideProgressBar();
         showSnackbar(R.string.result_empty);
-    }
-
-    @Override
-    public void onFirstLoadSuccess() {
-        hideProgressBar();
     }
 
     @Override

@@ -8,10 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.Comic;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import butterknife.BindView;
  */
 public class ResultAdapter extends BaseAdapter<Comic> {
 
-    private PipelineDraweeControllerBuilder builder;
+    private ControllerBuilderProvider mProvider;
 
     public class ResultViewHolder extends BaseViewHolder {
         @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
@@ -60,11 +60,11 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         } else {
             viewHolder.comicUpdate.setText(comic.getUpdate());
         }
-        viewHolder.comicImage.setController(builder.setUri(comic.getCover()).build());
+        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
     }
 
-    public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
-        this.builder = builder;
+    public void setProvider(ControllerBuilderProvider provider) {
+        mProvider = provider;
     }
 
     @Override
