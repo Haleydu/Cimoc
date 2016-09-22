@@ -86,19 +86,19 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     public void onLoadSuccess(Comic comic) {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         mResultAdapter.add(comic);
     }
 
     @Override
     public void onResultEmpty() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.result_empty);
     }
 
     @Override
     public void onSearchError() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.result_error);
     }
 

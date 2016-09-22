@@ -96,6 +96,13 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     onBackupFail();
                 }
                 break;
+            case 2:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mProgressDialog.show();
+                    mPresenter.loadFiles();
+                } else {
+                    onFilesLoadFail();
+                }
         }
     }
 
@@ -150,7 +157,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
         } else {
             mProgressDialog.show();
             mPresenter.loadFiles();
@@ -200,12 +207,15 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     public void onFilesLoadSuccess(final String[] files) {
         mProgressDialog.hide();
+        mTempChoice = -1;
         DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_file, files, -1, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mProgressDialog.show();
-                        mPresenter.restore(files[mTempChoice]);
+                        if (mTempChoice != -1) {
+                            mProgressDialog.show();
+                            mPresenter.restore(files[mTempChoice]);
+                        }
                     }
                 }).show();
     }
