@@ -172,12 +172,12 @@ public class DetailActivity extends BackActivity implements DetailView {
             }
         });
         mDetailAdapter.setDownload(complete);
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onDownloadLoadFail() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.detail_download_load_fail);
     }
 
@@ -214,8 +214,7 @@ public class DetailActivity extends BackActivity implements DetailView {
 
     @Override
     public void onDetailLoadSuccess() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.loadDownload(id, mDetailAdapter.getPaths());
+        mPresenter.loadDownload(mDetailAdapter.getPaths());
     }
 
     @Override
@@ -255,13 +254,13 @@ public class DetailActivity extends BackActivity implements DetailView {
 
     @Override
     public void onNetworkError() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.common_parse_error);
     }
 

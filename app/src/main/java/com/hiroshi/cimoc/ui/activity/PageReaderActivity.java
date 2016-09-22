@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager.OnPageChangedListener;
+import com.hiroshi.cimoc.utils.HintUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -43,6 +44,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     protected void initView() {
         super.initView();
+        int offset = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_TRIGGER, 5);
         reverse = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_REVERSE, false);
         volume = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_VOLUME, false);
         mSeekBar.setReverse(reverse);
@@ -53,6 +55,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+        ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
         ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -92,7 +95,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     public void onPrevLoadSuccess(List<ImageUrl> list) {
         mReaderAdapter.addAll(0, list);
         ((RecyclerViewPager) mRecyclerView).refreshBeforePosition(list.size());
-        showToast(R.string.reader_load_success);
+        HintUtils.showToast(this, R.string.reader_load_success);
     }
 
     @Override

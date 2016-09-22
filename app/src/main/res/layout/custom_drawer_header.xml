@@ -20,6 +20,8 @@
             android:id="@+id/drawer_last_read_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="@string/drawer_last_read_null"
             android:textColor="@color/white"/>
     </LinearLayout>

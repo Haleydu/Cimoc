@@ -205,7 +205,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                 mBinder.getService().initTask(mTaskAdapter.getDateSet());
                 mTaskAdapter.setData(list);
                 mRecyclerView.setAdapter(mTaskAdapter);
-                hideProgressBar();
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -216,7 +216,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     @Override
     public void onLoadIndexFail() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.task_load_fail);
     }
 

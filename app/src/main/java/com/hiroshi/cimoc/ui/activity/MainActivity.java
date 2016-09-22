@@ -8,7 +8,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +25,6 @@ import com.hiroshi.cimoc.ui.fragment.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.SourceFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
-import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +41,6 @@ public class MainActivity extends BaseActivity implements MainView {
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
     TextView mLastText;
 
-    private AlertDialog mProgressDialog;
     private MainPresenter mPresenter;
     private long mExitTime = 0;
     private int mLastSource = -1;
@@ -62,7 +59,6 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     protected void initView() {
-        mProgressDialog = DialogUtils.buildCancelableFalseDialog(this, R.string.dialog_doing);
         ActionBarDrawerToggle drawerToggle =
                 new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
                     @Override
@@ -72,9 +68,9 @@ public class MainActivity extends BaseActivity implements MainView {
                     @Override
                     public void onDrawerClosed(View drawerView) {
                         super.onDrawerClosed(drawerView);
-                        BaseFragment fragment = mCurrentFragment;
                         mCurrentFragment = mFragmentArray.get(mCheckItem);
-                        mFragmentManager.beginTransaction().hide(fragment).show(mCurrentFragment).commit();
+                        mFragmentManager.beginTransaction().show(mCurrentFragment).commit();
+                        mProgressBar.setVisibility(View.GONE);
                     }
                 };
         drawerToggle.syncState();
@@ -89,6 +85,7 @@ public class MainActivity extends BaseActivity implements MainView {
                     if (mFragmentArray.get(itemId) != null) {
                         mCheckItem = itemId;
                         mProgressBar.setVisibility(View.VISIBLE);
+                        mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
                         mToolbar.setTitle(item.getTitle().toString());
                         mDrawerLayout.closeDrawer(GravityCompat.START);
                     } else {
@@ -96,10 +93,7 @@ public class MainActivity extends BaseActivity implements MainView {
                             case R.id.drawer_night:
                                 CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, !night);
                                 Intent intent = getIntent();
-                                overridePendingTransition(0, 0);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                 finish();
-                                overridePendingTransition(0, 0);
                                 startActivity(intent);
                                 break;
                             case R.id.drawer_settings:
@@ -183,7 +177,6 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     protected void onDestroy() {
         mPresenter.detachView();
-        mProgressDialog.dismiss();
         super.onDestroy();
     }
 
@@ -204,9 +197,7 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void onLastLoadSuccess(int source, String cid, String title) {
-        mLastSource = source;
-        mLastCid = cid;
-        mLastText.setText(title);
+        onLastChange(source, cid, title);
     }
 
     @Override
@@ -216,7 +207,9 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void onLastChange(int source, String cid, String title) {
-
+        mLastSource = source;
+        mLastCid = cid;
+        mLastText.setText(title);
     }
 
     @Override
@@ -233,18 +226,6 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     protected View getLayoutView() {
         return mDrawerLayout;
-    }
-
-    public void showProgressDialog() {
-        mProgressDialog.show();
-    }
-
-    public void hideProgressDialog() {
-        mProgressDialog.hide();
-    }
-
-    public void hideProgressBar() {
-        mProgressBar.setVisibility(View.GONE);
     }
 
 }

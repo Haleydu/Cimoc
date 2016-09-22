@@ -2,6 +2,8 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.MainView;
 
 import rx.android.schedulers.AndroidSchedulers;
@@ -17,6 +19,17 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     public MainPresenter() {
         mComicManager = ComicManager.getInstance();
+    }
+
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.HISTORY_COMIC, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                MiniComic comic = (MiniComic) rxEvent.getData();
+                mBaseView.onLastChange(comic.getSource(), comic.getCid(), comic.getTitle());
+            }
+        });
     }
 
     public void load() {

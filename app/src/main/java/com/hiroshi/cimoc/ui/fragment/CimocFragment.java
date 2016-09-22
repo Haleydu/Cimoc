@@ -85,6 +85,13 @@ public class CimocFragment extends BaseFragment implements CimocView {
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
+            mPresenter.load();
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.cimoc_menu, menu);
@@ -161,7 +168,5 @@ public class CimocFragment extends BaseFragment implements CimocView {
     protected int getLayoutView() {
         return R.layout.fragment_cimoc;
     }
-
-
 
 }

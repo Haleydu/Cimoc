@@ -27,18 +27,14 @@ public abstract class BackActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mProgressDialog.dismiss();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
     }
 
     @Override
     protected void initView() {
         mProgressDialog = DialogUtils.buildCancelableFalseDialog(this, R.string.dialog_doing);
-    }
-
-    protected void hideProgressBar() {
-        if (mProgressBar.isShown()) {
-            mProgressBar.setVisibility(View.GONE);
-        }
     }
 
 }

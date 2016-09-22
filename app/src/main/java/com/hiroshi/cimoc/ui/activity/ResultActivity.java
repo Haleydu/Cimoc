@@ -31,6 +31,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
+    private ControllerBuilderProvider mProvider;
 
     @Override
     protected void initPresenter() {
@@ -46,7 +47,8 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
         mResultAdapter.setOnItemClickListener(this);
-        mResultAdapter.setProvider(new ControllerBuilderProvider(this));
+        mProvider = new ControllerBuilderProvider(this);
+        mResultAdapter.setProvider(mProvider);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
@@ -68,6 +70,9 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     protected void onDestroy() {
+        if (mProvider != null) {
+            mProvider.clear();
+        }
         mPresenter.detachView();
         super.onDestroy();
     }

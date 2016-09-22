@@ -26,8 +26,7 @@ import java.util.List;
  * https://github.com/lsjwzh/RecyclerViewPager
  */
 public class RecyclerViewPager extends RecyclerView {
-    
-    private static final float TRIGGER_OFFSET = 0.05f;
+
     private static final float FLING_FACTOR = 0.10f;
 
     private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
@@ -35,6 +34,7 @@ public class RecyclerViewPager extends RecyclerView {
     private List<OnPageChangedListener> mOnPageChangedListeners;
     private int mSmoothScrollTargetPosition = -1;
     private int mPositionBeforeScroll = -1;
+    private float mTiggerOffset = 0.05f;
 
     boolean mNeedAdjust;
     int mFirstLeftWhenDragging;
@@ -239,10 +239,10 @@ public class RecyclerViewPager extends RecyclerView {
             if (targetPosition == curPosition && mPositionOnTouchDown == curPosition) {
                 View centerXChild = ViewUtils.getCenterXChild(this);
                 if (centerXChild != null) {
-                    if (mTouchSpan > centerXChild.getWidth() * TRIGGER_OFFSET * TRIGGER_OFFSET && targetPosition != 0) {
+                    if (mTouchSpan > centerXChild.getWidth() * mTiggerOffset * mTiggerOffset && targetPosition != 0) {
                         if (!reverseLayout) targetPosition--;
                         else targetPosition++;
-                    } else if (mTouchSpan < centerXChild.getWidth() * -TRIGGER_OFFSET && targetPosition != getItemCount() - 1) {
+                    } else if (mTouchSpan < centerXChild.getWidth() * -mTiggerOffset && targetPosition != getItemCount() - 1) {
                         if (!reverseLayout) targetPosition++;
                         else targetPosition--;
                     }
@@ -250,6 +250,10 @@ public class RecyclerViewPager extends RecyclerView {
             }
             smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
         }
+    }
+
+    public void setTriggerOffset(float offset) {
+        mTiggerOffset = offset;
     }
 
     public void addOnPageChangedListener(OnPageChangedListener listener) {
@@ -343,10 +347,10 @@ public class RecyclerViewPager extends RecyclerView {
                     targetPosition = getChildAdapterPosition(mCurView);
                     int spanX = mCurView.getLeft() - mFirstLeftWhenDragging;
                     // if user is tending to cancel paging action, don't perform position changing
-                    if (spanX > mCurView.getWidth() * TRIGGER_OFFSET && mCurView.getLeft() >= mMaxLeftWhenDragging) {
+                    if (spanX > mCurView.getWidth() * mTiggerOffset && mCurView.getLeft() >= mMaxLeftWhenDragging) {
                         if (!reverseLayout) targetPosition--;
                         else targetPosition++;
-                    } else if (spanX < mCurView.getWidth() * -TRIGGER_OFFSET && mCurView.getLeft() <= mMinLeftWhenDragging) {
+                    } else if (spanX < mCurView.getWidth() * -mTiggerOffset && mCurView.getLeft() <= mMinLeftWhenDragging) {
                         if (!reverseLayout) targetPosition++;
                         else targetPosition--;
                     }
@@ -385,7 +389,7 @@ public class RecyclerViewPager extends RecyclerView {
         }
         int sign = velocity > 0 ? 1 : -1;
         return (int) (sign * Math.ceil((velocity * sign * FLING_FACTOR / cellSize)
-                - TRIGGER_OFFSET));
+                - mTiggerOffset));
     }
 
     private int safeTargetPosition(int position, int count) {

@@ -3,19 +3,14 @@ package com.hiroshi.cimoc.ui.fragment;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.DownloadPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
-import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
@@ -23,18 +18,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-public class DownloadFragment extends BaseFragment implements DownloadView, BaseAdapter.OnItemClickListener {
+public class DownloadFragment extends GridFragment implements DownloadView {
 
-    @BindView(R.id.download_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.download_control_btn) FloatingActionButton mControlBtn;
-
-    private ComicAdapter mComicAdapter;
     private DownloadPresenter mPresenter;
 
     private boolean start;
@@ -46,15 +34,8 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
     }
 
     @Override
-    protected void initView() {
+    protected void initAdapter() {
         mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
-        mComicAdapter.setOnItemClickListener(this);
-        mComicAdapter.setProvider(new ControllerBuilderProvider(getActivity()));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
-        mRecyclerView.setAdapter(mComicAdapter);
     }
 
     @Override
@@ -76,23 +57,23 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
     }
 
     @Override
+    protected void onActionConfirm() {
+        if (start) {
+            getActivity().stopService(new Intent(getActivity(), DownloadService.class));
+            onDownloadStop();
+            showSnackbar(R.string.download_stop_success);
+        } else {
+            mProgressDialog.show();
+            mPresenter.loadTask();
+        }
+    }
+
+    @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mComicAdapter.getItem(position);
         Intent intent =
                 TaskActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle());
         startActivity(intent);
-    }
-
-    @OnClick(R.id.download_control_btn) void onControlBtnClick() {
-        if (start) {
-            showProgressDialog();
-            getActivity().stopService(new Intent(getActivity(), DownloadService.class));
-            onDownloadStop();
-            showSnackbar(R.string.download_stop_success);
-            hideProgressDialog();
-        } else {
-            mPresenter.loadTask();
-        }
     }
 
     @Override
@@ -102,14 +83,14 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
 
     @Override
     public void onComicLoadFail() {
-        mControlBtn.setVisibility(View.GONE);
+        mActionButton.setVisibility(View.GONE);
         showSnackbar(R.string.download_load_comic_fail);
     }
 
     @Override
     public void onTaskLoadFail() {
         showSnackbar(R.string.download_task_fail);
-        hideProgressDialog();
+        mProgressDialog.hide();
     }
 
     @Override
@@ -128,7 +109,7 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
             getActivity().startService(intent);
             showSnackbar(R.string.download_start_success);
         }
-        hideProgressDialog();
+        mProgressDialog.hide();
     }
 
     @Override
@@ -147,7 +128,7 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
     public void onDownloadStart() {
         if (!start) {
             start = true;
-            mControlBtn.setImageResource(R.drawable.ic_pause_white_24dp);
+            mActionButton.setImageResource(R.drawable.ic_pause_white_24dp);
         }
     }
 
@@ -155,13 +136,18 @@ public class DownloadFragment extends BaseFragment implements DownloadView, Base
     public void onDownloadStop() {
         if (start) {
             start = false;
-            mControlBtn.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+            mActionButton.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         }
     }
 
     @Override
-    protected int getLayoutView() {
-        return R.layout.fragment_download;
+    protected int getActionRes() {
+        return R.string.download_action_confirm;
+    }
+
+    @Override
+    protected int getImageRes() {
+        return R.drawable.ic_play_arrow_white_24dp;
     }
 
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.view.View;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
@@ -22,6 +23,7 @@ import butterknife.OnClick;
 public class AboutActivity extends BackActivity implements AboutView {
 
     @BindView(R.id.about_update_summary) TextView mUpdateText;
+    @BindView(R.id.about_layout) View mLayoutView;
 
     private AboutPresenter mPresenter;
     private boolean update;
@@ -98,6 +100,11 @@ public class AboutActivity extends BackActivity implements AboutView {
     public void onCheckError() {
         mUpdateText.setText(R.string.about_update_fail);
         checking = false;
+    }
+
+    @Override
+    protected View getLayoutView() {
+        return mLayoutView;
     }
 
     @Override

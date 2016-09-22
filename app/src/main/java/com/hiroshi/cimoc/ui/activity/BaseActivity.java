@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -10,8 +9,7 @@ import android.widget.ProgressBar;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-
-import java.util.Locale;
+import com.hiroshi.cimoc.utils.HintUtils;
 
 import butterknife.ButterKnife;
 
@@ -71,18 +69,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getLayoutRes();
 
     protected void showSnackbar(String msg) {
-        View layout = getLayoutView();
-        if (layout != null && layout.isShown()) {
-            Snackbar.make(layout, msg, Snackbar.LENGTH_SHORT).show();
-        }
+        HintUtils.showSnackBar(getLayoutView(), msg);
     }
 
     protected void showSnackbar(int resId) {
-        showSnackbar(getString(resId));
+        HintUtils.showSnackBar(getLayoutView(), getString(resId));
     }
 
     protected void showSnackbar(int resId, Object... args) {
-        showSnackbar(String.format(Locale.CHINA, getString(resId), args));
+        HintUtils.showSnackBar(getLayoutView(), getString(resId), args);
     }
 
 }

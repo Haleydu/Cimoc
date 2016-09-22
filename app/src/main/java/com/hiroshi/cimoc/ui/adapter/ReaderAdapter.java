@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
@@ -11,17 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.facebook.cache.common.CacheKey;
-import com.facebook.cache.common.SimpleCacheKey;
-import com.facebook.common.references.CloseableReference;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.controller.BaseControllerListener;
-import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.request.BasePostprocessor;
-import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.fresco.SplitPostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
@@ -41,8 +35,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     public static final int MODE_PAGE = 0;
     public static final int MODE_STREAM = 1;
 
-    public static final int TYPE_LOADING = 0;
-    public static final int TYPE_IMAGE = 1;
+    private static final int TYPE_LOADING = 0;
+    private static final int TYPE_IMAGE = 1;
 
     @IntDef({MODE_PAGE, MODE_STREAM})
     @Retention(RetentionPolicy.SOURCE)
@@ -59,15 +53,15 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         super(context, list);
     }
 
-    public class ImageHolder extends BaseViewHolder {
+    class ImageHolder extends BaseViewHolder {
         @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
-        public ImageHolder(View view) {
+        ImageHolder(View view) {
             super(view);
         }
     }
 
-    public class LoadingHolder extends BaseViewHolder {
-        public LoadingHolder(View view) {
+    class LoadingHolder extends BaseViewHolder {
+        LoadingHolder(View view) {
             super(view);
         }
     }
@@ -140,16 +134,13 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         }
         draweeView.setOnSingleTapListener(mSingleTapListener);
         draweeView.setOnLongPressListener(mLongPressListener);
-        mControllerBuilder.setTapToRetryEnabled(true);
+        mControllerBuilder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
+        ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
+                .newBuilderWithSource(Uri.parse(imageUrl.getUrl()));
         if (split) {
-            ImageRequest request = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(imageUrl.getUrl()))
-                    .setPostprocessor(new SplitPostprocessor(imageUrl.getUrl()))
-                    .build();
-            draweeView.setController(mControllerBuilder.setImageRequest(request).build());
-        } else {
-            draweeView.setController(mControllerBuilder.setUri(imageUrl.getUrl()).build());
+            imageRequestBuilder.setPostprocessor(new SplitPostprocessor(imageUrl.getUrl()));
         }
+        draweeView.setController(mControllerBuilder.setImageRequest(imageRequestBuilder.build()).build());
     }
 
     public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
@@ -174,50 +165,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setPictureMode(@PictureMode int mode) {
         this.mode = mode;
-    }
-
-    class SplitPostprocessor extends BasePostprocessor {
-        String url;
-
-        public SplitPostprocessor(String url) {
-            this.url = url;
-        }
-
-        @Override
-        public CloseableReference<Bitmap> process(Bitmap sourceBitmap, PlatformBitmapFactory bitmapFactory) {
-            int width = sourceBitmap.getWidth();
-            int height = sourceBitmap.getHeight();
-            if (width > 1.15 * height) {
-                CloseableReference<Bitmap> reference = bitmapFactory.createBitmap(width / 2, height * 2, Bitmap.Config.RGB_565);
-                try {
-                    Bitmap bitmap = reference.get();
-                    int unit = height / 20;
-                    int[] pixels = new int[unit * width];
-                    int base = 0;
-                    int remain = height - 20 * unit;
-                    for (int i = 1; i >= 0; --i) {
-                        for (int j = 0; j != 20; ++j) {
-                            sourceBitmap.getPixels(pixels, 0, width, i * width / 2, j % 20 * unit, width / 2, unit);
-                            bitmap.setPixels(pixels, 0, width, 0, base + j % 20 * unit, width / 2, unit);
-                        }
-                        if (remain > 0) {
-                            sourceBitmap.getPixels(pixels, 0, width, i * width / 2, 20 * unit, width / 2, remain);
-                            bitmap.setPixels(pixels, 0, width, 0, base + 20 * unit, width / 2, remain);
-                        }
-                        base += height;
-                    }
-                    return CloseableReference.cloneOrNull(reference);
-                } finally {
-                    CloseableReference.closeSafely(reference);
-                }
-            }
-            return super.process(sourceBitmap, bitmapFactory);
-        }
-
-        @Override
-        public CacheKey getPostprocessorCacheKey() {
-            return new SimpleCacheKey(url.concat("split"));
-        }
     }
 
     @Override

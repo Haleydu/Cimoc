@@ -53,22 +53,24 @@ public class ResultPresenter extends BasePresenter<ResultView> {
 
                             @Override
                             public void onError(Throwable e) {
-                                if (e instanceof Manga.EmptyResultException) {
-                                    state[pos] = SEARCH_EMPTY;
-                                    for (int i : state) {
-                                        if (i != SEARCH_EMPTY) {
-                                            return;
+                                if (page[pos] == 1) {
+                                    if (e instanceof Manga.EmptyResultException) {
+                                        state[pos] = SEARCH_EMPTY;
+                                        for (int i : state) {
+                                            if (i != SEARCH_EMPTY) {
+                                                return;
+                                            }
                                         }
-                                    }
-                                    mBaseView.onResultEmpty();
-                                } else {
-                                    state[pos] = SEARCH_ERROR;
-                                    for (int i : state) {
-                                        if (i != SEARCH_ERROR) {
-                                            return;
+                                        mBaseView.onResultEmpty();
+                                    } else {
+                                        state[pos] = SEARCH_ERROR;
+                                        for (int i : state) {
+                                            if (i != SEARCH_ERROR) {
+                                                return;
+                                            }
                                         }
+                                        mBaseView.onSearchError();
                                     }
-                                    mBaseView.onSearchError();
                                 }
                             }
 

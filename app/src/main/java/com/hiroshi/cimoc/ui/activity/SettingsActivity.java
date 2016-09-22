@@ -3,7 +3,8 @@ package com.hiroshi.cimoc.ui.activity;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.CheckBox;
@@ -15,6 +16,7 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.DialogUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -33,6 +35,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_reverse_checkbox) CheckBox mReverseBox;
     @BindView(R.id.settings_reader_picture_checkbox) CheckBox mPictureBox;
     @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
+    @BindView(R.id.settings_reader_hide_checkbox) CheckBox mHideBox;
 
     private SettingsPresenter mPresenter;
     private PreferenceManager mPreference;
@@ -40,6 +43,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private int mHomeChoice;
     private int mModeChoice;
     private int mTempChoice;
+    private int mTriggerNum;
 
     private DialogInterface.OnClickListener mSingleChoiceListener = new DialogInterface.OnClickListener() {
         @Override
@@ -63,6 +67,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPreference = CimocApplication.getPreferences();
         mHomeChoice = mPreference.getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
         mModeChoice = mPreference.getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
+        mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
         mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
         mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
         mVolumeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_VOLUME, false));
@@ -70,6 +75,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SPLIT, false));
         mPictureBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_PICTURE, false));
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BRIGHT, false));
+        mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_HIDE, false));
     }
 
     @Override
@@ -79,7 +85,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 1:
@@ -94,7 +100,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_volume_btn, R.id.settings_reader_reverse_btn,
-            R.id.settings_reader_picture_btn, R.id.settings_reader_bright_btn})
+            R.id.settings_reader_picture_btn, R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_split_btn:
@@ -112,6 +118,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             case R.id.settings_reader_bright_btn:
                 checkedAndSave(mBrightBox, PreferenceManager.PREF_BRIGHT);
                 break;
+            case R.id.settings_reader_hide_btn:
+                checkedAndSave(mHideBox, PreferenceManager.PREF_HIDE);
+                break;
         }
     }
 
@@ -121,10 +130,27 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPreference.putBoolean(key, checked);
     }
 
+    @OnClick(R.id.settings_reader_trigger_btn) void onTriggerBtnClick() {
+        final String[] array = StringUtils.range(5, 50, 5);
+        for (int i = 0; i != array.length; ++i) {
+            if (Integer.parseInt(array[i]) == mTriggerNum) {
+                DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_trigger, array, i,
+                        mSingleChoiceListener, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mTriggerNum = Integer.parseInt(array[mTempChoice]);
+                                mPreference.putInt(PreferenceManager.PREF_TRIGGER, mTriggerNum);
+                            }
+                        }).show();
+            }
+        }
+    }
+
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
-        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]
+                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
             mProgressDialog.show();
             mPresenter.loadFiles();
@@ -156,9 +182,10 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick(R.id.settings_backup_save_btn) void onSaveBtnClick() {
-        if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]
+                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
             mProgressDialog.show();
             mPresenter.backup();

@@ -39,7 +39,7 @@ Online manga reader based on Android
 - [Rhino](https://www.mozilla.org/rhino/)
 
 # ToDo
-- 综合搜索
+- ~~综合搜索~~
 - 漫画标签分类
 - 多线程下载
 - 更改下载路径

@@ -125,7 +125,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 });
     }
 
-    public void loadDownload(long key, final String[] array) {
+    public void loadDownload(final String[] array) {
+        Long key = mComic.getId() == null ? -1 : mComic.getId();
         mTaskManager.list(key)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {

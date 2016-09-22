@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
@@ -31,6 +30,7 @@ import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
@@ -54,6 +54,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @BindView(R.id.reader_battery) TextView mBatteryText;
     @BindView(R.id.reader_progress_layout) View mProgressLayout;
     @BindView(R.id.reader_back_layout) View mBackLayout;
+    @BindView(R.id.reader_info_layout) View mInfoLayout;
     @BindView(R.id.reader_seek_bar) ReverseSeekBar mSeekBar;
     @BindView(R.id.reader_mask) View mNightMask;
     @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
@@ -66,6 +67,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected int progress = 1;
     protected int max = 1;
 
+    private boolean hide;
     private int source;
 
     @Override
@@ -75,6 +77,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
         if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false)) {
             mNightMask.setVisibility(View.VISIBLE);
+        }
+        hide = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_HIDE, false);
+        if (hide) {
+            mInfoLayout.setVisibility(View.INVISIBLE);
         }
         mSeekBar.setOnProgressChangeListener(this);
         List<ImageUrl> list = new LinkedList<>();
@@ -114,6 +120,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void onDestroy() {
+        if (mImagePipelineFactory != null) {
+            mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
+        }
         mPresenter.detachView();
         super.onDestroy();
     }
@@ -175,18 +184,26 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (mProgressLayout.isShown()) {
             mProgressLayout.setVisibility(View.INVISIBLE);
             mBackLayout.setVisibility(View.INVISIBLE);
+            if (hide) {
+                mInfoLayout.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
     protected void switchToolLayout() {
         if (mProgressLayout.isShown()) {
-            mProgressLayout.setVisibility(View.INVISIBLE);
-            mBackLayout.setVisibility(View.INVISIBLE);
+            hideToolLayout();
         } else {
-            mSeekBar.setMax(max);
+            if (mSeekBar.getMax() != max) {
+                mSeekBar.setMax(max);
+                mSeekBar.setProgress(max);
+            }
             mSeekBar.setProgress(progress);
             mProgressLayout.setVisibility(View.VISIBLE);
             mBackLayout.setVisibility(View.VISIBLE);
+            if (hide) {
+                mInfoLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -194,32 +211,26 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mChapterPage.setText(StringUtils.getProgress(progress, max));
     }
 
-    protected void showToast(int resId) {
-        if (!isFinishing()) {
-            Toast.makeText(this, resId, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public void onParseError() {
-        showToast(R.string.common_parse_error);
+        HintUtils.showToast(this, R.string.common_parse_error);
     }
 
     @Override
     public void onNetworkError() {
-        showToast(R.string.common_network_error);
+        HintUtils.showToast(this, R.string.common_network_error);
     }
 
     @Override
     public void onNextLoadSuccess(List<ImageUrl> list) {
         mReaderAdapter.addAll(list);
-        showToast(R.string.reader_load_success);
+        HintUtils.showToast(this, R.string.reader_load_success);
     }
 
     @Override
     public void onPrevLoadSuccess(List<ImageUrl> list) {
         mReaderAdapter.addAll(0, list);
-        showToast(R.string.reader_load_success);
+        HintUtils.showToast(this, R.string.reader_load_success);
     }
 
     @Override
@@ -249,32 +260,32 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onPictureSaveSuccess() {
-        showToast(R.string.reader_picture_save_success);
+        HintUtils.showToast(this, R.string.reader_picture_save_success);
     }
 
     @Override
     public void onPictureSaveFail() {
-        showToast(R.string.reader_picture_save_fail);
+        HintUtils.showToast(this, R.string.reader_picture_save_fail);
     }
 
     @Override
     public void onPrevLoading() {
-        showToast(R.string.reader_load_prev);
+        HintUtils.showToast(this, R.string.reader_load_prev);
     }
 
     @Override
     public void onPrevLoadNone() {
-        showToast(R.string.reader_prev_none);
+        HintUtils.showToast(this, R.string.reader_prev_none);
     }
 
     @Override
     public void onNextLoading() {
-        showToast(R.string.reader_load_next);
+        HintUtils.showToast(this, R.string.reader_load_next);
     }
 
     @Override
     public void onNextLoadNone() {
-        showToast(R.string.reader_next_none);
+        HintUtils.showToast(this, R.string.reader_next_none);
     }
 
     protected void savePicture(int position) {
@@ -287,7 +298,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             }
         } catch (IOException e) {
             e.printStackTrace();
-            showToast(R.string.reader_picture_save_fail);
+            HintUtils.showToast(this, R.string.reader_picture_save_fail);
         }
     }
 

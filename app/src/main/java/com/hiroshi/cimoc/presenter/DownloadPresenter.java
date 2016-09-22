@@ -101,6 +101,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     }
                 })
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
                     @Override
                     public void call(List<Task> list) {
