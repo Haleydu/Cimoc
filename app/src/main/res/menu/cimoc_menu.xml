@@ -2,8 +2,8 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/task_delete_multi"
-        android:title="@string/task_delete_multi"
-        android:icon="@drawable/ic_delete_white_24dp"
+    <item android:id="@+id/cimoc_filter"
+        android:title="@string/cimoc_filter"
+        android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom" />
 </menu>

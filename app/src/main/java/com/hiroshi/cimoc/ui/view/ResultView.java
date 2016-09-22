@@ -2,21 +2,15 @@ package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.model.Comic;
 
-import java.util.List;
-
 /**
  * Created by Hiroshi on 2016/8/21.
  */
 public interface ResultView extends BaseView {
 
-    void onFirstLoadSuccess();
+    void onSearchError();
 
-    void onParseError();
+    void onResultEmpty();
 
-    void onNetworkError();
-
-    void onEmptyResult();
-
-    void onLoadSuccess(List<Comic> list);
+    void onLoadSuccess(Comic comic);
 
 }

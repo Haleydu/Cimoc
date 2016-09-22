@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.core;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.Parser;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -10,6 +11,7 @@ import com.hiroshi.cimoc.model.ImageUrl;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -26,15 +28,31 @@ public class Manga {
 
     private static OkHttpClient mClient = CimocApplication.getHttpClient();
 
-    public static Observable<List<Comic>> search(final int source, final String keyword, final int page) {
-        final Parser parser = SourceManager.getParser(source);
-        return create(parser.getSearchRequest(keyword, page),
-                new OnResponseSuccessHandler<Comic>() {
-                    @Override
-                    public List<Comic> onSuccess(String html) {
-                        return parser.parseSearch(html, page);
+    public static Observable<Comic> search(final int source, final String keyword, final int page) {
+        return Observable.create(new Observable.OnSubscribe<Comic>() {
+            @Override
+            public void call(Subscriber<? super Comic> subscriber) {
+                Parser parser = SourceManager.getParser(source);
+                Request request = parser.getSearchRequest(keyword, page);
+                Random random = new Random();
+                try {
+                    String html = getResponseBody(mClient, request);
+                    SearchIterator iterator = parser.getSearchIterator(html, page);
+                    if (iterator == null || iterator.empty()) {
+                        subscriber.onError(new EmptyResultException());
+                    } else {
+                        while (iterator.hasNext()) {
+                            subscriber.onNext(iterator.next());
+                            Thread.sleep(random.nextInt(200));
+                        }
+                        subscriber.onCompleted();
                     }
-                });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
     }
 
     public static Observable<List<Chapter>> info(final int source, final Comic comic) {
@@ -163,16 +181,17 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException, ParseErrorException {
+    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException, EmptyResultException {
         Response response = null;
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 return response.body().string();
             } else {
-                throw new ParseErrorException();
+                throw new EmptyResultException();
             }
         } catch (IOException e){
+            e.printStackTrace();
             throw new NetworkErrorException();
         } finally {
             if (response != null) {

@@ -15,6 +15,7 @@ public class PreferenceManager {
     public static final int HOME_CIMOC = 0;
     public static final int HOME_FAVORITE = 1;
     public static final int HOME_HISTORY = 2;
+    public static final int HOME_DOWNLOAD = 3;
 
     public static final String PREF_HOME = "pref_home";
     public static final String PREF_MODE = "pref_mode";
@@ -24,6 +25,8 @@ public class PreferenceManager {
     public static final String PREF_REVERSE = "pref_reverse";
     public static final String PREF_PICTURE = "pref_picture";
     public static final String PREF_BRIGHT = "pref_bright";
+    public static final String PREF_HIDE = "pref_hide";
+    public static final String PREF_TRIGGER = "pref_trigger";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

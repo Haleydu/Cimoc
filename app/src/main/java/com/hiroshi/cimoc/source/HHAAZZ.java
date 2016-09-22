@@ -2,6 +2,8 @@ package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -30,19 +32,20 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseSearch(String html, int page) {
+    public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("ul.se-list > li")) {
-            String cid = node.attr("a.pic", "href", "/", 4);
-            String title = node.text("a.pic > div > h3");
-            String cover = node.attr("a.pic > img", "src");
-            String update = node.text("a.pic > div > p:eq(4) > span", 0, 10);
-            String author = node.text("a.pic > div > p:eq(1)");
-            boolean status = node.text("a.tool > span.h").contains("完结");
-            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
-        }
-        return list;
+        return new NodeIterator(body.list("ul.se-list > li")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.attr("a.pic", "href", "/", 4);
+                String title = node.text("a.pic > div > h3");
+                String cover = node.attr("a.pic > img", "src");
+                String update = node.text("a.pic > div > p:eq(4) > span", 0, 10);
+                String author = node.text("a.pic > div > p:eq(1)");
+                // boolean status = node.text("a.tool > span.h").contains("完结");
+                return new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author);
+            }
+        };
     }
 
     @Override

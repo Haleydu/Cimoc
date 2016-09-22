@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.SparseArray;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
 
 /**
  * Created by Hiroshi on 2016/9/5.
@@ -11,20 +13,30 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 public class ControllerBuilderProvider {
 
     private Context mContext;
-    private SparseArray<PipelineDraweeControllerBuilder> mArray;
+    private SparseArray<PipelineDraweeControllerBuilder> mBuilderArray;
+    private SparseArray<ImagePipeline> mPipelineArray;
 
     public ControllerBuilderProvider(Context context) {
-        mArray = new SparseArray<>();
+        mBuilderArray = new SparseArray<>(10);
+        mPipelineArray = new SparseArray<>(10);
         mContext = context;
     }
 
     public PipelineDraweeControllerBuilder get(int source) {
-        PipelineDraweeControllerBuilder builder = mArray.get(source);
+        PipelineDraweeControllerBuilder builder = mBuilderArray.get(source);
         if (builder == null) {
-            builder = ControllerBuilderFactory.get(mContext, source);
-            mArray.put(source, builder);
+            ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(mContext, source);
+            builder = ControllerBuilderFactory.get(mContext, factory);
+            mBuilderArray.put(source, builder);
+            mPipelineArray.put(source, factory.getImagePipeline());
         }
         return builder;
+    }
+
+    public void clear() {
+        for (int i = 0; i != mPipelineArray.size(); ++i) {
+            mPipelineArray.valueAt(i).clearMemoryCaches();
+        }
     }
 
 }

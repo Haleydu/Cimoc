@@ -54,10 +54,11 @@ public class SourceManager {
                 .list();
     }
 
-    public List<Source> listEnable() {
+    public Observable<List<Source>> listEnable() {
         return mSourceDao.queryBuilder()
                 .where(Properties.Enable.eq(true))
                 .orderAsc(Properties.Sid)
+                .rx()
                 .list();
     }
 

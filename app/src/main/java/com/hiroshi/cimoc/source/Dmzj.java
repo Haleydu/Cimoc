@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.JsonIterator;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -9,6 +11,7 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
@@ -34,37 +37,37 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseSearch(String html, int page) {
+    public SearchIterator getSearchIterator(String html, int page) {
         String jsonString = StringUtils.match("g_search_data = (.*);", html, 1);
-        List<Comic> list = new LinkedList<>();
-        if (jsonString != null) {
-            try {
-                JSONArray array = new JSONArray(jsonString);
-                for (int i = 0; i != array.length(); ++i) {
-                    JSONObject object = array.getJSONObject(i);
-                    if (object.getInt("hidden") == 1) {
-                        continue;
+        try {
+            return new JsonIterator(new JSONArray(jsonString)) {
+                @Override
+                protected Comic parse(JSONObject object) {
+                    try {
+                        if (object.getInt("hidden") != 1) {
+                            String cid = object.getString("id");
+                            String title = object.getString("name");
+                            String cover = object.getString("cover");
+                            long time = object.getLong("last_updatetime") * 1000;
+                            String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+                            String author = object.getString("authors");
+                            // boolean status = object.getInt("status_tag_id") == 2310;
+                            return new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    String cid = object.getString("id");
-                    String title = object.getString("name");
-                    String cover = object.getString("cover");
-                    long time = object.getLong("last_updatetime") * 1000;
-                    String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
-                    String author = object.getString("authors");
-                    // boolean status = object.getInt("status_tag_id") == 2310;
-                    list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author));
+                    return null;
                 }
-                return list;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            };
+        } catch (JSONException e) {
+            return null;
         }
-        return null;
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = String.format(Locale.getDefault(), "http://m.dmzj.com/info/%s.html", cid);
+        String url = StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -100,7 +103,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.getDefault(), "http://m.dmzj.com/view/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.dmzj.com/view/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 

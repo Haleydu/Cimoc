@@ -12,7 +12,9 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.Observer;
@@ -123,7 +125,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 });
     }
 
-    public void loadDownload(long key, final String[] array) {
+    public void loadDownload(final String[] array) {
+        Long key = mComic.getId() == null ? -1 : mComic.getId();
         mTaskManager.list(key)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
@@ -149,26 +152,42 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 });
     }
 
-    public Task addTask(String path, String title) {
-        Task task = new Task(null, -1, path, title, 0, 0);
-
-        Long key = mComic.getId();
-        mComic.setDownload(System.currentTimeMillis());
-        if (key != null) {
-            mComicManager.update(mComic);
-            task.setKey(key);
-        } else {
-            long id = mComicManager.insert(mComic);
-            mComic.setId(id);
-            task.setKey(id);
-        }
-
-        long id = mTaskManager.insert(task);
-        task.setId(id);
-        task.setInfo(mComic.getSource(), mComic.getCid(), mComic.getTitle());
-        task.setState(Task.STATE_WAIT);
-        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, new MiniComic(mComic), task));
-        return task;
+    public void addTask(final List<Chapter> list) {
+        mComicManager.callInTx(new Callable<ArrayList<Task>>() {
+            @Override
+            public ArrayList<Task> call() throws Exception {
+                Long key = mComic.getId();
+                mComic.setDownload(System.currentTimeMillis());
+                if (key != null) {
+                    mComicManager.update(mComic);
+                } else {
+                    key = mComicManager.insert(mComic);
+                    mComic.setId(key);
+                }
+                ArrayList<Task> taskList = new ArrayList<>(list.size());
+                for (Chapter chapter : list) {
+                    Task task = new Task(null, key, chapter.getPath(), chapter.getTitle(), 0, 0);
+                    long id = mTaskManager.insert(task);
+                    task.setId(id);
+                    task.setInfo(mComic.getSource(), mComic.getCid(), mComic.getTitle());
+                    task.setState(Task.STATE_WAIT);
+                    taskList.add(task);
+                }
+                RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, new MiniComic(mComic), taskList));
+                return taskList;
+            }
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ArrayList<Task>>() {
+                    @Override
+                    public void call(ArrayList<Task> list) {
+                        mBaseView.onTaskAddSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTaskAddFail();
+                    }
+                });
     }
 
     public void updateComic() {

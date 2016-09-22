@@ -4,6 +4,7 @@
         <item>Cimoc</item>
         <item>我的漫画</item>
         <item>历史阅读</item>
+        <item>下载管理</item>
     </string-array>
     <string-array name="mode_items">
         <item>竖屏翻页模式</item>

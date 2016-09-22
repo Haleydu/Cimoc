@@ -30,6 +30,7 @@ import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -171,26 +172,38 @@ public class DetailActivity extends BackActivity implements DetailView {
             }
         });
         mDetailAdapter.setDownload(complete);
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onDownloadLoadFail() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.detail_download_load_fail);
     }
 
     @Override
-    public void onUpdateIndexSuccess() {
-        for (int position : mSelectAdapter.getCheckedList()) {
-            Chapter chapter = mDetailAdapter.getItem(position);
-            Task task = mPresenter.addTask(chapter.getPath(), chapter.getTitle());
-            Intent intent = DownloadService.createIntent(DetailActivity.this, task);
-            startService(intent);
-        }
+    public void onTaskAddSuccess(ArrayList<Task> list) {
+        Intent intent = DownloadService.createIntent(DetailActivity.this, list);
+        startService(intent);
         mSelectAdapter.refreshChecked();
         mProgressDialog.hide();
         showSnackbar(R.string.detail_download_queue_success);
+    }
+
+    @Override
+    public void onTaskAddFail() {
+        mProgressDialog.hide();
+        showSnackbar(R.string.detail_download_queue_fail);
+    }
+
+    @Override
+    public void onUpdateIndexSuccess() {
+        List<Integer> checked = mSelectAdapter.getCheckedList();
+        List<Chapter> list = new ArrayList<>(checked.size());
+        for (int position : checked) {
+            list.add(mDetailAdapter.getItem(position));
+        }
+        mPresenter.addTask(list);
     }
 
     @Override
@@ -201,8 +214,7 @@ public class DetailActivity extends BackActivity implements DetailView {
 
     @Override
     public void onDetailLoadSuccess() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.loadDownload(id, mDetailAdapter.getPaths());
+        mPresenter.loadDownload(mDetailAdapter.getPaths());
     }
 
     @Override
@@ -242,13 +254,13 @@ public class DetailActivity extends BackActivity implements DetailView {
 
     @Override
     public void onNetworkError() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
-        hideProgressBar();
+        mProgressBar.setVisibility(View.GONE);
         showSnackbar(R.string.common_parse_error);
     }
 

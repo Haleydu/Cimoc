@@ -8,15 +8,15 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -31,11 +31,12 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
+    private ControllerBuilderProvider mProvider;
 
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        ArrayList<Integer> source = getIntent().getIntegerArrayListExtra(EXTRA_SOURCE);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
     }
@@ -46,8 +47,8 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
         mResultAdapter.setOnItemClickListener(this);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mResultAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, source));
+        mProvider = new ControllerBuilderProvider(this);
+        mResultAdapter.setProvider(mProvider);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
@@ -69,6 +70,9 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     protected void onDestroy() {
+        if (mProvider != null) {
+            mProvider.clear();
+        }
         mPresenter.detachView();
         super.onDestroy();
     }
@@ -81,31 +85,21 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     }
 
     @Override
-    public void onLoadSuccess(List<Comic> list) {
-        mResultAdapter.addAll(list);
-    }
-
-    @Override
-    public void onNetworkError() {
+    public void onLoadSuccess(Comic comic) {
         hideProgressBar();
-        showSnackbar(R.string.common_network_error);
+        mResultAdapter.add(comic);
     }
 
     @Override
-    public void onParseError() {
-        hideProgressBar();
-        showSnackbar(R.string.common_parse_error);
-    }
-
-    @Override
-    public void onEmptyResult() {
+    public void onResultEmpty() {
         hideProgressBar();
         showSnackbar(R.string.result_empty);
     }
 
     @Override
-    public void onFirstLoadSuccess() {
+    public void onSearchError() {
         hideProgressBar();
+        showSnackbar(R.string.result_error);
     }
 
     @Override
@@ -126,10 +120,10 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";
 
-    public static Intent createIntent(Context context, String keyword, int sid) {
+    public static Intent createIntent(Context context, String keyword, ArrayList<Integer> list) {
         Intent intent = new Intent(context, ResultActivity.class);
         intent.putExtra(EXTRA_KEYWORD, keyword);
-        intent.putExtra(EXTRA_SOURCE, sid);
+        intent.putIntegerArrayListExtra(EXTRA_SOURCE, list);
         return intent;
     }
 

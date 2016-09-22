@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.view.View;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
@@ -16,25 +17,53 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
- * Created by Hiroshi on 2016/7/20.
+ * Created by Hiroshi on 2016/9/21.
  */
-public class AboutFragment extends BaseFragment implements AboutView {
+
+public class AboutActivity extends BackActivity implements AboutView {
 
     @BindView(R.id.about_update_summary) TextView mUpdateText;
+    @BindView(R.id.about_layout) View mLayoutView;
 
     private AboutPresenter mPresenter;
     private boolean update;
     private boolean checking;
 
+    @Override
+    protected void initPresenter() {
+        mPresenter = new AboutPresenter();
+        mPresenter.attachView(this);
+    }
+
+    @Override
+    protected void initProgressBar() {}
+
+    @Override
+    protected void initData() {
+        update = false;
+        checking = false;
+    }
+
+    @Override
+    public void onDestroy() {
+        mPresenter.detachView();
+        super.onDestroy();
+    }
+
     @OnClick(R.id.about_support_btn) void onSupportClick() {
-        ClipboardManager manager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager manager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         manager.setPrimaryClip(ClipData.newPlainText(null, getString(R.string.about_support_email)));
         showSnackbar(R.string.about_already_clip);
     }
 
     @OnClick(R.id.about_resource_btn) void onResourceClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_resource_url)));
-        startActivity(intent);
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showSnackbar(R.string.about_resource_fail);
+        }
     }
 
     @OnClick(R.id.about_update_btn) void onUpdateClick() {
@@ -43,7 +72,7 @@ public class AboutFragment extends BaseFragment implements AboutView {
             startActivity(intent);
         } else if (!checking) {
             try {
-                PackageInfo info = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
+                PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
                 mUpdateText.setText(R.string.about_update_doing);
                 checking = true;
                 mPresenter.checkUpdate(info.versionName);
@@ -74,25 +103,13 @@ public class AboutFragment extends BaseFragment implements AboutView {
     }
 
     @Override
-    protected int getLayoutView() {
-        return R.layout.fragment_about;
+    protected View getLayoutView() {
+        return mLayoutView;
     }
 
     @Override
-    public void onDestroy() {
-        mPresenter.detachView();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void initPresenter() {
-        mPresenter = new AboutPresenter();
-        mPresenter.attachView(this);
-    }
-
-    @Override
-    protected void initData() {
-        update = false;
+    protected int getLayoutRes() {
+        return R.layout.activity_about;
     }
 
 }

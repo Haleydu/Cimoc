@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -100,10 +101,11 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     }
                 })
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
                     @Override
                     public void call(List<Task> list) {
-                        mBaseView.onTaskLoadSuccess(list);
+                        mBaseView.onTaskLoadSuccess(new ArrayList<>(list));
                     }
                 }, new Action1<Throwable>() {
                     @Override

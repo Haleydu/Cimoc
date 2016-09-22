@@ -2,6 +2,8 @@ package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -11,7 +13,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -22,24 +23,25 @@ public class DM5 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.getDefault(), "http://www.dm5.com/search?page=%d&title=%s", page, keyword);
+        String url = StringUtils.format("http://www.dm5.com/search?page=%d&title=%s", page, keyword);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    public List<Comic> parseSearch(String html, int page) {
+    public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("div.midBar > div.item")) {
-            String cid = node.attr("dt > p > a.title", "href", "/", 1);
-            String title = node.text("dt > p > a.title");
-            String cover = node.attr("dl > a > img", "src");
-            String update = node.text("dt > p > span.date", 6, -7);
-            String author = node.text("dt > a:eq(2)");
-            // boolean status = "已完结".equals(node.text("dt > p > span.date > span.red", 1, -2));
-            list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
-        }
-        return list;
+        return new NodeIterator(body.list("div.midBar > div.item")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.attr("dt > p > a.title", "href", "/", 1);
+                String title = node.text("dt > p > a.title");
+                String cover = node.attr("dl > a > img", "src");
+                String update = node.text("dt > p > span.date", 6, -7);
+                String author = node.text("dt > a:eq(2)");
+                // boolean status = "已完结".equals(node.text("dt > p > span.date > span.red", 1, -2));
+                return new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author);
+            }
+        };
     }
 
     @Override
@@ -103,7 +105,7 @@ public class DM5 extends MangaParser {
             }
             int page = Integer.parseInt(rs[1]);
             for (int i = 0; i != page; ++i) {
-                list.add(new ImageUrl(i + 1, String.format(Locale.getDefault(), format, rs[0], rs[0], i + 1), true));
+                list.add(new ImageUrl(i + 1, StringUtils.format(format, rs[0], rs[0], i + 1), true));
             }
         }
         return list;

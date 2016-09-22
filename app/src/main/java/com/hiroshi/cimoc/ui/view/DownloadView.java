@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.view;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ public interface DownloadView extends BaseView {
 
     void onComicLoadFail();
 
-    void onTaskLoadSuccess(List<Task> list);
+    void onTaskLoadSuccess(ArrayList<Task> list);
 
     void onTaskLoadFail();
 

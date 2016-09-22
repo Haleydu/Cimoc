@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/download_recycler_view"
+        android:id="@+id/grid_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="8dp"
@@ -14,11 +14,10 @@
         android:clipChildren="false"
         android:clipToPadding="false"/>
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/download_control_btn"
+        android:id="@+id/grid_action_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
-        android:src="@drawable/ic_play_arrow_white_24dp"
         app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
 </android.support.design.widget.CoordinatorLayout>

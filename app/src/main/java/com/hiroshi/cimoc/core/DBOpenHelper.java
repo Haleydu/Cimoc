@@ -43,9 +43,6 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
             case 3:
                 TaskDao.createTable(db, false);
                 updateDownload(db);
-                break;
-            case 4:
-                updateTest(db);
         }
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -76,14 +73,6 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " + System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
-    }
-
-    private void updateTest(Database db) {
-        db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
-        ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
-        db.execSQL("DROP TABLE \"COMIC2\"");
     }
 
 }

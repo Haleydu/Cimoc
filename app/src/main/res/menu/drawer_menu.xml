@@ -4,31 +4,37 @@
         android:checkableBehavior="single">
         <item
             android:id="@+id/drawer_cimoc"
+            android:checkable="true"
             android:title="@string/drawer_main"/>
         <item
             android:id="@+id/drawer_favorite"
+            android:checkable="true"
             android:title="@string/drawer_comic"/>
         <item
             android:id="@+id/drawer_history"
+            android:checkable="true"
             android:title="@string/drawer_history"/>
         <item
             android:id="@+id/drawer_download"
+            android:checkable="true"
             android:title="@string/drawer_download"/>
         <item
             android:id="@+id/drawer_source"
+            android:checkable="true"
             android:title="@string/drawer_source"/>
         <item
             android:title="@string/drawer_system">
             <menu>
                 <item
+                    android:id="@+id/drawer_night"
+                    android:icon="@drawable/ic_brightness_4_black_24dp"/>
+                <item
                     android:id="@+id/drawer_settings"
                     android:icon="@drawable/ic_settings_black_24dp"
-                    android:checkable="true"
                     android:title="@string/drawer_settings"/>
                 <item
                     android:id="@+id/drawer_about"
                     android:icon="@drawable/ic_about_black_24dp"
-                    android:checkable="true"
                     android:title="@string/drawer_about"/>
             </menu>
         </item>

@@ -21,8 +21,8 @@ public class FavoriteAdapter extends ComicAdapter {
     private Set<String> mFilterSet;
     private List<MiniComic> mFullList;
 
-    public FavoriteAdapter(Context context) {
-        super(context, new LinkedList<MiniComic>());
+    public FavoriteAdapter(Context context, List<MiniComic> list) {
+        super(context, list);
         mFullList = new LinkedList<>();
         mFilterSet = new HashSet<>();
         mFilterSet.add("已完结");

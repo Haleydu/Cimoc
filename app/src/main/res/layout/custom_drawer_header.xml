@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="140dp"
     android:background="?attr/colorPrimary">
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/drawer_last_read_btn"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:padding="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drawer_last_read"
+            android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/drawer_last_read_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/drawer_last_read_null"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+</FrameLayout>

@@ -2,6 +2,8 @@ package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
+import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -14,7 +16,6 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -25,24 +26,25 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = String.format(Locale.getDefault(), "http://m.ikanman.com/s/%s.html?page=%d", keyword, page);
+        String url = StringUtils.format("http://m.ikanman.com/s/%s.html?page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    public List<Comic> parseSearch(String html, int page) {
+    public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        List<Comic> list = new LinkedList<>();
-        for (Node node : body.list("#detail > li > a")) {
-            String cid = node.attr("href", "/", 2);
-            String title = node.text("h3");
-            String cover = node.attr("div > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
-            String author = node.text("dl:eq(2) > dd");
-            // boolean status = "完结".equals(node.text("div > i"));
-            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author));
-        }
-        return list;
+        return new NodeIterator(body.list("#detail > li > a")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.attr("href", "/", 2);
+                String title = node.text("h3");
+                String cover = node.attr("div > img", "data-src");
+                String update = node.text("dl:eq(5) > dd");
+                String author = node.text("dl:eq(2) > dd");
+                // boolean status = "完结".equals(node.text("div > i"));
+                return new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author);
+            }
+        };
     }
 
     @Override
@@ -74,7 +76,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = String.format(Locale.getDefault(), "http://m.ikanman.com/comic/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.ikanman.com/comic/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
