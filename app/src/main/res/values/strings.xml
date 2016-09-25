@@ -142,7 +142,8 @@
     <string name="task_finish">下载完成</string>
     <string name="task_error">下载错误</string>
     <string name="task_list">任务列表</string>
-    <string name="task_load_fail">找不到索引文件</string>
+    <string name="task_load_task_fail">读取任务失败</string>
+    <string name="task_load_index_fail">找不到索引文件</string>
     <string name="task_delete_multi">批量删除</string>
     <string name="task_delete_all">删除所有</string>
     <string name="task_delete_confirm">是否删除下载内容</string>

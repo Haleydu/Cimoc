@@ -17,7 +17,7 @@ public class ControllerBuilderFactory {
 
     public static PipelineDraweeControllerBuilder get(Context context, int source) {
         ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(context, source);
-        return new PipelineDraweeControllerBuilderSupplier(context, factory).get();
+        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get();
     }
 
 }

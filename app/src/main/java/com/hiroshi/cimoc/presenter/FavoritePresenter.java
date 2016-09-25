@@ -59,8 +59,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         });
     }
 
+    private int size;
+
     public void checkUpdate() {
         mComicManager.listFavorite()
+                .doOnNext(new Action1<List<Comic>>() {
+                    @Override
+                    public void call(List<Comic> list) {
+                        size = list.size();
+                    }
+                })
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -90,10 +98,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
                     @Override
                     public void onNext(Comic comic) {
-                        if (comic != null) {
-                            mBaseView.onComicUpdate(new MiniComic(comic));
-                        }
-                        mBaseView.onProgressChange(++count);
+                        mBaseView.onComicUpdate(comic, ++count, size);
                     }
                 });
     }
@@ -101,11 +106,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     public void updateComic(long fromId, long toId, boolean isBack) {
         Comic fromComic = mComicManager.load(fromId);
         Comic toComic = mComicManager.load(toId);
-        if (isBack) {
-            fromComic.setFavorite(toComic.getFavorite() - 1);
-        } else {
-            fromComic.setFavorite(toComic.getFavorite() + 1);
-        }
+        long favorite = isBack ? toComic.getFavorite() - 1 : toComic.getFavorite() + 1;
+        fromComic.setFavorite(favorite);
         mComicManager.update(fromComic);
     }
 
@@ -130,6 +132,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     public void call(List<MiniComic> list) {
                         mBaseView.onItemAdd(list);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+
+                    }
                 });
     }
 
@@ -146,6 +153,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                             filter[i + 2] = SourceManager.getTitle(list.get(i).getSid());
                         }
                         mBaseView.onFilterLoad(filter);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+
                     }
                 });
     }

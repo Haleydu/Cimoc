@@ -39,7 +39,6 @@ public abstract class GridFragment extends BaseFragment implements BaseAdapter.O
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.setAdapter(mComicAdapter);
         mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
         mRecyclerView.setAdapter(mComicAdapter);
     }
@@ -50,8 +49,15 @@ public abstract class GridFragment extends BaseFragment implements BaseAdapter.O
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         if (mBuilderProvider != null) {
             mBuilderProvider.clear();
+            mBuilderProvider = null;
         }
     }
 

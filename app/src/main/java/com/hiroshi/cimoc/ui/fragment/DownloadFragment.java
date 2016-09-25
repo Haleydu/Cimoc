@@ -72,7 +72,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onItemClick(View view, int position) {
         MiniComic comic = mComicAdapter.getItem(position);
         Intent intent =
-                TaskActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle());
+                TaskActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
     }
 

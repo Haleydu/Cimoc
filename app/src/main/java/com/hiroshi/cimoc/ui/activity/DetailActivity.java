@@ -136,6 +136,8 @@ public class DetailActivity extends BackActivity implements DetailView {
             } else {
                 mPresenter.updateIndex(mDetailAdapter.getDateSet());
             }
+        } else {
+            mPresenter.updateIndex(mDetailAdapter.getDateSet());
         }
     }
 
@@ -199,11 +201,13 @@ public class DetailActivity extends BackActivity implements DetailView {
     @Override
     public void onUpdateIndexSuccess() {
         List<Integer> checked = mSelectAdapter.getCheckedList();
-        List<Chapter> list = new ArrayList<>(checked.size());
-        for (int position : checked) {
-            list.add(mDetailAdapter.getItem(position));
+        if (!checked.isEmpty()) {
+            List<Chapter> list = new ArrayList<>(checked.size());
+            for (int position : checked) {
+                list.add(mDetailAdapter.getItem(position));
+            }
+            mPresenter.addTask(list);
         }
-        mPresenter.addTask(list);
     }
 
     @Override

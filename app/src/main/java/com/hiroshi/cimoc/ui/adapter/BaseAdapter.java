@@ -14,11 +14,12 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    protected Context mContext;
-    protected List<T> mDataSet;
-    protected LayoutInflater mInflater;
-    protected OnItemClickListener mClickListener;
-    protected OnItemLongClickListener mLongClickListener;
+    Context mContext;
+    List<T> mDataSet;
+    LayoutInflater mInflater;
+
+    private OnItemClickListener mClickListener;
+    private OnItemLongClickListener mLongClickListener;
 
     public BaseAdapter(Context context, List<T> list) {
         mContext = context;
@@ -27,7 +28,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public void add(T data) {
-        add(mDataSet.size(), data);
+        if (mDataSet.add(data)) {
+            notifyItemInserted(mDataSet.size());
+        }
     }
 
     public void add(int location, T data) {
@@ -40,8 +43,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public void addAll(int location, List<T> list) {
-        mDataSet.addAll(location, list);
-        notifyItemRangeInserted(location, location + list.size());
+        if (mDataSet.addAll(location, list)) {
+            notifyItemRangeInserted(location, location + list.size());
+        }
     }
 
     public boolean exist(T data) {
@@ -107,9 +111,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         void onItemLongClick(View view, int position);
     }
 
-    public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
-        public BaseViewHolder(View view) {
+        BaseViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
             view.setOnClickListener(this);

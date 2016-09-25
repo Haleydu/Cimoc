@@ -49,4 +49,8 @@ public class NotificationUtils {
         setBuilder(context, builder, text, ongoing, 0, 0, false);
     }
 
+    public static void cancelNotification(int id, NotificationManager manager) {
+        manager.cancel(id);
+    }
+
 }

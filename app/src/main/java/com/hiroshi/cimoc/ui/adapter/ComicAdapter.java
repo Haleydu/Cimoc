@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
@@ -53,7 +54,11 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
+        DraweeController controller = mProvider.get(comic.getSource())
+                .setOldController(viewHolder.comicImage.getController())
+                .setUri(comic.getCover())
+                .build();
+        viewHolder.comicImage.setController(controller);
     }
 
     public void setProvider(ControllerBuilderProvider provider) {

@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.view;
 
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
@@ -17,11 +18,9 @@ public interface FavoriteView extends BaseView {
 
     void onSourceRemove(int source);
 
-    void onComicUpdate(MiniComic comic);
+    void onComicUpdate(Comic comic, int progress, int max);
 
     void onCheckComplete();
-
-    void onProgressChange(int progress);
 
     void onFilterLoad(String[] filter);
 

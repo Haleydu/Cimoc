@@ -30,6 +30,7 @@ import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
+import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -37,6 +38,7 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -292,9 +294,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         String url = mReaderAdapter.getItem(position).getUrl();
         try {
             String suffix = StringUtils.getSplit(url, "\\.", -1);
-            BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
-            if (resource != null) {
-                mPresenter.savePicture(resource.openStream(), suffix);
+            if (url.startsWith("file")) {
+                InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
+                mPresenter.savePicture(inputStream, suffix);
+            } else {
+                BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
+                if (resource != null) {
+                    mPresenter.savePicture(resource.openStream(), suffix);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -309,16 +316,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private static final String EXTRA_COMIC = "e";
     private static final String EXTRA_CHAPTER = "f";
     private static final String EXTRA_POSITION = "g";
-
-    public static Intent createIntent(Context context, int source, String cid, String comic, List<Chapter> list, int position) {
-        Intent intent = getIntent(context);
-        intent.putExtra(EXTRA_SOURCE, source);
-        intent.putExtra(EXTRA_CID, cid);
-        intent.putExtra(EXTRA_COMIC, comic);
-        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
-        intent.putExtra(EXTRA_POSITION, position);
-        return intent;
-    }
 
     public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
         Intent intent = getIntent(context);

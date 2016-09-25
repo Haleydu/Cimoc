@@ -103,6 +103,11 @@ public class AboutActivity extends BackActivity implements AboutView {
     }
 
     @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.drawer_about);
+    }
+
+    @Override
     protected View getLayoutView() {
         return mLayoutView;
     }

@@ -93,11 +93,13 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        if (e instanceof Manga.NetworkErrorException) {
-                            mBaseView.onNetworkError();
-                        } else {
-                            mBaseView.onComicLoad(mComic);
-                            mBaseView.onParseError();
+                        if (mBaseView != null) {
+                            if (e instanceof Manga.NetworkErrorException) {
+                                mBaseView.onNetworkError();
+                            } else {
+                                mBaseView.onComicLoad(mComic);
+                                mBaseView.onParseError();
+                            }
                         }
                     }
 

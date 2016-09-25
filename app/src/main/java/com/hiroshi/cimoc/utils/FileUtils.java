@@ -3,6 +3,8 @@ package com.hiroshi.cimoc.utils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -151,6 +153,10 @@ public class FileUtils {
 
     public static boolean writeBinaryToFile(String dirPath, String filename, InputStream byteStream) {
         return mkDirsIfNotExist(dirPath) && writeBinaryToFile(new File(dirPath, filename), byteStream);
+    }
+
+    public static InputStream getInputStream(String pathname) throws FileNotFoundException {
+        return new FileInputStream(new File(pathname));
     }
 
 }

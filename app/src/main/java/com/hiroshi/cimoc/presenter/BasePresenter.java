@@ -13,7 +13,7 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BasePresenter<T extends BaseView> {
 
     protected T mBaseView;
-    protected CompositeSubscription mCompositeSubscription;
+    private CompositeSubscription mCompositeSubscription;
 
     public void attachView(T mBaseView) {
         this.mBaseView = mBaseView;
@@ -30,6 +30,7 @@ public abstract class BasePresenter<T extends BaseView> {
     public void detachView() {
         this.mCompositeSubscription.unsubscribe();
         this.mCompositeSubscription = null;
+        this.mBaseView = null;
     }
 
 }

@@ -263,6 +263,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.drawer_settings);
+    }
+
+    @Override
     protected View getLayoutView() {
         return mSettingsLayout;
     }
