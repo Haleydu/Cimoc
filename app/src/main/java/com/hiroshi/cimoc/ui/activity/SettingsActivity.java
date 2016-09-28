@@ -72,6 +72,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPictureBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_PICTURE, false));
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BRIGHT, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_HIDE, false));
+        mBlankBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BLANK, false));
     }
 
     @Override
