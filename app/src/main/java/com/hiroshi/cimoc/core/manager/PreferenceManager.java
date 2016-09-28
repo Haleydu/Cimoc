@@ -27,6 +27,7 @@ public class PreferenceManager {
     public static final String PREF_BRIGHT = "pref_bright";
     public static final String PREF_HIDE = "pref_hide";
     public static final String PREF_TRIGGER = "pref_trigger";
+    public static final String PREF_BLANK = "pref_blank";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

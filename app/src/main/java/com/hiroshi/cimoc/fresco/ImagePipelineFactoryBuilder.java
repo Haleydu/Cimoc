@@ -39,6 +39,8 @@ public class ImagePipelineFactoryBuilder {
                 return Headers.of("Referer", "http://www.u17.com");
             case SourceManager.SOURCE_DM5:
                 return Headers.of("Referer", "http://www.dm5.com");
+            case SourceManager.SOURCE_WEBTOON:
+                return Headers.of("Referer", "http://m.webtoons.com");
             case SourceManager.SOURCE_EHENTAI:
                 return Headers.of("Referer", "http://g.e-hentai.org");
             case SourceManager.SOURCE_EXHENTAI:

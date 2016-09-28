@@ -30,7 +30,9 @@ public class StreamReaderActivity extends ReaderActivity {
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
-        mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
+        if (!CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BLANK, false)) {
+            mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
+        }
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

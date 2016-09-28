@@ -8,7 +8,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -28,14 +27,13 @@ import butterknife.OnClick;
 public class SettingsActivity extends BackActivity implements SettingsView {
 
     @BindView(R.id.settings_layout) View mSettingsLayout;
-    @BindView(R.id.settings_other_home_summary) TextView mHomeSummary;
-    @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
     @BindView(R.id.settings_reader_reverse_checkbox) CheckBox mReverseBox;
     @BindView(R.id.settings_reader_picture_checkbox) CheckBox mPictureBox;
     @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) CheckBox mHideBox;
+    @BindView(R.id.settings_reader_blank_checkbox) CheckBox mBlankBox;
 
     private SettingsPresenter mPresenter;
     private PreferenceManager mPreference;
@@ -68,8 +66,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mHomeChoice = mPreference.getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
         mModeChoice = mPreference.getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
         mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
-        mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
-        mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
         mVolumeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_VOLUME, false));
         mReverseBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_REVERSE, false));
         mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SPLIT, false));
@@ -107,7 +103,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_volume_btn, R.id.settings_reader_reverse_btn,
-            R.id.settings_reader_picture_btn, R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
+            R.id.settings_reader_picture_btn, R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_reader_blank_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_split_btn:
@@ -127,6 +123,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_reader_hide_btn:
                 checkedAndSave(mHideBox, PreferenceManager.PREF_HIDE);
+                break;
+            case R.id.settings_reader_blank_btn:
+                checkedAndSave(mBlankBox, PreferenceManager.PREF_BLANK);
                 break;
         }
     }
@@ -171,7 +170,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     public void onClick(DialogInterface dialog, int which) {
                         mHomeChoice = mTempChoice;
                         mPreference.putInt(PreferenceManager.PREF_HOME, mHomeChoice);
-                        mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
                     }
                 }).show();
     }
@@ -183,7 +181,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     public void onClick(DialogInterface dialog, int which) {
                         mModeChoice = mTempChoice;
                         mPreference.putInt(PreferenceManager.PREF_MODE, mModeChoice);
-                        mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
                     }
                 }).show();
     }

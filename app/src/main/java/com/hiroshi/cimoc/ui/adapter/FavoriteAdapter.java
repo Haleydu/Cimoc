@@ -6,10 +6,13 @@ import android.view.View;
 
 import com.hiroshi.cimoc.collections.FilterList;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.utils.CollectionUtils;
 
 import java.util.List;
 import java.util.Set;
+
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/8/5.
@@ -36,20 +39,34 @@ public class FavoriteAdapter extends ComicAdapter {
     }
 
     public MiniComic clickItem(int which) {
-        MiniComic comic = mDataSet.get(which);
+        final MiniComic comic = mDataSet.get(which);
         if (comic.isHighlight()) {
             comic.setHighlight(false);
             remove(which);
-            CollectionUtils.Condition<MiniComic> condition = new CollectionUtils.Condition<MiniComic>() {
+            final Func1<MiniComic, Boolean> func = new Func1<MiniComic, Boolean>() {
                 @Override
-                public boolean call(int position, MiniComic element) {
-                    return !element.isHighlight();
+                public Boolean call(MiniComic comic) {
+                    return !comic.isHighlight();
                 }
             };
-            int position = CollectionUtils.findFirstFromList(mDataSet, condition);
-            int[] index = {CollectionUtils.findFirstFromList(filterList.getFullList(), condition), position};
-            filterList.addDiff(index, comic);
-            notifyItemInserted(position);
+            Observable.from(mDataSet)
+                    .takeFirst(func)
+                    .subscribe(new Action1<MiniComic>() {
+                        @Override
+                        public void call(final MiniComic comic1) {
+                            Observable.from(filterList.getFullList())
+                                    .takeFirst(func)
+                                    .subscribe(new Action1<MiniComic>() {
+                                        @Override
+                                        public void call(MiniComic comic2) {
+                                            int index1 = mDataSet.indexOf(comic1);
+                                            int index2 = filterList.getFullList().indexOf(comic2);
+                                            filterList.addDiff(index1, index2, comic);
+                                            notifyItemInserted(index1);
+                                        }
+                                    });
+                        }
+                    });
         }
         return comic;
     }
@@ -65,13 +82,20 @@ public class FavoriteAdapter extends ComicAdapter {
 
     @Override
     public void removeBySource(final int source) {
-        List<MiniComic> list = CollectionUtils.findAllToList(filterList.getFullList(), new CollectionUtils.Condition<MiniComic>() {
-            @Override
-            public boolean call(int position, MiniComic element) {
-                return source == element.getSource();
-            }
-        });
-        removeAll(list);
+        Observable.from(filterList.getFullList())
+                .filter(new Func1<MiniComic, Boolean>() {
+                    @Override
+                    public Boolean call(MiniComic comic) {
+                        return source == comic.getSource();
+                    }
+                })
+                .toList()
+                .subscribe(new Action1<List<MiniComic>>() {
+                    @Override
+                    public void call(List<MiniComic> list) {
+                        removeAll(list);
+                    }
+                });
     }
 
     public boolean isFull() {

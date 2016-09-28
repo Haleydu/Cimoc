@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import java.util.Collection;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -38,13 +39,13 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyItemInserted(location);
     }
 
-    public void addAll(List<T> list) {
-        addAll(mDataSet.size(), list);
+    public void addAll(Collection<T> collection) {
+        addAll(mDataSet.size(), collection);
     }
 
-    public void addAll(int location, List<T> list) {
-        if (mDataSet.addAll(location, list)) {
-            notifyItemRangeInserted(location, location + list.size());
+    public void addAll(int location, Collection<T> collection) {
+        if (mDataSet.addAll(location, collection)) {
+            notifyItemRangeInserted(location, location + collection.size());
         }
     }
 
@@ -64,8 +65,8 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyItemRemoved(position);
     }
 
-    public void removeAll(List<T> list) {
-        mDataSet.removeAll(list);
+    public void removeAll(Collection<T> collection) {
+        mDataSet.removeAll(collection);
         notifyDataSetChanged();
     }
 

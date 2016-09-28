@@ -22,14 +22,20 @@ import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
 import com.hiroshi.cimoc.ui.view.TaskView;
-import com.hiroshi.cimoc.utils.CollectionUtils;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/9/7.
@@ -87,31 +93,28 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.task_delete_multi:
-                String[] chapter = mTaskAdapter.getTaskTitle();
-                final boolean[] checked = new boolean[chapter.length];
-                DialogUtils.buildMultiChoiceDialog(this, R.string.task_delete_multi, chapter, checked,
+                final List<Task> data = mTaskAdapter.getDateSet();
+                final String[] chapter = mTaskAdapter.getTaskTitle();
+                final Set<Task> set = new HashSet<>(chapter.length);
+                DialogUtils.buildMultiChoiceDialog(this, R.string.task_delete_multi, chapter, null,
                         new DialogInterface.OnMultiChoiceClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                checked[which] = isChecked;
+                                if (isChecked) {
+                                    set.add(data.get(which));
+                                } else {
+                                    set.remove(data.get(which));
+                                }
                             }
                         }, R.string.task_delete_all, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mProgressDialog.show();
-                                deleteTask(new LinkedList<>(mTaskAdapter.getDateSet()));
+                                deleteTask(new ArrayList<>(data));
                             }
                         }, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mProgressDialog.show();
-                                List<Task> list = CollectionUtils.findAllToList(mTaskAdapter.getDateSet(), new CollectionUtils.Condition<Task>() {
-                                    @Override
-                                    public boolean call(int position, Task element) {
-                                        return checked[position];
-                                    }
-                                });
-                                deleteTask(list);
+                                deleteTask(set);
                             }
                         }).show();
                 break;
@@ -119,15 +122,16 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         return super.onOptionsItemSelected(item);
     }
 
-    private void deleteTask(List<Task> list) {
-        if (list.isEmpty()) {
+    private void deleteTask(Collection<Task> collection) {
+        mProgressDialog.show();
+        if (collection.isEmpty()) {
             mProgressDialog.hide();
         } else {
-            for (Task task : list) {
+            for (Task task : collection) {
                 mBinder.getService().removeDownload(task.getId());
             }
-            mPresenter.deleteTask(list, mTaskAdapter.getItemCount() == list.size());
-            mTaskAdapter.removeAll(list);
+            mPresenter.deleteTask(collection, mTaskAdapter.getItemCount() == collection.size());
+            mTaskAdapter.removeAll(collection);
         }
     }
 
@@ -137,25 +141,40 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         switch (task.getState()) {
             case Task.STATE_FINISH:
                 final String path = mTaskAdapter.getItem(position).getPath();
-                List<Chapter> list = CollectionUtils.findAllToList(mTaskAdapter.getDateSet(), new CollectionUtils.Condition<Task>() {
-                    @Override
-                    public boolean call(int position, Task element) {
-                        return element.getState() == Task.STATE_FINISH;
-                    }
-                }, new CollectionUtils.Construct<Task, Chapter>() {
-                    @Override
-                    public Chapter call(Task element) {
-                        return new Chapter(element.getTitle(), element.getPath(), element.getMax(), true);
-                    }
-                });
-                int pos = CollectionUtils.findFirstFromList(list, new CollectionUtils.Condition<Chapter>() {
-                    @Override
-                    public boolean call(int position, Chapter element) {
-                        return element.getPath().equals(path);
-                    }
-                });
-                Intent readerIntent = ReaderActivity.createIntent(this, mPresenter.getComic(), list, pos);
-                startActivity(readerIntent);
+                Observable.from(mTaskAdapter.getDateSet())
+                        .filter(new Func1<Task, Boolean>() {
+                            @Override
+                            public Boolean call(Task task) {
+                                return task.getState() == Task.STATE_FINISH;
+                            }
+                        })
+                        .map(new Func1<Task, Chapter>() {
+                            @Override
+                            public Chapter call(Task task) {
+                                return new Chapter(task.getTitle(), task.getPath(), task.getMax(), true);
+                            }
+                        })
+                        .toList()
+                        .subscribe(new Action1<List<Chapter>>() {
+                            @Override
+                            public void call(final List<Chapter> list) {
+                                Observable.from(list)
+                                        .takeFirst(new Func1<Chapter, Boolean>() {
+                                            @Override
+                                            public Boolean call(Chapter chapter) {
+                                                return chapter.getPath().equals(path);
+                                            }
+                                        })
+                                        .subscribe(new Action1<Chapter>() {
+                                            @Override
+                                            public void call(Chapter chapter) {
+                                                int pos = list.indexOf(chapter);
+                                                Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, mPresenter.getComic(), list, pos);
+                                                startActivity(readerIntent);
+                                            }
+                                        });
+                            }
+                        });
                 break;
             case Task.STATE_PAUSE:
             case Task.STATE_ERROR:

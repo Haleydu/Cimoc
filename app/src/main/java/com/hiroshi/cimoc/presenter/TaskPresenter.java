@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TaskView;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -189,8 +190,8 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 });
     }
 
-    public void deleteTask(final List<Task> list, final boolean isEmpty) {
-        Observable.from(list)
+    public void deleteTask(final Collection<Task> collection, final boolean isEmpty) {
+        Observable.from(collection)
                 .map(new Func1<Task, String>() {
                     @Override
                     public String call(Task task) {
@@ -219,7 +220,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                                     }
                                     RxBus.getInstance().post(new RxEvent(RxEvent.DOWNLOAD_DELETE, mComic.getId()));
                                 }
-                                for (Task task : list) {
+                                for (Task task : collection) {
                                     mTaskManager.delete(task);
                                 }
                             }

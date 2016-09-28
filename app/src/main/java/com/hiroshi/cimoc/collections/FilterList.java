@@ -67,9 +67,9 @@ public abstract class FilterList<T, E> extends LinkedList<T> {
         }
     }
 
-    public void addDiff(int[] index, T element) {
-        fullList.add(index[0], element);
-        super.add(index[1], element);
+    public void addDiff(int index1, int index2, T element) {
+        fullList.add(index1, element);
+        super.add(index2, element);
     }
 
     @Override

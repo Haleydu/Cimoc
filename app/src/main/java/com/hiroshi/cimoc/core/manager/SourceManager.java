@@ -16,6 +16,7 @@ import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.NHentai;
 import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Webtoon;
 import com.hiroshi.cimoc.source.Wnacg;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class SourceManager {
     public static final int SOURCE_CCTUKU = 3;
     public static final int SOURCE_U17 = 4;
     public static final int SOURCE_DM5 = 5;
+    public static final int SOURCE_WEBTOON = 6;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -88,6 +90,8 @@ public class SourceManager {
                 return "有妖气";
             case SOURCE_DM5:
                 return "动漫屋";
+            case SOURCE_WEBTOON:
+                return "Webtoon";
             case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
@@ -114,6 +118,8 @@ public class SourceManager {
                 return SOURCE_U17;
             case "DM5":
                 return SOURCE_DM5;
+            case "Webtoon":
+                return SOURCE_WEBTOON;
             case "EHentai":
                 return SOURCE_EHENTAI;
             case "ExHentai":
@@ -144,11 +150,14 @@ public class SourceManager {
                 case SOURCE_CCTUKU:
                     parser = new CCTuku();
                     break;
+                case SOURCE_U17:
+                    parser = new U17();
+                    break;
                 case SOURCE_DM5:
                     parser = new DM5();
                     break;
-                case SOURCE_U17:
-                    parser = new U17();
+                case SOURCE_WEBTOON:
+                    parser = new Webtoon();
                     break;
                 case SOURCE_EHENTAI:
                     parser = new EHentai();

@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainActivity extends BaseActivity implements MainView {
+public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
     private static final int FRAGMENT_NUM = 5;
 
@@ -62,10 +62,6 @@ public class MainActivity extends BaseActivity implements MainView {
         ActionBarDrawerToggle drawerToggle =
                 new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
                     @Override
-                    public void onDrawerOpened(View drawerView) {
-                        super.onDrawerOpened(drawerView);
-                    }
-                    @Override
                     public void onDrawerClosed(View drawerView) {
                         super.onDrawerClosed(drawerView);
                         mCurrentFragment = mFragmentArray.get(mCheckItem);
@@ -75,39 +71,9 @@ public class MainActivity extends BaseActivity implements MainView {
                 };
         drawerToggle.syncState();
         mDrawerLayout.setDrawerListener(drawerToggle);
-        final boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+        boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId != mCheckItem) {
-                    if (mFragmentArray.get(itemId) != null) {
-                        mCheckItem = itemId;
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
-                        mToolbar.setTitle(item.getTitle().toString());
-                        mDrawerLayout.closeDrawer(GravityCompat.START);
-                    } else {
-                        switch (itemId) {
-                            case R.id.drawer_night:
-                                CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, !night);
-                                Intent intent = getIntent();
-                                finish();
-                                startActivity(intent);
-                                break;
-                            case R.id.drawer_settings:
-                                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                                break;
-                            case R.id.drawer_about:
-                                startActivity(new Intent(MainActivity.this, AboutActivity.class));
-                                break;
-                        }
-                    }
-                }
-                return true;
-            }
-        });
+        mNavigationView.setNavigationItemSelectedListener(this);
         initHeader(mNavigationView.getHeaderView(0));
         initFragment();
         mProgressBar.setVisibility(View.GONE);
@@ -193,6 +159,37 @@ public class MainActivity extends BaseActivity implements MainView {
         } else {
             finish();
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId != mCheckItem) {
+            if (mFragmentArray.get(itemId) != null) {
+                mCheckItem = itemId;
+                mProgressBar.setVisibility(View.VISIBLE);
+                mFragmentManager.beginTransaction().hide(mCurrentFragment).commit();
+                mToolbar.setTitle(item.getTitle().toString());
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                switch (itemId) {
+                    case R.id.drawer_night:
+                        boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+                        CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, !night);
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                        break;
+                    case R.id.drawer_settings:
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        break;
+                    case R.id.drawer_about:
+                        startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                        break;
+                }
+            }
+        }
+        return true;
     }
 
     @Override

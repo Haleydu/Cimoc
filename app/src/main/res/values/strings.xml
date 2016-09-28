@@ -72,6 +72,7 @@
     <string name="settings_backup_restore_fail">恢复失败</string>
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
+    <string name="settings_reader_mode_summary">选择阅读模式</string>
     <string name="settings_reader_volume">音量键翻页</string>
     <string name="settings_reader_volume_summary">仅限翻页模式</string>
     <string name="settings_reader_reverse">从右往左翻页</string>
@@ -86,8 +87,11 @@
     <string name="settings_reader_hide_summary">阅读状态隐藏右上角的信息</string>
     <string name="settings_reader_trigger">翻页触发位移</string>
     <string name="settings_reader_trigger_summary">自定义触发翻页的百分比</string>
+    <string name="settings_reader_blank">取消图片间隔</string>
+    <string name="settings_reader_blank_summary">仅限卷纸模式</string>
     <string name="settings_other">其他设置</string>
     <string name="settings_other_home">首页设置</string>
+    <string name="settings_other_home_summary">选择启动时的首页</string>
     <string name="settings_other_cache">清除缓存</string>
     <string name="settings_other_cache_success">清除成功</string>
     <string name="settings_other_cache_fail">清除失败</string>
