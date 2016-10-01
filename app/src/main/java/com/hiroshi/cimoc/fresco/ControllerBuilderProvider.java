@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.SparseArray;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 
@@ -13,24 +14,24 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 public class ControllerBuilderProvider {
 
     private Context mContext;
-    private SparseArray<PipelineDraweeControllerBuilder> mBuilderArray;
+    private SparseArray<PipelineDraweeControllerBuilderSupplier> mSupplierArray;
     private SparseArray<ImagePipeline> mPipelineArray;
 
     public ControllerBuilderProvider(Context context) {
-        mBuilderArray = new SparseArray<>(10);
-        mPipelineArray = new SparseArray<>(10);
+        mSupplierArray = new SparseArray<>(11);
+        mPipelineArray = new SparseArray<>(11);
         mContext = context;
     }
 
     public PipelineDraweeControllerBuilder get(int source) {
-        PipelineDraweeControllerBuilder builder = mBuilderArray.get(source);
-        if (builder == null) {
+        PipelineDraweeControllerBuilderSupplier supplier = mSupplierArray.get(source);
+        if (supplier == null) {
             ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(mContext, source);
-            builder = ControllerBuilderFactory.get(mContext, factory);
-            mBuilderArray.put(source, builder);
+            supplier = ControllerBuilderSupplierFactory.get(mContext, factory);
+            mSupplierArray.put(source, supplier);
             mPipelineArray.put(source, factory.getImagePipeline());
         }
-        return builder;
+        return supplier.get();
     }
 
     public void clear() {

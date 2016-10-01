@@ -8,9 +8,13 @@ import android.support.v7.widget.RecyclerView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+import com.hiroshi.cimoc.ui.view.GridView;
 import com.hiroshi.cimoc.utils.DialogUtils;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -19,7 +23,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/9/22.
  */
 
-public abstract class GridFragment extends BaseFragment implements BaseAdapter.OnItemClickListener {
+public abstract class GridFragment extends BaseFragment implements GridView, BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.grid_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.grid_action_button) FloatingActionButton mActionButton;
@@ -69,6 +73,17 @@ public abstract class GridFragment extends BaseFragment implements BaseAdapter.O
                         onActionConfirm();
                     }
                 }).show();
+    }
+
+    @Override
+    public void onComicLoadSuccess(List<MiniComic> list) {
+        mComicAdapter.addAll(list);
+        onInitSuccess();
+    }
+
+    @Override
+    public void onComicLoadFail() {
+
     }
 
     protected abstract int getActionRes();

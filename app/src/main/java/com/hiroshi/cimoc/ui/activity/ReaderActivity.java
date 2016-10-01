@@ -17,7 +17,7 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -94,7 +94,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mReaderAdapter.setLongPressListener(this);
         }
         mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
-        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, mImagePipelineFactory));
+        mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mLayoutManager = new PreCacheLayoutManager(this);
     }
 

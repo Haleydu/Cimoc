@@ -74,7 +74,6 @@ public class Webtoon extends MangaParser {
 
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
-
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#_episodeList > li > a")) {
@@ -85,12 +84,34 @@ public class Webtoon extends MangaParser {
 
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
         String cover = body.attr("#_episodeList > li > a > div.row > div.pic > img", "src");
-        String update = body.text("#_episodeList > li > a > div.row > div.info > p.date").trim();
+        String[] args = body.text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
+        String update = StringUtils.format("%4d-%02d-%02d",
+                Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         String author = body.text("#ct > div.detail_info > a._btnInfo > p.author");
         String intro = body.text("#_informationLayer > p.summary_area");
         boolean status = body.text("#_informationLayer > div.info_update").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
+        return list;
+    }
+
+    @Override
+    public Request getRecentRequest(int page) {
+        String url = "http://m.webtoons.com/zh-hans/new";
+        return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#ct > ul > li > a")) {
+            String cid = node.attr("href", "=", 1);
+            String title = node.text("div.info > p.subj > span");
+            String cover = node.attr("div.pic", "style", "\\(|\\)", 1);
+            // boolean status = "完结".equals(node.text("div > i"));
+            list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
+        }
         return list;
     }
 
@@ -117,6 +138,17 @@ public class Webtoon extends MangaParser {
             }
         }
         return list;
+    }
+
+    @Override
+    public Request getCheckRequest(String cid) {
+        return getInfoRequest(cid);
+    }
+
+    @Override
+    public String parseCheck(String html) {
+        String[] args = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
+        return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.SourcePresenter;
+import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
 import com.hiroshi.cimoc.ui.view.SourceView;
@@ -46,6 +48,13 @@ public class SourceFragment extends BaseFragment implements SourceView {
                                 mSourceAdapter.remove(position);
                             }
                         }).show();
+            }
+        });
+        mSourceAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Intent intent = ResultActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getSid());
+                startActivity(intent);
             }
         });
         mSourceAdapter.setOnItemCheckedListener(new SourceAdapter.OnItemCheckedListener() {
@@ -111,6 +120,7 @@ public class SourceFragment extends BaseFragment implements SourceView {
     @Override
     public void onSourceLoad(List<Source> list) {
         mSourceAdapter.addAll(list);
+        onInitSuccess();
     }
 
     @Override

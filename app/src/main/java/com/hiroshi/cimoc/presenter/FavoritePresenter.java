@@ -130,12 +130,12 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {
-                        mBaseView.onItemAdd(list);
+                        mBaseView.onComicLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-
+                        mBaseView.onComicLoadFail();
                     }
                 });
     }

@@ -174,12 +174,12 @@ public class DetailActivity extends BackActivity implements DetailView {
             }
         });
         mDetailAdapter.setDownload(complete);
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
     }
 
     @Override
     public void onDownloadLoadFail() {
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
         showSnackbar(R.string.detail_download_load_fail);
     }
 
@@ -258,13 +258,13 @@ public class DetailActivity extends BackActivity implements DetailView {
 
     @Override
     public void onNetworkError() {
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
         showSnackbar(R.string.common_parse_error);
     }
 

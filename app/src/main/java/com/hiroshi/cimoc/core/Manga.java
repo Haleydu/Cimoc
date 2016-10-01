@@ -66,6 +66,17 @@ public class Manga {
                 });
     }
 
+    public static Observable<List<Comic>> recent(final int source, final int page) {
+        final Parser parser = SourceManager.getParser(source);
+        return create(parser.getRecentRequest(page),
+                new OnResponseSuccessHandler<Comic>() {
+                    @Override
+                    public List<Comic> onSuccess(String html) {
+                        return parser.parseRecent(html, page);
+                    }
+                });
+    }
+
     public static Observable<List<ImageUrl>> images(final int source, final String cid, final String path) {
         final Parser parser = SourceManager.getParser(source);
         return create(parser.getImagesRequest(cid, path),
@@ -175,6 +186,7 @@ public class Manga {
                         subscriber.onCompleted();
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     subscriber.onError(e);
                 }
             }

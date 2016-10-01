@@ -23,13 +23,11 @@
     <string name="cimoc_load_fail">读取图源失败</string>
 
     <string name="result">搜索结果</string>
-    <string name="result_update">最后更新：</string>
-    <string name="result_source">来源：</string>
     <string name="result_empty">搜索结果为空</string>
     <string name="result_error">搜索错误</string>
+    <string name="result_recent">最近更新</string>
 
     <string name="detail">详情</string>
-    <string name="detail_header_update">最后更新：</string>
     <string name="detail_error">解析错误或此漫画已被屏蔽</string>
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
@@ -132,12 +130,13 @@
 
     <string name="download_service_doing">正在下载漫画</string>
     <string name="download_service_complete">所有任务已完成</string>
-    <string name="download_load_comic_fail">加载漫画失败</string>
     <string name="download_start_success">已开始全部下载任务</string>
     <string name="download_stop_success">已暂停全部下载任务</string>
     <string name="download_task_empty">下载任务为空</string>
     <string name="download_task_fail">读取任务失败</string>
     <string name="download_action_confirm">是否开始或暂停下载</string>
+
+    <string name="grid_load_comic_fail">读取漫画失败</string>
 
     <string name="task_parse">正在解析</string>
     <string name="task_pause">暂停下载</string>

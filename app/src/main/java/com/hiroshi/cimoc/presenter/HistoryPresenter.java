@@ -60,7 +60,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {
-                        mBaseView.onLoadSuccess(list);
+                        mBaseView.onComicLoadSuccess(list);
                     }
                 });
     }

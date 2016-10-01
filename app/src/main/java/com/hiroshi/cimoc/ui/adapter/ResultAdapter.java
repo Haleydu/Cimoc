@@ -31,7 +31,6 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         @BindView(R.id.result_comic_author) TextView comicAuthor;
         @BindView(R.id.result_comic_update) TextView comicUpdate;
         @BindView(R.id.result_comic_source) TextView comicSource;
-        @BindView(R.id.result_comic_update_tab) TextView tabUpdate;
 
         ResultViewHolder(View view) {
             super(view);
@@ -55,11 +54,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        if (comic.getUpdate() == null) {
-            viewHolder.tabUpdate.setVisibility(View.INVISIBLE);
-        } else {
-            viewHolder.comicUpdate.setText(comic.getUpdate());
-        }
+        viewHolder.comicUpdate.setText(comic.getUpdate());
         viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
     }
 

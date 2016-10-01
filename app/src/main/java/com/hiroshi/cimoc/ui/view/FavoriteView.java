@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/8/21.
  */
-public interface FavoriteView extends BaseView {
+public interface FavoriteView extends GridView {
 
     void onItemAdd(MiniComic comic);
 

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.model.Chapter;
 
 import java.util.ArrayList;
@@ -76,7 +76,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 if (position == 0) {
                     outRect.set(0, 0, 0, 10);
                 } else {
-                    outRect.set(30, 0, 30, 40);
+                    int left = parent.getWidth() / 40;
+                    outRect.set(left, 0, left, (int) (left * 1.5));
                 }
             }
         };
@@ -123,7 +124,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.get(mContext, source);
+            PipelineDraweeControllerBuilder builder = ControllerBuilderSupplierFactory.get(mContext, source);
             if (title != null) {
                 headerHolder.mComicImage.setController(builder.setUri(image).build());
                 headerHolder.mComicTitle.setText(title);
@@ -131,7 +132,9 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 if (finish != null) {
                     headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
                 }
-                headerHolder.mComicUpdate.setText(update);
+                if (update != null) {
+                    headerHolder.mComicUpdate.setText("最后更新：".concat(update));
+                }
                 headerHolder.mComicAuthor.setText(author);
             }
         } else {

@@ -24,7 +24,7 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     protected void initView() {
         super.initView();
-        mLayoutManager.setExtraSpace(6);
+        mLayoutManager.setExtraSpace(4);
         mReaderAdapter.setPictureMode(ReaderAdapter.MODE_STREAM);
         mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_SPLIT, false));
         mRecyclerView.setItemAnimator(null);

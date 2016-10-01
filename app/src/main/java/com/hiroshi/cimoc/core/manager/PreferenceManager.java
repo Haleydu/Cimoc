@@ -16,6 +16,7 @@ public class PreferenceManager {
     public static final int HOME_FAVORITE = 1;
     public static final int HOME_HISTORY = 2;
     public static final int HOME_DOWNLOAD = 3;
+    public static final int HOME_SOURCE = 4;
 
     public static final String PREF_HOME = "pref_home";
     public static final String PREF_MODE = "pref_mode";

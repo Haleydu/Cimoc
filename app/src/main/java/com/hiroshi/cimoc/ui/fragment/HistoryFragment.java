@@ -14,7 +14,6 @@ import com.hiroshi.cimoc.ui.view.HistoryView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/7/1.
@@ -69,11 +68,6 @@ public class HistoryFragment extends GridFragment implements HistoryView {
         MiniComic comic = mComicAdapter.getItem(position);
         Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         startActivity(intent);
-    }
-
-    @Override
-    public void onLoadSuccess(List<MiniComic> list) {
-        mComicAdapter.addAll(list);
     }
 
     @Override

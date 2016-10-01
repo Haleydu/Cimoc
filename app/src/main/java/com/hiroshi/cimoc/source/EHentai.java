@@ -42,7 +42,7 @@ public class EHentai extends MangaParser {
                 }
                 String update = node.text("td:eq(1)", 0, 10);
                 String author = StringUtils.match("\\[(.*?)\\]", title, 1);
-                title = title.replaceFirst("\\[.*?\\]\\s+", "");
+                title = title.replaceFirst("\\[.*?\\]\\s*", "");
                 return new Comic(SourceManager.SOURCE_EHENTAI, cid, title, cover, update, author);
             }
         };
@@ -71,6 +71,33 @@ public class EHentai extends MangaParser {
         String cover = body.attr("#gd1 > img", "src");
         comic.setInfo(title, cover, update, intro, author, true);
 
+        return list;
+    }
+
+    @Override
+    public Request getRecentRequest(int page) {
+        String url = StringUtils.format("http://g.e-hentai.org/?page=%d", (page - 1));
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
+            String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
+            cid = cid.substring(24, cid.length() - 1);
+            String title = node.text("td:eq(2) > div > div:eq(2) > a");
+            String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
+            if (cover == null) {
+                String temp = node.text("td:eq(2) > div > div:eq(0)", 14).split("~", 2)[0];
+                cover = "http://ehgt.org/".concat(temp);
+            }
+            String update = node.text("td:eq(1)", 0, 10);
+            String author = StringUtils.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s*", "");
+            list.add(new Comic(SourceManager.SOURCE_EHENTAI, cid, title, cover, update, author));
+        }
         return list;
     }
 

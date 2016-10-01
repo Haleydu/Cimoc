@@ -85,10 +85,10 @@ public class Backup {
                         String cid = object.getString("i");
                         String title = object.getString("t");
                         String cover = object.getString("c");
-                        String update = object.has("u") ? object.getString("u") : null;
-                        Boolean finish = object.has("f") ? object.getBoolean("f") : null;
-                        String last = object.has("l") ? object.getString("l") : null;
-                        Integer page = object.has("p") ? object.getInt("p") : null;
+                        String update = object.optString("u");
+                        Boolean finish = object.optBoolean("f");
+                        String last = object.optString("l");
+                        Integer page = object.optInt("p");
                         list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
                     }
                     subscriber.onNext(list);

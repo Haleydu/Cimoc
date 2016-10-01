@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.JsonIterator;
 import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -11,10 +11,16 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.FormBody;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Created by Hiroshi on 2016/8/25.
@@ -23,25 +29,41 @@ public class DM5 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://www.dm5.com/search?page=%d&title=%s", page, keyword);
-        return new Request.Builder().url(url).build();
+        String url = "http://m.dm5.com/pagerdata.ashx";
+        RequestBody body = new FormBody.Builder()
+                .add("t", "7")
+                .add("pageindex", String.valueOf(page))
+                .add("title", keyword)
+                .build();
+        return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.dm5.com").build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        Node body = new Node(html);
-        return new NodeIterator(body.list("div.midBar > div.item")) {
-            @Override
-            protected Comic parse(Node node) {
-                String cid = node.attr("dt > p > a.title", "href", "/", 1);
-                String title = node.text("dt > p > a.title");
-                String cover = node.attr("dl > a > img", "src");
-                String update = node.text("dt > p > span.date", 6, -7);
-                String author = node.text("dt > a:eq(2)");
-                // boolean status = "已完结".equals(node.text("dt > p > span.date > span.red", 1, -2));
-                return new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author);
-            }
-        };
+        try {
+            return new JsonIterator(new JSONArray(html)) {
+                @Override
+                protected Comic parse(JSONObject object) {
+                    try {
+                        String cid = object.getString("Url").split("/")[1];
+                        String title = object.getString("Title");
+                        String cover = object.getString("Pic");
+                        String update = object.getString("LastPartTime");
+                        JSONArray array = object.optJSONArray("Author");
+                        String author = "";
+                        for (int i = 0; array != null && i != array.length(); ++i) {
+                            author = author.concat(array.optString(i));
+                        }
+                        return new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+        } catch (JSONException e) {
+            return null;
+        }
     }
 
     @Override
@@ -80,6 +102,44 @@ public class DM5 extends MangaParser {
         boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
         comic.setInfo(title, cover, update, intro, author, status);
 
+        return list;
+    }
+
+    @Override
+    public Request getRecentRequest(int page) {
+        String url = "http://m.dm5.com/manhua-new/pagerdata.ashx";
+        RequestBody body = new FormBody.Builder()
+                .add("t", "2")
+                .add("pageindex", String.valueOf(page))
+                .build();
+        return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.dm5.com").build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        try {
+            JSONArray array = new JSONArray(html);
+            for (int i = 0; i != array.length(); ++i) {
+                try {
+                    JSONObject object = array.getJSONObject(i);
+                    String cid = object.getString("Url").split("/")[1];
+                    String title = object.getString("Title");
+                    String cover = object.getString("Pic");
+                    String update = object.getString("LastPartTime");
+                    JSONArray temp = object.optJSONArray("Author");
+                    String author = "";
+                    for (int j = 0; temp != null && j != temp.length(); ++j) {
+                        author = author.concat(temp.optString(j));
+                    }
+                    list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 

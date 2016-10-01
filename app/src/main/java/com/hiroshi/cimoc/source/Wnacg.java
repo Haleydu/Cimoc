@@ -22,7 +22,7 @@ public class Wnacg extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
+        String url = StringUtils.format("https://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
         return new Request.Builder().url(url).build();
     }
 
@@ -34,17 +34,19 @@ public class Wnacg extends MangaParser {
             protected Comic parse(Node node) {
                 String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
                 String title = node.text("div.info > div.title > a");
+                String author = StringUtils.match("\\[(.*?)\\]", title, 1);
+                title = title.replaceFirst("\\[.*?\\]\\s*", "");
                 String cover = node.attr("div.pic_box > a > img", "data-original");
                 String update = node.text("div.info > div.info_col").trim();
-                // update = match("\\d{4}-\\d{2}-\\d{2}", update, 0);
-                return new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, null);
+                update = StringUtils.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
+                return new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, author);
             }
         };
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("http://www.wnacg.com/photos-index-aid-%s.html", cid);
+        String url = StringUtils.format("https://www.wnacg.com/photos-index-aid-%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -68,8 +70,31 @@ public class Wnacg extends MangaParser {
     }
 
     @Override
+    public Request getRecentRequest(int page) {
+        String url = StringUtils.format("https://www.wnacg.com/albums-index-page-%d.html", page);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
+            String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
+            String title = node.text("div.info > div.title > a");
+            String author = StringUtils.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s*", "");
+            String cover = node.attr("div.pic_box > a > img", "data-original");
+            String update = node.text("div.info > div.info_col").trim();
+            update = StringUtils.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
+            list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, author));
+        }
+        return list;
+    }
+
+    @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://www.wnacg.com/photos-index-page-%s-aid-%s.html", path, cid);
+        String url = StringUtils.format("https://www.wnacg.com/photos-index-page-%s-aid-%s.html", path, cid);
         return new Request.Builder().url(url).header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36").build();
     }
 
@@ -79,7 +104,7 @@ public class Wnacg extends MangaParser {
         Node body = new Node(html);
         int count = 0;
         for (Node node : body.list("#bodywrap > div.grid > div > ul > li > div.pic_box > a")) {
-            String url = "http://www.wnacg.com/".concat(node.attr("href"));
+            String url = "https://www.wnacg.com/".concat(node.attr("href"));
             list.add(new ImageUrl(++count, url, true));
         }
         return list;

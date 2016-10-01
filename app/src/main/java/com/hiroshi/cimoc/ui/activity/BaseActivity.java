@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected Toolbar mToolbar;
-    protected ProgressBar mProgressBar;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +78,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void showSnackbar(int resId, Object... args) {
         HintUtils.showSnackBar(getLayoutView(), getString(resId), args);
+    }
+
+    public void showProgressBar() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideProgressBar() {
+        mProgressBar.setVisibility(View.GONE);
     }
 
 }

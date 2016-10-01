@@ -157,11 +157,13 @@ public class CimocFragment extends BaseFragment implements CimocView {
             }
         }
         mSourceList = list;
+        onInitSuccess();
     }
 
     @Override
     public void onLoadFail() {
         showSnackbar(R.string.cimoc_load_fail);
+        onInitSuccess();
     }
 
     @Override

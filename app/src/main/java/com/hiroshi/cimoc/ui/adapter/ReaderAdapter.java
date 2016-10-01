@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -42,7 +43,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     @Retention(RetentionPolicy.SOURCE)
     public @interface PictureMode {}
 
-    private PipelineDraweeControllerBuilder mControllerBuilder;
+    private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
     private OnSingleTapListener mSingleTapListener;
     private OnLongPressListener mLongPressListener;
     private OnLazyLoadListener mLazyLoadListener;
@@ -92,11 +93,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             return;
         }
         final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
+        PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
         switch (mode) {
             case MODE_PAGE:
                 draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 draweeView.setHorizontalMode();
-                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         super.onFinalImageSet(id, imageInfo, animatable);
@@ -110,7 +112,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             case MODE_STREAM:
                 draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 draweeView.setVerticalMode();
-                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
                         super.onIntermediateImageSet(id, imageInfo);
@@ -134,17 +136,17 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         }
         draweeView.setOnSingleTapListener(mSingleTapListener);
         draweeView.setOnLongPressListener(mLongPressListener);
-        mControllerBuilder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
+        builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
         ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                 .newBuilderWithSource(Uri.parse(imageUrl.getUrl()));
         if (split) {
             imageRequestBuilder.setPostprocessor(new SplitPostprocessor(imageUrl.getUrl()));
         }
-        draweeView.setController(mControllerBuilder.setImageRequest(imageRequestBuilder.build()).build());
+        draweeView.setController(builder.setImageRequest(imageRequestBuilder.build()).build());
     }
 
-    public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
-        this.mControllerBuilder = builder;
+    public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {
+        this.mControllerSupplier = supplier;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {

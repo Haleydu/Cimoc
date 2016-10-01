@@ -48,7 +48,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         reverse = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_REVERSE, false);
         volume = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_VOLUME, false);
         mSeekBar.setReverse(reverse);
-        mLayoutManager.setExtraSpace(4);
+        mLayoutManager.setExtraSpace(3);
         mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setReverseLayout(reverse);
         mReaderAdapter.setAutoSplit(false);
