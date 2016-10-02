@@ -15,7 +15,7 @@ import com.hiroshi.cimoc.R;
 public class NotificationUtils {
 
     public static void notifyBuilder(int id, NotificationManager manager, Notification.Builder builder) {
-        if (Build.VERSION.SDK_INT >= 16) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             manager.notify(id, builder.build());
         } else {
             manager.notify(id, builder.getNotification());

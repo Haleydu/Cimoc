@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.utils.StringUtils;
+import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.List;
 
@@ -29,6 +32,8 @@ public class TaskAdapter extends BaseAdapter<Task> {
 
         public TaskHolder(View view) {
             super(view);
+            int resId = ThemeUtils.getResourceId(mContext, R.attr.colorAccent);
+            taskProgress.getProgressDrawable().setColorFilter(ContextCompat.getColor(mContext, resId), PorterDuff.Mode.SRC_ATOP);
         }
     }
 
@@ -60,7 +65,8 @@ public class TaskAdapter extends BaseAdapter<Task> {
         return new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.set(0, 0, 0, 10);
+                int offset = parent.getWidth() / 90;
+                outRect.set(0, 0, 0, offset);
             }
         };
     }

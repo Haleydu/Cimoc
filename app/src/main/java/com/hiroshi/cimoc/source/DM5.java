@@ -15,8 +15,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -74,7 +76,7 @@ public class DM5 extends MangaParser {
 
     @Override
     public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+        Set<Chapter> set = new LinkedHashSet<>();
         Node body = new Node(html);
         int count = 0;
         for (Node node : body.list("ul[id^=cbc_] > li > a")) {
@@ -87,7 +89,7 @@ public class DM5 extends MangaParser {
                         c_title = array[1];
                     }
                 }
-                list.add(new Chapter(c_title, c_path));
+                set.add(new Chapter(c_title, c_path));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -102,7 +104,7 @@ public class DM5 extends MangaParser {
         boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
         comic.setInfo(title, cover, update, intro, author, status);
 
-        return list;
+        return new LinkedList<>(set);
     }
 
     @Override

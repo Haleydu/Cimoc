@@ -1,8 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.os.HandlerThread;
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
@@ -24,9 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.FormBody;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 
 /**
  * Created by Hiroshi on 2016/8/8.

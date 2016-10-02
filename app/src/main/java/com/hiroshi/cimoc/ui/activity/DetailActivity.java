@@ -29,6 +29,7 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -37,11 +38,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class DetailActivity extends BackActivity implements DetailView {
+public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener {
 
     @BindView(R.id.detail_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.detail_layout) CoordinatorLayout mCoordinatorLayout;
@@ -154,6 +158,28 @@ public class DetailActivity extends BackActivity implements DetailView {
     }
 
     @Override
+    public void onTitleClick() {
+        final String last = mPresenter.getComic().getLast();
+        final List<Chapter> list = mDetailAdapter.getDateSet();
+        Observable.from(list)
+                .takeFirst(new Func1<Chapter, Boolean>() {
+                    @Override
+                    public Boolean call(Chapter chapter) {
+                        return StringUtils.isEmpty(last) || chapter.getPath().equals(last);
+                    }
+                })
+                .subscribe(new Action1<Chapter>() {
+                    @Override
+                    public void call(Chapter chapter) {
+                        int position = StringUtils.isEmpty(last) ? list.size() - 1 : list.indexOf(chapter);
+                        Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
+                                list, position);
+                        startActivity(intent);
+                    }
+                });
+    }
+
+    @Override
     public void onChapterChange(String last) {
         mDetailAdapter.setLast(last);
     }
@@ -253,6 +279,7 @@ public class DetailActivity extends BackActivity implements DetailView {
                 }
             }
         });
+        mDetailAdapter.setOnTitleClickListener(this);
         mDetailAdapter.setData(list);
     }
 

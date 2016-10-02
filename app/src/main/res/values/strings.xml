@@ -70,7 +70,7 @@
     <string name="settings_backup_restore_fail">恢复失败</string>
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
-    <string name="settings_reader_mode_summary">选择阅读模式</string>
+    <string name="settings_reader_mode_summary">选择默认阅读方式</string>
     <string name="settings_reader_volume">音量键翻页</string>
     <string name="settings_reader_volume_summary">仅限翻页模式</string>
     <string name="settings_reader_reverse">从右往左翻页</string>
@@ -89,16 +89,20 @@
     <string name="settings_reader_blank_summary">仅限卷纸模式</string>
     <string name="settings_other">其他设置</string>
     <string name="settings_other_home">首页设置</string>
-    <string name="settings_other_home_summary">选择启动时的首页</string>
+    <string name="settings_other_home_summary">选择默认启动页</string>
+    <string name="settings_other_theme">主题颜色</string>
+    <string name="settings_other_theme_summary">选择日间背景色</string>
+    <string name="settings_other_theme_reboot">重启软件生效</string>
     <string name="settings_other_cache">清除缓存</string>
     <string name="settings_other_cache_success">清除成功</string>
     <string name="settings_other_cache_fail">清除失败</string>
     <string name="settings_select_home">首页选择</string>
+    <string name="settings_select_theme">主题选择</string>
     <string name="settings_select_mode">阅读模式选择</string>
     <string name="settings_select_file">文件选择</string>
     <string name="settings_select_trigger">百分比选择</string>
 
-    <string name="about_version">version: 1.4.1</string>
+    <string name="about_version">version: 1.4.2</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

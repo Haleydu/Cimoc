@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private static final int FRAGMENT_NUM = 5;
 
-    @BindView(R.id.main_drawer_layout) DrawerLayout mDrawerLayout;
+    @BindView(R.id.main_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
     TextView mLastText;
@@ -198,9 +198,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 case R.id.drawer_night:
                     boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
                     CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, !night);
-                    Intent intent = getIntent();
-                    finish();
-                    startActivity(intent);
+                    mNightMask.setVisibility(night ? View.INVISIBLE : View.VISIBLE);
                     break;
                 case R.id.drawer_settings:
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));

@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,11 +62,14 @@ public class Backup {
             @Override
             public void call(Subscriber<? super String[]> subscriber) {
                 String[] files = FileUtils.listFilesNameHaveSuffix(dirPath, "cimoc");
-                if (files == null || files.length == 0) {
-                    subscriber.onError(new Exception());
-                } else {
-                    subscriber.onNext(files);
-                    subscriber.onCompleted();
+                if (files != null) {
+                    Arrays.sort(files);
+                    if (files.length == 0) {
+                        subscriber.onError(new Exception());
+                    } else {
+                        subscriber.onNext(files);
+                        subscriber.onCompleted();
+                    }
                 }
             }
         }).subscribeOn(Schedulers.io());
@@ -85,10 +89,10 @@ public class Backup {
                         String cid = object.getString("i");
                         String title = object.getString("t");
                         String cover = object.getString("c");
-                        String update = object.optString("u");
-                        Boolean finish = object.optBoolean("f");
-                        String last = object.optString("l");
-                        Integer page = object.optInt("p");
+                        String update = object.optString("u", null);
+                        Boolean finish = object.has("f") ? object.getBoolean("f") : null;
+                        String last = object.optString("l", null);
+                        Integer page = object.has("p") ? object.getInt("p") : null;
                         list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
                     }
                     subscriber.onNext(list);

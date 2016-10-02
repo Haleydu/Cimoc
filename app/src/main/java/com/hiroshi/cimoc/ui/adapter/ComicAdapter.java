@@ -70,7 +70,8 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         return new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.set(10, 0, 10, 30);
+                int offset = parent.getWidth() / 90;
+                outRect.set(offset, 0, offset, (int) (2.8 * offset));
             }
         };
     }

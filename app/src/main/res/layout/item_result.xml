@@ -6,7 +6,7 @@
     android:layout_height="120dp"
     android:padding="10dp"
     android:clickable="true"
-    android:background="?attr/colorBackgroundAccent"
+    android:background="@color/white"
     android:foreground="?android:attr/selectableItemBackground">
     <RelativeLayout
         android:layout_width="match_parent"

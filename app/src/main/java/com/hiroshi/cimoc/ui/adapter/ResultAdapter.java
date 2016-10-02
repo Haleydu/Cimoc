@@ -67,7 +67,8 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         return new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.set(0, 0, 0, 10);
+                int offset = parent.getWidth() / 90;
+                outRect.set(0, 0, 0, offset);
             }
         };
     }

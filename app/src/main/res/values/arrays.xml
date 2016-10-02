@@ -12,4 +12,12 @@
         <item>竖屏卷纸模式</item>
         <item>横屏卷纸模式</item>
     </string-array>
+    <string-array name="theme_items">
+        <item>天蓝</item>
+        <item>蓝灰</item>
+        <item>青绿</item>
+        <item>紫色</item>
+        <item>粉色</item>
+        <item>棕色</item>
+    </string-array>
 </resources>

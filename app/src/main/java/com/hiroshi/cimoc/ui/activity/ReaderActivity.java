@@ -58,7 +58,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @BindView(R.id.reader_back_layout) View mBackLayout;
     @BindView(R.id.reader_info_layout) View mInfoLayout;
     @BindView(R.id.reader_seek_bar) ReverseSeekBar mSeekBar;
-    @BindView(R.id.reader_mask) View mNightMask;
+
     @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
 
     protected PreCacheLayoutManager mLayoutManager;
@@ -73,12 +73,18 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private int source;
 
     @Override
+    protected void initTheme() {
+        super.initTheme();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    @Override
+    protected void initProgressBar() {}
+
+    @Override
     protected void initView() {
         if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-        if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false)) {
-            mNightMask.setVisibility(View.VISIBLE);
         }
         hide = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_HIDE, false);
         if (hide) {
@@ -137,9 +143,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @OnClick(R.id.reader_back_btn) void onBackClick() {
         onBackPressed();
     }
-
-    @Override
-    protected void initTheme() {}
 
     @Override
     protected void initToolbar() {}

@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -10,7 +12,9 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.utils.HintUtils;
+import com.hiroshi.cimoc.utils.ThemeUtils;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -18,8 +22,9 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+    @BindView(R.id.night_mask) View mNightMask;
     protected Toolbar mToolbar;
-    private ProgressBar mProgressBar;
+    protected ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         initTheme();
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
+        initNight();
         initToolbar();
         initProgressBar();
         initPresenter();
@@ -35,8 +41,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initTheme() {
+        int theme = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
+        setTheme(ThemeUtils.getThemeById(theme));
+    }
+
+    protected void initNight() {
         boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
-        setTheme(night ? R.style.AppThemeDark : R.style.AppTheme);
+        if (night) {
+            mNightMask.setVisibility(View.VISIBLE);
+        }
     }
 
     protected void initToolbar() {
@@ -50,6 +63,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void initProgressBar() {
         mProgressBar = ButterKnife.findById(this, R.id.custom_progress_bar);
+        int resId = ThemeUtils.getResourceId(this, R.attr.colorAccent);
+        mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, resId), PorterDuff.Mode.SRC_ATOP);
     }
 
     protected View getLayoutView() {

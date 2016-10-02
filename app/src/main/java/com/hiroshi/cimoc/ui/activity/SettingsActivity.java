@@ -16,6 +16,7 @@ import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
+import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -39,6 +40,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private PreferenceManager mPreference;
 
     private int mHomeChoice;
+    private int mThemeChoice;
     private int mModeChoice;
     private int mTempChoice;
     private int mTriggerNum;
@@ -64,6 +66,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         super.initView();
         mPreference = CimocApplication.getPreferences();
         mHomeChoice = mPreference.getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
+        mThemeChoice = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
         mModeChoice = mPreference.getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
         mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
         mVolumeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_VOLUME, false));
@@ -182,6 +185,18 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     public void onClick(DialogInterface dialog, int which) {
                         mModeChoice = mTempChoice;
                         mPreference.putInt(PreferenceManager.PREF_MODE, mModeChoice);
+                    }
+                }).show();
+    }
+
+    @OnClick(R.id.settings_other_theme_btn) void onThemeBtnClick() {
+        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_theme, R.array.theme_items, mThemeChoice, mSingleChoiceListener,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mThemeChoice = mTempChoice;
+                        mPreference.putInt(PreferenceManager.PREF_THEME, mThemeChoice);
+                        showSnackbar(R.string.settings_other_theme_reboot);
                     }
                 }).show();
     }

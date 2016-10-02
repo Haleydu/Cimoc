@@ -19,6 +19,7 @@ public class PreferenceManager {
     public static final int HOME_SOURCE = 4;
 
     public static final String PREF_HOME = "pref_home";
+    public static final String PREF_THEME = "pref_theme";
     public static final String PREF_MODE = "pref_mode";
     public static final String PREF_VOLUME = "pref_volume";
     public static final String PREF_NIGHT = "pref_night";
