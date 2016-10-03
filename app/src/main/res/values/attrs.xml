@@ -3,8 +3,4 @@
     <declare-styleable name="ChapterButton">
         <attr name="selected_color" format="color" />
     </declare-styleable>
-
-    <declare-styleable name="UpdateSign">
-        <attr name="sign_color" format="color" />
-    </declare-styleable>
 </resources>

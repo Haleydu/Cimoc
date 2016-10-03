@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -29,7 +30,6 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
-import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -38,9 +38,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/2.
@@ -57,16 +54,16 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     protected void initPresenter() {
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mPresenter = new DetailPresenter(source);
+        mPresenter = new DetailPresenter();
         mPresenter.attachView(this);
     }
 
     @Override
-    protected void initData() {
+    protected void initData(Bundle savedInstanceState) {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
-        mPresenter.loadDetail(id, cid);
+        mPresenter.loadDetail(id, source, cid);
     }
 
     @Override
@@ -159,24 +156,15 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     public void onTitleClick() {
-        final String last = mPresenter.getComic().getLast();
-        final List<Chapter> list = mDetailAdapter.getDateSet();
-        Observable.from(list)
-                .takeFirst(new Func1<Chapter, Boolean>() {
-                    @Override
-                    public Boolean call(Chapter chapter) {
-                        return StringUtils.isEmpty(last) || chapter.getPath().equals(last);
-                    }
-                })
-                .subscribe(new Action1<Chapter>() {
-                    @Override
-                    public void call(Chapter chapter) {
-                        int position = StringUtils.isEmpty(last) ? list.size() - 1 : list.indexOf(chapter);
-                        Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
-                                list, position);
-                        startActivity(intent);
-                    }
-                });
+        String last = mPresenter.getComic().getLast();
+        List<Chapter> list = mDetailAdapter.getDateSet();
+        if (last == null) {
+            last = mDetailAdapter.getItem(list.size() - 1).getPath();
+            mDetailAdapter.setLast(last);
+        }
+        mPresenter.updateLast(last);
+        Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic().getId(), list);
+        startActivity(intent);
     }
 
     @Override
@@ -268,13 +256,15 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    public void onChapterLoad(List<Chapter> list) {
+    public void onChapterLoad(final List<Chapter> list) {
         mDetailAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (position != 0) {
-                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
-                            mDetailAdapter.getDateSet(), position - 1);
+                    String last = mDetailAdapter.getItem(position - 1).getPath();
+                    mDetailAdapter.setLast(last);
+                    long id = mPresenter.updateLast(last);
+                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet());
                     startActivity(intent);
                 }
             }

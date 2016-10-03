@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         initProgressBar();
         initPresenter();
         initView();
-        initData();
+        initData(savedInstanceState);
     }
 
     protected void initTheme() {
@@ -79,7 +79,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void initView() {}
 
-    protected void initData() {}
+    protected void initData(Bundle savedInstanceState) {}
 
     protected abstract int getLayoutRes();
 

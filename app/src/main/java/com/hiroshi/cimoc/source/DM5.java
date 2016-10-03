@@ -180,6 +180,9 @@ public class DM5 extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
+        if (html == null) {
+            return null;
+        }
         String result = DecryptionUtils.evalDecrypt(html);
         if (result != null) {
             return result.split(",")[0];

@@ -24,12 +24,7 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     protected void initView() {
         super.initView();
-        mLayoutManager.setExtraSpace(4);
-        mReaderAdapter.setPictureMode(ReaderAdapter.MODE_STREAM);
-        mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_SPLIT, false));
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mReaderAdapter);
+        mReaderAdapter.setReaderMode(ReaderAdapter.READER_STREAM);
         if (!CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BLANK, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
         }
@@ -52,13 +47,42 @@ public class StreamReaderActivity extends ReaderActivity {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int item = mLayoutManager.findFirstVisibleItemPosition();
+                int item;
+                switch(turn) {
+                    default:
+                    case PreferenceManager.READER_TURN_LTR:
+                        item = mLayoutManager.findFirstVisibleItemPosition();
+                        if (item != position) {
+                            if (dx > 0 && progress == max) {
+                                mPresenter.toNextChapter();
+                            } else if (dx < 0 && progress == 1) {
+                                mPresenter.toPrevChapter();
+                            }
+                        }
+                        break;
+                    case PreferenceManager.READER_TURN_RTL:
+                        item = mLayoutManager.findFirstVisibleItemPosition();
+                        if (item != position) {
+                            if (dx < 0 && progress == max) {
+                                mPresenter.toNextChapter();
+                            } else if (dx > 0 && progress == 1) {
+                                mPresenter.toPrevChapter();
+                            }
+                        }
+                        break;
+
+                    case PreferenceManager.READER_TURN_ATB:
+                        item = mLayoutManager.findFirstVisibleItemPosition();
+                        if (item != position) {
+                            if (dy > 0 && progress == max) {
+                                mPresenter.toNextChapter();
+                            } else if (dy < 0 && progress == 1) {
+                                mPresenter.toPrevChapter();
+                            }
+                        }
+                        break;
+                }
                 if (item != position) {
-                    if (dy > 0 && progress == max) {
-                        mPresenter.toNextChapter();
-                    } else if (dy < 0 && progress == 1) {
-                        mPresenter.toPrevChapter();
-                    }
                     progress = mReaderAdapter.getItem(item).getNum();
                     position = item;
                     updateProgress();

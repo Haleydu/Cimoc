@@ -24,11 +24,14 @@ import butterknife.BindView;
  */
 public class TaskAdapter extends BaseAdapter<Task> {
 
+    private String last;
+
     public class TaskHolder extends BaseViewHolder {
         @BindView(R.id.task_page) TextView taskPage;
         @BindView(R.id.task_title) TextView taskTitle;
         @BindView(R.id.task_state) TextView taskState;
         @BindView(R.id.task_progress) ProgressBar taskProgress;
+        @BindView(R.id.task_last) View taskLast;
 
         public TaskHolder(View view) {
             super(view);
@@ -58,6 +61,11 @@ public class TaskAdapter extends BaseAdapter<Task> {
         viewHolder.taskPage.setText(StringUtils.getProgress(progress, max));
         viewHolder.taskProgress.setMax(max);
         viewHolder.taskProgress.setProgress(progress);
+        if (task.getPath().equals(last)) {
+            viewHolder.taskLast.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.taskLast.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -69,6 +77,22 @@ public class TaskAdapter extends BaseAdapter<Task> {
                 outRect.set(0, 0, 0, offset);
             }
         };
+    }
+
+    public void setLast(String value) {
+        if (value == null || value.equals(last)) {
+            return;
+        }
+        String temp = last;
+        last = value;
+        for (int i = 0; i != mDataSet.size(); ++i) {
+            String path = mDataSet.get(i).getPath();
+            if (path.equals(last)) {
+                notifyItemChanged(i);
+            } else if (path.equals(temp)) {
+                notifyItemChanged(i);
+            }
+        }
     }
 
     public int getPositionById(long id) {

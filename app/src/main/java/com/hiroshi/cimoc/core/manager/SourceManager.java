@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.source.ExHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.NHentai;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
@@ -37,6 +38,7 @@ public class SourceManager {
     public static final int SOURCE_DM5 = 5;
     public static final int SOURCE_WEBTOON = 6;
     public static final int SOURCE_HHSSEE = 7;
+    public static final int SOURCE_57MH = 8;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -96,6 +98,8 @@ public class SourceManager {
                 return "Webtoon";
             case SOURCE_HHSSEE:
                 return "汗汗漫画";
+            case SOURCE_57MH:
+                return "57漫画";
             case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
@@ -126,6 +130,8 @@ public class SourceManager {
                 return SOURCE_WEBTOON;
             case "HHSSEE":
                 return SOURCE_HHSSEE;
+            case "57mh":
+                return SOURCE_57MH;
             case "EHentai":
                 return SOURCE_EHENTAI;
             case "ExHentai":
@@ -167,6 +173,9 @@ public class SourceManager {
                     break;
                 case SOURCE_HHSSEE:
                     parser = new HHSSEE();
+                    break;
+                case SOURCE_57MH:
+                    parser = new MH57();
                     break;
                 case SOURCE_EHENTAI:
                     parser = new EHentai();

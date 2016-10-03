@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +16,11 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -69,7 +73,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    protected void initData() {
+    protected void initData(Bundle savedInstanceState) {
         long key = getIntent().getLongExtra(EXTRA_KEY, -1);
         mPresenter.load(key);
     }
@@ -136,11 +140,11 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, final int position) {
         Task task = mTaskAdapter.getItem(position);
         switch (task.getState()) {
             case Task.STATE_FINISH:
-                final String path = mTaskAdapter.getItem(position).getPath();
+                final String last = mTaskAdapter.getItem(position).getPath();
                 Observable.from(mTaskAdapter.getDateSet())
                         .filter(new Func1<Task, Boolean>() {
                             @Override
@@ -158,21 +162,15 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                         .subscribe(new Action1<List<Chapter>>() {
                             @Override
                             public void call(final List<Chapter> list) {
-                                Observable.from(list)
-                                        .takeFirst(new Func1<Chapter, Boolean>() {
-                                            @Override
-                                            public Boolean call(Chapter chapter) {
-                                                return chapter.getPath().equals(path);
-                                            }
-                                        })
-                                        .subscribe(new Action1<Chapter>() {
-                                            @Override
-                                            public void call(Chapter chapter) {
-                                                int pos = list.indexOf(chapter);
-                                                Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, mPresenter.getComic(), list, pos);
-                                                startActivity(readerIntent);
-                                            }
-                                        });
+                                for (Chapter chapter : list) {
+                                    if (chapter.getPath().equals(last)) {
+                                        mTaskAdapter.setLast(last);
+                                        long id = mPresenter.updateLast(last);
+                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, list);
+                                        startActivity(readerIntent);
+                                        break;
+                                    }
+                                }
                             }
                         });
                 break;
@@ -214,7 +212,13 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
+    public void onChapterChange(String last) {
+        mTaskAdapter.setLast(mPresenter.getComic().getLast());
+    }
+
+    @Override
     public void onTaskLoadSuccess(final List<Task> list) {
+        mTaskAdapter.setLast(mPresenter.getComic().getLast());
         mTaskAdapter.addAll(list);
         mPresenter.sortTask(list);
     }

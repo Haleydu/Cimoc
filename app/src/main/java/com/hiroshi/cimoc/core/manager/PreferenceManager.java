@@ -8,9 +8,15 @@ import android.content.SharedPreferences;
  */
 public class PreferenceManager {
 
-    public static final int MODE_HORIZONTAL_PAGE = 0;
-    public static final int MODE_PORTRAIT_STREAM = 1;
-    public static final int MODE_LANDSCAPE_STREAM = 2;
+    public static final int READER_MODE_PAGE = 0;
+    public static final int READER_MODE_STREAM = 1;
+
+    public static final int READER_TURN_LTR = 0;
+    public static final int READER_TURN_RTL = 1;
+    public static final int READER_TURN_ATB = 2;
+
+    public static final int READER_ORIENTATION_PORTRAIT = 0;
+    public static final int READER_ORIENTATION_LANDSCAPE = 1;
 
     public static final int HOME_CIMOC = 0;
     public static final int HOME_FAVORITE = 1;
@@ -18,13 +24,14 @@ public class PreferenceManager {
     public static final int HOME_DOWNLOAD = 3;
     public static final int HOME_SOURCE = 4;
 
+    public static final String PREF_READER_MODE = "pref_reader_mode";
+    public static final String PREF_READER_TURN = "pref_reader_turn";
+    public static final String PREF_READER_ORIENTATION = "pref_reader_orientation";
     public static final String PREF_HOME = "pref_home";
     public static final String PREF_THEME = "pref_theme";
-    public static final String PREF_MODE = "pref_mode";
     public static final String PREF_VOLUME = "pref_volume";
     public static final String PREF_NIGHT = "pref_night";
     public static final String PREF_SPLIT = "pref_split";
-    public static final String PREF_REVERSE = "pref_reverse";
     public static final String PREF_PICTURE = "pref_picture";
     public static final String PREF_BRIGHT = "pref_bright";
     public static final String PREF_HIDE = "pref_hide";

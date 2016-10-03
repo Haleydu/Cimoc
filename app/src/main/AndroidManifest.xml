@@ -58,6 +58,11 @@
             android:screenOrientation="landscape"
             android:configChanges="orientation|screenSize"/>
 
+        <activity
+            android:name=".ui.activity.LandscapePageReaderActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
+
         <service
             android:name=".service.DownloadService"/>
 

@@ -35,10 +35,6 @@ public class Node {
         return list;
     }
 
-    public boolean exist(String cssQuery) {
-        return !element.select(cssQuery).isEmpty();
-    }
-
     public String text() {
         return element.text();
     }

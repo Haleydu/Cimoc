@@ -51,6 +51,14 @@ public class FileUtils {
         return mkDirsIfNotExist(new File(dirPath));
     }
 
+    public static boolean isDirsExist(String dirPath) {
+        return new File(dirPath).exists();
+    }
+
+    public static boolean rename(String oldPath, String newPath) {
+        return new File(oldPath).renameTo(new File(newPath));
+    }
+
     public static boolean createFile(String dirPath, String filename) {
         File file = new File(dirPath, filename);
         if (!file.exists()) {

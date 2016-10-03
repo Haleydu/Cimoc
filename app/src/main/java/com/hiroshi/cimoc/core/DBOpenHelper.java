@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.TaskDao;
+import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -43,6 +44,8 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
             case 3:
                 TaskDao.createTable(db, false);
                 updateDownload(db);
+            case 5:
+                updateHHAAZZ();
         }
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -56,6 +59,15 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         dao.insert(new Source(null, SourceManager.SOURCE_CCTUKU, true));
         dao.insert(new Source(null, SourceManager.SOURCE_U17, true));
         dao.insert(new Source(null, SourceManager.SOURCE_DM5, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_WEBTOON, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_HHSSEE, true));
+    }
+
+    private void updateHHAAZZ() {
+        if (FileUtils.isDirsExist(FileUtils.getPath(Download.dirPath, "汗汗漫画"))
+                && !FileUtils.isDirsExist(FileUtils.getPath(Download.dirPath, "手机汗汗"))) {
+            FileUtils.rename(FileUtils.getPath(Download.dirPath, "汗汗漫画"), FileUtils.getPath(Download.dirPath, "手机汗汗"));
+        }
     }
 
     private void updateDownload(Database db) {

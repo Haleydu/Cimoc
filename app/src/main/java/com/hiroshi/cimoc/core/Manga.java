@@ -130,13 +130,15 @@ public class Manga {
             public void call(Subscriber<? super String> subscriber) {
                 Parser parser = SourceManager.getParser(source);
                 Request request = parser.getLazyRequest(url);
+                String html = null;
                 try {
-                    String newUrl = parser.parseLazy(getResponseBody(mClient, request), url);
-                    subscriber.onNext(newUrl);
-                    subscriber.onCompleted();
+                    html = getResponseBody(mClient, request);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                String newUrl = parser.parseLazy(html, url);
+                subscriber.onNext(newUrl);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }

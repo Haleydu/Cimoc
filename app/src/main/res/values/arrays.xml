@@ -7,10 +7,18 @@
         <item>下载管理</item>
         <item>图源管理</item>
     </string-array>
-    <string-array name="mode_items">
-        <item>竖屏翻页模式</item>
-        <item>竖屏卷纸模式</item>
-        <item>横屏卷纸模式</item>
+    <string-array name="reader_mode_items">
+        <item>翻页模式</item>
+        <item>卷纸模式</item>
+    </string-array>
+    <string-array name="reader_turn_items">
+        <item>从左到右</item>
+        <item>从右到左</item>
+        <item>从上到下</item>
+    </string-array>
+    <string-array name="reader_orientation_items">
+        <item>竖屏</item>
+        <item>横屏</item>
     </string-array>
     <string-array name="theme_items">
         <item>天蓝</item>

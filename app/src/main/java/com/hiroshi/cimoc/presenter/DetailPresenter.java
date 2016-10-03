@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
@@ -30,10 +32,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
     private Comic mComic;
-    private int source;
 
-    public DetailPresenter(int source) {
-        this.source = source;
+    public DetailPresenter() {
         this.mComicManager = ComicManager.getInstance();
         this.mTaskManager = TaskManager.getInstance();
     }
@@ -48,13 +48,6 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 mComic.setHistory(System.currentTimeMillis());
                 mComic.setLast(last);
                 mComic.setPage(page);
-                if (mComic.getId() == null) {
-                    long id = mComicManager.insert(mComic);
-                    mComic.setId(id);
-                } else {
-                    mComicManager.update(mComic);
-                }
-                RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
                 mBaseView.onChapterChange(last);
             }
         });
@@ -69,12 +62,12 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         });
     }
 
-    public void loadDetail(long id, final String cid) {
+    public void loadDetail(long id, final int source, final String cid) {
         Observable<Comic> observable =
                 id == -1 ? mComicManager.loadInRx(source, cid) : mComicManager.loadInRx(id);
-        observable.flatMap(new Func1<Comic, Observable<List<Chapter>>>() {
+        observable.doOnNext(new Action1<Comic>() {
             @Override
-            public Observable<List<Chapter>> call(Comic comic) {
+            public void call(Comic comic) {
                 if (comic == null) {
                     comic = new Comic(source, cid);
                 } if (comic.getFavorite() != null && comic.getHighlight()) {
@@ -82,7 +75,11 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     comic.setFavorite(System.currentTimeMillis());
                 }
                 mComic = comic;
-                return Manga.info(source, comic);
+            }
+        }).flatMap(new Func1<Comic, Observable<List<Chapter>>>() {
+            @Override
+            public Observable<List<Chapter>> call(Comic comic) {
+                return Manga.info(source, mComic);
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Chapter>>() {
@@ -93,6 +90,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         if (mBaseView != null) {
                             if (e instanceof Manga.NetworkErrorException) {
                                 mBaseView.onNetworkError();
@@ -190,6 +188,22 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                         mBaseView.onTaskAddFail();
                     }
                 });
+    }
+
+    public long updateLast(String last) {
+        mComic.setHistory(System.currentTimeMillis());
+        if (!last.equals(mComic.getLast())) {
+            mComic.setLast(last);
+            mComic.setPage(1);
+        }
+        if (mComic.getId() != null) {
+            mComicManager.update(mComic);
+        } else {
+            long id = mComicManager.insert(mComic);
+            mComic.setId(id);
+        }
+        RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
+        return mComic.getId();
     }
 
     public void updateComic() {

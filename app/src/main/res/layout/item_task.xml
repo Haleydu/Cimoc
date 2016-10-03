@@ -41,5 +41,13 @@
             android:layout_below="@id/task_state"
             android:layout_marginTop="6dp"
             style="?android:attr/progressBarStyleHorizontal"/>
+        <View
+            android:id="@+id/task_last"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:visibility="invisible"
+            android:background="?attr/colorAccent"/>
     </RelativeLayout>
 </FrameLayout>

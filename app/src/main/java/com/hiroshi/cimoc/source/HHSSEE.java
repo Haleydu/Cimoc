@@ -134,6 +134,9 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
+        if (html == null) {
+            return null;
+        }
         Node body = new Node(html);
         String server = body.attr("#hdDomain", "value").split("\\|")[0];
         String name = body.attr("#iBodyQ > img", "name");

@@ -170,8 +170,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     }
 
     public void setLast(String value) {
-        if (value.equals(last)) {
-            last = value;
+        if (value == null || value.equals(last)) {
             return;
         }
         String temp = last;

@@ -18,8 +18,8 @@ public class ControllerBuilderProvider {
     private SparseArray<ImagePipeline> mPipelineArray;
 
     public ControllerBuilderProvider(Context context) {
-        mSupplierArray = new SparseArray<>(11);
-        mPipelineArray = new SparseArray<>(11);
+        mSupplierArray = new SparseArray<>();
+        mPipelineArray = new SparseArray<>();
         mContext = context;
     }
 

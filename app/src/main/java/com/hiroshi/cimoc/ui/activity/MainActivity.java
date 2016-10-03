@@ -64,7 +64,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    protected void initData() {
+    protected void initData(Bundle savedInstanceState) {
         mPresenter.load();
     }
 

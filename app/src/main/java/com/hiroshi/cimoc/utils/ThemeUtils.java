@@ -30,15 +30,15 @@ public class ThemeUtils {
             case THEME_BLUE:
                 return R.style.AppThemeBlue;
             case THEME_GREY:
-                return R.style.AppThemeBlue;
+                return R.style.AppThemeGrey;
             case THEME_TEAL:
-                return R.style.AppThemeBlue;
+                return R.style.AppThemeTeal;
             case THEME_PURPLE:
-                return R.style.AppThemeBlue;
+                return R.style.AppThemePurple;
             case THEME_PINK:
-                return R.style.AppThemeBlue;
+                return R.style.AppThemePink;
             case THEME_BROWN:
-                return R.style.AppThemeBlue;
+                return R.style.AppThemeBrown;
         }
     }
 

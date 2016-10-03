@@ -113,6 +113,50 @@
                             android:textSize="14sp"
                             android:text="@string/settings_reader_mode_summary"/>
                     </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/settings_reader_orientation_btn"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:background="?android:attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/settings_reader_orientation"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:textSize="14sp"
+                            android:text="@string/settings_reader_orientation_summary"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/settings_reader_turn_btn"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:background="?android:attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/settings_reader_turn"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:textSize="14sp"
+                            android:text="@string/settings_reader_turn_summary"/>
+                    </LinearLayout>
                     <RelativeLayout
                         android:id="@+id/settings_reader_volume_btn"
                         android:layout_width="match_parent"
@@ -144,38 +188,6 @@
                             android:layout_below="@id/settings_reader_volume_title"
                             android:textSize="14sp"
                             android:text="@string/settings_reader_volume_summary"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:id="@+id/settings_reader_reverse_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
-                            android:id="@+id/settings_reader_reverse_checkbox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:clickable="false"
-                            android:focusable="false"
-                            android:background="@null"/>
-                        <TextView
-                            android:id="@+id/settings_reader_reverse_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_reverse_checkbox"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_reverse"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_reverse_checkbox"
-                            android:layout_below="@id/settings_reader_reverse_title"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_reverse_summary"/>
                     </RelativeLayout>
                     <RelativeLayout
                         android:id="@+id/settings_reader_split_btn"

@@ -12,16 +12,6 @@ import okhttp3.Request;
 public abstract class MangaParser implements Parser {
 
     @Override
-    public Request getRecentRequest(int page) {
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        return null;
-    }
-
-    @Override
     public Request getLazyRequest(String url) {
         return null;
     }

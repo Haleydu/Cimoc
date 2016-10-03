@@ -83,7 +83,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 mComic.setLast(last);
                 mComic.setPage(page);
                 mComicManager.update(mComic);
-                RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
+                mBaseView.onChapterChange(last);
             }
         });
         addSubscription(RxEvent.COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
@@ -239,6 +239,22 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         mBaseView.onTaskDeleteFail();
                     }
                 });
+    }
+
+    public long updateLast(String last) {
+        mComic.setHistory(System.currentTimeMillis());
+        if (!last.equals(mComic.getLast())) {
+            mComic.setLast(last);
+            mComic.setPage(1);
+        }
+        if (mComic.getId() != null) {
+            mComicManager.update(mComic);
+        } else {
+            long id = mComicManager.insert(mComic);
+            mComic.setId(id);
+        }
+        RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
+        return mComic.getId();
     }
 
 }

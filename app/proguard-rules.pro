@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--optimizationpasses 5
+-optimizationpasses 0
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -dontpreverify

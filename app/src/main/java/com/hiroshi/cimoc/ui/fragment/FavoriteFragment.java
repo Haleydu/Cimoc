@@ -159,7 +159,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onItemAdd(MiniComic comic) {
-        mFavoriteAdapter.add(0, comic);
+        mFavoriteAdapter.add(comic);
     }
 
     @Override

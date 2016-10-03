@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.graphics.Point;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 
@@ -9,6 +8,7 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager.OnPageChangedListener;
@@ -24,7 +24,6 @@ import java.util.List;
 public class PageReaderActivity extends ReaderActivity implements OnPageChangedListener {
 
     private boolean volume;
-    private boolean reverse;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -45,16 +44,8 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     protected void initView() {
         super.initView();
         int offset = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_TRIGGER, 5);
-        reverse = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_REVERSE, false);
         volume = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_VOLUME, false);
-        mSeekBar.setReverse(reverse);
-        mLayoutManager.setExtraSpace(3);
-        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        mLayoutManager.setReverseLayout(reverse);
-        mReaderAdapter.setAutoSplit(false);
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mReaderAdapter);
+        mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
         ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

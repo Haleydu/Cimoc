@@ -67,7 +67,7 @@ public class IKanman extends MangaParser {
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
         String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title");
-        String intro = body.exist("#bookIntro > p") ? body.text("#bookIntro > p") : body.text("#bookIntro");
+        String intro = body.text("#bookIntro");
         boolean status = "完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
@@ -39,7 +40,7 @@ public class AboutActivity extends BackActivity implements AboutView {
     protected void initProgressBar() {}
 
     @Override
-    protected void initData() {
+    protected void initData(Bundle savedInstanceState) {
         update = false;
         checking = false;
     }

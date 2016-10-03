@@ -33,6 +33,11 @@ public class FavoriteAdapter extends ComicAdapter {
         ((ViewHolder) holder).comicNew.setVisibility(visibility);
     }
 
+    @Override
+    public void add(MiniComic data) {
+        add(findFirstNotHighlight(mDataSet), data);
+    }
+
     public void moveToFirst(MiniComic comic) {
         remove(comic);
         add(0, comic);
@@ -43,30 +48,10 @@ public class FavoriteAdapter extends ComicAdapter {
         if (comic.isHighlight()) {
             comic.setHighlight(false);
             remove(which);
-            final Func1<MiniComic, Boolean> func = new Func1<MiniComic, Boolean>() {
-                @Override
-                public Boolean call(MiniComic comic) {
-                    return !comic.isHighlight();
-                }
-            };
-            Observable.from(mDataSet)
-                    .takeFirst(func)
-                    .subscribe(new Action1<MiniComic>() {
-                        @Override
-                        public void call(final MiniComic comic1) {
-                            Observable.from(filterList.getFullList())
-                                    .takeFirst(func)
-                                    .subscribe(new Action1<MiniComic>() {
-                                        @Override
-                                        public void call(MiniComic comic2) {
-                                            int index1 = mDataSet.indexOf(comic1);
-                                            int index2 = filterList.getFullList().indexOf(comic2);
-                                            filterList.addDiff(index1, index2, comic);
-                                            notifyItemInserted(index1);
-                                        }
-                                    });
-                        }
-                    });
+            int index1 = findFirstNotHighlight(mDataSet);
+            int index2 = findFirstNotHighlight(filterList.getFullList());
+            filterList.addDiff(index1, index2, comic);
+            notifyItemInserted(index1);
         }
         return comic;
     }
@@ -100,6 +85,17 @@ public class FavoriteAdapter extends ComicAdapter {
 
     public boolean isFull() {
         return filterList.isFull();
+    }
+
+    private int findFirstNotHighlight(List<MiniComic> list) {
+        int count = 0;
+        for (MiniComic comic : mDataSet) {
+            if (!comic.isHighlight()) {
+                break;
+            }
+            ++count;
+        }
+        return count;
     }
 
 }

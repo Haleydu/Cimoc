@@ -5,7 +5,6 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.drawee.interfaces.DraweeController;
@@ -31,7 +30,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
         @BindView(R.id.item_comic_source) TextView comicSource;
-        @BindView(R.id.item_comic_new) ImageView comicNew;
+        @BindView(R.id.item_comic_new) View comicNew;
 
         public ViewHolder(View view) {
             super(view);
