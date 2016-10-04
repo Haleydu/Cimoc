@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.utils.StringUtils;
-import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.List;
 
@@ -25,6 +24,7 @@ import butterknife.BindView;
 public class TaskAdapter extends BaseAdapter<Task> {
 
     private String last;
+    private int colorId;
 
     public class TaskHolder extends BaseViewHolder {
         @BindView(R.id.task_page) TextView taskPage;
@@ -35,8 +35,7 @@ public class TaskAdapter extends BaseAdapter<Task> {
 
         public TaskHolder(View view) {
             super(view);
-            int resId = ThemeUtils.getResourceId(mContext, R.attr.colorAccent);
-            taskProgress.getProgressDrawable().setColorFilter(ContextCompat.getColor(mContext, resId), PorterDuff.Mode.SRC_ATOP);
+            taskProgress.getProgressDrawable().setColorFilter(ContextCompat.getColor(mContext, colorId), PorterDuff.Mode.SRC_ATOP);
         }
     }
 
@@ -77,6 +76,10 @@ public class TaskAdapter extends BaseAdapter<Task> {
                 outRect.set(0, 0, 0, offset);
             }
         };
+    }
+
+    public void setColorId(int colorId) {
+        this.colorId = colorId;
     }
 
     public void setLast(String value) {

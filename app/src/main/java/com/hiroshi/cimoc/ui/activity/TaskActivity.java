@@ -24,6 +24,7 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
 import com.hiroshi.cimoc.ui.view.TaskView;
 import com.hiroshi.cimoc.utils.DialogUtils;
+import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -219,6 +220,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     @Override
     public void onTaskLoadSuccess(final List<Task> list) {
+        mTaskAdapter.setColorId(ThemeUtils.getResourceId(this, R.attr.colorAccent));
         mTaskAdapter.setLast(mPresenter.getComic().getLast());
         mTaskAdapter.addAll(list);
         mPresenter.sortTask(list);

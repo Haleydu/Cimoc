@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
-import android.content.res.Configuration;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.DBOpenHelper;
