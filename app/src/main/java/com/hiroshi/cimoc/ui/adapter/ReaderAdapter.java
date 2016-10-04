@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -32,21 +33,29 @@ import butterknife.BindView;
  */
 public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
-    public static final int MODE_PAGE = 0;
-    public static final int MODE_STREAM = 1;
+    public static final int READER_PAGE = 0;
+    public static final int READER_STREAM = 1;
+
+    public static final int FIT_HEIGHT = 0;
+    public static final int FIT_WIDTH = 1;
 
     private static final int TYPE_LOADING = 0;
     private static final int TYPE_IMAGE = 1;
 
-    @IntDef({MODE_PAGE, MODE_STREAM})
+    @IntDef({READER_PAGE, READER_STREAM})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface PictureMode {}
+    @interface ReaderMode {}
 
-    private PipelineDraweeControllerBuilder mControllerBuilder;
+    @IntDef({FIT_HEIGHT, FIT_WIDTH})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface FitMode {}
+
+    private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
     private OnSingleTapListener mSingleTapListener;
     private OnLongPressListener mLongPressListener;
     private OnLazyLoadListener mLazyLoadListener;
-    private @PictureMode int mode;
+    private @ReaderMode int reader;
+    private @FitMode int fit;
     private boolean split = false;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
@@ -92,11 +101,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             return;
         }
         final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
-        switch (mode) {
-            case MODE_PAGE:
+        PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
+        switch (reader) {
+            case READER_PAGE:
                 draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 draweeView.setHorizontalMode();
-                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         super.onFinalImageSet(id, imageInfo, animatable);
@@ -107,15 +117,22 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     }
                 });
                 break;
-            case MODE_STREAM:
+            case READER_STREAM:
                 draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 draweeView.setVerticalMode();
-                mControllerBuilder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
                         super.onIntermediateImageSet(id, imageInfo);
                         if (imageInfo != null) {
-                            draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            switch (fit) {
+                                case FIT_HEIGHT:
+                                    draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                    break;
+                                case FIT_WIDTH:
+                                    draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                    break;
+                            }
                             draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
                         }
                     }
@@ -124,7 +141,14 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         super.onFinalImageSet(id, imageInfo, animatable);
                         if (imageInfo != null) {
-                            draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            switch (fit) {
+                                case FIT_HEIGHT:
+                                    draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                    break;
+                                case FIT_WIDTH:
+                                    draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                                    break;
+                            }
                             draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
                             draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
                         }
@@ -134,17 +158,17 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         }
         draweeView.setOnSingleTapListener(mSingleTapListener);
         draweeView.setOnLongPressListener(mLongPressListener);
-        mControllerBuilder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
+        builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
         ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                 .newBuilderWithSource(Uri.parse(imageUrl.getUrl()));
-        if (split) {
+        if (reader == READER_STREAM && fit == FIT_WIDTH && split) {
             imageRequestBuilder.setPostprocessor(new SplitPostprocessor(imageUrl.getUrl()));
         }
-        draweeView.setController(mControllerBuilder.setImageRequest(imageRequestBuilder.build()).build());
+        draweeView.setController(builder.setImageRequest(imageRequestBuilder.build()).build());
     }
 
-    public void setControllerBuilder(PipelineDraweeControllerBuilder builder) {
-        this.mControllerBuilder = builder;
+    public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {
+        this.mControllerSupplier = supplier;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {
@@ -163,26 +187,34 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         this.split = split;
     }
 
-    public void setPictureMode(@PictureMode int mode) {
-        this.mode = mode;
+    public void setReaderMode(@ReaderMode int reader) {
+        this.reader = reader;
+    }
+
+    public void setFitMode(@FitMode int fit) {
+        this.fit = fit;
     }
 
     @Override
     public RecyclerView.ItemDecoration getItemDecoration() {
-        switch (mode) {
+        switch (reader) {
             default:
-            case MODE_PAGE:
+            case READER_PAGE:
                 return new RecyclerView.ItemDecoration() {
                     @Override
                     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                         outRect.set(0, 0, 0, 0);
                     }
                 };
-            case MODE_STREAM:
+            case READER_STREAM:
                 return new RecyclerView.ItemDecoration() {
                     @Override
                     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                        outRect.set(0, 10, 0, 10);
+                        if (fit == FIT_WIDTH) {
+                            outRect.set(0, 10, 0, 10);
+                        } else {
+                            outRect.set(10, 0, 10, 0);
+                        }
                     }
                 };
         }

@@ -21,7 +21,7 @@ public class CimocPresenter extends BasePresenter<CimocView> {
     }
 
     public void load() {
-        mSourceManager.listEnable()
+        mCompositeSubscription.add(mSourceManager.listEnable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Source>>() {
                     @Override
@@ -33,7 +33,7 @@ public class CimocPresenter extends BasePresenter<CimocView> {
                     public void call(Throwable throwable) {
                         mBaseView.onLoadFail();
                     }
-                });
+                }));
     }
 
 }

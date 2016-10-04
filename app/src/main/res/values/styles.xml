@@ -1,53 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:colorBackground">@color/colorBackground</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     </style>
 
-    <style name="BaseThemeDark" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="AppThemeBlue" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryBlue</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryBlueDark</item>
+        <item name="colorAccent">@color/colorPrimaryBlueDark</item>
+        <item name="alertDialogTheme">@style/DialogThemeBlue</item>
     </style>
 
-    <style name="BaseAppTheme" parent="BaseTheme">
-        <item name="colorBackgroundAccent">@color/white</item>
-        <item name="colorBackgroundTrans">@color/colorBackgroundTrans</item>
-        <item name="colorChapterText">@color/button_chapter_color</item>
-        <item name="backgroundChapter">@drawable/button_chapter_normal</item>
-        <item name="progressDrawable">@drawable/progress_trans</item>
-        <item name="alertDialogTheme">@style/AlertTheme</item>
+    <style name="DialogThemeBlue" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryBlueDark</item>
     </style>
 
-    <style name="BaseAppThemeDark" parent="BaseThemeDark">
-        <item name="colorBackgroundAccent">@color/black</item>
-        <item name="colorBackgroundTrans">@color/colorBackgroundTransDark</item>
-        <item name="colorChapterText">@color/button_chapter_color_dark</item>
-        <item name="backgroundChapter">@drawable/button_chapter_normal_dark</item>
-        <item name="progressDrawable">@drawable/progress_trans_dark</item>
-        <item name="alertDialogTheme">@style/AlertThemeDark</item>
+    <style name="AppThemeGrey" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryGrey</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryGreyDark</item>
+        <item name="colorAccent">@color/colorPrimaryGreyDark</item>
+        <item name="alertDialogTheme">@style/DialogThemeGrey</item>
     </style>
 
-    <style name="AppTheme" parent="BaseAppTheme">
+    <style name="DialogThemeGrey" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryGreyDark</item>
     </style>
 
-    <style name="AppThemeDark" parent="BaseThemeDark">
+    <style name="AppThemeTeal" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryTeal</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryTealDark</item>
+        <item name="colorAccent">@color/colorPrimaryTealDark</item>
+        <item name="alertDialogTheme">@style/DialogThemeTeal</item>
     </style>
 
-    <style name="TextInputTheme" parent="BaseTheme">
+    <style name="DialogThemeTeal" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryTealDark</item>
+    </style>
+
+    <style name="AppThemePurple" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryPurple</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryPurpleDark</item>
+        <item name="colorAccent">@color/colorPrimaryPurpleDark</item>
+        <item name="alertDialogTheme">@style/DialogThemePurple</item>
+    </style>
+
+    <style name="DialogThemePurple" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryPurpleDark</item>
+    </style>
+
+    <style name="AppThemePink" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryPink</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryPinkDark</item>
+        <item name="colorAccent">@color/colorPrimaryPinkDark</item>
+        <item name="alertDialogTheme">@style/DialogThemePink</item>
+    </style>
+
+    <style name="DialogThemePink" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryPinkDark</item>
+    </style>
+
+    <style name="AppThemeBrown" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimaryBrown</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryBrownDark</item>
+        <item name="colorAccent">@color/colorPrimaryBrownDark</item>
+        <item name="alertDialogTheme">@style/DialogThemeBrown</item>
+    </style>
+
+    <style name="DialogThemeBrown" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorPrimaryBrownDark</item>
+    </style>
+
+    <style name="TextInputTheme">
         <item name="android:textColorSecondary">@color/white</item>
-    </style>
-
-    <style name="ReaderTheme" parent="BaseAppThemeDark">
-        <item name="android:windowFullscreen">true</item>
-    </style>
-
-    <style name="AlertTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AlertThemeDark" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/white</item>
     </style>
 </resources>

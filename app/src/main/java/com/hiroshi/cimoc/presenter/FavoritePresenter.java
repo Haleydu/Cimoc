@@ -59,11 +59,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         });
     }
 
+    private int size;
+
     public void checkUpdate() {
-        mComicManager.listFavorite()
+        mCompositeSubscription.add(mComicManager.listFavorite()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
+                        size = list.size();
                         return Manga.check(list);
                     }
                 })
@@ -90,27 +93,21 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
                     @Override
                     public void onNext(Comic comic) {
-                        if (comic != null) {
-                            mBaseView.onComicUpdate(new MiniComic(comic));
-                        }
-                        mBaseView.onProgressChange(++count);
+                        mBaseView.onComicUpdate(comic, ++count, size);
                     }
-                });
+                }));
     }
 
     public void updateComic(long fromId, long toId, boolean isBack) {
         Comic fromComic = mComicManager.load(fromId);
         Comic toComic = mComicManager.load(toId);
-        if (isBack) {
-            fromComic.setFavorite(toComic.getFavorite() - 1);
-        } else {
-            fromComic.setFavorite(toComic.getFavorite() + 1);
-        }
+        long favorite = isBack ? toComic.getFavorite() - 1 : toComic.getFavorite() + 1;
+        fromComic.setFavorite(favorite);
         mComicManager.update(fromComic);
     }
 
     public void loadComic() {
-        mComicManager.listFavorite()
+        mCompositeSubscription.add(mComicManager.listFavorite()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -128,13 +125,18 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {
-                        mBaseView.onItemAdd(list);
+                        mBaseView.onComicLoadSuccess(list);
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadFail();
+                    }
+                }));
     }
 
     public void loadFilter() {
-        mSourceManager.list()
+        mCompositeSubscription.add(mSourceManager.list()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Source>>() {
                     @Override
@@ -147,7 +149,10 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                         }
                         mBaseView.onFilterLoad(filter);
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {}
+                }));
     }
 
 }

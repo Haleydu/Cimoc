@@ -76,6 +76,27 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
+    public Request getRecentRequest(int page) {
+        String url = StringUtils.format("http://hhaazz.com/dfcomiclist_%d.htm", page);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("li > a.pic")) {
+            String cid = node.attr("href", "/", 4);
+            String title = node.text("div.con > h3");
+            String cover = node.attr("img", "src");
+            String update = node.text("div.con > p > span", 0, 10);
+            String author = node.text("div.con > p:eq(1)");
+            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
+        }
+        return list;
+    }
+
+    @Override
     public Request getBeforeImagesRequest() {
         if (server != null) {
             return null;

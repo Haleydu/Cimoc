@@ -5,9 +5,9 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
@@ -30,7 +30,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_comic_title) TextView comicTitle;
         @BindView(R.id.item_comic_source) TextView comicSource;
-        @BindView(R.id.item_comic_new) ImageView comicNew;
+        @BindView(R.id.item_comic_new) View comicNew;
 
         public ViewHolder(View view) {
             super(view);
@@ -53,7 +53,11 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
+        DraweeController controller = mProvider.get(comic.getSource())
+                .setOldController(viewHolder.comicImage.getController())
+                .setUri(comic.getCover())
+                .build();
+        viewHolder.comicImage.setController(controller);
     }
 
     public void setProvider(ControllerBuilderProvider provider) {
@@ -65,7 +69,8 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         return new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                outRect.set(10, 0, 10, 30);
+                int offset = parent.getWidth() / 90;
+                outRect.set(offset, 0, offset, (int) (2.8 * offset));
             }
         };
     }

@@ -53,6 +53,16 @@ public class Chapter implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        return o instanceof Chapter && ((Chapter) o).path.equals(path);
+    }
+
+    @Override
+    public int hashCode() {
+        return path.hashCode();
+    }
+
+    @Override
     public int describeContents() {
         return 0;
     }

@@ -6,7 +6,6 @@ Online manga reader based on Android
 # 功能简介
 - 翻页阅读（Page Reader）
 - 卷纸阅读（Scroll Reader）
-- 夜间模式（Night Mode）
 - 检查漫画更新（Check Manga For Update）
 - 下载漫画（Download Manga）
 - 本地备份恢复（Local Backup）
@@ -14,14 +13,17 @@ Online manga reader based on Android
 # 支持网站
 - [看漫画](http://m.ikanman.com)
 - [动漫之家](http://m.dmzj.com)
-- [汗汗漫画](http://hhaazz.com)
+- [手机汗汗](http://hhaazz.com)
 - [CC图库](http://m.tuku.cc)
 - [有妖气](http://www.u17.com)
 - [动漫屋](http://www.dm5.com)
+- [Webtoon](http://m.webtoons.com)
+- [汗汗漫画](http://hhssee.com)
+- [57漫画](http://m.57mh.com)
 - ~~各种奇怪的网站~~
 
 # 可添加图源
-- IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5
+- IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5、Webtoon、HHSSEE、57MH
 - EHentai、ExHentai、NHentai、Wnacg
 
 # 感谢以下的开源项目及作者
@@ -44,6 +46,7 @@ Online manga reader based on Android
 - 多线程下载
 - 更改下载路径
 - 扫描已下载漫画
+- 阅读状态自定义点击事件
 
 # 应用截图
 <img src="./screenshot/01.png" width="30%" height="30%">

@@ -46,20 +46,22 @@
         <activity
             android:name=".ui.activity.PageReaderActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/ReaderTheme"/>
+            android:configChanges="orientation|screenSize"/>
 
         <activity
             android:name=".ui.activity.StreamReaderActivity"
             android:screenOrientation="portrait"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/ReaderTheme"/>
+            android:configChanges="orientation|screenSize"/>
 
         <activity
             android:name=".ui.activity.LandscapeStreamReaderActivity"
             android:screenOrientation="landscape"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/ReaderTheme"/>
+            android:configChanges="orientation|screenSize"/>
+
+        <activity
+            android:name=".ui.activity.LandscapePageReaderActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"/>
 
         <service
             android:name=".service.DownloadService"/>

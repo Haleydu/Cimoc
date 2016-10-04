@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.utils.HintUtils;
 
 import butterknife.ButterKnife;
@@ -18,11 +19,13 @@ import butterknife.Unbinder;
 public abstract class BaseFragment extends Fragment {
 
     private Unbinder unbinder;
+    protected boolean isInit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutView(), container, false);
         unbinder = ButterKnife.bind(this, view);
+        isInit = false;
         initPresenter();
         initView();
         initData();
@@ -33,6 +36,18 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (isInit && !hidden) {
+            ((MainActivity) getActivity()).hideProgressBar();
+        }
+    }
+
+    protected void onInitSuccess() {
+        isInit = true;
+        ((MainActivity) getActivity()).hideProgressBar();
     }
 
     public void showSnackbar(int resId) {

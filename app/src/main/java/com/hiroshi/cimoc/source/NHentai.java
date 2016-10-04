@@ -35,7 +35,7 @@ public class NHentai extends MangaParser {
                 String cid = node.attr("href", "/", 2);
                 String title = node.text("div.caption");
                 String author = StringUtils.match("\\[(.*?)\\]", title, 1);
-                title = title.replaceFirst("\\[.*?\\]\\s+", "");
+                title = title.replaceFirst("\\[.*?\\]\\s*", "");
                 String cover = "https:".concat(node.attr("img", "src"));
                 return new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author);
             }
@@ -60,6 +60,27 @@ public class NHentai extends MangaParser {
         String cover = "https:" + body.attr("#cover > a > img", "src");
         comic.setInfo(title, cover, null, intro, author, true);
 
+        return list;
+    }
+
+    @Override
+    public Request getRecentRequest(int page) {
+        String url = StringUtils.format("https://nhentai.net/?page=%d", page);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#content > div.index-container > div > a")) {
+            String cid = node.attr("href", "/", 2);
+            String title = node.text("div.caption");
+            String author = StringUtils.match("\\[(.*?)\\]", title, 1);
+            title = title.replaceFirst("\\[.*?\\]\\s*", "");
+            String cover = "https:".concat(node.attr("img", "src"));
+            list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author));
+        }
         return list;
     }
 

@@ -9,15 +9,15 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 /**
  * Created by Hiroshi on 2016/9/5.
  */
-public class ControllerBuilderFactory {
+public class ControllerBuilderSupplierFactory {
 
-    public static PipelineDraweeControllerBuilder get(Context context, ImagePipelineFactory factory) {
-        return new PipelineDraweeControllerBuilderSupplier(context, factory).get();
+    public static PipelineDraweeControllerBuilderSupplier get(Context context, ImagePipelineFactory factory) {
+        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory);
     }
 
     public static PipelineDraweeControllerBuilder get(Context context, int source) {
         ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(context, source);
-        return new PipelineDraweeControllerBuilderSupplier(context, factory).get();
+        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get();
     }
 
 }

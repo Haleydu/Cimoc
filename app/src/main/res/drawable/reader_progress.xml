@@ -11,10 +11,10 @@
         android:thicknessRatio="10"
         android:useLevel="false" >
         <gradient
-            android:centerColor="@color/colorBackground"
+            android:centerColor="@color/black"
             android:centerY="0.50"
-            android:endColor="@color/colorAccent"
-            android:startColor="@color/colorBackground"
+            android:endColor="@color/white"
+            android:startColor="@color/black"
             android:type="sweep"
             android:useLevel="false"/>
         <size

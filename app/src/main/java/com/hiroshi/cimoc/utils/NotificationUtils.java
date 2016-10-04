@@ -15,7 +15,7 @@ import com.hiroshi.cimoc.R;
 public class NotificationUtils {
 
     public static void notifyBuilder(int id, NotificationManager manager, Notification.Builder builder) {
-        if (Build.VERSION.SDK_INT >= 16) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             manager.notify(id, builder.build());
         } else {
             manager.notify(id, builder.getNotification());
@@ -47,6 +47,10 @@ public class NotificationUtils {
 
     public static void setBuilder(Context context, Notification.Builder builder, @StringRes int text, boolean ongoing) {
         setBuilder(context, builder, text, ongoing, 0, 0, false);
+    }
+
+    public static void cancelNotification(int id, NotificationManager manager) {
+        manager.cancel(id);
     }
 
 }

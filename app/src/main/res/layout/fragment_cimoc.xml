@@ -26,20 +26,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionSearch"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:textSize="14sp"
                 android:textColor="@color/white"
-                tools:ignore="TextFields" />
+                tools:ignore="TextFields"/>
         </android.support.design.widget.TextInputLayout>
     </FrameLayout>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/main_search_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="12dp"
         android:src="@drawable/ic_search_white_24dp"
-        app:elevation="0dp"
-        app:pressedTranslationZ="0dp"
         app:layout_anchor="@id/frame_layout"
         app:layout_anchorGravity="bottom|end"/>
 </android.support.design.widget.CoordinatorLayout>

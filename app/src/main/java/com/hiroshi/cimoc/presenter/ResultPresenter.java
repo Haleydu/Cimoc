@@ -8,6 +8,7 @@ import java.util.List;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**
@@ -25,6 +26,9 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private int[] state;
     private String keyword;
 
+    private int emptyNum = 0;
+    private int errorNum = 0;
+
     public ResultPresenter(List<Integer> list, String keyword) {
         this.keyword = keyword;
         this.list = list;
@@ -32,12 +36,34 @@ public class ResultPresenter extends BasePresenter<ResultView> {
         this.state = new int[list.size()];
     }
 
-    public void load() {
+    private void recent() {
+        if (state[0] == SEARCH_NULL) {
+            state[0] = SEARCH_DOING;
+            mCompositeSubscription.add(Manga.recent(list.get(0), ++page[0])
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<Comic>>() {
+                        @Override
+                        public void call(List<Comic> list) {
+                            mBaseView.onRecentLoadSuccess(list);
+                            state[0] = SEARCH_NULL;
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            if (page[0] == 1) {
+                                mBaseView.onRecentLoadFail();
+                            }
+                        }
+                    }));
+        }
+    }
+
+    private void search() {
         for (int i = 0; i != list.size(); ++i) {
             final int pos = i;
             if (state[pos] == SEARCH_NULL) {
                 state[pos] = SEARCH_DOING;
-                Manga.search(list.get(i), keyword, ++page[pos])
+                mCompositeSubscription.add(Manga.search(list.get(i), keyword, ++page[pos])
                         .filter(new Func1<Comic, Boolean>() {
                             @Override
                             public Boolean call(Comic comic) {
@@ -56,30 +82,32 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                                 if (page[pos] == 1) {
                                     if (e instanceof Manga.EmptyResultException) {
                                         state[pos] = SEARCH_EMPTY;
-                                        for (int i : state) {
-                                            if (i != SEARCH_EMPTY) {
-                                                return;
-                                            }
+                                        if (++emptyNum == state.length) {
+                                            mBaseView.onResultEmpty();
                                         }
-                                        mBaseView.onResultEmpty();
                                     } else {
                                         state[pos] = SEARCH_ERROR;
-                                        for (int i : state) {
-                                            if (i != SEARCH_ERROR) {
-                                                return;
-                                            }
+                                        if (++errorNum == state.length) {
+                                            mBaseView.onSearchError();
                                         }
-                                        mBaseView.onSearchError();
                                     }
                                 }
                             }
 
                             @Override
                             public void onNext(Comic comic) {
-                                mBaseView.onLoadSuccess(comic);
+                                mBaseView.onSearchSuccess(comic);
                             }
-                        });
+                        }));
             }
+        }
+    }
+
+    public void load() {
+        if (keyword == null) {
+            recent();
+        } else {
+            search();
         }
     }
 

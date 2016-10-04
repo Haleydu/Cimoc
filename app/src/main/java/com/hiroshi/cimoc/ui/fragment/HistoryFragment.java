@@ -14,7 +14,6 @@ import com.hiroshi.cimoc.ui.view.HistoryView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/7/1.
@@ -53,9 +52,10 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -72,15 +72,16 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     @Override
-    public void onLoadSuccess(List<MiniComic> list) {
-        mComicAdapter.addAll(list);
-    }
-
-    @Override
-    public void onHistoryClear() {
+    public void onHistoryClearSuccess() {
         int count = mComicAdapter.getItemCount();
         mComicAdapter.clear();
         showSnackbar(R.string.history_clear_success, count);
+        mProgressDialog.hide();
+    }
+
+    @Override
+    public void onHistoryClearFail() {
+        showSnackbar(R.string.history_clear_fail);
         mProgressDialog.hide();
     }
 

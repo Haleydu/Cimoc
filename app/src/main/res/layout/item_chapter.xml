@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<com.hiroshi.cimoc.ui.custom.ChapterButton
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_chapter_button"
     android:layout_width="match_parent"
     android:layout_height="32dp"
     android:paddingLeft="6dp"
     android:paddingRight="6dp"
     android:gravity="center"
-    android:background="?attr/backgroundChapter"
     android:textSize="12sp"
-    android:singleLine="true"
+    android:maxLines="1"
     android:ellipsize="end"
-    android:textColor="?attr/colorChapterText"
-    android:clickable="true"/>
+    app:selected_color="?attr/colorAccent"/>
 
 

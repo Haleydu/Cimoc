@@ -29,6 +29,10 @@ public interface Parser {
 
     List<ImageUrl> parseImages(String html);
 
+    Request getRecentRequest(int page);
+
+    List<Comic> parseRecent(String html, int page);
+
     Request getLazyRequest(String url);
 
     String parseLazy(String html, String url);

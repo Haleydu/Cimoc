@@ -13,9 +13,12 @@ import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.EHentai;
 import com.hiroshi.cimoc.source.ExHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
+import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.NHentai;
 import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Webtoon;
 import com.hiroshi.cimoc.source.Wnacg;
 
 import java.util.List;
@@ -33,6 +36,9 @@ public class SourceManager {
     public static final int SOURCE_CCTUKU = 3;
     public static final int SOURCE_U17 = 4;
     public static final int SOURCE_DM5 = 5;
+    public static final int SOURCE_WEBTOON = 6;
+    public static final int SOURCE_HHSSEE = 7;
+    public static final int SOURCE_57MH = 8;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -81,13 +87,19 @@ public class SourceManager {
             case SOURCE_DMZJ:
                 return "动漫之家";
             case SOURCE_HHAAZZ:
-                return "汗汗漫画";
+                return "手机汗汗";
             case SOURCE_CCTUKU:
                 return "CC图库";
             case SOURCE_U17:
                 return "有妖气";
             case SOURCE_DM5:
                 return "动漫屋";
+            case SOURCE_WEBTOON:
+                return "Webtoon";
+            case SOURCE_HHSSEE:
+                return "汗汗漫画";
+            case SOURCE_57MH:
+                return "57漫画";
             case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
@@ -114,6 +126,12 @@ public class SourceManager {
                 return SOURCE_U17;
             case "DM5":
                 return SOURCE_DM5;
+            case "Webtoon":
+                return SOURCE_WEBTOON;
+            case "HHSSEE":
+                return SOURCE_HHSSEE;
+            case "57MH":
+                return SOURCE_57MH;
             case "EHentai":
                 return SOURCE_EHENTAI;
             case "ExHentai":
@@ -144,11 +162,20 @@ public class SourceManager {
                 case SOURCE_CCTUKU:
                     parser = new CCTuku();
                     break;
+                case SOURCE_U17:
+                    parser = new U17();
+                    break;
                 case SOURCE_DM5:
                     parser = new DM5();
                     break;
-                case SOURCE_U17:
-                    parser = new U17();
+                case SOURCE_WEBTOON:
+                    parser = new Webtoon();
+                    break;
+                case SOURCE_HHSSEE:
+                    parser = new HHSSEE();
+                    break;
+                case SOURCE_57MH:
+                    parser = new MH57();
                     break;
                 case SOURCE_EHENTAI:
                     parser = new EHentai();

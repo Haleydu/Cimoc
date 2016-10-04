@@ -29,6 +29,7 @@ public abstract class BackActivity extends BaseActivity {
         super.onDestroy();
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
     }
 

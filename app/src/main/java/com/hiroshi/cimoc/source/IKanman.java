@@ -26,14 +26,14 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://m.ikanman.com/s/%s.html?page=%d", keyword, page);
+        String url = StringUtils.format("http://m.ikanman.com/s/%s.html?page=%d&ajax=1", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("#detail > li > a")) {
+        return new NodeIterator(body.list("li > a")) {
             @Override
             protected Comic parse(Node node) {
                 String cid = node.attr("href", "/", 2);
@@ -67,7 +67,7 @@ public class IKanman extends MangaParser {
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
         String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title");
-        String intro = body.exist("#bookIntro > p") ? body.text("#bookIntro > p") : body.text("#bookIntro");
+        String intro = body.text("#bookIntro");
         boolean status = "完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
 
@@ -99,6 +99,27 @@ public class IKanman extends MangaParser {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        return list;
+    }
+
+    @Override
+    public Request getRecentRequest(int page) {
+        String url = StringUtils.format("http://m.ikanman.com/update/?ajax=1&page=%d", page);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("li > a")) {
+            String cid = node.attr("href", "/", 2);
+            String title = node.text("h3");
+            String cover = node.attr("div > img", "data-src");
+            String update = node.text("dl:eq(5) > dd");
+            String author = node.text("dl:eq(2) > dd");
+            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author));
         }
         return list;
     }

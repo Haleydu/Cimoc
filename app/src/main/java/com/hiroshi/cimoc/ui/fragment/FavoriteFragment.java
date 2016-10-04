@@ -13,6 +13,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.collections.FilterList;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
@@ -22,8 +25,9 @@ import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Hiroshi on 2016/7/1.
@@ -34,10 +38,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     private FavoritePresenter mPresenter;
     private Notification.Builder mBuilder;
     private NotificationManager mManager;
-
-    private int max;
-    private String[] filter;
-    private boolean[] checked;
 
     @Override
     protected void initPresenter() {
@@ -55,8 +55,19 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     protected void initAdapter() {
-        mFavoriteAdapter = new FavoriteAdapter(getActivity(), new LinkedList<MiniComic>());
+        Set<String> filterSet = new HashSet<>();
+        filterSet.add("已完结");
+        filterSet.add("连载中");
+        FilterList<MiniComic, String> list = new FilterList<MiniComic, String>(filterSet) {
+            @Override
+            protected boolean isFilter(Set<String> filter, MiniComic data) {
+                return filter.contains(data.isFinish() != null && data.isFinish() ? "已完结" : "连载中") ||
+                        filter.contains(SourceManager.getTitle(data.getSource()));
+            }
+        };
+        mFavoriteAdapter = new FavoriteAdapter(getActivity(), list);
         mComicAdapter = mFavoriteAdapter;
+
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -99,15 +110,18 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     protected void initData() {
-        max = -1;
         mPresenter.loadComic();
-        mPresenter.loadFilter();
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
+        if (mBuilder != null) {
+            NotificationUtils.cancelNotification(0, mManager);
+            mBuilder = null;
+        }
     }
 
     @Override
@@ -120,22 +134,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.favorite_filter:
-                final boolean[] temp = checked;
-                if (filter != null) {
-                    DialogUtils.buildMultiChoiceDialog(getActivity(), R.string.favorite_filter_select, filter, checked,
-                            new DialogInterface.OnMultiChoiceClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                    temp[which] = isChecked;
-                                }
-                            }, -1, null, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    checked = temp;
-                                    mFavoriteAdapter.updateFilter(filter, checked);
-                                }
-                            }).show();
-                }
+                mPresenter.loadFilter();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -143,8 +142,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     protected void onActionConfirm() {
-        if (max == -1) {
-            max = mFavoriteAdapter.getFullSize();
+        if (mBuilder == null) {
             mPresenter.checkUpdate();
             mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
                     R.string.favorite_update_doing, true, 0, 0, true);
@@ -156,7 +154,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mFavoriteAdapter.cancelHighlight(position);
+        MiniComic comic = mFavoriteAdapter.clickItem(position);
         Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         startActivity(intent);
     }
@@ -168,7 +166,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onItemAdd(List<MiniComic> list) {
-        mFavoriteAdapter.addAll(list);
+        mFavoriteAdapter.addAll(0, list);
     }
 
     @Override
@@ -182,29 +180,47 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onProgressChange(int progress) {
+    public void onFilterLoad(final String[] filter) {
+        final Set<String> filterSet = mFavoriteAdapter.getFilterSet();
+        final boolean[] checked = new boolean[filter.length];
+        for (int i = 0; i != filter.length; ++i) {
+            checked[i] = filterSet.contains(filter[i]);
+        }
+        DialogUtils.buildMultiChoiceDialog(getActivity(), R.string.favorite_filter_select, filter, checked,
+                new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        checked[which] = isChecked;
+                    }
+                }, -1, null, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        for (int i = 0; i != filter.length; ++i) {
+                            if (checked[i]) {
+                                filterSet.add(filter[i]);
+                            } else {
+                                filterSet.remove(filter[i]);
+                            }
+                        }
+                        mFavoriteAdapter.updateFilterSet();
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onComicUpdate(Comic comic, int progress, int max) {
+        if (comic != null) {
+            mFavoriteAdapter.moveToFirst(new MiniComic(comic));
+        }
         mBuilder.setProgress(max, progress, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-    }
-
-    @Override
-    public void onFilterLoad(String[] filter) {
-        checked = new boolean[filter.length];
-        checked[0] = true;
-        checked[1] = true;
-        this.filter = filter;
-    }
-
-    @Override
-    public void onComicUpdate(MiniComic comic) {
-        mFavoriteAdapter.moveToFirst(comic);
     }
 
     @Override
     public void onCheckComplete() {
         NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_update_finish, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-        max = -1;
+        mBuilder = null;
     }
 
     @Override

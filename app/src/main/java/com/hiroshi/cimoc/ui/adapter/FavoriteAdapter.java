@@ -4,157 +4,98 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.collections.FilterList;
 import com.hiroshi.cimoc.model.MiniComic;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/8/5.
  */
 public class FavoriteAdapter extends ComicAdapter {
 
-    private Set<String> mFilterSet;
-    private List<MiniComic> mFullList;
+    private FilterList<MiniComic, String> filterList;
 
-    public FavoriteAdapter(Context context, List<MiniComic> list) {
-        super(context, list);
-        mFullList = new LinkedList<>();
-        mFilterSet = new HashSet<>();
-        mFilterSet.add("已完结");
-        mFilterSet.add("连载中");
+    public FavoriteAdapter(Context context, FilterList<MiniComic, String> filterList) {
+        super(context, filterList);
+        this.filterList = filterList;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (mDataSet.get(position).isHighlight()) {
-            ((ViewHolder) holder).comicNew.setVisibility(View.VISIBLE);
-        } else {
-            ((ViewHolder) holder).comicNew.setVisibility(View.INVISIBLE);
-        }
+        int visibility = mDataSet.get(position).isHighlight() ? View.VISIBLE : View.INVISIBLE;
+        ((ViewHolder) holder).comicNew.setVisibility(visibility);
     }
 
     @Override
-    public void add(MiniComic comic) {
-        mFullList.add(findFirstNormal(mFullList), comic);
-        if (isFilter(comic)) {
-            super.add(findFirstNormal(mDataSet), comic);
-        }
-    }
-
-    @Override
-    public void addAll(List<MiniComic> list) {
-        mFullList.addAll(findFirstNormal(mFullList), list);
-        List<MiniComic> temp = new LinkedList<>();
-        for (MiniComic comic : list) {
-            if (isFilter(comic)) {
-                temp.add(comic);
-            }
-        }
-        if (!temp.isEmpty()) {
-            super.addAll(findFirstNormal(mDataSet), temp);
-        }
+    public void add(MiniComic data) {
+        add(findFirstNotHighlight(mDataSet), data);
     }
 
     public void moveToFirst(MiniComic comic) {
-        mFullList.remove(comic);
-        mFullList.add(0, comic);
-
-        int position = mDataSet.indexOf(comic);
-        if (position != -1) {
-            mDataSet.remove(position);
-            mDataSet.add(0, comic);
-            notifyItemMoved(position, 0);
-        }
+        remove(comic);
+        add(0, comic);
     }
 
-    public MiniComic cancelHighlight(int position) {
-        MiniComic comic = mDataSet.get(position);
+    public MiniComic clickItem(int which) {
+        final MiniComic comic = mDataSet.get(which);
         if (comic.isHighlight()) {
             comic.setHighlight(false);
-
-            mFullList.remove(comic);
-            int temp = findFirstNormal(mFullList);
-            mFullList.add(temp, comic);
-
-            mDataSet.remove(position);
-            temp = findFirstNormal(mDataSet);
-            mDataSet.add(temp, comic);
-            notifyItemMoved(position, temp);
-            notifyItemChanged(temp);
+            remove(which);
+            int index1 = findFirstNotHighlight(mDataSet);
+            int index2 = findFirstNotHighlight(filterList.getFullList());
+            filterList.addDiff(index1, index2, comic);
+            notifyItemInserted(index1);
         }
         return comic;
     }
 
-    public void updateFilter(String[] filter, boolean[] checked) {
-        for (int i = 0; i != checked.length; ++i) {
-            if (checked[i]) {
-                mFilterSet.add(filter[i]);
-            } else {
-                mFilterSet.remove(filter[i]);
-            }
-        }
-
-        List<MiniComic> list = new LinkedList<>();
-        for (MiniComic comic : mFullList) {
-            if (isFilter(comic)) {
-                list.add(comic);
-            }
-        }
-        mDataSet = list;
+    public void updateFilterSet() {
+        filterList.filter();
         notifyDataSetChanged();
     }
 
-    @Override
-    public void removeById(long id) {
-        for (MiniComic comic : mFullList) {
-            if (id == comic.getId()) {
-                mFullList.remove(comic);
-                break;
-            }
-        }
-        super.removeById(id);
+    public Set<String> getFilterSet() {
+        return filterList.getFilterSet();
     }
 
     @Override
-    public void removeBySource(int source) {
-        Iterator<MiniComic> iterator = mFullList.iterator();
-        while (iterator.hasNext()) {
-            MiniComic comic = iterator.next();
-            if (source == comic.getSource()) {
-                iterator.remove();
-            }
-        }
-        super.removeBySource(source);
+    public void removeBySource(final int source) {
+        Observable.from(filterList.getFullList())
+                .filter(new Func1<MiniComic, Boolean>() {
+                    @Override
+                    public Boolean call(MiniComic comic) {
+                        return source == comic.getSource();
+                    }
+                })
+                .toList()
+                .subscribe(new Action1<List<MiniComic>>() {
+                    @Override
+                    public void call(List<MiniComic> list) {
+                        removeAll(list);
+                    }
+                });
     }
 
     public boolean isFull() {
-        return mDataSet.size() == mFullList.size();
+        return filterList.isFull();
     }
 
-    public int getFullSize() {
-        return mFullList.size();
-    }
-
-    private boolean isFilter(MiniComic comic) {
-        return mFilterSet.contains(comic.isFinish() != null && comic.isFinish() ? "已完结" : "连载中") ||
-                mFilterSet.contains(SourceManager.getTitle(comic.getSource()));
-    }
-
-    private int findFirstNormal(List<MiniComic> list) {
-        int index = 0;
-        for (MiniComic comic : list) {
+    private int findFirstNotHighlight(List<MiniComic> list) {
+        int count = 0;
+        for (MiniComic comic : mDataSet) {
             if (!comic.isHighlight()) {
                 break;
             }
-            ++index;
+            ++count;
         }
-        return index;
+        return count;
     }
 
 }

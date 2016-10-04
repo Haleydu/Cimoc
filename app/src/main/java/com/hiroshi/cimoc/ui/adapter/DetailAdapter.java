@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -12,8 +11,9 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.model.Chapter;
+import com.hiroshi.cimoc.ui.custom.ChapterButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,8 @@ import butterknife.BindView;
  */
 public class DetailAdapter extends BaseAdapter<Chapter> {
 
+    private OnTitleClickListener mTitleClickListener;
+
     private int source;
     private String title;
     private String image;
@@ -34,18 +36,16 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     private Boolean finish;
 
     private String last;
-    private int backgroundId;
-    private int colorId;
 
     public class ViewHolder extends BaseViewHolder {
-        @BindView(R.id.item_chapter_button) TextView chapterButton;
+        @BindView(R.id.item_chapter_button) ChapterButton chapterButton;
 
         public ViewHolder(View view) {
             super(view);
         }
     }
 
-    public class HeaderHolder extends BaseViewHolder {
+    class HeaderHolder extends BaseViewHolder {
         @BindView(R.id.item_header_comic_image) SimpleDraweeView mComicImage;
         @BindView(R.id.item_header_comic_title) TextView mComicTitle;
         @BindView(R.id.item_header_comic_intro) TextView mComicIntro;
@@ -53,18 +53,21 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         @BindView(R.id.item_header_comic_update) TextView mComicUpdate;
         @BindView(R.id.item_header_comic_author) TextView mComicAuthor;
 
-        public HeaderHolder(View view) {
+        HeaderHolder(View view) {
             super(view);
+            mComicTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mTitleClickListener != null) {
+                        mTitleClickListener.onTitleClick();
+                    }
+                }
+            });
         }
     }
 
     public DetailAdapter(Context context, List<Chapter> list) {
         super(context, list);
-        TypedValue typedValue = new TypedValue();
-        mContext.getTheme().resolveAttribute(R.attr.backgroundChapter, typedValue, true);
-        backgroundId = typedValue.resourceId;
-        mContext.getTheme().resolveAttribute(R.attr.colorChapterText, typedValue, true);
-        colorId = typedValue.resourceId;
     }
 
     @Override
@@ -76,7 +79,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 if (position == 0) {
                     outRect.set(0, 0, 0, 10);
                 } else {
-                    outRect.set(30, 0, 30, 40);
+                    int offset = parent.getWidth() / 40;
+                    outRect.set(offset, 0, offset, (int) (offset * 1.5));
                 }
             }
         };
@@ -119,11 +123,15 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         }
     }
 
+    public void setOnTitleClickListener(OnTitleClickListener listener) {
+        mTitleClickListener = listener;
+    }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            PipelineDraweeControllerBuilder builder = ControllerBuilderFactory.get(mContext, source);
+            PipelineDraweeControllerBuilder builder = ControllerBuilderSupplierFactory.get(mContext, source);
             if (title != null) {
                 headerHolder.mComicImage.setController(builder.setUri(image).build());
                 headerHolder.mComicTitle.setText(title);
@@ -131,20 +139,16 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 if (finish != null) {
                     headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
                 }
-                headerHolder.mComicUpdate.setText(update);
+                if (update != null) {
+                    headerHolder.mComicUpdate.setText("最后更新：".concat(update));
+                }
                 headerHolder.mComicAuthor.setText(author);
             }
         } else {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.chapterButton.setText(chapter.getTitle());
-            if (chapter.isDownload()) {
-                viewHolder.chapterButton.setBackgroundResource(R.drawable.button_chapter_download);
-                viewHolder.chapterButton.setTextColor(mContext.getResources().getColorStateList(R.color.button_chapter_color_download));
-            } else {
-                viewHolder.chapterButton.setBackgroundResource(backgroundId);
-                viewHolder.chapterButton.setTextColor(mContext.getResources().getColorStateList(colorId));
-            }
+            viewHolder.chapterButton.setDownload(chapter.isDownload());
             if (chapter.getPath().equals(last)) {
                 viewHolder.chapterButton.setSelected(true);
             } else if (viewHolder.chapterButton.isSelected()) {
@@ -166,8 +170,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     }
 
     public void setLast(String value) {
-        if (value.equals(last)) {
-            last = value;
+        if (value == null || value.equals(last)) {
             return;
         }
         String temp = last;
@@ -197,6 +200,10 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             paths[i] = mDataSet.get(i).getPath();
         }
         return paths;
+    }
+
+    public interface OnTitleClickListener {
+        void onTitleClick();
     }
 
 }

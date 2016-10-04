@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorAccent">#FFC107</color>
-    <color name="colorAccentTrans">#AAFFC107</color>
-    <color name="textColorSecondary">#8A000000</color>
-    <color name="colorBackground">#FFFAFAFA</color>
     <color name="colorBackgroundTrans">#AAFAFAFA</color>
-    <color name="textColorSecondaryDark">#B3FFFFFF</color>
-    <color name="colorBackgroundDark">#FF303030</color>
-    <color name="colorBackgroundTransDark">#AA303030</color>
+
+    <color name="colorPrimaryBlue">#2196F3</color>
+    <color name="colorPrimaryBlueDark">#1976D2</color>
+
+    <color name="colorPrimaryGrey">#455A64</color>
+    <color name="colorPrimaryGreyDark">#607D8B</color>
+
+    <color name="colorPrimaryTeal">#009688</color>
+    <color name="colorPrimaryTealDark">#00796B</color>
+
+    <color name="colorPrimaryPurple">#9C27B0</color>
+    <color name="colorPrimaryPurpleDark">#7B1FA2</color>
+
+    <color name="colorPrimaryPink">#E91E63</color>
+    <color name="colorPrimaryPinkDark">#C2185B</color>
+
+    <color name="colorPrimaryBrown">#795548</color>
+    <color name="colorPrimaryBrownDark">#5D4037</color>
+
+    <color name="colorPrimaryBlack">#FF212121</color>
 
     <color name="transparent">#00000000</color>
-    <color name="transparent_mask">#30000000</color>
+    <color name="transparent_mask">#40000000</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

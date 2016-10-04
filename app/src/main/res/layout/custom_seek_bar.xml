@@ -17,10 +17,9 @@
         app:dsb_min="1"
         app:dsb_indicatorPopupEnabled="true"
         app:dsb_trackColor="@color/white"
-        app:dsb_rippleColor="?attr/colorAccent"
-        app:dsb_progressColor="?attr/colorAccent"
-        app:dsb_indicatorColor="?attr/colorAccent"
-        app:dsb_indicatorTextAppearance="@color/white"
+        app:dsb_rippleColor="?attr/colorPrimary"
+        app:dsb_progressColor="?attr/colorPrimary"
+        app:dsb_indicatorColor="?attr/colorPrimary"
         app:dsb_trackHeight="4dp"
         app:dsb_thumbSize="12dp"/>
 </LinearLayout>

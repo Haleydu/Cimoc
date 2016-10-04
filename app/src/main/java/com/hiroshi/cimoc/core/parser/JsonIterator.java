@@ -36,7 +36,7 @@ public abstract class JsonIterator implements SearchIterator {
 
     @Override
     public boolean empty() {
-        return array == null;
+        return array == null || array.length() == 0;
     }
 
     protected abstract Comic parse(JSONObject object);

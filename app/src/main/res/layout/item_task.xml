@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:clickable="true"
-    android:background="?attr/colorBackgroundAccent"
+    android:background="@color/white"
     android:foreground="?android:attr/selectableItemBackground">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -32,15 +32,22 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/task_title"
-            android:textColor="@color/colorAccent"
+            android:textColor="?colorAccent"
             android:textSize="12sp"/>
         <ProgressBar
             android:id="@+id/task_progress"
             android:layout_width="match_parent"
-            android:layout_height="4dp"
+            android:layout_height="12dp"
             android:layout_below="@id/task_state"
             android:layout_marginTop="6dp"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:progressDrawable="@drawable/progress_task"/>
+            style="?android:attr/progressBarStyleHorizontal"/>
+        <View
+            android:id="@+id/task_last"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:visibility="invisible"
+            android:background="?attr/colorAccent"/>
     </RelativeLayout>
 </FrameLayout>

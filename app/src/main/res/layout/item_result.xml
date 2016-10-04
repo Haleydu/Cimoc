@@ -6,7 +6,7 @@
     android:layout_height="120dp"
     android:padding="10dp"
     android:clickable="true"
-    android:background="?attr/colorBackgroundAccent"
+    android:background="@color/white"
     android:foreground="?android:attr/selectableItemBackground">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -25,14 +25,6 @@
             android:layout_alignParentRight="true"
             android:textSize="14sp"/>
         <TextView
-            android:id="@+id/result_comic_source_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/result_comic_source"
-            android:layout_alignParentTop="true"
-            android:text="@string/result_source"
-            android:textSize="14sp"/>
-        <TextView
             android:id="@+id/result_comic_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,22 +32,14 @@
             android:layout_alignParentRight="true"
             android:textSize="14sp"/>
         <TextView
-            android:id="@+id/result_comic_update_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/result_comic_update"
-            android:layout_alignParentBottom="true"
-            android:text="@string/result_update"
-            android:textSize="14sp"/>
-        <TextView
             android:id="@+id/result_comic_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@id/result_comic_image"
-            android:layout_toLeftOf="@id/result_comic_source_tab"
-            android:layout_marginRight="6dp"
-            android:maxLines="1"
+            android:layout_toLeftOf="@id/result_comic_source"
+            android:paddingRight="4dp"
+            android:maxLines="2"
             android:ellipsize="end"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"/>
@@ -64,9 +48,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/result_comic_title"
-            android:layout_toLeftOf="@id/result_comic_source_tab"
+            android:layout_toLeftOf="@id/result_comic_source"
             android:layout_below="@id/result_comic_title"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="6dp"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="16sp"/>

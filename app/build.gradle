@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 24
         versionCode 1
-        versionName "1.4.1"
+        versionName "1.4.2"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -24,7 +24,7 @@ android {
 }
 
 greendao {
-    schemaVersion 5
+    schemaVersion 6
 }
 
 dependencies {

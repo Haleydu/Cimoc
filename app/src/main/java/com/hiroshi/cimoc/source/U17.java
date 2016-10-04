@@ -11,8 +11,15 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Request;
 
@@ -68,6 +75,38 @@ public class U17 extends MangaParser {
         boolean status = "已完结".equals(body.text("div.main > div.info > div.fl > span.eq(2)"));
         String update = body.text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
         comic.setInfo(title, cover, update, intro, author, status);
+        return list;
+    }
+
+    @Override
+    public Request getRecentRequest(int page) {
+        String url = StringUtils.format("http://m.u17.com/update/list/%d?page=0&pageSize=1000", (page - 1));
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        try {
+            JSONArray array = new JSONArray(html);
+            int size = array.length();
+            for (int i = 0; i != size; ++i) {
+                try {
+                    JSONObject object = array.getJSONObject(i);
+                    String cid = object.getString("comicId");
+                    String title = object.getString("name");
+                    String cover = object.getString("cover");
+                    long time = object.getLong("lastUpdateTime") * 1000;
+                    String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+                    String author = object.optString("authorName");
+                    list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 

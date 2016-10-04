@@ -66,17 +66,6 @@ public class ComicManager {
                 .list();
     }
 
-    public Observable<Comic> loadInRx(int source, String cid) {
-        return mComicDao.queryBuilder()
-                .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
-                .rx()
-                .unique();
-    }
-
-    public Observable<Comic> loadInRx(long id) {
-        return mComicDao.rx().load(id);
-    }
-
     public Comic load(long id) {
         return mComicDao.load(id);
     }

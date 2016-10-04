@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -41,7 +42,7 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class DetailActivity extends BackActivity implements DetailView {
+public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener {
 
     @BindView(R.id.detail_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.detail_layout) CoordinatorLayout mCoordinatorLayout;
@@ -53,23 +54,26 @@ public class DetailActivity extends BackActivity implements DetailView {
 
     @Override
     protected void initPresenter() {
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        mPresenter = new DetailPresenter(source);
+        mPresenter = new DetailPresenter();
         mPresenter.attachView(this);
     }
 
     @Override
-    protected void initData() {
+    protected void initData(Bundle savedInstanceState) {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
-        mPresenter.loadDetail(id, cid);
+        mPresenter.loadDetail(id, source, cid);
     }
 
     @Override
     protected void onDestroy() {
         mPresenter.updateComic();
         mPresenter.detachView();
+        mPresenter = null;
         super.onDestroy();
+        mDetailAdapter = null;
+        mSelectAdapter = null;
     }
 
     @Override
@@ -136,6 +140,8 @@ public class DetailActivity extends BackActivity implements DetailView {
             } else {
                 mPresenter.updateIndex(mDetailAdapter.getDateSet());
             }
+        } else {
+            mPresenter.updateIndex(mDetailAdapter.getDateSet());
         }
     }
 
@@ -149,6 +155,19 @@ public class DetailActivity extends BackActivity implements DetailView {
             mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
             showSnackbar(R.string.detail_favorite);
         }
+    }
+
+    @Override
+    public void onTitleClick() {
+        String last = mPresenter.getComic().getLast();
+        List<Chapter> list = mDetailAdapter.getDateSet();
+        if (last == null) {
+            last = mDetailAdapter.getItem(list.size() - 1).getPath();
+            mDetailAdapter.setLast(last);
+        }
+        mPresenter.updateLast(last);
+        Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic().getId(), list);
+        startActivity(intent);
     }
 
     @Override
@@ -172,12 +191,12 @@ public class DetailActivity extends BackActivity implements DetailView {
             }
         });
         mDetailAdapter.setDownload(complete);
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
     }
 
     @Override
     public void onDownloadLoadFail() {
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
         showSnackbar(R.string.detail_download_load_fail);
     }
 
@@ -199,11 +218,13 @@ public class DetailActivity extends BackActivity implements DetailView {
     @Override
     public void onUpdateIndexSuccess() {
         List<Integer> checked = mSelectAdapter.getCheckedList();
-        List<Chapter> list = new ArrayList<>(checked.size());
-        for (int position : checked) {
-            list.add(mDetailAdapter.getItem(position));
+        if (!checked.isEmpty()) {
+            List<Chapter> list = new ArrayList<>(checked.size());
+            for (int position : checked) {
+                list.add(mDetailAdapter.getItem(position));
+            }
+            mPresenter.addTask(list);
         }
-        mPresenter.addTask(list);
     }
 
     @Override
@@ -238,29 +259,32 @@ public class DetailActivity extends BackActivity implements DetailView {
     }
 
     @Override
-    public void onChapterLoad(List<Chapter> list) {
+    public void onChapterLoad(final List<Chapter> list) {
         mDetailAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if (position != 0) {
-                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic(),
-                            mDetailAdapter.getDateSet(), position - 1);
+                    String last = mDetailAdapter.getItem(position - 1).getPath();
+                    mDetailAdapter.setLast(last);
+                    long id = mPresenter.updateLast(last);
+                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet());
                     startActivity(intent);
                 }
             }
         });
+        mDetailAdapter.setOnTitleClickListener(this);
         mDetailAdapter.setData(list);
     }
 
     @Override
     public void onNetworkError() {
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
         showSnackbar(R.string.common_network_error);
     }
 
     @Override
     public void onParseError() {
-        mProgressBar.setVisibility(View.GONE);
+        hideProgressBar();
         showSnackbar(R.string.common_parse_error);
     }
 

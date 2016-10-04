@@ -23,7 +23,8 @@ import okhttp3.OkHttpClient;
 public class OkHttpImagePipelineConfigFactory {
 
     public static ImagePipelineConfig.Builder newBuilder(Context context, OkHttpClient okHttpClient, Headers headers) {
-        return ImagePipelineConfig.newBuilder(context)
+        return ImagePipelineConfig.newBuilder(context.getApplicationContext())
+                .setDecodeMemoryFileEnabled(true)
                 .setNetworkFetcher(new OkHttpNetworkFetcher(okHttpClient, headers));
     }
 

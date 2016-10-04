@@ -4,8 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
@@ -17,10 +18,9 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.fresco.ControllerBuilderFactory;
+import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
@@ -30,6 +30,7 @@ import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
+import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -37,6 +38,7 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,7 +58,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @BindView(R.id.reader_back_layout) View mBackLayout;
     @BindView(R.id.reader_info_layout) View mInfoLayout;
     @BindView(R.id.reader_seek_bar) ReverseSeekBar mSeekBar;
-    @BindView(R.id.reader_mask) View mNightMask;
+
     @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
 
     protected PreCacheLayoutManager mLayoutManager;
@@ -66,23 +68,41 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected ReaderPresenter mPresenter;
     protected int progress = 1;
     protected int max = 1;
+    protected boolean reverse = false;
+    protected int turn;
 
     private boolean hide;
-    private int source;
 
     @Override
-    protected void initView() {
+    protected void initTheme() {
+        super.initTheme();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false)) {
-            mNightMask.setVisibility(View.VISIBLE);
-        }
+    }
+
+    @Override
+    protected void initProgressBar() {}
+
+    @Override
+    protected void initView() {
         hide = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_HIDE, false);
         if (hide) {
             mInfoLayout.setVisibility(View.INVISIBLE);
         }
+        turn = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
+        reverse = turn == PreferenceManager.READER_TURN_RTL;
+        mSeekBar.setReverse(reverse);
         mSeekBar.setOnProgressChangeListener(this);
+        initLayoutManager();
+        initReaderAdapter();
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mReaderAdapter);
+    }
+
+    private void initReaderAdapter() {
         List<ImageUrl> list = new LinkedList<>();
         list.add(new ImageUrl(0, null, true));
         mReaderAdapter = new ReaderAdapter(this, list);
@@ -91,45 +111,53 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_PICTURE, false)) {
             mReaderAdapter.setLongPressListener(this);
         }
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
-        mReaderAdapter.setControllerBuilder(ControllerBuilderFactory.get(this, mImagePipelineFactory));
+        mReaderAdapter.setFitMode(turn == PreferenceManager.READER_TURN_ATB ? ReaderAdapter.FIT_WIDTH : ReaderAdapter.FIT_HEIGHT);
+        mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_SPLIT, false));
+    }
+
+    private void initLayoutManager() {
         mLayoutManager = new PreCacheLayoutManager(this);
+        mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
+        mLayoutManager.setExtraSpace(3);
+        mLayoutManager.setReverseLayout(reverse);
     }
 
     @Override
-    protected void initData() {
-        String last = getIntent().getStringExtra(EXTRA_LAST);
-        int page = getIntent().getIntExtra(EXTRA_PAGE, -1);
-        mPresenter.loadInit(last, page);
+    protected void initData(Bundle savedInstanceState) {
+        Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
+        Chapter[] chapter = new Chapter[array.length];
+        for (int i = 0; i != array.length; ++i) {
+            chapter[i] = (Chapter) array[i];
+        }
+        long id = getIntent().getLongExtra(EXTRA_ID, -1);
+        mPresenter.loadInit(id, chapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(batteryReceiver,  new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         if (mPresenter != null) {
-            mPresenter.setPage(progress);
+            mPresenter.updateComic(progress);
         }
         unregisterReceiver(batteryReceiver);
     }
 
     @Override
     protected void onDestroy() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroy();
         if (mImagePipelineFactory != null) {
             mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
+            mImagePipelineFactory = null;
         }
-        mPresenter.detachView();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+        mReaderAdapter = null;
     }
 
     @OnClick(R.id.reader_back_btn) void onBackClick() {
@@ -137,23 +165,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    protected void initTheme() {}
-
-    @Override
     protected void initToolbar() {}
 
     @Override
     protected void initPresenter() {
-        source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        String cid = getIntent().getStringExtra(EXTRA_CID);
-        String comic = getIntent().getStringExtra(EXTRA_COMIC);
-        Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
-        Chapter[] chapter = new Chapter[array.length];
-        for (int i = 0; i != array.length; ++i) {
-            chapter[i] = (Chapter) array[i];
-        }
-        int position = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        mPresenter = new ReaderPresenter(source, cid, comic, chapter, position);
+        mPresenter = new ReaderPresenter();
         mPresenter.attachView(this);
     }
 
@@ -234,7 +250,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onInitLoadSuccess(List<ImageUrl> list, int progress) {
+    public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source) {
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
+        mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mReaderAdapter.setData(list);
         if (progress != 1) {
             mRecyclerView.scrollToPosition(progress - 1);
@@ -292,9 +310,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         String url = mReaderAdapter.getItem(position).getUrl();
         try {
             String suffix = StringUtils.getSplit(url, "\\.", -1);
-            BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
-            if (resource != null) {
-                mPresenter.savePicture(resource.openStream(), suffix);
+            if (url.startsWith("file")) {
+                InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
+                mPresenter.savePicture(inputStream, suffix);
+            } else {
+                BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
+                if (resource != null) {
+                    mPresenter.savePicture(resource.openStream(), suffix);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -302,46 +325,33 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     }
 
-    private static final String EXTRA_SOURCE = "a";
-    private static final String EXTRA_CID = "b";
-    private static final String EXTRA_LAST = "c";
-    private static final String EXTRA_PAGE = "d";
-    private static final String EXTRA_COMIC = "e";
-    private static final String EXTRA_CHAPTER = "f";
-    private static final String EXTRA_POSITION = "g";
+    private static final String EXTRA_ID = "a";
+    private static final String EXTRA_CHAPTER = "b";
 
-    public static Intent createIntent(Context context, int source, String cid, String comic, List<Chapter> list, int position) {
+    public static Intent createIntent(Context context, long id, List<Chapter> list) {
         Intent intent = getIntent(context);
-        intent.putExtra(EXTRA_SOURCE, source);
-        intent.putExtra(EXTRA_CID, cid);
-        intent.putExtra(EXTRA_COMIC, comic);
+        intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
-        intent.putExtra(EXTRA_POSITION, position);
-        return intent;
-    }
-
-    public static Intent createIntent(Context context, Comic comic, List<Chapter> list, int position) {
-        Intent intent = getIntent(context);
-        intent.putExtra(EXTRA_SOURCE, comic.getSource());
-        intent.putExtra(EXTRA_CID, comic.getCid());
-        intent.putExtra(EXTRA_LAST, comic.getLast());
-        intent.putExtra(EXTRA_PAGE, comic.getPage());
-        intent.putExtra(EXTRA_COMIC, comic.getTitle());
-        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
-        intent.putExtra(EXTRA_POSITION, position);
         return intent;
     }
 
     private static Intent getIntent(Context context) {
-        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
+        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+        int orientation = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
         switch (mode) {
             default:
-            case PreferenceManager.MODE_HORIZONTAL_PAGE:
-                return new Intent(context, PageReaderActivity.class);
-            case PreferenceManager.MODE_PORTRAIT_STREAM:
-                return new Intent(context, StreamReaderActivity.class);
-            case PreferenceManager.MODE_LANDSCAPE_STREAM:
-                return new Intent(context, LandscapeStreamReaderActivity.class);
+            case PreferenceManager.READER_MODE_PAGE:
+                if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
+                    return new Intent(context, PageReaderActivity.class);
+                } else {
+                    return new Intent(context, LandscapePageReaderActivity.class);
+                }
+            case PreferenceManager.READER_MODE_STREAM:
+                if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
+                    return new Intent(context, StreamReaderActivity.class);
+                } else {
+                    return new Intent(context, LandscapeStreamReaderActivity.class);
+                }
         }
     }
 

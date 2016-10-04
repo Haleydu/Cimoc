@@ -8,7 +8,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.TextView;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
@@ -17,6 +16,7 @@ import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
+import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -28,20 +28,21 @@ import butterknife.OnClick;
 public class SettingsActivity extends BackActivity implements SettingsView {
 
     @BindView(R.id.settings_layout) View mSettingsLayout;
-    @BindView(R.id.settings_other_home_summary) TextView mHomeSummary;
-    @BindView(R.id.settings_reader_mode_summary) TextView mModeSummary;
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
-    @BindView(R.id.settings_reader_reverse_checkbox) CheckBox mReverseBox;
     @BindView(R.id.settings_reader_picture_checkbox) CheckBox mPictureBox;
     @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) CheckBox mHideBox;
+    @BindView(R.id.settings_reader_blank_checkbox) CheckBox mBlankBox;
 
     private SettingsPresenter mPresenter;
     private PreferenceManager mPreference;
 
     private int mHomeChoice;
-    private int mModeChoice;
+    private int mThemeChoice;
+    private int mReaderModeChoice;
+    private int mReaderTurnChoice;
+    private int mReaderOrientationChoice;
     private int mTempChoice;
     private int mTriggerNum;
 
@@ -66,21 +67,23 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         super.initView();
         mPreference = CimocApplication.getPreferences();
         mHomeChoice = mPreference.getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
-        mModeChoice = mPreference.getInt(PreferenceManager.PREF_MODE, PreferenceManager.MODE_HORIZONTAL_PAGE);
+        mThemeChoice = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
+        mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+        mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
+        mReaderOrientationChoice = mPreference.getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
         mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
-        mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
-        mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
         mVolumeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_VOLUME, false));
-        mReverseBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_REVERSE, false));
         mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SPLIT, false));
         mPictureBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_PICTURE, false));
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BRIGHT, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_HIDE, false));
+        mBlankBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BLANK, false));
     }
 
     @Override
     public void onDestroy() {
         mPresenter.detachView();
+        mPresenter = null;
         super.onDestroy();
     }
 
@@ -106,8 +109,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
     }
 
-    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_volume_btn, R.id.settings_reader_reverse_btn,
-            R.id.settings_reader_picture_btn, R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
+    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_volume_btn, R.id.settings_reader_picture_btn,
+            R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_reader_blank_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_split_btn:
@@ -115,9 +118,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_reader_volume_btn:
                 checkedAndSave(mVolumeBox, PreferenceManager.PREF_VOLUME);
-                break;
-            case R.id.settings_reader_reverse_btn:
-                checkedAndSave(mReverseBox, PreferenceManager.PREF_REVERSE);
                 break;
             case R.id.settings_reader_picture_btn:
                 checkedAndSave(mPictureBox, PreferenceManager.PREF_PICTURE);
@@ -127,6 +127,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_reader_hide_btn:
                 checkedAndSave(mHideBox, PreferenceManager.PREF_HIDE);
+                break;
+            case R.id.settings_reader_blank_btn:
+                checkedAndSave(mBlankBox, PreferenceManager.PREF_BLANK);
                 break;
         }
     }
@@ -171,19 +174,51 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     public void onClick(DialogInterface dialog, int which) {
                         mHomeChoice = mTempChoice;
                         mPreference.putInt(PreferenceManager.PREF_HOME, mHomeChoice);
-                        mHomeSummary.setText(getResources().getStringArray(R.array.home_items)[mHomeChoice]);
                     }
                 }).show();
     }
 
-    @OnClick(R.id.settings_reader_mode_btn) void onModeBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_mode, R.array.mode_items, mModeChoice, mSingleChoiceListener,
+    @OnClick(R.id.settings_reader_mode_btn) void onReaderModeBtnClick() {
+        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_mode, R.array.reader_mode_items, mReaderModeChoice, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mModeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_MODE, mModeChoice);
-                        mModeSummary.setText(getResources().getStringArray(R.array.mode_items)[mModeChoice]);
+                        mReaderModeChoice = mTempChoice;
+                        mPreference.putInt(PreferenceManager.PREF_READER_MODE, mReaderModeChoice);
+                    }
+                }).show();
+    }
+
+    @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnBtnClick() {
+        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_turn, R.array.reader_turn_items, mReaderTurnChoice, mSingleChoiceListener,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mReaderTurnChoice = mTempChoice;
+                        mPreference.putInt(PreferenceManager.PREF_READER_TURN, mReaderTurnChoice);
+                    }
+                }).show();
+    }
+
+    @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationBtnClick() {
+        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_orientation, R.array.reader_orientation_items, mReaderOrientationChoice, mSingleChoiceListener,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mReaderOrientationChoice = mTempChoice;
+                        mPreference.putInt(PreferenceManager.PREF_READER_ORIENTATION, mReaderOrientationChoice);
+                    }
+                }).show();
+    }
+
+    @OnClick(R.id.settings_other_theme_btn) void onThemeBtnClick() {
+        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_theme, R.array.theme_items, mThemeChoice, mSingleChoiceListener,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mThemeChoice = mTempChoice;
+                        mPreference.putInt(PreferenceManager.PREF_THEME, mThemeChoice);
+                        showSnackbar(R.string.settings_other_theme_reboot);
                     }
                 }).show();
     }
@@ -201,7 +236,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
         mProgressDialog.show();
-        mPresenter.clearCache(getCacheDir());
+        mPresenter.clearCache();
     }
 
     @Override
@@ -260,6 +295,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     public void onCacheClearFail() {
         mProgressDialog.hide();
         showSnackbar(R.string.settings_other_cache_fail);
+    }
+
+    @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.drawer_settings);
     }
 
     @Override

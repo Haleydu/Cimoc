@@ -17,7 +17,7 @@ public abstract class BasePresenter<T extends BaseView> {
 
     public void attachView(T mBaseView) {
         this.mBaseView = mBaseView;
-        this.mCompositeSubscription = new CompositeSubscription();
+        mCompositeSubscription = new CompositeSubscription();
         initSubscription();
     }
 
@@ -28,8 +28,11 @@ public abstract class BasePresenter<T extends BaseView> {
     }
 
     public void detachView() {
-        this.mCompositeSubscription.unsubscribe();
-        this.mCompositeSubscription = null;
+        if (mCompositeSubscription != null) {
+            mCompositeSubscription.unsubscribe();
+        }
+        mCompositeSubscription = null;
+        mBaseView = null;
     }
 
 }

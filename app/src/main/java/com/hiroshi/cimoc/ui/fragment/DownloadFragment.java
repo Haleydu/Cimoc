@@ -16,7 +16,6 @@ import com.hiroshi.cimoc.ui.view.DownloadView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/9/1.
@@ -51,9 +50,10 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -72,19 +72,14 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onItemClick(View view, int position) {
         MiniComic comic = mComicAdapter.getItem(position);
         Intent intent =
-                TaskActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle());
+                TaskActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
     }
 
     @Override
-    public void onComicLoadSuccess(List<MiniComic> list) {
-        mComicAdapter.addAll(list);
-    }
-
-    @Override
     public void onComicLoadFail() {
+        super.onComicLoadFail();
         mActionButton.setVisibility(View.GONE);
-        showSnackbar(R.string.download_load_comic_fail);
     }
 
     @Override
