@@ -23,7 +23,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     private OnItemLongClickListener mLongClickListener;
 
     public BaseAdapter(Context context, List<T> list) {
-        mContext = context;
+        mContext = context.getApplicationContext();
         mDataSet = list;
         mInflater = LayoutInflater.from(context);
     }

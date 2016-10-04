@@ -13,11 +13,11 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BasePresenter<T extends BaseView> {
 
     protected T mBaseView;
-    private CompositeSubscription mCompositeSubscription;
+    protected CompositeSubscription mCompositeSubscription;
 
     public void attachView(T mBaseView) {
         this.mBaseView = mBaseView;
-        this.mCompositeSubscription = new CompositeSubscription();
+        mCompositeSubscription = new CompositeSubscription();
         initSubscription();
     }
 
@@ -28,9 +28,11 @@ public abstract class BasePresenter<T extends BaseView> {
     }
 
     public void detachView() {
-        this.mCompositeSubscription.unsubscribe();
-        this.mCompositeSubscription = null;
-        this.mBaseView = null;
+        if (mCompositeSubscription != null) {
+            mCompositeSubscription.unsubscribe();
+        }
+        mCompositeSubscription = null;
+        mBaseView = null;
     }
 
 }

@@ -27,44 +27,22 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/8/11.
  */
-public class SourceFragment extends BaseFragment implements SourceView {
+public class SourceFragment extends BaseFragment implements SourceView,
+        BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener, SourceAdapter.OnItemCheckedListener {
 
     @BindView(R.id.source_recycler_view) RecyclerView mRecyclerView;
 
+    protected AlertDialog mProgressDialog;
     private SourceAdapter mSourceAdapter;
     private SourcePresenter mPresenter;
 
     @Override
     protected void initView() {
+        mProgressDialog = DialogUtils.buildCancelableFalseDialog(getActivity(), R.string.dialog_doing);
         mSourceAdapter = new SourceAdapter(getActivity(), new LinkedList<Source>());
-        mSourceAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(View view, final int position) {
-                DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.source_delete_confirm,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mPresenter.delete(mSourceAdapter.getItem(position));
-                                mSourceAdapter.remove(position);
-                            }
-                        }).show();
-            }
-        });
-        mSourceAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Intent intent = ResultActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getSid());
-                startActivity(intent);
-            }
-        });
-        mSourceAdapter.setOnItemCheckedListener(new SourceAdapter.OnItemCheckedListener() {
-            @Override
-            public void onItemCheckedListener(boolean isChecked, int position) {
-                Source source = mSourceAdapter.getItem(position);
-                source.setEnable(isChecked);
-                mPresenter.update(source);
-            }
-        });
+        mSourceAdapter.setOnItemLongClickListener(this);
+        mSourceAdapter.setOnItemClickListener(this);
+        mSourceAdapter.setOnItemCheckedListener(this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
@@ -75,6 +53,31 @@ public class SourceFragment extends BaseFragment implements SourceView {
     @Override
     protected void initData() {
         mPresenter.load();
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        Intent intent = ResultActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getSid());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onItemLongClick(View view, final int position) {
+        DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.source_delete_confirm,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mProgressDialog.show();
+                        mPresenter.delete(mSourceAdapter.getItem(position), position);
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onItemCheckedListener(boolean isChecked, int position) {
+        Source source = mSourceAdapter.getItem(position);
+        source.setEnable(isChecked);
+        mPresenter.update(source);
     }
 
     @OnClick(R.id.source_add_btn) void onSourceAddClick() {
@@ -100,9 +103,15 @@ public class SourceFragment extends BaseFragment implements SourceView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+        mSourceAdapter = null;
     }
 
     @Override
@@ -118,9 +127,28 @@ public class SourceFragment extends BaseFragment implements SourceView {
     }
 
     @Override
-    public void onSourceLoad(List<Source> list) {
+    public void onSourceLoadSuccess(List<Source> list) {
         mSourceAdapter.addAll(list);
         onInitSuccess();
+    }
+
+    @Override
+    public void onSourceLoadFail() {
+        showSnackbar(R.string.source_load_fail);
+        onInitSuccess();
+    }
+
+    @Override
+    public void onSourceDeleteSuccess(int position) {
+        mProgressDialog.hide();
+        mSourceAdapter.remove(position);
+        showSnackbar(R.string.source_delete_success);
+    }
+
+    @Override
+    public void onSourceDeleteFail() {
+        mProgressDialog.hide();
+        showSnackbar(R.string.source_delete_fail);
     }
 
     @Override

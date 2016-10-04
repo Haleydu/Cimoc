@@ -79,9 +79,10 @@ public class CimocFragment extends BaseFragment implements CimocView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -138,7 +139,7 @@ public class CimocFragment extends BaseFragment implements CimocView {
                 }
             }
             if (list.isEmpty()) {
-                showSnackbar(R.string.source_source_none);
+                showSnackbar(R.string.cimoc_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(getActivity(), keyword, list));
             }

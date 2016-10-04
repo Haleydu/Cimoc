@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
@@ -18,11 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/4.
@@ -63,54 +58,38 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void loadDetail(long id, final int source, final String cid) {
-        Observable<Comic> observable =
-                id == -1 ? mComicManager.loadInRx(source, cid) : mComicManager.loadInRx(id);
-        observable.doOnNext(new Action1<Comic>() {
-            @Override
-            public void call(Comic comic) {
-                if (comic == null) {
-                    comic = new Comic(source, cid);
-                } if (comic.getFavorite() != null && comic.getHighlight()) {
-                    comic.setHighlight(false);
-                    comic.setFavorite(System.currentTimeMillis());
-                }
-                mComic = comic;
-            }
-        }).flatMap(new Func1<Comic, Observable<List<Chapter>>>() {
-            @Override
-            public Observable<List<Chapter>> call(Comic comic) {
-                return Manga.info(source, mComic);
-            }
-        }).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Chapter>>() {
+        mComic = id == -1 ? mComicManager.load(source, cid) : mComicManager.load(id);
+        if (mComic == null) {
+            mComic = new Comic(source, cid);
+        } if (mComic.getHighlight()) {
+            mComic.setHighlight(false);
+            mComic.setFavorite(System.currentTimeMillis());
+            mComicManager.update(mComic);
+        }
+        mCompositeSubscription.add(Manga.info(source, mComic)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Chapter>>() {
                     @Override
-                    public void onCompleted() {
-                        mBaseView.onDetailLoadSuccess();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        if (mBaseView != null) {
-                            if (e instanceof Manga.NetworkErrorException) {
-                                mBaseView.onNetworkError();
-                            } else {
-                                mBaseView.onComicLoad(mComic);
-                                mBaseView.onParseError();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onNext(List<Chapter> list) {
+                    public void call(List<Chapter> list) {
                         mBaseView.onComicLoad(mComic);
                         mBaseView.onChapterLoad(list);
+                        mBaseView.onDetailLoadSuccess();
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (throwable instanceof Manga.NetworkErrorException) {
+                            mBaseView.onNetworkError();
+                        } else {
+                            mBaseView.onComicLoad(mComic);
+                            mBaseView.onParseError();
+                        }
+                    }
+                }));
     }
 
     public void updateIndex(List<Chapter> list) {
-        Download.update(list, mComic.getSource(), mComic.getCid(), mComic.getTitle(), mComic.getCover())
+        mCompositeSubscription.add(Download.update(list, mComic.getSource(), mComic.getCid(), mComic.getTitle(), mComic.getCover())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
@@ -122,12 +101,12 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     public void call(Throwable throwable) {
                         mBaseView.onUpdateIndexFail();
                     }
-                });
+                }));
     }
 
     public void loadDownload(final String[] array) {
         Long key = mComic.getId() == null ? -1 : mComic.getId();
-        mTaskManager.list(key)
+        mCompositeSubscription.add(mTaskManager.list(key)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
                     @Override
@@ -149,11 +128,11 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     public void call(Throwable throwable) {
                         mBaseView.onDownloadLoadFail();
                     }
-                });
+                }));
     }
 
     public void addTask(final List<Chapter> list) {
-        mComicManager.callInTx(new Callable<ArrayList<Task>>() {
+        mCompositeSubscription.add(mComicManager.callInTx(new Callable<ArrayList<Task>>() {
             @Override
             public ArrayList<Task> call() throws Exception {
                 Long key = mComic.getId();
@@ -187,7 +166,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     public void call(Throwable throwable) {
                         mBaseView.onTaskAddFail();
                     }
-                });
+                }));
     }
 
     public long updateLast(String last) {

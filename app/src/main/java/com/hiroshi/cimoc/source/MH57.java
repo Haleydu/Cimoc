@@ -84,8 +84,11 @@ public class MH57 extends MangaParser {
 
     @Override
     public Request getRecentRequest(int page) {
-        String url = "http://m.57mh.com/latest";
-        return new Request.Builder().url(url).build();
+        if (page == 1) {
+            String url = "http://m.57mh.com/latest";
+            return new Request.Builder().url(url).build();
+        }
+        return null;
     }
 
     @Override

@@ -97,8 +97,11 @@ public class Webtoon extends MangaParser {
 
     @Override
     public Request getRecentRequest(int page) {
-        String url = "http://m.webtoons.com/zh-hans/new";
-        return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
+        if (page == 1) {
+            String url = "http://m.webtoons.com/zh-hans/new";
+            return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
+        }
+        return null;
     }
 
     @Override
@@ -109,7 +112,6 @@ public class Webtoon extends MangaParser {
             String cid = node.attr("href", "=", 1);
             String title = node.text("div.info > p.subj > span");
             String cover = node.attr("div.pic", "style", "\\(|\\)", 1);
-            // boolean status = "完结".equals(node.text("div > i"));
             list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
         }
         return list;

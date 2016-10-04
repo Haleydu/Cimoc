@@ -16,11 +16,8 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
-import com.hiroshi.cimoc.rx.RxBus;
-import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -80,11 +77,15 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     @Override
     protected void onDestroy() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroy();
         if (mConnection != null) {
             unbindService(mConnection);
+            mConnection = null;
+            mBinder = null;
         }
-        mPresenter.detachView();
-        super.onDestroy();
+        mTaskAdapter = null;
     }
 
     @Override

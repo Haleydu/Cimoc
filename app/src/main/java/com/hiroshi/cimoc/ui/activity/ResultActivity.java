@@ -72,12 +72,14 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     protected void onDestroy() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroy();
         if (mProvider != null) {
             mProvider.clear();
             mProvider = null;
         }
-        mPresenter.detachView();
-        super.onDestroy();
+        mResultAdapter = null;
     }
 
     @Override

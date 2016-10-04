@@ -61,6 +61,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         dao.insert(new Source(null, SourceManager.SOURCE_DM5, true));
         dao.insert(new Source(null, SourceManager.SOURCE_WEBTOON, true));
         dao.insert(new Source(null, SourceManager.SOURCE_HHSSEE, true));
+        dao.insert(new Source(null, SourceManager.SOURCE_57MH, true));
     }
 
     private void updateHHAAZZ() {

@@ -52,9 +52,10 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -71,10 +72,16 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     @Override
-    public void onHistoryClear() {
+    public void onHistoryClearSuccess() {
         int count = mComicAdapter.getItemCount();
         mComicAdapter.clear();
         showSnackbar(R.string.history_clear_success, count);
+        mProgressDialog.hide();
+    }
+
+    @Override
+    public void onHistoryClearFail() {
+        showSnackbar(R.string.history_clear_fail);
         mProgressDialog.hide();
     }
 

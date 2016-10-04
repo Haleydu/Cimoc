@@ -48,6 +48,7 @@ public class AboutActivity extends BackActivity implements AboutView {
     @Override
     public void onDestroy() {
         mPresenter.detachView();
+        mPresenter = null;
         super.onDestroy();
     }
 

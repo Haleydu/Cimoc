@@ -11,6 +11,8 @@ public interface HistoryView extends GridView {
 
     void onSourceRemove(int source);
 
-    void onHistoryClear();
+    void onHistoryClearSuccess();
+
+    void onHistoryClearFail();
 
 }

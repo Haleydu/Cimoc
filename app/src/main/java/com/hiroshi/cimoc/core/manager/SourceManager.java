@@ -130,7 +130,7 @@ public class SourceManager {
                 return SOURCE_WEBTOON;
             case "HHSSEE":
                 return SOURCE_HHSSEE;
-            case "57mh":
+            case "57MH":
                 return SOURCE_57MH;
             case "EHentai":
                 return SOURCE_EHENTAI;

@@ -62,16 +62,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     private int size;
 
     public void checkUpdate() {
-        mComicManager.listFavorite()
-                .doOnNext(new Action1<List<Comic>>() {
-                    @Override
-                    public void call(List<Comic> list) {
-                        size = list.size();
-                    }
-                })
+        mCompositeSubscription.add(mComicManager.listFavorite()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
+                        size = list.size();
                         return Manga.check(list);
                     }
                 })
@@ -100,7 +95,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     public void onNext(Comic comic) {
                         mBaseView.onComicUpdate(comic, ++count, size);
                     }
-                });
+                }));
     }
 
     public void updateComic(long fromId, long toId, boolean isBack) {
@@ -112,7 +107,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     }
 
     public void loadComic() {
-        mComicManager.listFavorite()
+        mCompositeSubscription.add(mComicManager.listFavorite()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -137,11 +132,11 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     public void call(Throwable throwable) {
                         mBaseView.onComicLoadFail();
                     }
-                });
+                }));
     }
 
     public void loadFilter() {
-        mSourceManager.list()
+        mCompositeSubscription.add(mSourceManager.list()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Source>>() {
                     @Override
@@ -156,10 +151,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     }
                 }, new Action1<Throwable>() {
                     @Override
-                    public void call(Throwable throwable) {
-
-                    }
-                });
+                    public void call(Throwable throwable) {}
+                }));
     }
 
 }

@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -137,7 +136,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(batteryReceiver,  new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
     @Override
@@ -151,15 +150,15 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void onDestroy() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroy();
         if (mImagePipelineFactory != null) {
             mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
+            mImagePipelineFactory = null;
         }
-        mPresenter.detachView();
-        super.onDestroy();
+        mReaderAdapter = null;
     }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {}
 
     @OnClick(R.id.reader_back_btn) void onBackClick() {
         onBackPressed();

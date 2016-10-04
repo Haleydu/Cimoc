@@ -155,7 +155,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void onDestroy() {
         mPresenter.detachView();
+        mPresenter = null;
         super.onDestroy();
+        mFragmentArray = null;
+        mCurrentFragment = null;
+        mDrawerToggle = null;
     }
 
     @Override

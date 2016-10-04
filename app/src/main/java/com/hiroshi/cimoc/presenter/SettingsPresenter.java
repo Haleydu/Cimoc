@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
@@ -7,19 +8,15 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.utils.FileUtils;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/22.
@@ -32,31 +29,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         mComicManager = ComicManager.getInstance();
     }
 
-    public void clearCache(final File dir) {
-        Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                FileUtils.deleteDir(dir);
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-                        mBaseView.onCacheClearSuccess();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onCacheClearFail();
-                    }
-                });
+    public void clearCache() {
+        Fresco.getImagePipeline().clearDiskCaches();
+        mBaseView.onCacheClearSuccess();
     }
 
     public void backup() {
-        mComicManager.listFavorite()
+        mCompositeSubscription.add(mComicManager.listFavorite()
                 .flatMap(new Func1<List<Comic>, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(List<Comic> list) {
@@ -74,11 +53,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     public void call(Throwable throwable) {
                         mBaseView.onBackupFail();
                     }
-                });
+                }));
     }
 
     public void loadFiles() {
-        Backup.load()
+        mCompositeSubscription.add(Backup.load()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String[]>() {
                     @Override
@@ -90,11 +69,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     public void call(Throwable throwable) {
                         mBaseView.onFilesLoadFail();
                     }
-                });
+                }));
     }
 
     public void restore(String name) {
-        Backup.restore(name)
+        mCompositeSubscription.add(Backup.restore(name)
                 .flatMap(new Func1<List<Comic>, Observable<List<MiniComic>>>() {
                     @Override
                     public Observable<List<MiniComic>> call(final List<Comic> list) {
@@ -134,7 +113,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     public void call(Throwable throwable) {
                         mBaseView.onRestoreFail();
                     }
-                });
+                }));
     }
 
 }

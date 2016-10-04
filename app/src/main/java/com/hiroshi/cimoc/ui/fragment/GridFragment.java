@@ -52,17 +52,13 @@ public abstract class GridFragment extends BaseFragment implements GridView, Bas
         super.onDestroyView();
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
         if (mBuilderProvider != null) {
             mBuilderProvider.clear();
             mBuilderProvider = null;
         }
+        mComicAdapter = null;
     }
 
     @OnClick(R.id.grid_action_button) void onClick() {
@@ -83,7 +79,8 @@ public abstract class GridFragment extends BaseFragment implements GridView, Bas
 
     @Override
     public void onComicLoadFail() {
-
+        showSnackbar(R.string.cimoc_load_fail);
+        onInitSuccess();
     }
 
     protected abstract int getActionRes();

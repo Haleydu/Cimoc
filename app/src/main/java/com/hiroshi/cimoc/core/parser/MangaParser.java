@@ -1,9 +1,5 @@
 package com.hiroshi.cimoc.core.parser;
 
-import com.hiroshi.cimoc.model.Comic;
-
-import java.util.List;
-
 import okhttp3.Request;
 
 /**

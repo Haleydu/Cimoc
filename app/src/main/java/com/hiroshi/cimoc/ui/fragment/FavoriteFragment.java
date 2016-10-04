@@ -114,12 +114,14 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroyView();
         if (mBuilder != null) {
             NotificationUtils.cancelNotification(0, mManager);
+            mBuilder = null;
         }
-        mPresenter.detachView();
-        super.onDestroy();
     }
 
     @Override

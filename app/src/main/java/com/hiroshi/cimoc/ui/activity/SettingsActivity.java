@@ -83,6 +83,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     public void onDestroy() {
         mPresenter.detachView();
+        mPresenter = null;
         super.onDestroy();
     }
 
@@ -235,7 +236,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
         mProgressDialog.show();
-        mPresenter.clearCache(getCacheDir());
+        mPresenter.clearCache();
     }
 
     @Override

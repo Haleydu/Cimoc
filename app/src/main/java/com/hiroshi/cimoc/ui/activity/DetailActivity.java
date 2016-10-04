@@ -70,7 +70,10 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     protected void onDestroy() {
         mPresenter.updateComic();
         mPresenter.detachView();
+        mPresenter = null;
         super.onDestroy();
+        mDetailAdapter = null;
+        mSelectAdapter = null;
     }
 
     @Override

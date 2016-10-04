@@ -28,14 +28,19 @@ public class SourcePresenter extends BasePresenter<SourceView> {
     }
 
     public void load() {
-        mSourceManager.list()
+        mCompositeSubscription.add(mSourceManager.list()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Source>>() {
                     @Override
                     public void call(List<Source> list) {
-                        mBaseView.onSourceLoad(list);
+                        mBaseView.onSourceLoadSuccess(list);
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onSourceLoadFail();
+                    }
+                }));
     }
 
     public void add(int sid) {
@@ -49,16 +54,22 @@ public class SourcePresenter extends BasePresenter<SourceView> {
         mSourceManager.update(source);
     }
 
-    public void delete(final Source source) {
-        mComicManager.listSource(source.getSid())
+    public void delete(final Source source, final int position) {
+        mCompositeSubscription.add(mComicManager.listSource(source.getSid())
                 .observeOn(Schedulers.io())
                 .subscribe(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
                         mSourceManager.delete(source);
                         mComicManager.deleteInTx(list);
+                        mBaseView.onSourceDeleteSuccess(position);
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onSourceDeleteFail();
+                    }
+                }));
         RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, source.getSid()));
     }
 

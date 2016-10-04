@@ -33,12 +33,12 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void load() {
-        mComicManager.loadLast()
+        mCompositeSubscription.add(mComicManager.loadLast()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Comic>() {
                     @Override
                     public void call(Comic comic) {
-                        if (comic.getHistory() != null) {
+                        if (comic != null) {
                             mBaseView.onLastLoadSuccess(comic.getSource(), comic.getCid(), comic.getTitle());
                         }
                     }
@@ -47,8 +47,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                     public void call(Throwable throwable) {
                         mBaseView.onLastLoadFail();
                     }
-                });
-
+                }));
     }
 
 }

@@ -58,7 +58,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     }
 
     public void loadComic() {
-        mComicManager.listDownload()
+        mCompositeSubscription.add(mComicManager.listDownload()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -83,11 +83,11 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     public void call(Throwable throwable) {
                         mBaseView.onComicLoadFail();
                     }
-                });
+                }));
     }
 
     public void loadTask() {
-        mTaskManager.list()
+        mCompositeSubscription.add(mTaskManager.list()
                 .flatMap(new Func1<List<Task>, Observable<Task>>() {
                     @Override
                     public Observable<Task> call(List<Task> list) {
@@ -112,7 +112,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     public void call(Throwable throwable) {
                         mBaseView.onTaskLoadFail();
                     }
-                });
+                }));
     }
 
 }

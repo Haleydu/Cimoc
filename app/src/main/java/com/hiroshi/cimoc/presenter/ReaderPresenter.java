@@ -16,10 +16,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import rx.Observable;
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/8.
@@ -49,8 +47,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        Manga.load(mComic.getSource(), imageUrl.getUrl())
-                .subscribeOn(Schedulers.io())
+        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -64,11 +61,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        if (mBaseView != null) {
-                            mBaseView.onImageLoadFail(imageUrl.getId());
-                        }
+                        mBaseView.onImageLoadFail(imageUrl.getId());
                     }
-                });
+                }));
     }
 
     public void loadInit(long id, Chapter[] array) {
@@ -140,7 +135,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void savePicture(InputStream inputStream, String suffix) {
-        Picture.save(inputStream, suffix)
+        mCompositeSubscription.add(Picture.save(inputStream, suffix)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
@@ -152,7 +147,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                     public void call(Throwable throwable) {
                         mBaseView.onPictureSaveFail();
                     }
-                });
+                }));
     }
 
     public void updateComic(int page) {
@@ -164,30 +159,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private void images(Observable<List<ImageUrl>> observable) {
-        observable
+        mCompositeSubscription.add(observable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<ImageUrl>>() {
+                .subscribe(new Action1<List<ImageUrl>>() {
                     @Override
-                    public void onCompleted() {
-                        status = LOAD_NULL;
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (mBaseView != null) {
-                            if (e instanceof Manga.NetworkErrorException) {
-                                mBaseView.onNetworkError();
-                            } else {
-                                mBaseView.onParseError();
-                            }
-                            if (status != LOAD_INIT && ++count < 2) {
-                                status = LOAD_NULL;
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onNext(List<ImageUrl> list) {
+                    public void call(List<ImageUrl> list) {
                         Chapter chapter;
                         switch (status) {
                             case LOAD_INIT:
@@ -207,8 +183,21 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                                 mBaseView.onNextLoadSuccess(list);
                                 break;
                         }
+                        status = LOAD_NULL;
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (throwable instanceof Manga.NetworkErrorException) {
+                            mBaseView.onNetworkError();
+                        } else {
+                            mBaseView.onParseError();
+                        }
+                        if (status != LOAD_INIT && ++count < 2) {
+                            status = LOAD_NULL;
+                        }
+                    }
+                }));
     }
 
 }

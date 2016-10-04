@@ -34,7 +34,6 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         mComicManager = ComicManager.getInstance();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.TASK_STATE_CHANGE, new Action1<RxEvent>() {
@@ -100,19 +99,8 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     }
 
     public void load(final long key) {
-        mComicManager.loadInRx(key)
-                .doOnNext(new Action1<Comic>() {
-                    @Override
-                    public void call(Comic comic) {
-                        mComic = comic;
-                    }
-                })
-                .flatMap(new Func1<Comic, Observable<List<Task>>>() {
-                    @Override
-                    public Observable<List<Task>> call(Comic comic) {
-                        return mTaskManager.list(key);
-                    }
-                })
+        mComic = mComicManager.load(key);
+        mCompositeSubscription.add(mTaskManager.list(key)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Task>>() {
                     @Override
@@ -129,11 +117,11 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     public void call(Throwable throwable) {
                         mBaseView.onTaskLoadFail();
                     }
-                });
+                }));
     }
 
     public void sortTask(final List<Task> list) {
-        Download.get(mComic.getSource(), mComic.getTitle())
+        mCompositeSubscription.add(Download.get(mComic.getSource(), mComic.getTitle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<String>>() {
                     @Override
@@ -151,11 +139,11 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     public void call(Throwable throwable) {
                         mBaseView.onLoadIndexFail();
                     }
-                });
+                }));
     }
 
     public void deleteTask(final Task task, final boolean isEmpty) {
-        Download.delete(mComic.getSource(), mComic.getTitle(), task.getTitle())
+        mCompositeSubscription.add(Download.delete(mComic.getSource(), mComic.getTitle(), task.getTitle())
                 .flatMap(new Func1<Object, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(Object o) {
@@ -187,11 +175,11 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     public void call(Throwable throwable) {
                         mBaseView.onTaskDeleteFail();
                     }
-                });
+                }));
     }
 
     public void deleteTask(final Collection<Task> collection, final boolean isEmpty) {
-        Observable.from(collection)
+        mCompositeSubscription.add(Observable.from(collection)
                 .map(new Func1<Task, String>() {
                     @Override
                     public String call(Task task) {
@@ -238,7 +226,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     public void call(Throwable throwable) {
                         mBaseView.onTaskDeleteFail();
                     }
-                });
+                }));
     }
 
     public long updateLast(String last) {

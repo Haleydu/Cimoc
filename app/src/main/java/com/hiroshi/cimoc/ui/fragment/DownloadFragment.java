@@ -50,9 +50,10 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         mPresenter.detachView();
-        super.onDestroy();
+        mPresenter = null;
+        super.onDestroyView();
     }
 
     @Override

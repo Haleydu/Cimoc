@@ -42,7 +42,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
     }
 
     public void loadComic() {
-        mComicManager.listHistory()
+        mCompositeSubscription.add(mComicManager.listHistory()
                 .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
                     @Override
                     public Observable<Comic> call(List<Comic> list) {
@@ -62,7 +62,12 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                     public void call(List<MiniComic> list) {
                         mBaseView.onComicLoadSuccess(list);
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadFail();
+                    }
+                }));
     }
 
     public void deleteHistory(MiniComic history) {
@@ -76,7 +81,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
     }
 
     public void clearHistory() {
-        mComicManager.listHistory()
+        mCompositeSubscription.add(mComicManager.listHistory()
                 .flatMap(new Func1<List<Comic>, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(final List<Comic> list) {
@@ -100,9 +105,14 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        mBaseView.onHistoryClear();
+                        mBaseView.onHistoryClearSuccess();
                     }
-                });
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onHistoryClearFail();
+                    }
+                }));
     }
 
 }

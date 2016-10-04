@@ -8,6 +8,7 @@ import java.util.List;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**
@@ -38,26 +39,22 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private void recent() {
         if (state[0] == SEARCH_NULL) {
             state[0] = SEARCH_DOING;
-            Manga.recent(list.get(0), ++page[0])
+            mCompositeSubscription.add(Manga.recent(list.get(0), ++page[0])
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<List<Comic>>() {
+                    .subscribe(new Action1<List<Comic>>() {
                         @Override
-                        public void onCompleted() {
+                        public void call(List<Comic> list) {
+                            mBaseView.onRecentLoadSuccess(list);
                             state[0] = SEARCH_NULL;
                         }
-
+                    }, new Action1<Throwable>() {
                         @Override
-                        public void onError(Throwable e) {
-                            if (page[0] == 1 && mBaseView != null) {
+                        public void call(Throwable throwable) {
+                            if (page[0] == 1) {
                                 mBaseView.onRecentLoadFail();
                             }
                         }
-
-                        @Override
-                        public void onNext(List<Comic> list) {
-                            mBaseView.onRecentLoadSuccess(list);
-                        }
-                    });
+                    }));
         }
     }
 
@@ -66,7 +63,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
             final int pos = i;
             if (state[pos] == SEARCH_NULL) {
                 state[pos] = SEARCH_DOING;
-                Manga.search(list.get(i), keyword, ++page[pos])
+                mCompositeSubscription.add(Manga.search(list.get(i), keyword, ++page[pos])
                         .filter(new Func1<Comic, Boolean>() {
                             @Override
                             public Boolean call(Comic comic) {
@@ -85,12 +82,12 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                                 if (page[pos] == 1) {
                                     if (e instanceof Manga.EmptyResultException) {
                                         state[pos] = SEARCH_EMPTY;
-                                        if (++emptyNum == state.length && mBaseView != null) {
+                                        if (++emptyNum == state.length) {
                                             mBaseView.onResultEmpty();
                                         }
-                                    } else if (e instanceof Manga.NetworkErrorException || e instanceof Manga.ParseErrorException) {
+                                    } else {
                                         state[pos] = SEARCH_ERROR;
-                                        if (++errorNum == state.length && mBaseView != null) {
+                                        if (++errorNum == state.length) {
                                             mBaseView.onSearchError();
                                         }
                                     }
@@ -101,7 +98,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                             public void onNext(Comic comic) {
                                 mBaseView.onSearchSuccess(comic);
                             }
-                        });
+                        }));
             }
         }
     }
