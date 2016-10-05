@@ -59,7 +59,7 @@ public class U17 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.comic_info > div.left > h1.fl").trim();
         String cover = body.attr("#cover > a > img", "src");
@@ -68,6 +68,8 @@ public class U17 extends MangaParser {
         boolean status = "已完结".equals(body.text("div.main > div.info > div.fl > span.eq(2)"));
         String update = body.text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
         comic.setInfo(title, cover, update, intro, author, status);
+
+        return null;
     }
 
     @Override

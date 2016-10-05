@@ -32,6 +32,7 @@
     <string name="detail_error">解析错误或此漫画已被屏蔽</string>
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
+    <string name="detail_label">标签</string>
     <string name="detail_download">下载</string>
     <string name="detail_download_load_fail">读取下载列表失败</string>
     <string name="detail_download_all">下载全部</string>
@@ -108,7 +109,7 @@
     <string name="settings_select_file">文件选择</string>
     <string name="settings_select_trigger">百分比选择</string>
 
-    <string name="about_version">version: 1.4.2.1</string>
+    <string name="about_version">version: 1.4.2.2</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

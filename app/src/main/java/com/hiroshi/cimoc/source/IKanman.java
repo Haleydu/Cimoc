@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
@@ -54,7 +56,7 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
@@ -63,6 +65,8 @@ public class IKanman extends MangaParser {
         String intro = body.text("#bookIntro");
         boolean status = "完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
+
+        return comic.getCid();
     }
 
     @Override
@@ -75,10 +79,19 @@ public class IKanman extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("div.chapter-list > ul > li > a")) {
-            String title = node.attr("title");
-            String path = node.attr("href", "/|\\.", 3);
-            list.add(new Chapter(title, path));
+        List<Node> nodeList = body.list("div.chapter-list");
+        for (Node node : nodeList) {
+            List<Chapter> ulList = new LinkedList<>();
+            for (Node ul : node.list("ul")) {
+                List<Chapter> liList = new LinkedList<>();
+                for (Node li : ul.list("li > a")) {
+                    String title = li.attr("title");
+                    String path = li.attr("href", "/|\\.", 3);
+                    liList.add(new Chapter(title, path));
+                }
+                ulList.addAll(0, liList);
+            }
+            list.addAll(ulList);
         }
         return list;
     }

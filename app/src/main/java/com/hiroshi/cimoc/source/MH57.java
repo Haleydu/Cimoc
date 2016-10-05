@@ -62,7 +62,7 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
@@ -71,6 +71,8 @@ public class MH57 extends MangaParser {
         String intro = body.text("#bookIntro");
         boolean status = "已完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
+
+        return null;
     }
 
     @Override
@@ -126,7 +128,7 @@ public class MH57 extends MangaParser {
                 JSONArray array = new JSONArray(jsonString);
                 int size = array.length();
                 for (int i = 0; i != size; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://play.333dm.com/get.php?url=".concat(array.getString(i)), true));
+                    list.add(new ImageUrl(i + 1, "http://cartoon.akshk.com".concat(array.getString(i)), true));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -137,7 +139,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Request getLazyRequest(String url) {
-        return new Request.Builder().url(url).build();
+        return new Request.Builder().head().url(url).build();
     }
 
     @Override

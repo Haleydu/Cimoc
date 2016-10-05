@@ -55,7 +55,7 @@ public class EHentai extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
         String title = body.text("#gn");
@@ -63,6 +63,8 @@ public class EHentai extends MangaParser {
         String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
         String cover = body.attr("#gd1 > img", "src");
         comic.setInfo(title, cover, update, intro, author, true);
+
+        return null;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#about_kit > ul > li:eq(0) > h1").trim();
         String cover = body.attr("#about_style > img", "src");
@@ -63,6 +63,8 @@ public class HHSSEE extends MangaParser {
         String intro = body.text("#about_kit > ul > li:eq(7)", 3);
         boolean status = body.text("#about_kit > ul > li:eq(2)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
+
+        return null;
     }
 
     @Override

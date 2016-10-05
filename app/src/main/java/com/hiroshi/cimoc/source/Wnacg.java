@@ -51,13 +51,15 @@ public class Wnacg extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#bodywrap > h2");
         String intro = body.text("#bodywrap > div > div.uwconn > p", 3);
         String author = body.text("#bodywrap > div > div.uwuinfo > p");
         String cover = body.attr("#bodywrap > div > div.uwthumb > img", "data-original");
         comic.setInfo(title, cover, null, intro, author, true);
+
+        return null;
     }
 
     @Override

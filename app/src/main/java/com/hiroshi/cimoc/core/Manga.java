@@ -63,9 +63,9 @@ public class Manga {
                 try {
                     Request request = parser.getInfoRequest(comic.getCid());
                     String html = getResponseBody(mClient, request);
-                    parser.parseInfo(html, comic);
-                    request = parser.getChapterRequest(comic.getCid());
-                    if (request != null) {
+                    String msg = parser.parseInfo(html, comic);
+                    if (msg != null) {
+                        request = parser.getChapterRequest(msg);
                         html = getResponseBody(mClient, request);
                     }
                     List<Chapter> list = parser.parseChapter(html);
@@ -217,6 +217,9 @@ public class Manga {
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
+                if (request.method().equals("HEAD")) {
+                    return String.valueOf(response.code());
+                }
                 return response.body().string();
             } else {
                 throw new EmptyResultException();

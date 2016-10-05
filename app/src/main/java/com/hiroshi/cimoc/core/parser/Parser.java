@@ -19,7 +19,7 @@ public interface Parser {
 
     Request getInfoRequest(String cid);
 
-    void parseInfo(String html, Comic comic);
+    String parseInfo(String html, Comic comic);
 
     Request getChapterRequest(String cid);
 

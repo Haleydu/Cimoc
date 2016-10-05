@@ -55,7 +55,7 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main > div > div.pic > div.con > h3");
         String cover = body.attr("div.main > div > div.pic > img", "src");
@@ -64,6 +64,8 @@ public class HHAAZZ extends MangaParser {
         String intro = body.text("#detail_block > div > p");
         boolean status = body.text("div.main > div > div.pic > div.con > p:eq(4)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
+
+        return null;
     }
 
     @Override

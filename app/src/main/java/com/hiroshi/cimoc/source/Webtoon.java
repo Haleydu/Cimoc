@@ -73,7 +73,7 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
         String cover = body.attr("#_episodeList > li > a > div.row > div.pic > img", "src");
@@ -84,6 +84,8 @@ public class Webtoon extends MangaParser {
         String intro = body.text("#_informationLayer > p.summary_area");
         boolean status = body.text("#_informationLayer > div.info_update").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
+
+        return null;
     }
 
     @Override

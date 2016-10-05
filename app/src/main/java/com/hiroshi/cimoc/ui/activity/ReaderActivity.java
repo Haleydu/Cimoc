@@ -58,6 +58,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @BindView(R.id.reader_back_layout) View mBackLayout;
     @BindView(R.id.reader_info_layout) View mInfoLayout;
     @BindView(R.id.reader_seek_bar) ReverseSeekBar mSeekBar;
+    @BindView(R.id.reader_loading) TextView mLoadingText;
 
     @BindView(R.id.reader_recycler_view) RecyclerView mRecyclerView;
 
@@ -103,9 +104,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     private void initReaderAdapter() {
-        List<ImageUrl> list = new LinkedList<>();
-        list.add(new ImageUrl(0, null, true));
-        mReaderAdapter = new ReaderAdapter(this, list);
+        mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
         mReaderAdapter.setSingleTapListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_PICTURE, false)) {
@@ -118,7 +117,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private void initLayoutManager() {
         mLayoutManager = new PreCacheLayoutManager(this);
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
-        mLayoutManager.setExtraSpace(3);
+        mLayoutManager.setExtraSpace(2);
         mLayoutManager.setReverseLayout(reverse);
     }
 
@@ -253,10 +252,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source) {
         mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
         mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
-        mReaderAdapter.setData(list);
+        mReaderAdapter.addAll(list);
         if (progress != 1) {
             mRecyclerView.scrollToPosition(progress - 1);
         }
+        mLoadingText.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
         updateProgress();
     }
 
