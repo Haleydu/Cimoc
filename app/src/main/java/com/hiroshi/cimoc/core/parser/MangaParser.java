@@ -8,6 +8,11 @@ import okhttp3.Request;
 public abstract class MangaParser implements Parser {
 
     @Override
+    public Request getChapterRequest(String cid) {
+        return null;
+    }
+
+    @Override
     public Request getLazyRequest(String url) {
         return null;
     }

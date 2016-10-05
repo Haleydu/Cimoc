@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.NHentai;
+import com.hiroshi.cimoc.source.Pic177;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 import com.hiroshi.cimoc.source.Wnacg;
@@ -44,6 +45,7 @@ public class SourceManager {
     public static final int SOURCE_EXHENTAI = 101;
     public static final int SOURCE_NHENTAI = 102;
     public static final int SOURCE_WNACG = 103;
+    public static final int SOURCE_177PIC = 104;
 
     private static SourceManager mSourceManager;
 
@@ -108,6 +110,8 @@ public class SourceManager {
                 return "NHentai";
             case SOURCE_WNACG:
                 return "绅士漫画";
+            case SOURCE_177PIC:
+                return "177漫画";
         }
         return "null";
     }
@@ -140,6 +144,8 @@ public class SourceManager {
                 return SOURCE_NHENTAI;
             case "Wnacg":
                 return SOURCE_WNACG;
+            case "177Pic":
+                return SOURCE_177PIC;
         }
         return -1;
     }
@@ -188,6 +194,9 @@ public class SourceManager {
                     break;
                 case SOURCE_WNACG:
                     parser = new Wnacg();
+                    break;
+                case SOURCE_177PIC:
+                    parser = new Pic177();
                     break;
             }
             sparseArray.put(source, parser);

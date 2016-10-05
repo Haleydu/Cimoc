@@ -54,15 +54,8 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        for (Node node : body.list("#chapterList > ul > li > a")) {
-            String c_title = node.text("b");
-            String c_path = node.attr("href", "/|\\.", 3);
-            list.add(new Chapter(c_title, c_path));
-        }
-
         String title = body.text("div.main-bar > h1");
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
@@ -70,7 +63,23 @@ public class IKanman extends MangaParser {
         String intro = body.text("#bookIntro");
         boolean status = "完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
+    }
 
+    @Override
+    public Request getChapterRequest(String cid) {
+        String url = "http://m.ikanman.com/support/chapters.aspx?id=".concat(cid);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("div.chapter-list > ul > li > a")) {
+            String title = node.attr("title");
+            String path = node.attr("href", "/|\\.", 3);
+            list.add(new Chapter(title, path));
+        }
         return list;
     }
 

@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private int mCheckItem;
     private SparseArray<BaseFragment> mFragmentArray;
     private BaseFragment mCurrentFragment;
+    private boolean night;
 
     @Override
     protected void initPresenter() {
@@ -85,7 +86,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initNavigation() {
-        boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+        night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
@@ -200,9 +201,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.drawer_night:
-                    boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
-                    CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, !night);
-                    mNightMask.setVisibility(night ? View.INVISIBLE : View.VISIBLE);
+                    night = !night;
+                    CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, night);
+                    mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
+                    mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
                     break;
                 case R.id.drawer_settings:
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));

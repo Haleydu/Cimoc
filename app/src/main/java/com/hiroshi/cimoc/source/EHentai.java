@@ -55,7 +55,18 @@ public class EHentai extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
+        Node body = new Node(html);
+        String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
+        String title = body.text("#gn");
+        String intro = body.text("#gj");
+        String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
+        String cover = body.attr("#gd1 > img", "src");
+        comic.setInfo(title, cover, update, intro, author, true);
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
@@ -63,14 +74,6 @@ public class EHentai extends MangaParser {
         for (int i = 0; i != size; ++i) {
             list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
         }
-
-        String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
-        String title = body.text("#gn");
-        String intro = body.text("#gj");
-        String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
-        String cover = body.attr("#gd1 > img", "src");
-        comic.setInfo(title, cover, update, intro, author, true);
-
         return list;
     }
 

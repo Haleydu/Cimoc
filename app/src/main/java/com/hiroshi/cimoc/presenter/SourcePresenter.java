@@ -12,7 +12,6 @@ import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/8/11.
@@ -56,12 +55,18 @@ public class SourcePresenter extends BasePresenter<SourceView> {
 
     public void delete(final Source source, final int position) {
         mCompositeSubscription.add(mComicManager.listSource(source.getSid())
-                .observeOn(Schedulers.io())
-                .subscribe(new Action1<List<Comic>>() {
+                .doOnNext(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
                         mSourceManager.delete(source);
                         mComicManager.deleteInTx(list);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Comic>>() {
+                    @Override
+                    public void call(List<Comic> list) {
+                        RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, source.getSid()));
                         mBaseView.onSourceDeleteSuccess(position);
                     }
                 }, new Action1<Throwable>() {
@@ -70,7 +75,6 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                         mBaseView.onSourceDeleteFail();
                     }
                 }));
-        RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, source.getSid()));
     }
 
 }

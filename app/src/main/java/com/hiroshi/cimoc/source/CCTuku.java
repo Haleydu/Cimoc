@@ -54,15 +54,8 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        for (Node node : body.list("ul.list-body > li > a")) {
-            String c_title = node.text();
-            String c_path = node.attr("href", "/", 3);
-            list.add(new Chapter(c_title, c_path));
-        }
-
         String title = body.text("div.title-banner > div.book-title > h1", 0, -3);
         String cover = body.attr("div.book > div > div.row > div:eq(0) > a > img", "src");
         String update = body.text("div.book > div > div.row > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
@@ -70,7 +63,17 @@ public class CCTuku extends MangaParser {
         String intro = body.text("div.book-details > p:eq(1)");
         boolean status = "完结".equals(body.text("div.book > div > div.row > div:eq(0) > div"));
         comic.setInfo(title, cover, update, intro, author, status);
+    }
 
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("ul.list-body > li > a")) {
+            String title = node.text();
+            String path = node.attr("href", "/", 3);
+            list.add(new Chapter(title, path));
+        }
         return list;
     }
 

@@ -59,15 +59,8 @@ public class U17 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        for (Node node : body.list("#chapter > li > a")) {
-            String c_title = node.text().trim();
-            String c_path = node.attr("href", "/|\\.", 6);
-            list.add(0, new Chapter(c_title, c_path));
-        }
-
         String title = body.text("div.comic_info > div.left > h1.fl").trim();
         String cover = body.attr("#cover > a > img", "src");
         String author = body.text("div.comic_info > div.right > div.author_info > div.info > a.name");
@@ -75,6 +68,17 @@ public class U17 extends MangaParser {
         boolean status = "已完结".equals(body.text("div.main > div.info > div.fl > span.eq(2)"));
         String update = body.text("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
         comic.setInfo(title, cover, update, intro, author, status);
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#chapter > li > a")) {
+            String title = node.text().trim();
+            String path = node.attr("href", "/|\\.", 6);
+            list.add(0, new Chapter(title, path));
+        }
         return list;
     }
 

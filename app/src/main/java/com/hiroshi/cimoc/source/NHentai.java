@@ -49,17 +49,19 @@ public class NHentai extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        list.add(new Chapter("全一话", ""));
-
         String title = body.text("#info > h1");
         String intro = body.text("#info > h2");
         String author = body.text("#tags > div > span > a[href^=/artist/]");
-        String cover = "https:" + body.attr("#cover > a > img", "src");
+        String cover = "https:".concat(body.attr("#cover > a > img", "src"));
         comic.setInfo(title, cover, null, intro, author, true);
+    }
 
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        list.add(new Chapter("全一话", ""));
         return list;
     }
 

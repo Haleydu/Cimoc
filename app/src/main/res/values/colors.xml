@@ -23,10 +23,9 @@
     <color name="colorPrimaryBlack">#FF212121</color>
 
     <color name="transparent">#00000000</color>
-    <color name="transparent_mask">#40000000</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="trans_black">#90000000</color>
+    <color name="trans_black">#A0000000</color>
     <color name="trans_light_black">#4F000000</color>
 </resources>

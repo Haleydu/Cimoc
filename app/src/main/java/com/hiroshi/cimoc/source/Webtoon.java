@@ -73,15 +73,8 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        for (Node node : body.list("#_episodeList > li > a")) {
-            String c_title = node.text("div.row > div.info > p.sub_title > span");
-            String c_path = node.attr("href").substring(30);
-            list.add(new Chapter(c_title, c_path));
-        }
-
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
         String cover = body.attr("#_episodeList > li > a > div.row > div.pic > img", "src");
         String[] args = body.text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
@@ -91,7 +84,17 @@ public class Webtoon extends MangaParser {
         String intro = body.text("#_informationLayer > p.summary_area");
         boolean status = body.text("#_informationLayer > div.info_update").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
+    }
 
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#_episodeList > li > a")) {
+            String title = node.text("div.row > div.info > p.sub_title > span");
+            String path = node.attr("href").substring(30);
+            list.add(new Chapter(title, path));
+        }
         return list;
     }
 

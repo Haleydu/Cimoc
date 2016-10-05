@@ -108,7 +108,7 @@
     <string name="settings_select_file">文件选择</string>
     <string name="settings_select_trigger">百分比选择</string>
 
-    <string name="about_version">version: 1.4.2</string>
+    <string name="about_version">version: 1.4.2.1</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

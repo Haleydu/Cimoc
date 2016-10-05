@@ -62,15 +62,8 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        for (Node node : body.list("#chapterList > ul > li > a")) {
-            String c_title = node.text();
-            String c_path = node.attr("href", "/|\\.", 2);
-            list.add(new Chapter(c_title, c_path));
-        }
-
         String title = body.text("div.main-bar > h1");
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(7) > dd");
@@ -78,7 +71,17 @@ public class MH57 extends MangaParser {
         String intro = body.text("#bookIntro");
         boolean status = "已完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
+    }
 
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#chapterList > ul > li > a")) {
+            String title = node.text();
+            String path = node.attr("href", "/|\\.", 2);
+            list.add(new Chapter(title, path));
+        }
         return list;
     }
 

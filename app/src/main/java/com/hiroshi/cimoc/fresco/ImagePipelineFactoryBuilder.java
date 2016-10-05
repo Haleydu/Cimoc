@@ -53,6 +53,8 @@ public class ImagePipelineFactoryBuilder {
                 return Headers.of("Referer", "https://nhentai.net");
             case SourceManager.SOURCE_WNACG:
                 return Headers.of("Referer", "https://www.wnacg.com");
+            case SourceManager.SOURCE_177PIC:
+                return Headers.of("Referer", "http://www.177pic66.com");
         }
         return Headers.of();
     }

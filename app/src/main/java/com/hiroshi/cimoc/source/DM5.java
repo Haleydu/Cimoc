@@ -75,27 +75,8 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        Set<Chapter> set = new LinkedHashSet<>();
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        int count = 0;
-        for (Node node : body.list("ul[id^=cbc_] > li > a")) {
-            String c_title = node.text();
-            try {
-                String c_path = node.attr("href", "/", 1);
-                if (count % 4 == 0) {
-                    String[] array = c_title.split(" ", 2);
-                    if (array.length == 2) {
-                        c_title = array[1];
-                    }
-                }
-                set.add(new Chapter(c_title, c_path));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            ++count;
-        }
-
         String title = body.text("#mhinfo > div.inbt > h1.new_h2");
         String cover = body.attr("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img", "src");
         String update = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
@@ -103,7 +84,29 @@ public class DM5 extends MangaParser {
         String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p").replace("[+展开]", "").replace("[-折叠]", "");
         boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
         comic.setInfo(title, cover, update, intro, author, status);
+    }
 
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        Set<Chapter> set = new LinkedHashSet<>();
+        Node body = new Node(html);
+        int count = 0;
+        for (Node node : body.list("ul[id^=cbc_] > li > a")) {
+            String title = node.text();
+            try {
+                String path = node.attr("href", "/", 1);
+                if (count % 4 == 0) {
+                    String[] array = title.split(" ", 2);
+                    if (array.length == 2) {
+                        title = array[1];
+                    }
+                }
+                set.add(new Chapter(title, path));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            ++count;
+        }
         return new LinkedList<>(set);
     }
 
