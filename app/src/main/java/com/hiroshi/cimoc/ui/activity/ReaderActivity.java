@@ -4,10 +4,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -27,9 +31,11 @@ import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
 import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
+import com.hiroshi.cimoc.utils.EventUtils;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -69,10 +75,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected ReaderPresenter mPresenter;
     protected int progress = 1;
     protected int max = 1;
-    protected boolean reverse = false;
     protected int turn;
+    protected boolean isPortrait;
 
     private boolean hide;
+    private int[] mClickArray;
+    private int[] mLongClickArray;
 
     @Override
     protected void initTheme() {
@@ -81,6 +89,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+        isPortrait = CimocApplication.getPreferences()
+                .getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT)
+                == PreferenceManager.READER_ORIENTATION_PORTRAIT;
+        int value = isPortrait ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        setRequestedOrientation(value);
     }
 
     @Override
@@ -93,8 +106,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mInfoLayout.setVisibility(View.INVISIBLE);
         }
         turn = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
-        reverse = turn == PreferenceManager.READER_TURN_RTL;
-        mSeekBar.setReverse(reverse);
+        mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
         mSeekBar.setOnProgressChangeListener(this);
         initLayoutManager();
         initReaderAdapter();
@@ -106,10 +118,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private void initReaderAdapter() {
         mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
         mReaderAdapter.setSingleTapListener(this);
+        mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
-        if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_PICTURE, false)) {
-            mReaderAdapter.setLongPressListener(this);
-        }
         mReaderAdapter.setFitMode(turn == PreferenceManager.READER_TURN_ATB ? ReaderAdapter.FIT_WIDTH : ReaderAdapter.FIT_HEIGHT);
         mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_SPLIT, false));
     }
@@ -117,12 +127,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private void initLayoutManager() {
         mLayoutManager = new PreCacheLayoutManager(this);
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
+        mLayoutManager.setReverseLayout(turn == PreferenceManager.READER_TURN_RTL);
         mLayoutManager.setExtraSpace(2);
-        mLayoutManager.setReverseLayout(reverse);
     }
 
     @Override
     protected void initData(Bundle savedInstanceState) {
+        mClickArray = EventUtils.getClickEventChoice(CimocApplication.getPreferences());
+        mLongClickArray = EventUtils.getLongClickEventChoice(CimocApplication.getPreferences());
         Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
         Chapter[] chapter = new Chapter[array.length];
         for (int i = 0; i != array.length; ++i) {
@@ -195,29 +207,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     };
 
-    protected void hideToolLayout() {
+    protected void hideControl() {
         if (mProgressLayout.isShown()) {
             mProgressLayout.setVisibility(View.INVISIBLE);
             mBackLayout.setVisibility(View.INVISIBLE);
             if (hide) {
                 mInfoLayout.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
-
-    protected void switchToolLayout() {
-        if (mProgressLayout.isShown()) {
-            hideToolLayout();
-        } else {
-            if (mSeekBar.getMax() != max) {
-                mSeekBar.setMax(max);
-                mSeekBar.setProgress(max);
-            }
-            mSeekBar.setProgress(progress);
-            mProgressLayout.setVisibility(View.VISIBLE);
-            mBackLayout.setVisibility(View.VISIBLE);
-            if (hide) {
-                mInfoLayout.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -307,8 +302,103 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         HintUtils.showToast(this, R.string.reader_next_none);
     }
 
-    protected void savePicture(int position) {
-        String url = mReaderAdapter.getItem(position).getUrl();
+    /**
+     *  Click Event Function
+     */
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mReaderAdapter.getItemCount() != 0) {
+            int value = EventUtils.EVENT_NULL;
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_VOLUME_UP:
+                    value = mClickArray[5];
+                    break;
+                case KeyEvent.KEYCODE_VOLUME_DOWN:
+                    value = mClickArray[6];
+                    break;
+            }
+            if (value != EventUtils.EVENT_NULL) {
+                doClickEvent(value);
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onSingleTap(PhotoDraweeView draweeView, float x, float y) {
+        doClickEvent(getValue(draweeView, x, y, false));
+    }
+
+    @Override
+    public void onLongPress(PhotoDraweeView draweeView, float x, float y) {
+        doClickEvent(getValue(draweeView, x, y, true));
+    }
+
+    private int getValue(PhotoDraweeView draweeView, float x, float y, boolean isLong) {
+        Point point = new Point();
+        getWindowManager().getDefaultDisplay().getSize(point);
+        float limitX = point.x / 3.0f;
+        float limitY = point.y / 3.0f;
+        if (x < limitX) {
+            return isLong ? mLongClickArray[0] : mClickArray[0];
+        } else if (x > 2 * limitX) {
+            return isLong ? mLongClickArray[4] : mClickArray[4];
+        } else if (y < limitY) {
+            return isLong ? mLongClickArray[1] : mClickArray[1];
+        } else if (y > 2 * limitY) {
+            return isLong ? mLongClickArray[3] : mClickArray[3];
+        } else if (!draweeView.retry()) {
+            return isLong ? mLongClickArray[2] : mClickArray[2];
+        }
+        return 0;
+    }
+
+    private void doClickEvent(int value) {
+        switch (value) {
+            case EventUtils.EVENT_PREV_PAGE:
+                prevPage();
+                break;
+            case EventUtils.EVENT_NEXT_PAGE:
+                nextPage();
+                break;
+            case EventUtils.EVENT_SAVE_PICTURE:
+                savePicture();
+                break;
+            case EventUtils.EVENT_LOAD_PREV:
+                loadPrev();
+                break;
+            case EventUtils.EVENT_LOAD_NEXT:
+                loadNext();
+                break;
+            case EventUtils.EVENT_EXIT_READER:
+                exitReader();
+                break;
+            case EventUtils.EVENT_TO_FIRST:
+                toFirst();
+                break;
+            case EventUtils.EVENT_TO_LAST:
+                toLast();
+                break;
+            case EventUtils.EVENT_SWITCH_SCREEN:
+                switchScreen();
+                break;
+            case EventUtils.EVENT_SWITCH_MODE:
+                switchMode();
+                break;
+            case EventUtils.EVENT_SWITCH_CONTROL:
+                switchControl();
+                break;
+        }
+    }
+
+    protected abstract void prevPage();
+
+    protected abstract void nextPage();
+
+    protected void savePicture() {
+        String url = mReaderAdapter.getItem(mLayoutManager.findFirstVisibleItemPosition()).getUrl();
         try {
             String suffix = StringUtils.getSplit(url, "\\.", -1);
             if (url.startsWith("file")) {
@@ -326,33 +416,80 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     }
 
+    protected void loadPrev() {
+        mPresenter.loadPrev();
+    }
+
+    protected void loadNext() {
+        mPresenter.loadNext();
+    }
+
+    protected void exitReader() {
+        finish();
+    }
+
+    protected void toFirst() {
+        mRecyclerView.scrollToPosition(0);
+    }
+
+    protected void toLast() {
+        mRecyclerView.scrollToPosition(mReaderAdapter.getItemCount() - 1);
+    }
+
+    protected void switchScreen() {
+        isPortrait = !isPortrait;
+        int value = isPortrait ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        setRequestedOrientation(value);
+    }
+
+    protected void switchMode() {
+        Intent intent = getIntent();
+        boolean page = intent.getBooleanExtra(EXTRA_PAGE, true);
+        if (page) {
+            intent.setClass(this, StreamReaderActivity.class);
+        } else {
+            intent.setClass(this, PageReaderActivity.class);
+        }
+        intent.putExtra(EXTRA_PAGE, !page);
+        finish();
+        startActivity(intent);
+    }
+
+    protected void switchControl() {
+        if (mProgressLayout.isShown()) {
+            hideControl();
+        } else {
+            if (mSeekBar.getMax() != max) {
+                mSeekBar.setMax(max);
+                mSeekBar.setProgress(max);
+            }
+            mSeekBar.setProgress(progress);
+            mProgressLayout.setVisibility(View.VISIBLE);
+            mBackLayout.setVisibility(View.VISIBLE);
+            if (hide) {
+                mInfoLayout.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
     private static final String EXTRA_ID = "a";
     private static final String EXTRA_CHAPTER = "b";
+    private static final String EXTRA_PAGE = "c";
 
     public static Intent createIntent(Context context, long id, List<Chapter> list) {
-        Intent intent = getIntent(context);
+        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+        Intent intent = getIntent(context, mode);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
+        intent.putExtra(EXTRA_PAGE, mode == PreferenceManager.READER_MODE_PAGE);
         return intent;
     }
 
-    private static Intent getIntent(Context context) {
-        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-        int orientation = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
-        switch (mode) {
-            default:
-            case PreferenceManager.READER_MODE_PAGE:
-                if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
-                    return new Intent(context, PageReaderActivity.class);
-                } else {
-                    return new Intent(context, LandscapePageReaderActivity.class);
-                }
-            case PreferenceManager.READER_MODE_STREAM:
-                if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
-                    return new Intent(context, StreamReaderActivity.class);
-                } else {
-                    return new Intent(context, LandscapeStreamReaderActivity.class);
-                }
+    private static Intent getIntent(Context context, int mode) {
+        if (mode == PreferenceManager.READER_MODE_PAGE) {
+            return new Intent(context, PageReaderActivity.class);
+        } else {
+            return new Intent(context, StreamReaderActivity.class);
         }
     }
 

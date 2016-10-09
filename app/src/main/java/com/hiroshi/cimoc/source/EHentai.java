@@ -130,9 +130,6 @@ public class EHentai extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
-        if (html == null) {
-            return null;
-        }
         return new Node(html).attr("a > img[style]", "src");
     }
 

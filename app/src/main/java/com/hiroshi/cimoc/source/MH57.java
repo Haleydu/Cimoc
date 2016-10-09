@@ -143,10 +143,9 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public String parseLazy(String html, String url) {
-        if (html == null) {
-            String path = url.split("=")[1];
-            return "http://images.333dm.com".concat(path);
+    public String parseLazy(String code, String url) {
+        if (code.equals("415")) {
+            return "http://images.333dm.com".concat(url.substring(24));
         }
         return url;
     }

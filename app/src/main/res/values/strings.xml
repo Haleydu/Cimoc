@@ -60,6 +60,7 @@
     <string name="reader_picture_loading">正在加载中..</string>
     <string name="reader_picture_save_success">保存成功</string>
     <string name="reader_picture_save_fail">保存失败</string>
+    <string name="reader_volume_save_fail">音量键不能用于保存图片</string>
 
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
@@ -78,12 +79,12 @@
     <string name="settings_reader_turn_summary">选择默认阅读方向</string>
     <string name="settings_reader_orientation">屏幕方向</string>
     <string name="settings_reader_orientation_summary">选择默认屏幕方向</string>
-    <string name="settings_reader_volume">音量键翻页</string>
-    <string name="settings_reader_volume_summary">仅限翻页模式</string>
+    <string name="settings_reader_click_event">自定义点击事件</string>
+    <string name="settings_reader_click_event_summary">阅读状态屏幕及音量键点击事件</string>
+    <string name="settings_reader_long_click_event">自定义长按事件</string>
+    <string name="settings_reader_long_click_event_summary">阅读状态屏幕长按事件</string>
     <string name="settings_reader_split">自动切割分页</string>
     <string name="settings_reader_split_summary">仅限从上到下卷纸模式</string>
-    <string name="settings_reader_picture">长按保存图片</string>
-    <string name="settings_reader_picture_summary">阅读状态长按保存图片</string>
     <string name="settings_reader_bright">保持屏幕常亮</string>
     <string name="settings_reader_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_reader_hide">隐藏阅读信息</string>
@@ -109,7 +110,7 @@
     <string name="settings_select_file">文件选择</string>
     <string name="settings_select_trigger">百分比选择</string>
 
-    <string name="about_version">version: 1.4.2.2</string>
+    <string name="about_version">version: 1.4.3</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -165,6 +166,20 @@
     <string name="task_delete_confirm">是否删除下载内容</string>
     <string name="task_delete_success">删除成功</string>
     <string name="task_delete_fail">删除失败</string>
+
+    <string name="event_select">事件选择</string>
+    <string name="event_null">无</string>
+    <string name="event_prev_page">上一页</string>
+    <string name="event_next_page">下一页</string>
+    <string name="event_save_picture">保存图片</string>
+    <string name="event_load_prev">加载上一章</string>
+    <string name="event_load_next">加载下一章</string>
+    <string name="event_exit_reader">退出阅读器</string>
+    <string name="event_to_first">跳到第一页</string>
+    <string name="event_to_last">跳到最后一页</string>
+    <string name="event_switch_screen">切换屏幕方向</string>
+    <string name="event_switch_mode">切换阅读模式</string>
+    <string name="event_switch_control">显示/隐藏进度条</string>
 
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>

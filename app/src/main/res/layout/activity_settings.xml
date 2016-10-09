@@ -157,38 +157,50 @@
                             android:textSize="14sp"
                             android:text="@string/settings_reader_turn_summary"/>
                     </LinearLayout>
-                    <RelativeLayout
-                        android:id="@+id/settings_reader_volume_btn"
+                    <LinearLayout
+                        android:id="@+id/settings_reader_click_event_btn"
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:padding="16dp"
                         android:clickable="true"
                         android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
-                            android:id="@+id/settings_reader_volume_checkbox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:clickable="false"
-                            android:focusable="false"
-                            android:background="@null"/>
                         <TextView
-                            android:id="@+id/settings_reader_volume_title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_volume_checkbox"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_volume"/>
+                            android:text="@string/settings_reader_click_event"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_volume_checkbox"
-                            android:layout_below="@id/settings_reader_volume_title"
+                            android:paddingTop="2dp"
                             android:textSize="14sp"
-                            android:text="@string/settings_reader_volume_summary"/>
-                    </RelativeLayout>
+                            android:text="@string/settings_reader_click_event_summary"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/settings_reader_long_click_event_btn"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:background="?android:attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/settings_reader_long_click_event"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:textSize="14sp"
+                            android:text="@string/settings_reader_long_click_event_summary"/>
+                    </LinearLayout>
                     <RelativeLayout
                         android:id="@+id/settings_reader_split_btn"
                         android:layout_width="match_parent"
@@ -220,38 +232,6 @@
                             android:layout_below="@id/settings_reader_split_title"
                             android:textSize="14sp"
                             android:text="@string/settings_reader_split_summary"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:id="@+id/settings_reader_picture_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
-                            android:id="@+id/settings_reader_picture_checkbox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:clickable="false"
-                            android:focusable="false"
-                            android:background="@null"/>
-                        <TextView
-                            android:id="@+id/settings_reader_picture_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_picture_checkbox"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_picture"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_picture_checkbox"
-                            android:layout_below="@id/settings_reader_picture_title"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_picture_summary"/>
                     </RelativeLayout>
                     <RelativeLayout
                         android:id="@+id/settings_reader_bright_btn"

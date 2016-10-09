@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.core.manager;
 
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.hiroshi.cimoc.CimocApplication;

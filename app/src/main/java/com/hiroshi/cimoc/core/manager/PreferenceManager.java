@@ -29,14 +29,25 @@ public class PreferenceManager {
     public static final String PREF_READER_ORIENTATION = "pref_reader_orientation";
     public static final String PREF_HOME = "pref_home";
     public static final String PREF_THEME = "pref_theme";
-    public static final String PREF_VOLUME = "pref_volume";
     public static final String PREF_NIGHT = "pref_night";
     public static final String PREF_SPLIT = "pref_split";
-    public static final String PREF_PICTURE = "pref_picture";
     public static final String PREF_BRIGHT = "pref_bright";
     public static final String PREF_HIDE = "pref_hide";
     public static final String PREF_TRIGGER = "pref_trigger";
     public static final String PREF_BLANK = "pref_blank";
+
+    public static final String PREF_CLICK_LEFT = "pref_click_left";
+    public static final String PREF_CLICK_TOP = "pref_click_top";
+    public static final String PREF_CLICK_MIDDLE = "pref_click_middle";
+    public static final String PREF_CLICK_BOTTOM = "pref_click_bottom";
+    public static final String PREF_CLICK_RIGHT = "pref_click_right";
+    public static final String PREF_CLICK_UP = "pref_click_up";
+    public static final String PREF_CLICK_DOWN = "pref_click_down";
+    public static final String PREF_LONG_CLICK_LEFT = "pref_long_click_left";
+    public static final String PREF_LONG_CLICK_TOP = "pref_long_click_top";
+    public static final String PREF_LONG_CLICK_MIDDLE = "pref_long_click_middle";
+    public static final String PREF_LONG_CLICK_BOTTOM = "pref_long_click_bottom";
+    public static final String PREF_LONG_CLICK_RIGHT = "pref_long_click_right";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

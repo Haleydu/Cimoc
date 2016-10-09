@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
@@ -79,8 +77,7 @@ public class IKanman extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        List<Node> nodeList = body.list("div.chapter-list");
-        for (Node node : nodeList) {
+        for (Node node : body.list("div.chapter-list")) {
             List<Chapter> ulList = new LinkedList<>();
             for (Node ul : node.list("ul")) {
                 List<Chapter> liList = new LinkedList<>();

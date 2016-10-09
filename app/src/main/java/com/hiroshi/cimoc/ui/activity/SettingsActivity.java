@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -29,8 +30,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
-    @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
-    @BindView(R.id.settings_reader_picture_checkbox) CheckBox mPictureBox;
     @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) CheckBox mHideBox;
     @BindView(R.id.settings_reader_blank_checkbox) CheckBox mBlankBox;
@@ -72,9 +71,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
         mReaderOrientationChoice = mPreference.getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
         mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
-        mVolumeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_VOLUME, false));
         mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SPLIT, false));
-        mPictureBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_PICTURE, false));
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BRIGHT, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_HIDE, false));
         mBlankBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BLANK, false));
@@ -109,18 +106,12 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
     }
 
-    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_volume_btn, R.id.settings_reader_picture_btn,
-            R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_reader_blank_btn})
+    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_bright_btn,
+            R.id.settings_reader_hide_btn, R.id.settings_reader_blank_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_split_btn:
                 checkedAndSave(mSplitBox, PreferenceManager.PREF_SPLIT);
-                break;
-            case R.id.settings_reader_volume_btn:
-                checkedAndSave(mVolumeBox, PreferenceManager.PREF_VOLUME);
-                break;
-            case R.id.settings_reader_picture_btn:
-                checkedAndSave(mPictureBox, PreferenceManager.PREF_PICTURE);
                 break;
             case R.id.settings_reader_bright_btn:
                 checkedAndSave(mBrightBox, PreferenceManager.PREF_BRIGHT);
@@ -165,6 +156,13 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             mProgressDialog.show();
             mPresenter.loadFiles();
         }
+    }
+
+    @OnClick({ R.id.settings_reader_click_event_btn, R.id.settings_reader_long_click_event_btn })
+    void onReaderEventBtnClick(View view) {
+        boolean isLong = view.getId() == R.id.settings_reader_long_click_event_btn;
+        Intent intent = EventActivity.createIntent(this, isLong, mReaderOrientationChoice == PreferenceManager.READER_ORIENTATION_PORTRAIT);
+        startActivity(intent);
     }
 
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {

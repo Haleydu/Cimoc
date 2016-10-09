@@ -14,7 +14,6 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -22,7 +21,7 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    @BindView(R.id.night_mask) View mNightMask;
+    protected View mNightMask;
     protected Toolbar mToolbar;
     protected ProgressBar mProgressBar;
 
@@ -46,6 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initNight() {
+        mNightMask = ButterKnife.findById(this, R.id.night_mask);
         boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
         if (night) {
             mNightMask.setVisibility(View.VISIBLE);

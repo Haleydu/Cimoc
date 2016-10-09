@@ -147,13 +147,12 @@ public class Manga {
             public void call(Subscriber<? super String> subscriber) {
                 Parser parser = SourceManager.getParser(source);
                 Request request = parser.getLazyRequest(url);
-                String html = null;
+                String newUrl = null;
                 try {
-                    html = getResponseBody(mClient, request);
+                    newUrl = parser.parseLazy(getResponseBody(mClient, request), url);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String newUrl = parser.parseLazy(html, url);
                 subscriber.onNext(newUrl);
                 subscriber.onCompleted();
             }
@@ -216,10 +215,10 @@ public class Manga {
         Response response = null;
         try {
             response = client.newCall(request).execute();
+            if (request.method().equals("HEAD")) {
+                return String.valueOf(response.code());
+            }
             if (response.isSuccessful()) {
-                if (request.method().equals("HEAD")) {
-                    return String.valueOf(response.code());
-                }
                 return response.body().string();
             } else {
                 throw new EmptyResultException();

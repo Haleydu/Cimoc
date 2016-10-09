@@ -46,7 +46,7 @@ Online manga reader based on Android
 - 多线程下载
 - 更改下载路径
 - 扫描已下载漫画
-- 阅读状态自定义点击事件
+- ~阅读状态自定义点击事件~
 
 # 应用截图
 <img src="./screenshot/01.png" width="30%" height="30%">
