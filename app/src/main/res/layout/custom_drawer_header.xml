@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="180dp"
     android:background="?attr/colorPrimary">
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/drawer_last_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        fresco:actualImageScaleType="centerCrop"
+        fresco:overlayImage ="@color/trans_white"/>
     <LinearLayout
         android:id="@+id/drawer_last_read_btn"
         android:orientation="horizontal"
@@ -15,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/drawer_last_read"
-            android:textColor="@color/white"/>
+            android:textColor="@color/black"/>
         <TextView
             android:id="@+id/drawer_last_read_text"
             android:layout_width="match_parent"
@@ -23,6 +31,6 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:text="@string/drawer_last_read_null"
-            android:textColor="@color/white"/>
+            android:textColor="@color/black"/>
     </LinearLayout>
 </FrameLayout>

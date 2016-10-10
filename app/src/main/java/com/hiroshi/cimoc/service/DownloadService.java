@@ -175,34 +175,41 @@ public class DownloadService extends Service {
                 onDownloadDoing(size);
 
                 for (int i = task.getProgress(); i != size; ++i) {
+                    int error = 0;
                     ImageUrl image = list.get(i);
-                    String url = image.isLazy() ? Manga.downloadLazy(client, source, image.getUrl()) : image.getUrl();
-                    if (url == null) {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
-                        break;
-                    }
-
-                    Request request = new Request.Builder()
-                            .headers(headers)
-                            .url(url)
-                            .build();
-                    try {
-                        Response response = client.newCall(request).execute();
-                        if (response.isSuccessful()) {
-                            InputStream byteStream = response.body().byteStream();
-                            if (writeToFile(byteStream, i + 1, url)) {
-                                if (i + 1 == size) {
-                                    onDownloadFinish();
-                                } else {
-                                    onDownloadProgress(i + 1);
+                    String[] urls = image.getUrl();
+                    for (String url : urls) {
+                        url = image.isLazy() ? Manga.downloadLazy(client, source, url) : url;
+                        if (url != null) {
+                            Request request = new Request.Builder()
+                                    .headers(headers)
+                                    .url(url)
+                                    .build();
+                            Response response = null;
+                            try {
+                                response = client.newCall(request).execute();
+                                if (response.isSuccessful()) {
+                                    InputStream byteStream = response.body().byteStream();
+                                    if (writeToFile(byteStream, i + 1, url)) {
+                                        if (i + 1 == size) {
+                                            onDownloadFinish();
+                                        } else {
+                                            onDownloadProgress(i + 1);
+                                        }
+                                        break;
+                                    }
                                 }
-                            } else {
-                                RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
-                                break;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } finally {
+                                if (response != null) {
+                                    response.close();
+                                }
                             }
                         }
-                        response.close();
-                    } catch (IOException e) {
+                        ++error;
+                    }
+                    if (error == urls.length) {
                         RxBus.getInstance().post(new RxEvent(RxEvent.TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                         break;
                     }

@@ -14,6 +14,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.SplitPostprocessor;
@@ -66,12 +67,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
         ImageHolder(View view) {
             super(view);
-        }
-    }
-
-    class LoadingHolder extends BaseViewHolder {
-        LoadingHolder(View view) {
-            super(view);
+            photoView.setOnSingleTapListener(mSingleTapListener);
+            photoView.setOnLongPressListener(mLongPressListener);
         }
     }
 
@@ -82,12 +79,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_IMAGE) {
-            View view = mInflater.inflate(R.layout.item_picture, parent, false);
-            return new ImageHolder(view);
-        }
-        View view = mInflater.inflate(R.layout.item_loading, parent, false);
-        return new LoadingHolder(view);
+        int resId = viewType == TYPE_IMAGE ? R.layout.item_picture : R.layout.item_loading;
+        View view = mInflater.inflate(resId, parent, false);
+        return new ImageHolder(view);
     }
 
     @Override
@@ -156,15 +150,18 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 });
                 break;
         }
-        draweeView.setOnSingleTapListener(mSingleTapListener);
-        draweeView.setOnLongPressListener(mLongPressListener);
-        builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
-        ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(imageUrl.getUrl()));
-        if (reader == READER_STREAM && fit == FIT_WIDTH && split) {
-            imageRequestBuilder.setPostprocessor(new SplitPostprocessor(imageUrl.getUrl()));
+        String[] url = imageUrl.getUrl();
+        ImageRequest[] request = new ImageRequest[url.length];
+        for (int i = 0; i != url.length; ++i) {
+            ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
+                    .newBuilderWithSource(Uri.parse(url[i]));
+            if (reader == READER_STREAM && fit == FIT_WIDTH && split) {
+                imageRequestBuilder.setPostprocessor(new SplitPostprocessor(url[i]));
+            }
+            request[i] = imageRequestBuilder.build();
         }
-        draweeView.setController(builder.setImageRequest(imageRequestBuilder.build()).build());
+        builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
+        draweeView.setController(builder.setFirstAvailableImageRequests(request).build());
     }
 
     public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {

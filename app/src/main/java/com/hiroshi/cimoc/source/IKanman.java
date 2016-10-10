@@ -24,6 +24,11 @@ import okhttp3.Request;
  */
 public class IKanman extends MangaParser {
 
+    public IKanman() {
+        server = new String[]{ "http://p.3qfm.com", "http://i.hamreus.com:8080",
+                "http://idx0.hamreus.com:8080", "http://ilt2.hamreus.com:8080"};
+    }
+
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("http://m.ikanman.com/s/%s.html?page=%d&ajax=1", keyword, page);
@@ -113,7 +118,7 @@ public class IKanman extends MangaParser {
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONArray array = new JSONObject(jsonString).getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(i + 1, "http://i.hamreus.com:8080".concat(array.getString(i)), false));
+                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i)), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

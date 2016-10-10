@@ -24,6 +24,10 @@ import okhttp3.Request;
 
 public class MH57 extends MangaParser {
 
+    public MH57() {
+        server = new String[]{ "http://images.333dm.com", "http://cartoon.akshk.com" };
+    }
+
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("http://m.57mh.com/search/q_%s-p-%d", keyword, page);
@@ -128,26 +132,13 @@ public class MH57 extends MangaParser {
                 JSONArray array = new JSONArray(jsonString);
                 int size = array.length();
                 for (int i = 0; i != size; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://cartoon.akshk.com".concat(array.getString(i)), true));
+                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i)), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return list;
-    }
-
-    @Override
-    public Request getLazyRequest(String url) {
-        return new Request.Builder().head().url(url).build();
-    }
-
-    @Override
-    public String parseLazy(String code, String url) {
-        if (code.equals("415")) {
-            return "http://images.333dm.com".concat(url.substring(24));
-        }
-        return url;
     }
 
     @Override

@@ -7,6 +7,7 @@
     <string name="drawer_system">系统选项</string>
     <string name="drawer_download">下载管理</string>
     <string name="drawer_source">图源管理</string>
+    <string name="drawer_tag">标签管理</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
     <string name="drawer_light">日间模式</string>
@@ -14,14 +15,14 @@
     <string name="drawer_last_read">最后阅读：</string>
     <string name="drawer_last_read_null">无</string>
 
+    <string name="main_menu_search">搜索</string>
+    <string name="main_menu_source">图源</string>
+    <string name="main_search_keyword_empty">关键字为空</string>
+    <string name="main_source_select">图源选择</string>
+    <string name="main_source_none">未选择图源</string>
+    <string name="main_source_load_fail">读取图源失败</string>
     <string name="main_double_click">再按一次退出</string>
     <string name="main_last_read_fail">读取最后阅读失败</string>
-
-    <string name="cimoc_filter">图源选择</string>
-    <string name="cimoc_search_hint">请输入漫画名</string>
-    <string name="cimoc_empty_error">关键字不能为空</string>
-    <string name="cimoc_load_fail">读取图源失败</string>
-    <string name="cimoc_source_none">未选择图源</string>
 
     <string name="result">搜索结果</string>
     <string name="result_empty">搜索结果为空</string>
@@ -32,7 +33,7 @@
     <string name="detail_error">解析错误或此漫画已被屏蔽</string>
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
-    <string name="detail_label">标签</string>
+    <string name="detail_tag">标签</string>
     <string name="detail_download">下载</string>
     <string name="detail_download_load_fail">读取下载列表失败</string>
     <string name="detail_download_all">下载全部</string>
@@ -40,8 +41,6 @@
     <string name="detail_download_queue_fail">加入下载队列失败</string>
     <string name="detail_select_chapter">选择章节</string>
 
-    <string name="favorite_filter">过滤</string>
-    <string name="favorite_filter_select">过滤选择</string>
     <string name="favorite_update_confirm">是否检查更新</string>
     <string name="favorite_update_doing">正在检查更新</string>
     <string name="favorite_update_finish">检查更新完成</string>
@@ -60,7 +59,6 @@
     <string name="reader_picture_loading">正在加载中..</string>
     <string name="reader_picture_save_success">保存成功</string>
     <string name="reader_picture_save_fail">保存失败</string>
-    <string name="reader_volume_save_fail">音量键不能用于保存图片</string>
 
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
@@ -93,6 +91,7 @@
     <string name="settings_reader_trigger_summary">自定义触发翻页的百分比</string>
     <string name="settings_reader_blank">取消图片间隔</string>
     <string name="settings_reader_blank_summary">仅限卷纸模式</string>
+    <string name="settings_download">下载设置</string>
     <string name="settings_other">其他设置</string>
     <string name="settings_other_home">首页设置</string>
     <string name="settings_other_home_summary">选择默认启动页</string>
@@ -138,9 +137,14 @@
     <string name="source_delete_fail">删除图源失败</string>
     <string name="source_add">添加图源</string>
     <string name="source_add_exist">图源已存在</string>
-    <string name="source_add_success">添加成功</string>
     <string name="source_add_error">添加失败</string>
-    <string name="source_load_fail">读取图源失败</string>
+
+    <string name="tag_add">添加标签</string>
+    <string name="tag_add_exist">标签已存在</string>
+    <string name="tag_add_empty">标签名称不能为空</string>
+
+    <string name="card_add_success">添加成功</string>
+    <string name="card_load_fail">读取数据失败</string>
 
     <string name="download_service_doing">正在下载漫画</string>
     <string name="download_service_complete">所有任务已完成</string>

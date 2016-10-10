@@ -4,14 +4,22 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
+import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
+import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.model.TagDao;
+import com.hiroshi.cimoc.model.TagRefDao;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.greenrobot.greendao.database.Database;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/8/12.
@@ -29,12 +37,11 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     @Override
     public void onCreate(Database db) {
         super.onCreate(db);
-        initSource(db);
+        initSourceAndTag(db);
     }
 
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
-        db.beginTransaction();
         switch (oldVersion) {
             case 1:
                 SourceDao.createTable(db, false);
@@ -46,22 +53,48 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 updateDownload(db);
             case 5:
                 updateHHAAZZ();
+            case 6:
+                SourceDao.dropTable(db, false);
+                SourceDao.createTable(db, false);
+                TagDao.createTable(db, false);
+                TagRefDao.createTable(db, false);
+                initSourceAndTag(db);
         }
-        db.setTransactionSuccessful();
-        db.endTransaction();
     }
 
     private void initSource(Database db) {
-        SourceDao dao = new DaoMaster(db).newSession().getSourceDao();
-        dao.insert(new Source(null, SourceManager.SOURCE_IKANMAN, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_DMZJ, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_HHAAZZ, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_CCTUKU, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_U17, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_DM5, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_WEBTOON, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_HHSSEE, true));
-        dao.insert(new Source(null, SourceManager.SOURCE_57MH, true));
+        String[] title = { "看漫画", "动漫之家", "手机汗汗", "CC图库",
+                "有妖气", "动漫屋", "Webtoon", "汗汗漫画", "57漫画"};
+        int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ,
+                SourceManager.SOURCE_CCTUKU, SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5,
+                SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE, SourceManager.SOURCE_57MH};
+        List<Source> list = new ArrayList<>(title.length);
+        for (int i = 0; i != title.length; ++i) {
+            list.add(new Source(null, title[i], type[i], true));
+        }
+        new DaoMaster(db).newSession().getSourceDao().insertInTx(list);
+    }
+
+    private void initSourceAndTag(Database db) {
+        final DaoSession session = new DaoMaster(db).newSession();
+        session.runInTx(new Runnable() {
+            @Override
+            public void run() {
+                String[] title = { "看漫画", "动漫之家", "手机汗汗", "CC图库",
+                        "有妖气", "动漫屋", "Webtoon", "汗汗漫画", "57漫画"};
+                int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ,
+                        SourceManager.SOURCE_CCTUKU, SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5,
+                        SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE, SourceManager.SOURCE_57MH};
+                SourceDao sourceDao = session.getSourceDao();
+                TagDao tagDao = session.getTagDao();
+                tagDao.insert(new Tag(null, "连载中", TagManager.TAG_TYPE_CONTINUE, true));
+                tagDao.insert(new Tag(null, "已完结", TagManager.TAG_TYPE_END, true));
+                for (int i = 0; i != title.length; ++i) {
+                    sourceDao.insert(new Source(null, title[i], type[i], true));
+                    tagDao.insert(new Tag(null, title[i], type[i], true));
+                }
+            }
+        });
     }
 
     private void updateHHAAZZ() {
@@ -72,20 +105,26 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     }
 
     private void updateDownload(Database db) {
+        db.beginTransaction();
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
         db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
                 " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", null, \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     private void updateHighlight(Database db) {
+        db.beginTransaction();
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
         db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
                 " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " + System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
 }

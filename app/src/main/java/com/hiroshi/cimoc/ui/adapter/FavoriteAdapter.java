@@ -4,26 +4,17 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.hiroshi.cimoc.collections.FilterList;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
-import java.util.Set;
-
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/8/5.
  */
 public class FavoriteAdapter extends ComicAdapter {
 
-    private FilterList<MiniComic, String> filterList;
-
-    public FavoriteAdapter(Context context, FilterList<MiniComic, String> filterList) {
-        super(context, filterList);
-        this.filterList = filterList;
+    public FavoriteAdapter(Context context, List<MiniComic> list) {
+        super(context, list);
     }
 
     @Override
@@ -35,7 +26,7 @@ public class FavoriteAdapter extends ComicAdapter {
 
     @Override
     public void add(MiniComic data) {
-        add(findFirstNotHighlight(mDataSet), data);
+        add(findFirstNotHighlight(), data);
     }
 
     public void moveToFirst(MiniComic comic) {
@@ -48,46 +39,14 @@ public class FavoriteAdapter extends ComicAdapter {
         if (comic.isHighlight()) {
             comic.setHighlight(false);
             remove(which);
-            int index1 = findFirstNotHighlight(mDataSet);
-            int index2 = findFirstNotHighlight(filterList.getFullList());
-            filterList.addDiff(index1, index2, comic);
-            notifyItemInserted(index1);
+            int pos = findFirstNotHighlight();
+            add(pos, comic);
+            notifyItemInserted(pos);
         }
         return comic;
     }
 
-    public void updateFilterSet() {
-        filterList.filter();
-        notifyDataSetChanged();
-    }
-
-    public Set<String> getFilterSet() {
-        return filterList.getFilterSet();
-    }
-
-    @Override
-    public void removeBySource(final int source) {
-        Observable.from(filterList.getFullList())
-                .filter(new Func1<MiniComic, Boolean>() {
-                    @Override
-                    public Boolean call(MiniComic comic) {
-                        return source == comic.getSource();
-                    }
-                })
-                .toList()
-                .subscribe(new Action1<List<MiniComic>>() {
-                    @Override
-                    public void call(List<MiniComic> list) {
-                        removeAll(list);
-                    }
-                });
-    }
-
-    public boolean isFull() {
-        return filterList.isFull();
-    }
-
-    private int findFirstNotHighlight(List<MiniComic> list) {
+    private int findFirstNotHighlight() {
         int count = 0;
         for (MiniComic comic : mDataSet) {
             if (!comic.isHighlight()) {

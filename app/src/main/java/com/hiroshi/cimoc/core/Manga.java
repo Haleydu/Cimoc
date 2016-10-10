@@ -215,9 +215,6 @@ public class Manga {
         Response response = null;
         try {
             response = client.newCall(request).execute();
-            if (request.method().equals("HEAD")) {
-                return String.valueOf(response.code());
-            }
             if (response.isSuccessful()) {
                 return response.body().string();
             } else {

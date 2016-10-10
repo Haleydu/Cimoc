@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="home_items">
-        <item>Cimoc</item>
         <item>我的漫画</item>
         <item>历史阅读</item>
         <item>下载管理</item>

@@ -47,7 +47,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getUrl())
+        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override

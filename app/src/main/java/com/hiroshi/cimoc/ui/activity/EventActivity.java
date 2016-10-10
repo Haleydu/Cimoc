@@ -37,6 +37,7 @@ public class EventActivity extends BaseActivity {
 
     @Override
     protected void initTheme() {
+        super.initTheme();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         int value = getIntent().getBooleanExtra(EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
@@ -45,9 +46,6 @@ public class EventActivity extends BaseActivity {
 
     @Override
     protected void initToolbar() {}
-
-    @Override
-    protected void initNight() {}
 
     @Override
     protected void initProgressBar() {}
@@ -98,7 +96,9 @@ public class EventActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         mChoiceArray[index] = mTempChoice;
                         mPreference.putInt(mKeyArray[index], mTempChoice);
-                        mButtonList.get(index).setText(EventUtils.getTitleId(mTempChoice));
+                        if (index < 5) {
+                            mButtonList.get(index).setText(EventUtils.getTitleId(mTempChoice));
+                        }
                     }
                 }).show();
     }

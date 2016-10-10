@@ -57,7 +57,7 @@ public class SourceManager {
 
     public Observable<List<Source>> list() {
         return mSourceDao.queryBuilder()
-                .orderAsc(Properties.Sid)
+                .orderAsc(Properties.Type)
                 .rx()
                 .list();
     }
@@ -65,7 +65,7 @@ public class SourceManager {
     public Observable<List<Source>> listEnable() {
         return mSourceDao.queryBuilder()
                 .where(Properties.Enable.eq(true))
-                .orderAsc(Properties.Sid)
+                .orderAsc(Properties.Type)
                 .rx()
                 .list();
     }
@@ -74,8 +74,8 @@ public class SourceManager {
         return mSourceDao.insert(source);
     }
 
-    public void delete(Source source) {
-        mSourceDao.delete(source);
+    public void deleteByKey(long key) {
+        mSourceDao.deleteByKey(key);
     }
 
     public void update(Source source) {
@@ -116,38 +116,38 @@ public class SourceManager {
         return "null";
     }
 
-    public static int getId(String key) {
+    public static Source getSource(String key) {
         switch (key) {
             case "IKanman":
-                return SOURCE_IKANMAN;
+                return new Source(null, "看漫画", SOURCE_IKANMAN, true);
             case "DMZJ":
-                return SOURCE_DMZJ;
+                return new Source(null, "动漫之家", SOURCE_DMZJ, true);
             case "HHAAZZ":
-                return SOURCE_HHAAZZ;
+                return new Source(null, "手机汗汗", SOURCE_HHAAZZ, true);
             case "CCTuku":
-                return SOURCE_CCTUKU;
+                return new Source(null, "CC图库", SOURCE_CCTUKU, true);
             case "U17":
-                return SOURCE_U17;
+                return new Source(null, "有妖气", SOURCE_U17, true);
             case "DM5":
-                return SOURCE_DM5;
+                return new Source(null, "动漫屋", SOURCE_DM5, true);
             case "Webtoon":
-                return SOURCE_WEBTOON;
+                return new Source(null, "Webtoon", SOURCE_WEBTOON, true);
             case "HHSSEE":
-                return SOURCE_HHSSEE;
+                return new Source(null, "汗汗漫画", SOURCE_HHSSEE, true);
             case "57MH":
-                return SOURCE_57MH;
+                return new Source(null, "57漫画", SOURCE_57MH, true);
             case "EHentai":
-                return SOURCE_EHENTAI;
+                return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
             case "ExHentai":
-                return SOURCE_EXHENTAI;
+                return new Source(null, "ExHentai", SOURCE_EXHENTAI, false);
             case "NHentai":
-                return SOURCE_NHENTAI;
+                return new Source(null, "NHentai", SOURCE_NHENTAI, false);
             case "Wnacg":
-                return SOURCE_WNACG;
+                return new Source(null, "绅士漫画", SOURCE_WNACG, false);
             case "177Pic":
-                return SOURCE_177PIC;
+                return new Source(null, "177漫画", SOURCE_177PIC, false);
         }
-        return -1;
+        return null;
     }
 
     private static SparseArray<Parser> sparseArray = new SparseArray<>();

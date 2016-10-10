@@ -37,13 +37,12 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onSourceLoadFail();
+                        mBaseView.onCardLoadFail();
                     }
                 }));
     }
 
-    public void add(int sid) {
-        Source source = new Source(null, sid, true);
+    public void insert(Source source) {
         long id = mSourceManager.insert(source);
         source.setId(id);
         mBaseView.onSourceAdd(source);
@@ -53,12 +52,12 @@ public class SourcePresenter extends BasePresenter<SourceView> {
         mSourceManager.update(source);
     }
 
-    public void delete(final Source source, final int position) {
-        mCompositeSubscription.add(mComicManager.listSource(source.getSid())
+    public void delete(final long id, final int sid, final int position) {
+        mCompositeSubscription.add(mComicManager.listSource(sid)
                 .doOnNext(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
-                        mSourceManager.delete(source);
+                        mSourceManager.deleteByKey(id);
                         mComicManager.deleteInTx(list);
                     }
                 })
@@ -66,7 +65,7 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                 .subscribe(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, source.getSid()));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, sid));
                         mBaseView.onSourceDeleteSuccess(position);
                     }
                 }, new Action1<Throwable>() {

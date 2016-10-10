@@ -22,6 +22,4 @@ public interface FavoriteView extends GridView {
 
     void onCheckComplete();
 
-    void onFilterLoad(String[] filter);
-
 }

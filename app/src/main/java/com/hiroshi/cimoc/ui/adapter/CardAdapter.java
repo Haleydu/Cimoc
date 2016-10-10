@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.adapter;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,27 +10,27 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.model.Card;
 
 import java.util.List;
 
 import butterknife.BindView;
 
 /**
- * Created by Hiroshi on 2016/8/11.
+ * Created by Hiroshi on 2016/10/10.
  */
-public class SourceAdapter extends BaseAdapter<Source> {
+
+public class CardAdapter<T extends Card> extends BaseAdapter<T> {
 
     private OnItemCheckedListener mOnItemCheckedListener;
 
-    public class SourceViewHolder extends BaseViewHolder {
-        @BindView(R.id.source_title) TextView sourceTitle;
-        @BindView(R.id.source_switch) SwitchCompat sourceSwitch;
+    class CardHolder extends BaseViewHolder {
+        @BindView(R.id.card_title) TextView cardTitle;
+        @BindView(R.id.card_switch) SwitchCompat cardSwitch;
 
-        public SourceViewHolder(final View view) {
+        CardHolder(final View view) {
             super(view);
-            sourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            cardSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     mOnItemCheckedListener.onItemCheckedListener(isChecked, getAdapterPosition());
@@ -40,22 +39,23 @@ public class SourceAdapter extends BaseAdapter<Source> {
         }
     }
 
-    public SourceAdapter(Context context, List<Source> list) {
+    public CardAdapter(Context context, List<T> list) {
         super(context, list);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_source, parent, false);
-        return new SourceViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = mInflater.inflate(R.layout.item_card, parent, false);
+        return new CardHolder(view);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Source source = mDataSet.get(position);
-        SourceViewHolder viewHolder = (SourceViewHolder) holder;
-        viewHolder.sourceTitle.setText(SourceManager.getTitle(source.getSid()));
-        viewHolder.sourceSwitch.setChecked(source.getEnable());
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Card card = mDataSet.get(position);
+        CardHolder viewHolder = (CardHolder) holder;
+        viewHolder.cardTitle.setText(card.getTitle());
+        viewHolder.cardSwitch.setChecked(card.getEnable());
     }
 
     @Override
@@ -77,14 +77,13 @@ public class SourceAdapter extends BaseAdapter<Source> {
         void onItemCheckedListener(boolean isChecked, int position);
     }
 
-    public boolean contain(int sid) {
-        for (Source source : mDataSet) {
-            if (source.getSid() == sid) {
+    public boolean contain(int type) {
+        for (Card card : mDataSet) {
+            if (card.getType() == type) {
                 return true;
             }
         }
         return false;
     }
-
 
 }

@@ -18,11 +18,11 @@ public class PreferenceManager {
     public static final int READER_ORIENTATION_PORTRAIT = 0;
     public static final int READER_ORIENTATION_LANDSCAPE = 1;
 
-    public static final int HOME_CIMOC = 0;
     public static final int HOME_FAVORITE = 1;
     public static final int HOME_HISTORY = 2;
     public static final int HOME_DOWNLOAD = 3;
     public static final int HOME_SOURCE = 4;
+    public static final int HOME_TAG = 5;
 
     public static final String PREF_READER_MODE = "pref_reader_mode";
     public static final String PREF_READER_TURN = "pref_reader_turn";

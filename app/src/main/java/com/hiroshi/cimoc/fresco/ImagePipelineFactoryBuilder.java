@@ -19,7 +19,7 @@ public class ImagePipelineFactoryBuilder {
     public static ImagePipelineFactory build(Context context, int source) {
         OkHttpClient client = CimocApplication.getHttpClient();
         ImagePipelineConfig config =
-                OkHttpImagePipelineConfigFactory.newBuilder(context, client, getHeaders(source))
+                OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client, getHeaders(source))
                         .setBitmapsConfig(Bitmap.Config.RGB_565)
                         .build();
         return new ImagePipelineFactory(config);

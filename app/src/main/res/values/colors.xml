@@ -26,6 +26,7 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="trans_white">#3FFFFFFF</color>
     <color name="trans_black">#B0000000</color>
     <color name="trans_light_black">#4F000000</color>
 </resources>

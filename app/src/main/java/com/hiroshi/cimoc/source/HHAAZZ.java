@@ -20,8 +20,6 @@ import okhttp3.Request;
  */
 public class HHAAZZ extends MangaParser {
 
-    private String[] server = null;
-
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {

@@ -79,7 +79,7 @@ public abstract class GridFragment extends BaseFragment implements GridView, Bas
 
     @Override
     public void onComicLoadFail() {
-        showSnackbar(R.string.cimoc_load_fail);
+        showSnackbar(R.string.grid_load_comic_fail);
         onInitSuccess();
     }
 

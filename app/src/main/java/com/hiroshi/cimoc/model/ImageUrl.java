@@ -9,11 +9,15 @@ public class ImageUrl {
 
     private int id;
     private int num;
-    private String url;
+    private String[] url;
     private boolean lazy;
     private boolean loading;
 
     public ImageUrl(int num, String url, boolean lazy) {
+        this(num, new String[]{ url }, lazy);
+    }
+
+    public ImageUrl(int num, String[] url, boolean lazy) {
         this.id = ++count;
         this.num = num;
         this.url = url;
@@ -30,7 +34,7 @@ public class ImageUrl {
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.url = new String[]{ url };
     }
 
     public int getId() {
@@ -41,8 +45,12 @@ public class ImageUrl {
         return num;
     }
 
-    public String getUrl() {
+    public String[] getUrl() {
         return url;
+    }
+
+    public String getFirstUrl() {
+        return url[0];
     }
 
     public boolean isLazy() {

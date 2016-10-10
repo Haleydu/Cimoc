@@ -4,29 +4,34 @@ import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Unique;
 
 /**
- * Created by Hiroshi on 2016/8/11.
+ * Created by Hiroshi on 2016/10/10.
  */
 @Entity
-public class Source implements Card {
+public class Tag implements Card {
 
-    @Id private Long id;
+    @Id(autoincrement = true) private Long id;
     @NotNull private String title;
-    @Unique private int type;
+    /**
+     *  0 - 200 source
+     *  250 continue
+     *  251 end
+     *  300 normal
+     */
+    @NotNull private int type;
     @NotNull private boolean enable;
 
-    @Generated(hash = 1339691905)
-    public Source(Long id, @NotNull String title, int type, boolean enable) {
+    @Generated(hash = 659343159)
+    public Tag(Long id, @NotNull String title, int type, boolean enable) {
         this.id = id;
         this.title = title;
         this.type = type;
         this.enable = enable;
     }
 
-    @Generated(hash = 615387317)
-    public Source() {
+    @Generated(hash = 1605720318)
+    public Tag() {
     }
 
     public Long getId() {

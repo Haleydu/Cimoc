@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -97,7 +96,16 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
+    protected void initToolbar() {}
+
+    @Override
     protected void initProgressBar() {}
+
+    @Override
+    protected void initPresenter() {
+        mPresenter = new ReaderPresenter();
+        mPresenter.attachView(this);
+    }
 
     @Override
     protected void initView() {
@@ -173,15 +181,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @OnClick(R.id.reader_back_btn) void onBackClick() {
         onBackPressed();
-    }
-
-    @Override
-    protected void initToolbar() {}
-
-    @Override
-    protected void initPresenter() {
-        mPresenter = new ReaderPresenter();
-        mPresenter.attachView(this);
     }
 
     @Override
@@ -398,16 +397,24 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected abstract void nextPage();
 
     protected void savePicture() {
-        String url = mReaderAdapter.getItem(mLayoutManager.findFirstVisibleItemPosition()).getUrl();
+        int position = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        if (position == -1) {
+            position = mLayoutManager.findFirstVisibleItemPosition();
+        }
+        String[] urls = mReaderAdapter.getItem(position).getUrl();
         try {
-            String suffix = StringUtils.getSplit(url, "\\.", -1);
-            if (url.startsWith("file")) {
-                InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
-                mPresenter.savePicture(inputStream, suffix);
-            } else {
-                BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
-                if (resource != null) {
-                    mPresenter.savePicture(resource.openStream(), suffix);
+            for (String url : urls) {
+                String suffix = StringUtils.getSplit(url, "\\.", -1);
+                if (url.startsWith("file")) {
+                    InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
+                    mPresenter.savePicture(inputStream, suffix);
+                    break;
+                } else {
+                    BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
+                    if (resource != null) {
+                        mPresenter.savePicture(resource.openStream(), suffix);
+                        break;
+                    }
                 }
             }
         } catch (IOException e) {
