@@ -65,7 +65,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     protected void initView() {
         super.initView();
         mPreference = CimocApplication.getPreferences();
-        mHomeChoice = mPreference.getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_FAVORITE);
+        mHomeChoice = mPreference.getInt(PreferenceManager.PREF_LAUNH_HOME, PreferenceManager.HOME_SEARCH);
         mThemeChoice = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
         mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
         mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
@@ -171,7 +171,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mHomeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_HOME, mHomeChoice);
+                        mPreference.putInt(PreferenceManager.PREF_LAUNH_HOME, mHomeChoice);
                     }
                 }).show();
     }

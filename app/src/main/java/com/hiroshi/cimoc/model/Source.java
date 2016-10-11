@@ -10,7 +10,7 @@ import org.greenrobot.greendao.annotation.Unique;
  * Created by Hiroshi on 2016/8/11.
  */
 @Entity
-public class Source implements Card {
+public class Source {
 
     @Id private Long id;
     @NotNull private String title;

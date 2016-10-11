@@ -19,7 +19,7 @@ import rx.functions.Func1;
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-public class DownloadPresenter extends BasePresenter<DownloadView> {
+public class DownloadPresenter extends GridPresenter<DownloadView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
@@ -31,6 +31,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     @Override
     protected void initSubscription() {
+        super.initSubscription();
         addSubscription(RxEvent.TASK_ADD, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
@@ -57,33 +58,9 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
         });
     }
 
-    public void loadComic() {
-        mCompositeSubscription.add(mComicManager.listDownload()
-                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
-                    @Override
-                    public Observable<Comic> call(List<Comic> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .map(new Func1<Comic, MiniComic>() {
-                    @Override
-                    public MiniComic call(Comic comic) {
-                        return new MiniComic(comic);
-                    }
-                })
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
-                    @Override
-                    public void call(List<MiniComic> list) {
-                        mBaseView.onComicLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onComicLoadFail();
-                    }
-                }));
+    @Override
+    protected Observable<List<Comic>> getRawObservable() {
+        return mComicManager.listDownload();
     }
 
     public void loadTask() {

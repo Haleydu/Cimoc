@@ -27,10 +27,10 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
     private ControllerBuilderProvider mProvider;
 
     public class ViewHolder extends BaseViewHolder {
-        @BindView(R.id.item_comic_image) SimpleDraweeView comicImage;
-        @BindView(R.id.item_comic_title) TextView comicTitle;
-        @BindView(R.id.item_comic_source) TextView comicSource;
-        @BindView(R.id.item_comic_new) View comicNew;
+        @BindView(R.id.item_grid_image) SimpleDraweeView comicImage;
+        @BindView(R.id.item_grid_title) TextView comicTitle;
+        @BindView(R.id.item_grid_subtitle) TextView comicSource;
+        @BindView(R.id.item_grid_symbol) View comicHighlight;
 
         public ViewHolder(View view) {
             super(view);
@@ -43,7 +43,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_comic, parent, false);
+        View view = mInflater.inflate(R.layout.item_grid, parent, false);
         return new ViewHolder(view);
     }
 
@@ -58,6 +58,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
                 .setUri(comic.getCover())
                 .build();
         viewHolder.comicImage.setController(controller);
+        viewHolder.comicHighlight.setVisibility(comic.isHighlight() ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void setProvider(ControllerBuilderProvider provider) {
@@ -75,10 +76,15 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         };
     }
 
+    @Override
+    public void add(MiniComic data) {
+        add(findFirstNotHighlight(), data);
+    }
+
     public void update(MiniComic comic) {
         int position = mDataSet.indexOf(comic);
         if (position != -1) {
-            mDataSet.remove(comic);
+            mDataSet.remove(position);
             mDataSet.add(0, comic);
             notifyItemMoved(position, 0);
         } else {
@@ -114,6 +120,29 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
             }
         }
         return null;
+    }
+
+    public MiniComic clickItem(int which) {
+        final MiniComic comic = mDataSet.get(which);
+        if (comic.isHighlight()) {
+            comic.setHighlight(false);
+            remove(which);
+            int pos = findFirstNotHighlight();
+            add(pos, comic);
+            notifyItemInserted(pos);
+        }
+        return comic;
+    }
+
+    private int findFirstNotHighlight() {
+        int count = 0;
+        for (MiniComic comic : mDataSet) {
+            if (!comic.isHighlight()) {
+                break;
+            }
+            ++count;
+        }
+        return count;
     }
 
 }

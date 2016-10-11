@@ -1,11 +1,12 @@
 package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.DialogInterface;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -14,19 +15,14 @@ import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
 import com.hiroshi.cimoc.ui.view.GridView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.OnClick;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Created by Hiroshi on 2016/9/22.
  */
 
-public abstract class GridFragment extends BaseFragment implements GridView, BaseAdapter.OnItemClickListener {
-
-    @BindView(R.id.grid_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.grid_action_button) FloatingActionButton mActionButton;
+public abstract class GridFragment extends ClassicalFragment implements GridView {
 
     protected AlertDialog mProgressDialog;
     protected ControllerBuilderProvider mBuilderProvider;
@@ -35,16 +31,10 @@ public abstract class GridFragment extends BaseFragment implements GridView, Bas
     @Override
     protected void initView() {
         mProgressDialog = DialogUtils.buildCancelableFalseDialog(getActivity(), R.string.dialog_doing);
-        mBuilderProvider = new ControllerBuilderProvider(getActivity());
-        mActionButton.setImageResource(getImageRes());
-        initAdapter();
-        mComicAdapter.setOnItemClickListener(this);
+        mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
+        mBuilderProvider = ((CimocApplication) getActivity().getApplication()).getBuilderProvider();
         mComicAdapter.setProvider(mBuilderProvider);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        mRecyclerView.addItemDecoration(mComicAdapter.getItemDecoration());
-        mRecyclerView.setAdapter(mComicAdapter);
+        super.initView();
     }
 
     @Override
@@ -54,14 +44,14 @@ public abstract class GridFragment extends BaseFragment implements GridView, Bas
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-        if (mBuilderProvider != null) {
-            mBuilderProvider.clear();
-            mBuilderProvider = null;
-        }
         mComicAdapter = null;
     }
 
-    @OnClick(R.id.grid_action_button) void onClick() {
+    @Override
+    public void onItemLongClick(View view, int position) {}
+
+    @Override
+    protected void onActionButtonClick() {
         DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, getActionRes(),
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -72,28 +62,37 @@ public abstract class GridFragment extends BaseFragment implements GridView, Bas
     }
 
     @Override
-    public void onComicLoadSuccess(List<MiniComic> list) {
+    public void onComicLoadSuccess(Collection<MiniComic> list) {
         mComicAdapter.addAll(list);
-        onInitSuccess();
     }
 
     @Override
     public void onComicLoadFail() {
-        showSnackbar(R.string.grid_load_comic_fail);
-        onInitSuccess();
+        showSnackbar(R.string.common_data_load_fail);
+    }
+
+    @Override
+    public void onComicFilterSuccess(Collection<MiniComic> list) {
+        mComicAdapter.setData(list);
+    }
+
+    @Override
+    public void onComicFilterFail() {
+        showSnackbar(R.string.comic_filter_fail);
     }
 
     protected abstract int getActionRes();
 
     protected abstract void onActionConfirm();
 
-    protected abstract int getImageRes();
-
-    protected abstract void initAdapter();
+    @Override
+    protected BaseAdapter getAdapter() {
+        return mComicAdapter;
+    }
 
     @Override
-    protected int getLayoutView() {
-        return R.layout.fragment_grid;
+    protected RecyclerView.LayoutManager getLayoutManager() {
+        return new GridLayoutManager(getActivity(), 3);
     }
 
 }

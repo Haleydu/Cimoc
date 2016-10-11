@@ -4,13 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
-import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
-import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagDao;
 import com.hiroshi.cimoc.model.TagRefDao;
 import com.hiroshi.cimoc.model.TaskDao;
@@ -37,7 +34,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     @Override
     public void onCreate(Database db) {
         super.onCreate(db);
-        initSourceAndTag(db);
+        initSource(db);
     }
 
     @Override
@@ -45,7 +42,6 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         switch (oldVersion) {
             case 1:
                 SourceDao.createTable(db, false);
-                initSource(db);
             case 2:
                 updateHighlight(db);
             case 3:
@@ -58,7 +54,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 SourceDao.createTable(db, false);
                 TagDao.createTable(db, false);
                 TagRefDao.createTable(db, false);
-                initSourceAndTag(db);
+                initSource(db);
         }
     }
 
@@ -73,28 +69,6 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
             list.add(new Source(null, title[i], type[i], true));
         }
         new DaoMaster(db).newSession().getSourceDao().insertInTx(list);
-    }
-
-    private void initSourceAndTag(Database db) {
-        final DaoSession session = new DaoMaster(db).newSession();
-        session.runInTx(new Runnable() {
-            @Override
-            public void run() {
-                String[] title = { "看漫画", "动漫之家", "手机汗汗", "CC图库",
-                        "有妖气", "动漫屋", "Webtoon", "汗汗漫画", "57漫画"};
-                int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ,
-                        SourceManager.SOURCE_CCTUKU, SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5,
-                        SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE, SourceManager.SOURCE_57MH};
-                SourceDao sourceDao = session.getSourceDao();
-                TagDao tagDao = session.getTagDao();
-                tagDao.insert(new Tag(null, "连载中", TagManager.TAG_TYPE_CONTINUE, true));
-                tagDao.insert(new Tag(null, "已完结", TagManager.TAG_TYPE_END, true));
-                for (int i = 0; i != title.length; ++i) {
-                    sourceDao.insert(new Source(null, title[i], type[i], true));
-                    tagDao.insert(new Tag(null, title[i], type[i], true));
-                }
-            }
-        });
     }
 
     private void updateHHAAZZ() {

@@ -32,13 +32,13 @@ public class TagPresenter extends BasePresenter<TagView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onCardLoadFail();
+                        mBaseView.onTagLoadFail();
                     }
                 }));
     }
 
     public void insert(String title) {
-        Tag tag = new Tag(null, title, TagManager.TAG_NORMAL, true);
+        Tag tag = new Tag(null, title, 0, null);
         long id = mTagManager.insert(tag);
         tag.setId(id);
         mBaseView.onTagAddSuccess(tag);

@@ -172,7 +172,7 @@ public class RecyclerViewPager extends RecyclerView {
 
                         @Override
                         protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                            return getContext().getResources().getDisplayMetrics().density * 0.14f / displayMetrics.density;
+                            return 0.14f;
                         }
                     };
             linearSmoothScroller.setTargetPosition(position);

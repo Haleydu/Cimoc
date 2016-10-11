@@ -10,7 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Card;
+import com.hiroshi.cimoc.model.Source;
 
 import java.util.List;
 
@@ -20,17 +20,17 @@ import butterknife.BindView;
  * Created by Hiroshi on 2016/10/10.
  */
 
-public class CardAdapter<T extends Card> extends BaseAdapter<T> {
+public class SourceAdapter extends BaseAdapter<Source> {
 
     private OnItemCheckedListener mOnItemCheckedListener;
 
-    class CardHolder extends BaseViewHolder {
-        @BindView(R.id.card_title) TextView cardTitle;
-        @BindView(R.id.card_switch) SwitchCompat cardSwitch;
+    class SourceHolder extends BaseViewHolder {
+        @BindView(R.id.item_source_title) TextView sourceTitle;
+        @BindView(R.id.item_source_switch) SwitchCompat sourceSwitch;
 
-        CardHolder(final View view) {
+        SourceHolder(final View view) {
             super(view);
-            cardSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            sourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     mOnItemCheckedListener.onItemCheckedListener(isChecked, getAdapterPosition());
@@ -39,23 +39,22 @@ public class CardAdapter<T extends Card> extends BaseAdapter<T> {
         }
     }
 
-    public CardAdapter(Context context, List<T> list) {
+    public SourceAdapter(Context context, List<Source> list) {
         super(context, list);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_card, parent, false);
-        return new CardHolder(view);
+        View view = mInflater.inflate(R.layout.item_source, parent, false);
+        return new SourceHolder(view);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Card card = mDataSet.get(position);
-        CardHolder viewHolder = (CardHolder) holder;
-        viewHolder.cardTitle.setText(card.getTitle());
-        viewHolder.cardSwitch.setChecked(card.getEnable());
+        Source source = mDataSet.get(position);
+        SourceHolder viewHolder = (SourceHolder) holder;
+        viewHolder.sourceTitle.setText(source.getTitle());
+        viewHolder.sourceSwitch.setChecked(source.getEnable());
     }
 
     @Override
@@ -78,8 +77,8 @@ public class CardAdapter<T extends Card> extends BaseAdapter<T> {
     }
 
     public boolean contain(int type) {
-        for (Card card : mDataSet) {
-            if (card.getType() == type) {
+        for (Source source : mDataSet) {
+            if (source.getType() == type) {
                 return true;
             }
         }

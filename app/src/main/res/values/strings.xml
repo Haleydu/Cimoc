@@ -1,28 +1,24 @@
 <resources>
     <string name="app_name">Cimoc</string>
 
-    <string name="drawer_main">Cimoc</string>
-    <string name="drawer_comic">我的漫画</string>
-    <string name="drawer_history">历史浏览</string>
-    <string name="drawer_system">系统选项</string>
-    <string name="drawer_download">下载管理</string>
-    <string name="drawer_source">图源管理</string>
-    <string name="drawer_tag">标签管理</string>
+    <string name="drawer_search">搜索</string>
+    <string name="drawer_comic">漫画</string>
+    <string name="drawer_source">图源</string>
+    <string name="drawer_tag">标签</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
     <string name="drawer_light">日间模式</string>
     <string name="drawer_night">夜间模式</string>
-    <string name="drawer_last_read">最后阅读：</string>
-    <string name="drawer_last_read_null">无</string>
 
-    <string name="main_menu_search">搜索</string>
-    <string name="main_menu_source">图源</string>
-    <string name="main_search_keyword_empty">关键字为空</string>
-    <string name="main_source_select">图源选择</string>
-    <string name="main_source_none">未选择图源</string>
-    <string name="main_source_load_fail">读取图源失败</string>
     <string name="main_double_click">再按一次退出</string>
     <string name="main_last_read_fail">读取最后阅读失败</string>
+
+    <string name="search_menu_source">图源</string>
+    <string name="search_keyword_empty">关键字为空</string>
+    <string name="search_keyword_input">请输入关键字</string>
+    <string name="search_source_select">图源选择</string>
+    <string name="search_source_none">未选择图源</string>
+    <string name="search_source_load_fail">读取图源失败</string>
 
     <string name="result">搜索结果</string>
     <string name="result_empty">搜索结果为空</string>
@@ -41,9 +37,18 @@
     <string name="detail_download_queue_fail">加入下载队列失败</string>
     <string name="detail_select_chapter">选择章节</string>
 
-    <string name="favorite_update_confirm">是否检查更新</string>
-    <string name="favorite_update_doing">正在检查更新</string>
-    <string name="favorite_update_finish">检查更新完成</string>
+    <string name="comic_tab_favorite">收藏</string>
+    <string name="comic_tab_history">历史</string>
+    <string name="comic_tab_download">下载</string>
+    <string name="comic_filter">过滤</string>
+    <string name="comic_filter_fail">过滤失败</string>
+    <string name="comic_load_filter_fail">读取标签失败</string>
+    <string name="comic_tag_select">标签选择</string>
+
+    <string name="favorite_check_update">检查更新</string>
+    <string name="favorite_check_update_confirm">是否检查更新</string>
+    <string name="favorite_check_update_doing">正在检查更新</string>
+    <string name="favorite_check_update_done">检查更新完成</string>
 
     <string name="history_delete_confirm">是否删除该历史纪录</string>
     <string name="history_clear_confirm">是否清除所有历史纪录</string>
@@ -137,14 +142,12 @@
     <string name="source_delete_fail">删除图源失败</string>
     <string name="source_add">添加图源</string>
     <string name="source_add_exist">图源已存在</string>
+    <string name="source_add_success">添加成功</string>
     <string name="source_add_error">添加失败</string>
 
     <string name="tag_add">添加标签</string>
-    <string name="tag_add_exist">标签已存在</string>
     <string name="tag_add_empty">标签名称不能为空</string>
-
-    <string name="card_add_success">添加成功</string>
-    <string name="card_load_fail">读取数据失败</string>
+    <string name="tag_add_success">添加成功</string>
 
     <string name="download_service_doing">正在下载漫画</string>
     <string name="download_service_complete">所有任务已完成</string>
@@ -153,8 +156,6 @@
     <string name="download_task_empty">下载任务为空</string>
     <string name="download_task_fail">读取任务失败</string>
     <string name="download_action_confirm">是否开始或暂停下载</string>
-
-    <string name="grid_load_comic_fail">读取漫画失败</string>
 
     <string name="task_parse">正在解析</string>
     <string name="task_pause">暂停下载</string>
@@ -185,6 +186,7 @@
     <string name="event_switch_mode">切换阅读模式</string>
     <string name="event_switch_control">显示/隐藏进度条</string>
 
+    <string name="common_data_load_fail">读取数据失败</string>
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>
     <string name="common_null">null</string>

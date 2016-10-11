@@ -79,9 +79,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         return mDataSet;
     }
 
-    public void setData(List<T> list) {
+    public void setData(Collection<T> collection) {
         mDataSet.clear();
-        mDataSet.addAll(list);
+        mDataSet.addAll(collection);
         notifyDataSetChanged();
     }
 

@@ -103,7 +103,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                        super.onFinalImageSet(id, imageInfo, animatable);
                         if (imageInfo == null) {
                             return;
                         }
@@ -117,7 +116,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
-                        super.onIntermediateImageSet(id, imageInfo);
                         if (imageInfo != null) {
                             switch (fit) {
                                 case FIT_HEIGHT:
@@ -133,7 +131,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                        super.onFinalImageSet(id, imageInfo, animatable);
                         if (imageInfo != null) {
                             switch (fit) {
                                 case FIT_HEIGHT:

@@ -23,7 +23,7 @@
         </LinearLayout>
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"
-            android:layout_width="300dp"
+            android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:headerLayout="@layout/custom_drawer_header"

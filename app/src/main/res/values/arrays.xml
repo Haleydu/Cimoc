@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="home_items">
-        <item>我的漫画</item>
-        <item>历史阅读</item>
-        <item>下载管理</item>
-        <item>图源管理</item>
+        <item>搜索</item>
+        <item>漫画</item>
+        <item>图源</item>
+        <item>标签</item>
     </string-array>
     <string-array name="reader_mode_items">
         <item>翻页模式</item>

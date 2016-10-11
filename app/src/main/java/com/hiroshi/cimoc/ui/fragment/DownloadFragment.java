@@ -33,11 +33,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    protected void initAdapter() {
-        mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
-    }
-
-    @Override
     protected void initData() {
         start = false;
         ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);

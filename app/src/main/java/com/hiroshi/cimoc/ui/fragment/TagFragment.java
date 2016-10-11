@@ -1,13 +1,21 @@
 package com.hiroshi.cimoc.ui.fragment;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.TagPresenter;
-import com.hiroshi.cimoc.ui.adapter.CardAdapter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
+import com.hiroshi.cimoc.ui.adapter.TagAdapter;
 import com.hiroshi.cimoc.ui.view.TagView;
-import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,10 +24,10 @@ import java.util.List;
  * Created by Hiroshi on 2016/10/10.
  */
 
-public class TagFragment extends CardFragment implements TagView {
+public class TagFragment extends ClassicalFragment implements TagView {
 
     private TagPresenter mPresenter;
-    private CardAdapter<Tag> mCardAdapter;
+    private TagAdapter mTagAdapter;
 
     @Override
     protected void initPresenter() {
@@ -29,13 +37,9 @@ public class TagFragment extends CardFragment implements TagView {
 
     @Override
     protected void initView() {
+        mTagAdapter = new TagAdapter(getActivity(), new LinkedList<Tag>());
+        mTagAdapter.setOnItemLongClickListener(this);
         super.initView();
-        mCardAdapter = new CardAdapter<>(getActivity(), new LinkedList<Tag>());
-        mCardAdapter.setOnItemLongClickListener(this);
-        mCardAdapter.setOnItemClickListener(this);
-        mCardAdapter.setOnItemCheckedListener(this);
-        mRecyclerView.addItemDecoration(mCardAdapter.getItemDecoration());
-        mRecyclerView.setAdapter(mCardAdapter);
     }
 
     @Override
@@ -54,42 +58,50 @@ public class TagFragment extends CardFragment implements TagView {
     }
 
     @Override
-    public void onItemCheckedListener(boolean isChecked, int position) {
-        Tag tag = mCardAdapter.getItem(position);
-        tag.setEnable(isChecked);
-        mPresenter.update(tag);
-    }
-
-    @Override
-    protected void onActionConfirm(String text) {
-        if (!StringUtils.isEmpty(text)) {
-            for (Tag tag : mCardAdapter.getDateSet()) {
-                if (tag.getTitle().equals(text)) {
-                    showSnackbar(R.string.tag_add_exist);
-                    return;
-                }
+    protected void onActionButtonClick() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_single_editor, null);
+        final EditText editText = (EditText) view.findViewById(R.id.dialog_single_edit_text);
+        builder.setTitle(R.string.tag_add);
+        builder.setView(view);
+        builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mPresenter.insert(editText.getText().toString());
             }
-            mPresenter.insert(text);
-        } else {
-            showSnackbar(R.string.tag_add_empty);
-        }
+        });
+        builder.show();
     }
 
     @Override
     public void onTagLoadSuccess(List<Tag> list) {
-        mCardAdapter.addAll(list);
-        onInitSuccess();
+        mTagAdapter.addAll(list);
+    }
+
+    @Override
+    public void onTagLoadFail() {
+        showSnackbar(R.string.common_data_load_fail);
     }
 
     @Override
     public void onTagAddSuccess(Tag tag) {
-        mCardAdapter.add(tag);
-        showSnackbar(R.string.card_add_success);
+        mTagAdapter.add(tag);
+        showSnackbar(R.string.tag_add_success);
     }
 
     @Override
-    protected int getActionTitle() {
-        return R.string.tag_add;
+    protected int getImageRes() {
+        return R.drawable.ic_add_white_24dp;
+    }
+
+    @Override
+    protected BaseAdapter getAdapter() {
+        return mTagAdapter;
+    }
+
+    @Override
+    protected RecyclerView.LayoutManager getLayoutManager() {
+        return new GridLayoutManager(getActivity(), 3);
     }
 
 }

@@ -7,9 +7,11 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/8/21.
  */
-public interface SourceView extends CardView {
+public interface SourceView extends BaseView {
 
     void onSourceLoadSuccess(List<Source> list);
+
+    void onSourceLoadFail();
 
     void onSourceAdd(Source source);
 

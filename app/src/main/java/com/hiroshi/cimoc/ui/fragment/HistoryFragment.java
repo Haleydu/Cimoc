@@ -29,8 +29,8 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     @Override
-    protected void initAdapter() {
-        mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
+    protected void initView() {
+        super.initView();
         mComicAdapter.setOnItemLongClickListener(new BaseAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, final int position) {

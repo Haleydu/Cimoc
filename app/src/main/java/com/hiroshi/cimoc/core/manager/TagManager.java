@@ -16,9 +16,10 @@ import rx.Observable;
 
 public class TagManager {
 
-    public static final int TAG_TYPE_CONTINUE = 250;
-    public static final int TAG_TYPE_END = 251;
-    public static final int TAG_NORMAL = 300;
+    public static final int TAG_ALL = 100;
+    public static final int TAG_CONTINUE = 101;
+    public static final int TAG_END = 102;
+    public static final int TAG_NORMAL = 103;
 
     private static TagManager mTagManager;
 
@@ -36,9 +37,9 @@ public class TagManager {
                 .list();
     }
 
-    public Observable<List<TagRef>> listByTag(List<Integer> list) {
+    public Observable<List<TagRef>> listByTag(long id) {
         return mRefDao.queryBuilder()
-                .where(TagRefDao.Properties.Tid.in(list))
+                .where(TagRefDao.Properties.Tid.eq(id))
                 .rx()
                 .list();
     }

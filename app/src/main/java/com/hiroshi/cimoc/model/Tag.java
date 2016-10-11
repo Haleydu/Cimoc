@@ -9,25 +9,19 @@ import org.greenrobot.greendao.annotation.NotNull;
  * Created by Hiroshi on 2016/10/10.
  */
 @Entity
-public class Tag implements Card {
+public class Tag {
 
     @Id(autoincrement = true) private Long id;
     @NotNull private String title;
-    /**
-     *  0 - 200 source
-     *  250 continue
-     *  251 end
-     *  300 normal
-     */
-    @NotNull private int type;
-    @NotNull private boolean enable;
+    @NotNull private int count;
+    private String cover;
 
-    @Generated(hash = 659343159)
-    public Tag(Long id, @NotNull String title, int type, boolean enable) {
+    @Generated(hash = 1976843784)
+    public Tag(Long id, @NotNull String title, int count, String cover) {
         this.id = id;
         this.title = title;
-        this.type = type;
-        this.enable = enable;
+        this.count = count;
+        this.cover = cover;
     }
 
     @Generated(hash = 1605720318)
@@ -50,20 +44,20 @@ public class Tag implements Card {
         this.title = title;
     }
 
-    public int getType() {
-        return this.type;
+    public int getCount() {
+        return this.count;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setCount(int count) {
+        this.count = count;
     }
 
-    public boolean getEnable() {
-        return this.enable;
+    public String getCover() {
+        return this.cover;
     }
 
-    public void setEnable(boolean enable) {
-        this.enable = enable;
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
 }

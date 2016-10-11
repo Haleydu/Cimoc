@@ -37,7 +37,7 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onCardLoadFail();
+                        mBaseView.onSourceLoadFail();
                     }
                 }));
     }

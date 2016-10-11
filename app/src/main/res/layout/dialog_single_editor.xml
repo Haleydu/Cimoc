@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <EditText
-        android:id="@+id/card_edit_text"
+        android:id="@+id/dialog_single_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -12,6 +12,6 @@
         android:layout_marginBottom="20dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textSize="14sp"/>
 </RelativeLayout>

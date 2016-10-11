@@ -13,12 +13,10 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.adapter.FavoriteAdapter;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,7 +24,6 @@ import java.util.List;
  */
 public class FavoriteFragment extends GridFragment implements FavoriteView {
 
-    private FavoriteAdapter mFavoriteAdapter;
     private FavoritePresenter mPresenter;
     private Notification.Builder mBuilder;
     private NotificationManager mManager;
@@ -39,17 +36,9 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     protected void initView() {
-        setHasOptionsMenu(true);
         super.initView();
-        mActionButton.setImageResource(R.drawable.ic_sync_white_24dp);
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-    }
-
-    @Override
-    protected void initAdapter() {
-        mFavoriteAdapter = new FavoriteAdapter(getActivity(), new LinkedList<MiniComic>());
-        mComicAdapter = mFavoriteAdapter;
-
+        mComicAdapter.setOnItemLongClickListener(null);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -65,7 +54,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
                     return false;
                 }
 
-                List<MiniComic> list = mFavoriteAdapter.getDateSet();
+                List<MiniComic> list = mComicAdapter.getDateSet();
                 long fromId = list.get(fromPosition).getId();
                 long toId = list.get(toPosition).getId();
                 boolean isBack = fromPosition < toPosition;
@@ -79,7 +68,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
                     }
                 }
                 mPresenter.updateComic(fromId, toId, isBack);
-                mFavoriteAdapter.notifyItemMoved(fromPosition, toPosition);
+                mComicAdapter.notifyItemMoved(fromPosition, toPosition);
                 return true;
             }
 
@@ -110,44 +99,44 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         if (mBuilder == null) {
             mPresenter.checkUpdate();
             mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
-                    R.string.favorite_update_doing, true, 0, 0, true);
+                    R.string.favorite_check_update_doing, true, 0, 0, true);
             NotificationUtils.notifyBuilder(0, mManager, mBuilder);
         } else {
-            showSnackbar(R.string.favorite_update_doing);
+            showSnackbar(R.string.favorite_check_update_doing);
         }
     }
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mFavoriteAdapter.clickItem(position);
+        MiniComic comic = mComicAdapter.clickItem(position);
         Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
         startActivity(intent);
     }
 
     @Override
     public void onItemAdd(MiniComic comic) {
-        mFavoriteAdapter.add(comic);
+        mComicAdapter.add(comic);
     }
 
     @Override
     public void onItemAdd(List<MiniComic> list) {
-        mFavoriteAdapter.addAll(0, list);
+        mComicAdapter.addAll(0, list);
     }
 
     @Override
     public void onItemRemove(long id) {
-        mFavoriteAdapter.removeById(id);
+        mComicAdapter.removeById(id);
     }
 
     @Override
     public void onSourceRemove(int source) {
-        mFavoriteAdapter.removeBySource(source);
+        mComicAdapter.removeBySource(source);
     }
 
     @Override
     public void onComicUpdate(Comic comic, int progress, int max) {
         if (comic != null) {
-            mFavoriteAdapter.moveToFirst(new MiniComic(comic));
+            mComicAdapter.update(new MiniComic(comic));
         }
         mBuilder.setProgress(max, progress, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
@@ -155,14 +144,14 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onCheckComplete() {
-        NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_update_finish, false);
+        NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_done, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
         mBuilder = null;
     }
 
     @Override
     protected int getActionRes() {
-        return R.string.favorite_update_confirm;
+        return R.string.favorite_check_update_confirm;
     }
 
     @Override

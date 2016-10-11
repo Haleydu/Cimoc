@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.model.MiniComic;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by Hiroshi on 2016/9/30.
@@ -10,8 +10,12 @@ import java.util.List;
 
 public interface GridView extends BaseView {
 
-    void onComicLoadSuccess(List<MiniComic> list);
+    void onComicLoadSuccess(Collection<MiniComic> list);
 
     void onComicLoadFail();
+
+    void onComicFilterSuccess(Collection<MiniComic> list);
+
+    void onComicFilterFail();
 
 }

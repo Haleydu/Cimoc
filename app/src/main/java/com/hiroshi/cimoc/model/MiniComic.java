@@ -22,7 +22,7 @@ public class MiniComic {
         this.cover = comic.getCover();
         this.update = comic.getUpdate();
         this.finish = comic.getFinish();
-        this.highlight = comic.getHighlight();
+        this.highlight = comic.getFavorite() != null && comic.getHighlight();
     }
 
     @Override

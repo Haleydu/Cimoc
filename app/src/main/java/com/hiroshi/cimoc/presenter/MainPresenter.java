@@ -1,14 +1,10 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.MainView;
-
-import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -20,11 +16,9 @@ import rx.functions.Action1;
 public class MainPresenter extends BasePresenter<MainView> {
 
     private ComicManager mComicManager;
-    private SourceManager mSourceManager;
 
     public MainPresenter() {
         mComicManager = ComicManager.getInstance();
-        mSourceManager = SourceManager.getInstance();
     }
 
     @Override
@@ -52,22 +46,6 @@ public class MainPresenter extends BasePresenter<MainView> {
                     @Override
                     public void call(Throwable throwable) {
                         mBaseView.onLastLoadFail();
-                    }
-                }));
-    }
-
-    public void loadSource() {
-        mCompositeSubscription.add(mSourceManager.listEnable()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Source>>() {
-                    @Override
-                    public void call(List<Source> list) {
-                        mBaseView.onSourceLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onSourceLoadFail();
                     }
                 }));
     }
