@@ -1,17 +1,16 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.fragment.classical.grid;
 
-import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+import com.hiroshi.cimoc.ui.adapter.GridAdapter;
+import com.hiroshi.cimoc.ui.fragment.classical.ClassicalFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.GridView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
@@ -22,18 +21,17 @@ import java.util.LinkedList;
  * Created by Hiroshi on 2016/9/22.
  */
 
-public abstract class GridFragment extends ClassicalFragment implements GridView {
+public abstract class GridFragment extends ClassicalFragment implements GridView, MessageDialogFragment.MessageDialogListener {
 
     protected AlertDialog mProgressDialog;
-    protected ControllerBuilderProvider mBuilderProvider;
-    protected ComicAdapter mComicAdapter;
+    protected GridAdapter mGridAdapter;
 
     @Override
     protected void initView() {
         mProgressDialog = DialogUtils.buildCancelableFalseDialog(getActivity(), R.string.dialog_doing);
-        mComicAdapter = new ComicAdapter(getActivity(), new LinkedList<MiniComic>());
-        mBuilderProvider = ((CimocApplication) getActivity().getApplication()).getBuilderProvider();
-        mComicAdapter.setProvider(mBuilderProvider);
+        mGridAdapter = new GridAdapter(getActivity(), new LinkedList<MiniComic>());
+        mGridAdapter.setProvider(((CimocApplication) getActivity().getApplication()).getBuilderProvider());
+        mRecyclerView.setRecycledViewPool(((CimocApplication) getActivity().getApplication()).getGridRecycledPool());
         super.initView();
     }
 
@@ -44,26 +42,11 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-        mComicAdapter = null;
-    }
-
-    @Override
-    public void onItemLongClick(View view, int position) {}
-
-    @Override
-    protected void onActionButtonClick() {
-        DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, getActionRes(),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        onActionConfirm();
-                    }
-                }).show();
     }
 
     @Override
     public void onComicLoadSuccess(Collection<MiniComic> list) {
-        mComicAdapter.addAll(list);
+        mGridAdapter.addAll(list);
     }
 
     @Override
@@ -73,7 +56,7 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
 
     @Override
     public void onComicFilterSuccess(Collection<MiniComic> list) {
-        mComicAdapter.setData(list);
+        mGridAdapter.setData(list);
     }
 
     @Override
@@ -81,18 +64,16 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
         showSnackbar(R.string.comic_filter_fail);
     }
 
-    protected abstract int getActionRes();
-
-    protected abstract void onActionConfirm();
-
     @Override
     protected BaseAdapter getAdapter() {
-        return mComicAdapter;
+        return mGridAdapter;
     }
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new GridLayoutManager(getActivity(), 3);
+        GridLayoutManager manager = new GridLayoutManager(getActivity(), 3);
+        manager.setRecycleChildrenOnDetach(true);
+        return manager;
     }
 
 }

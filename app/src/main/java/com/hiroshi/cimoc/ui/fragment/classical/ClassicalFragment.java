@@ -1,12 +1,12 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.fragment.classical;
 
-import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.utils.DialogUtils;
+import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -18,8 +18,8 @@ import butterknife.OnClick;
 public abstract class ClassicalFragment extends BaseFragment implements BaseAdapter.OnItemClickListener,
         BaseAdapter.OnItemLongClickListener {
 
-    @BindView(R.id.classical_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.classical_action_button) FloatingActionButton mActionButton;
+    @BindView(R.id.classical_recycler_view) protected RecyclerView mRecyclerView;
+    @BindView(R.id.classical_action_button) protected FloatingActionButton mActionButton;
 
     @Override
     protected void initView() {
@@ -41,7 +41,13 @@ public abstract class ClassicalFragment extends BaseFragment implements BaseAdap
     }
 
     @Override
-    protected int getLayoutView() {
+    public void onItemClick(View view, int position) {}
+
+    @Override
+    public void onItemLongClick(View view, int position) {}
+
+    @Override
+    protected int getLayoutRes() {
         return R.layout.fragment_classical;
     }
 

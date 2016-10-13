@@ -1,12 +1,10 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,10 +14,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.image.ImageInfo;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
@@ -27,8 +23,8 @@ import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.SearchFragment;
-import com.hiroshi.cimoc.ui.fragment.SourceFragment;
-import com.hiroshi.cimoc.ui.fragment.TagFragment;
+import com.hiroshi.cimoc.ui.fragment.classical.SourceFragment;
+import com.hiroshi.cimoc.ui.fragment.classical.TagFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
 
 import butterknife.BindView;
@@ -46,7 +42,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
     private TextView mLastText;
     private SimpleDraweeView mDraweeView;
-    private View mHeaderMask;
 
     private MainPresenter mPresenter;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -94,13 +89,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initNavigation() {
-        night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+        night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
         mLastText = ButterKnife.findById(header, R.id.drawer_last_title);
         mDraweeView = ButterKnife.findById(header, R.id.drawer_last_cover);
-        mHeaderMask = ButterKnife.findById(header, R.id.drawer_cover_mask);
         mLastText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +107,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initFragment() {
-        int home = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_LAUNH_HOME, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_LAUNCH_HOME, PreferenceManager.HOME_SEARCH);
         switch (home) {
             default:
             case PreferenceManager.HOME_SEARCH:
@@ -164,9 +158,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mPresenter = null;
         super.onDestroy();
         ((CimocApplication) getApplication()).getBuilderProvider().clear();
-        mFragmentArray = null;
-        mCurrentFragment = null;
-        mDrawerToggle = null;
+        ((CimocApplication) getApplication()).getGridRecycledPool().clear();
     }
 
     @Override
@@ -183,7 +175,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else if (System.currentTimeMillis() - mExitTime > 2000) {
-            showSnackbar(R.string.main_double_click);
+            mCurrentFragment.showSnackbar(R.string.main_double_click);
             mExitTime = System.currentTimeMillis();
         } else {
             finish();
@@ -206,7 +198,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     break;
                 case R.id.drawer_night:
                     night = !night;
-                    CimocApplication.getPreferences().putBoolean(PreferenceManager.PREF_NIGHT, night);
+                    mPreference.putBoolean(PreferenceManager.PREF_NIGHT, night);
                     mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
                     mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
                     break;
@@ -238,13 +230,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastText.setText(title);
         DraweeController controller = ((CimocApplication) getApplication()).getBuilderProvider().get(source)
                 .setOldController(mDraweeView.getController())
-                .setControllerListener(new BaseControllerListener<ImageInfo>() {
-                    @Override
-                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                        mHeaderMask.setVisibility(View.VISIBLE);
-                        mLastText.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.black));
-                    }
-                })
                 .setUri(cover)
                 .build();
         mDraweeView.setController(controller);
@@ -252,7 +237,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected String getDefaultTitle() {
-        int home = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_LAUNH_HOME, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_LAUNCH_HOME, PreferenceManager.HOME_SEARCH);
         return getResources().getStringArray(R.array.home_items)[home];
     }
 

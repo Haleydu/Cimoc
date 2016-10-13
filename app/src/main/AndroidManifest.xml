@@ -40,11 +40,23 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.settings.PageSettingsActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.settings.StreamSettingsActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.AboutActivity"
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.EventActivity"
+            android:name=".ui.activity.TagComicActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.settings.EventSettingsActivity"
             android:configChanges="orientation|screenSize"/>
 
         <activity

@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.activity;
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -24,7 +23,7 @@ public class StreamReaderActivity extends ReaderActivity {
     protected void initView() {
         super.initView();
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_STREAM);
-        if (!CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BLANK, false)) {
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
         }
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

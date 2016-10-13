@@ -28,13 +28,13 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
     @Override
     protected void initSubscription() {
         super.initSubscription();
-        addSubscription(RxEvent.HISTORY_COMIC, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_HISTORY, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onItemUpdate((MiniComic) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.COMIC_DELETE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_REMOVE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onSourceRemove((int) rxEvent.getData());
@@ -47,7 +47,7 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
         return mComicManager.listHistory();
     }
 
-    public void deleteHistory(MiniComic history) {
+    public void delete(MiniComic history) {
         Comic comic = mComicManager.load(history.getId());
         if (comic.getFavorite() == null && comic.getDownload() == null) {
             mComicManager.delete(comic);
@@ -57,7 +57,7 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
         }
     }
 
-    public void clearHistory() {
+    public void clear() {
         mCompositeSubscription.add(mComicManager.listHistory()
                 .flatMap(new Func1<List<Comic>, Observable<Void>>() {
                     @Override

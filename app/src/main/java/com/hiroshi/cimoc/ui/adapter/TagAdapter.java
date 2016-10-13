@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
 
@@ -21,10 +20,8 @@ import butterknife.BindView;
 
 public class TagAdapter extends BaseAdapter<Tag> {
 
-    class TagHolder extends BaseViewHolder {
-        @BindView(R.id.item_grid_image) SimpleDraweeView tagCover;
-        @BindView(R.id.item_grid_title) TextView tagTitle;
-        @BindView(R.id.item_grid_subtitle) TextView tagCount;
+    static class TagHolder extends BaseViewHolder {
+        @BindView(R.id.item_tag_title) TextView tagTitle;
 
         TagHolder(final View view) {
             super(view);
@@ -37,17 +34,16 @@ public class TagAdapter extends BaseAdapter<Tag> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_grid, parent, false);
+        View view = mInflater.inflate(R.layout.item_tag, parent, false);
         return new TagHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         Tag tag = mDataSet.get(position);
         TagHolder viewHolder = (TagHolder) holder;
-        viewHolder.tagCover.setImageURI(tag.getCover());
         viewHolder.tagTitle.setText(tag.getTitle());
-        viewHolder.tagCount.setText(String.valueOf(tag.getCount()));
     }
 
     @Override
@@ -56,7 +52,7 @@ public class TagAdapter extends BaseAdapter<Tag> {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 int offset = parent.getWidth() / 90;
-                outRect.set(offset, 0, offset, (int) (2.8 * offset));
+                outRect.set(offset, 0, offset, (int) (offset * 1.5));
             }
         };
     }

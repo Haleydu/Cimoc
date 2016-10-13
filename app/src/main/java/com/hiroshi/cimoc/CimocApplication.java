@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
+import android.support.v7.widget.RecyclerView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.DBOpenHelper;
@@ -8,6 +9,7 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
@@ -20,18 +22,17 @@ public class CimocApplication extends Application {
 
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
-    private static PreferenceManager preferences;
 
-    private ControllerBuilderProvider builderProvider;
+    private PreferenceManager mPreferenceManager;
+    private ControllerBuilderProvider mBuilderProvider;
+    private RecyclerView.RecycledViewPool mRecycledPool;
 
     @Override
     public void onCreate() {
         super.onCreate();
         DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
         httpClient = new OkHttpClient();
-        builderProvider = new ControllerBuilderProvider(getApplicationContext());
         daoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
-        preferences = new PreferenceManager(getApplicationContext());
         Fresco.initialize(this);
     }
 
@@ -39,16 +40,30 @@ public class CimocApplication extends Application {
         return daoSession;
     }
 
-    public static PreferenceManager getPreferences() {
-        return preferences;
-    }
-
     public static OkHttpClient getHttpClient() {
         return httpClient;
     }
 
+    public PreferenceManager getPreferenceManager() {
+        if (mPreferenceManager == null) {
+            mPreferenceManager = new PreferenceManager(getApplicationContext());
+        }
+        return mPreferenceManager;
+    }
+
+    public RecyclerView.RecycledViewPool getGridRecycledPool() {
+        if (mRecycledPool == null) {
+            mRecycledPool = new RecyclerView.RecycledViewPool();
+            mRecycledPool.setMaxRecycledViews(GridAdapter.GRID_ITEM_TYPE, 20);
+        }
+        return mRecycledPool;
+    }
+
     public ControllerBuilderProvider getBuilderProvider() {
-        return builderProvider;
+        if (mBuilderProvider == null) {
+            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext());
+        }
+        return mBuilderProvider;
     }
 
 }

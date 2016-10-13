@@ -7,8 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.utils.HintUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -19,13 +19,11 @@ import butterknife.Unbinder;
 public abstract class BaseFragment extends Fragment {
 
     private Unbinder unbinder;
-    protected boolean isInit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(getLayoutView(), container, false);
+        View view = inflater.inflate(getLayoutRes(), container, false);
         unbinder = ButterKnife.bind(this, view);
-        isInit = false;
         initPresenter();
         initView();
         initData();
@@ -39,15 +37,15 @@ public abstract class BaseFragment extends Fragment {
     }
 
     public void showSnackbar(int resId) {
-        HintUtils.showSnackBar(getView(), getString(resId));
+        showSnackbar(getString(resId));
     }
 
     public void showSnackbar(int resId, Object... args) {
-        HintUtils.showSnackBar(getView(), getString(resId), args);
+        showSnackbar(StringUtils.format(getString(resId), args));
     }
 
     public void showSnackbar(String msg) {
-        HintUtils.showSnackBar(getView(), msg);
+        HintUtils.showSnackbar(getView(), msg);
     }
 
     protected void initView() {}
@@ -56,6 +54,6 @@ public abstract class BaseFragment extends Fragment {
 
     protected void initPresenter() {}
 
-    protected abstract @LayoutRes int getLayoutView();
+    protected abstract @LayoutRes int getLayoutRes();
 
 }

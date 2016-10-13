@@ -23,7 +23,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.HISTORY_COMIC, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_HISTORY, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();

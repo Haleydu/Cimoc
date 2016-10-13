@@ -29,10 +29,8 @@ public class ComicManager {
                 .call(callable);
     }
 
-    public Observable<Void> runInTx(Runnable runnable) {
-        return mComicDao.getSession()
-                .rxTx()
-                .run(runnable);
+    public void runInTx(Runnable runnable) {
+        mComicDao.getSession().runInTx(runnable);
     }
 
     public Observable<List<Comic>> listSource(int source) {

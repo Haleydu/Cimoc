@@ -124,30 +124,16 @@ public class Download {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Void> delete(final int source, final String comic, final String title) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
-                FileUtils.deleteDir(dir);
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io());
+    public static void delete(final int source, final String comic, final String title) {
+        String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
+        FileUtils.deleteDir(dir);
     }
 
-    public static Observable<Void> delete(final int source, final String comic, final List<String> list) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                for (String title : list) {
-                    String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
-                    FileUtils.deleteDir(dir);
-                }
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io());
+    public static void delete(final int source, final String comic, final List<String> list) {
+        for (String title : list) {
+            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
+            FileUtils.deleteDir(dir);
+        }
     }
 
 }

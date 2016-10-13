@@ -24,16 +24,16 @@ public class SourceAdapter extends BaseAdapter<Source> {
 
     private OnItemCheckedListener mOnItemCheckedListener;
 
-    class SourceHolder extends BaseViewHolder {
+    static class SourceHolder extends BaseViewHolder {
         @BindView(R.id.item_source_title) TextView sourceTitle;
         @BindView(R.id.item_source_switch) SwitchCompat sourceSwitch;
 
-        SourceHolder(final View view) {
+        SourceHolder(final View view, final OnItemCheckedListener listener) {
             super(view);
             sourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    mOnItemCheckedListener.onItemCheckedListener(isChecked, getAdapterPosition());
+                    listener.onItemCheckedListener(isChecked, getAdapterPosition());
                 }
             });
         }
@@ -46,11 +46,12 @@ public class SourceAdapter extends BaseAdapter<Source> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item_source, parent, false);
-        return new SourceHolder(view);
+        return new SourceHolder(view, mOnItemCheckedListener);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         Source source = mDataSet.get(position);
         SourceHolder viewHolder = (SourceHolder) holder;
         viewHolder.sourceTitle.setText(source.getTitle());
@@ -63,7 +64,7 @@ public class SourceAdapter extends BaseAdapter<Source> {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                 int offset = parent.getWidth() / 90;
-                outRect.set(offset, offset, offset, 0);
+                outRect.set(offset, 0, offset, (int) (offset * 1.5));
             }
         };
     }

@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.support.v7.widget.RecyclerView;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -23,7 +22,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     protected void initView() {
         super.initView();
-        int offset = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_TRIGGER, 5);
+        int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 5);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
         ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);

@@ -8,8 +8,9 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Selectable;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -17,35 +18,19 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/9/4.
  */
-public class SelectAdapter extends BaseAdapter<String> {
+public class SelectAdapter extends BaseAdapter<Selectable> {
 
-    class BoxState {
-        boolean disable;
-        boolean checked;
-    }
+    class SelectHolder extends BaseAdapter.BaseViewHolder {
+        @BindView(R.id.item_select_title) TextView chapterTitle;
+        @BindView(R.id.item_select_checkbox) CheckBox chapterChoice;
 
-    private BoxState[] mStateArray;
-
-    public class ChapterHolder extends BaseAdapter.BaseViewHolder {
-        @BindView(R.id.download_chapter_title) TextView chapterTitle;
-        @BindView(R.id.download_chapter_checkbox) CheckBox chapterChoice;
-
-        public ChapterHolder(View view) {
+        SelectHolder(View view) {
             super(view);
         }
     }
 
-    public SelectAdapter(Context context, List<String> list) {
+    public SelectAdapter(Context context, List<Selectable> list) {
         super(context, list);
-    }
-
-    public void initState(boolean[] array) {
-        mStateArray = new BoxState[array.length];
-        for (int i = 0; i != array.length; ++i) {
-            mStateArray[i] = new BoxState();
-            mStateArray[i].checked = array[i];
-            mStateArray[i].disable = array[i];
-        }
     }
 
     @Override
@@ -55,26 +40,25 @@ public class SelectAdapter extends BaseAdapter<String> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.item_download, parent, false);
-        return new ChapterHolder(view);
+        View view = mInflater.inflate(R.layout.item_select, parent, false);
+        return new SelectHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ChapterHolder viewHolder = (ChapterHolder) holder;
-        viewHolder.chapterTitle.setText(mDataSet.get(position));
-        viewHolder.chapterChoice.setEnabled(!mStateArray[position].disable);
-        viewHolder.chapterChoice.setChecked(mStateArray[position].checked);
-    }
-
-    public void onClick(int position, boolean checked) {
-        mStateArray[position].checked = checked;
+        super.onBindViewHolder(holder, position);
+        SelectHolder viewHolder = (SelectHolder) holder;
+        Selectable selectable = mDataSet.get(position);
+        viewHolder.chapterTitle.setText(selectable.getTitle());
+        viewHolder.chapterChoice.setEnabled(!selectable.isDisable());
+        viewHolder.chapterChoice.setChecked(selectable.isChecked());
     }
 
     public List<Integer> getCheckedList() {
-        List<Integer> list = new ArrayList<>(mStateArray.length);
-        for (int i = 0; i != mStateArray.length; ++i) {
-            if (mStateArray[i].checked && !mStateArray[i].disable) {
+        List<Integer> list = new LinkedList<>();
+        int size = mDataSet.size();
+        for (int i = 0; i != size; ++i) {
+            if (mDataSet.get(i).isChecked() && !mDataSet.get(i).isDisable()) {
                 list.add(i);
             }
         }
@@ -82,15 +66,15 @@ public class SelectAdapter extends BaseAdapter<String> {
     }
 
     public void checkAll() {
-        for (BoxState state : mStateArray) {
-            state.checked = true;
+        for (Selectable selectable : mDataSet) {
+            selectable.setChecked(true);
         }
     }
 
     public void refreshChecked() {
-        for (BoxState state : mStateArray) {
-            if (state.checked && !state.disable) {
-                state.disable = true;
+        for (Selectable selectable : mDataSet) {
+            if (selectable.isChecked() && !selectable.isDisable()) {
+                selectable.setDisable(true);
             }
         }
     }

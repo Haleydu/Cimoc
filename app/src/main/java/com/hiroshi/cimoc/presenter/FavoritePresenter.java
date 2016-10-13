@@ -30,25 +30,25 @@ public class FavoritePresenter extends GridPresenter<FavoriteView> {
     @Override
     protected void initSubscription() {
         super.initSubscription();
-        addSubscription(RxEvent.FAVORITE_COMIC, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_FAVORITE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onItemAdd((MiniComic) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.UN_FAVORITE_COMIC, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_UNFAVORITE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onItemRemove((long) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.RESTORE_FAVORITE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onItemAdd((List<MiniComic>) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.COMIC_DELETE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_REMOVE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onSourceRemove((int) rxEvent.getData());

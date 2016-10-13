@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.utils.ViewUtils;
 
 /**
  * Created by Hiroshi on 2016/10/2.
@@ -23,7 +24,6 @@ public class ChapterButton extends TextView {
     private int normalColor;
     private int accentColor;
     private boolean download;
-    private float density;
 
     public ChapterButton(Context context) {
         this(context, null);
@@ -48,7 +48,6 @@ public class ChapterButton extends TextView {
 
         setClickable(true);
         download = false;
-        density = getResources().getDisplayMetrics().density;
         initColorDrawableState();
         initDrawableState();
     }
@@ -61,13 +60,13 @@ public class ChapterButton extends TextView {
 
     private void initDrawableState() {
         GradientDrawable normalDrawable = new GradientDrawable();
-        normalDrawable.setStroke((int) dpToPx(1), normalColor);
-        normalDrawable.setCornerRadius(dpToPx(18));
+        normalDrawable.setStroke((int) ViewUtils.dpToPixel(1, getContext()), normalColor);
+        normalDrawable.setCornerRadius(ViewUtils.dpToPixel(18, getContext()));
         normalDrawable.setColor(Color.TRANSPARENT);
 
         GradientDrawable selectedDrawable = new GradientDrawable();
-        selectedDrawable.setStroke((int) dpToPx(1), accentColor);
-        selectedDrawable.setCornerRadius(dpToPx(18));
+        selectedDrawable.setStroke((int) ViewUtils.dpToPixel(1, getContext()), accentColor);
+        selectedDrawable.setCornerRadius(ViewUtils.dpToPixel(18, getContext()));
         selectedDrawable.setColor(accentColor);
 
         StateListDrawable stateList = new StateListDrawable();
@@ -83,14 +82,6 @@ public class ChapterButton extends TextView {
             initColorDrawableState();
             initDrawableState();
         }
-    }
-
-    private float dpToPx(float dp) {
-        float px = dp * density;
-        if (dp > 0 && (px > 0 && px < 1)) {
-            px = 1;
-        }
-        return px;
     }
 
 }

@@ -10,7 +10,12 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.ComicPresenter;
 import com.hiroshi.cimoc.ui.adapter.ComicTabAdapter;
+import com.hiroshi.cimoc.ui.fragment.classical.grid.DownloadFragment;
+import com.hiroshi.cimoc.ui.fragment.classical.grid.FavoriteFragment;
+import com.hiroshi.cimoc.ui.fragment.classical.grid.GridFragment;
+import com.hiroshi.cimoc.ui.fragment.classical.grid.HistoryFragment;
 import com.hiroshi.cimoc.ui.view.ComicView;
+import com.hiroshi.cimoc.utils.HintUtils;
 
 import java.util.List;
 
@@ -26,6 +31,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @BindView(R.id.comic_view_pager) ViewPager mViewPager;
 
     private ComicPresenter mPresenter;
+    private ComicTabAdapter mTabAdapter;
     private long id;
 
     @Override
@@ -40,7 +46,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_history));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_favorite));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_download));
-        ComicTabAdapter mTabAdapter = new ComicTabAdapter(getFragmentManager(),
+        mTabAdapter = new ComicTabAdapter(getFragmentManager(),
                 new GridFragment[]{ new HistoryFragment(), new FavoriteFragment(), new DownloadFragment() },
                 new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download) });
         mViewPager.setOffscreenPageLimit(3);
@@ -73,6 +79,11 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
+    public void showSnackbar(String msg) {
+        HintUtils.showSnackbar(mTabAdapter.getItem(mViewPager.getCurrentItem()).getView(), msg);
+    }
+
+    @Override
     public void onFilterFail() {
         showSnackbar(R.string.comic_filter_fail);
     }
@@ -88,7 +99,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
-    protected int getLayoutView() {
+    protected int getLayoutRes() {
         return R.layout.fragment_comic;
     }
 

@@ -5,7 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 
-import com.hiroshi.cimoc.ui.fragment.GridFragment;
+import com.hiroshi.cimoc.ui.fragment.classical.grid.GridFragment;
 
 /**
  * Created by Hiroshi on 2016/10/11.

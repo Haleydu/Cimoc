@@ -10,23 +10,26 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class RxEvent {
 
-    public static final int FAVORITE_COMIC = 2;
-    public static final int UN_FAVORITE_COMIC = 3;
-    public static final int HISTORY_COMIC = 4;
-    public static final int COMIC_PAGE_CHANGE = 5;
-    public static final int COMIC_CHAPTER_CHANGE = 6;
-    public static final int RESTORE_FAVORITE = 7;
-    public static final int COMIC_DELETE = 8;
-    public static final int TASK_STATE_CHANGE = 9;
-    public static final int TASK_PROCESS = 10;
-    public static final int TASK_ADD = 11;
-    public static final int DOWNLOAD_DELETE = 12;
-    public static final int DOWNLOAD_START = 13;
-    public static final int DOWNLOAD_STOP = 14;
-    public static final int COMIC_FILTER = 15;
+    public static final int EVENT_COMIC_FAVORITE = 1;
+    public static final int EVENT_COMIC_UNFAVORITE = 2;
+    public static final int EVENT_COMIC_HISTORY = 3;
+    public static final int EVENT_COMIC_PAGE_CHANGE = 4;
+    public static final int EVENT_COMIC_CHAPTER_CHANGE = 5;
+    public static final int EVENT_COMIC_REMOVE = 6;
+    public static final int EVENT_COMIC_FILTER = 7;
+    public static final int EVENT_COMIC_FAVORITE_RESTORE = 8;
 
-    @IntDef({FAVORITE_COMIC, UN_FAVORITE_COMIC, HISTORY_COMIC, COMIC_PAGE_CHANGE, COMIC_CHAPTER_CHANGE, RESTORE_FAVORITE,
-            COMIC_DELETE, TASK_STATE_CHANGE, TASK_PROCESS, TASK_ADD, DOWNLOAD_DELETE, DOWNLOAD_START, DOWNLOAD_STOP, COMIC_FILTER})
+    public static final int EVENT_TASK_STATE_CHANGE = 20;
+    public static final int EVENT_TASK_PROCESS = 21;
+    public static final int EVENT_TASK_INSERT = 22;
+
+    public static final int EVENT_DOWNLOAD_REMOVE = 41;
+    public static final int EVENT_DOWNLOAD_START = 42;
+    public static final int EVENT_DOWNLOAD_STOP = 43;
+
+    @IntDef({EVENT_COMIC_FAVORITE, EVENT_COMIC_UNFAVORITE, EVENT_COMIC_HISTORY, EVENT_COMIC_PAGE_CHANGE, EVENT_COMIC_CHAPTER_CHANGE,
+            EVENT_COMIC_FAVORITE_RESTORE, EVENT_COMIC_REMOVE, EVENT_TASK_STATE_CHANGE, EVENT_TASK_PROCESS, EVENT_TASK_INSERT,
+            EVENT_DOWNLOAD_REMOVE, EVENT_DOWNLOAD_START, EVENT_DOWNLOAD_STOP, EVENT_COMIC_FILTER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface EventType {}
 

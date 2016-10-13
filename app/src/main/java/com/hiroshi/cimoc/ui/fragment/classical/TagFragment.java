@@ -1,18 +1,17 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.fragment.classical;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.TagPresenter;
+import com.hiroshi.cimoc.ui.activity.TagComicActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TagAdapter;
 import com.hiroshi.cimoc.ui.view.TagView;
@@ -49,7 +48,8 @@ public class TagFragment extends ClassicalFragment implements TagView {
 
     @Override
     public void onItemClick(View view, int position) {
-
+        Intent intent = TagComicActivity.createIntent(getActivity(), mTagAdapter.getItem(position).getId());
+        startActivity(intent);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class TagFragment extends ClassicalFragment implements TagView {
 
     @Override
     protected RecyclerView.LayoutManager getLayoutManager() {
-        return new GridLayoutManager(getActivity(), 3);
+        return new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
     }
 
 }

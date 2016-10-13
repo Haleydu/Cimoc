@@ -32,25 +32,25 @@ public class DownloadPresenter extends GridPresenter<DownloadView> {
     @Override
     protected void initSubscription() {
         super.initSubscription();
-        addSubscription(RxEvent.TASK_ADD, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_TASK_INSERT, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onDownloadAdd((MiniComic) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.DOWNLOAD_DELETE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_DOWNLOAD_REMOVE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onDownloadDelete((long) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.DOWNLOAD_START, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_DOWNLOAD_START, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onDownloadStart();
             }
         });
-        addSubscription(RxEvent.DOWNLOAD_STOP, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_DOWNLOAD_STOP, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onDownloadStop();

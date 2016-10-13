@@ -105,7 +105,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
                     public void call(List<MiniComic> list) {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.RESTORE_FAVORITE, list));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, list));
                         mBaseView.onRestoreSuccess(list.size());
                     }
                 }, new Action1<Throwable>() {

@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
@@ -75,7 +74,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected int progress = 1;
     protected int max = 1;
     protected int turn;
-    protected boolean isPortrait;
+    protected int orientation;
+    protected int mode;
 
     private boolean hide;
     private int[] mClickArray;
@@ -85,14 +85,15 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initTheme() {
         super.initTheme();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BRIGHT, false)) {
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        isPortrait = CimocApplication.getPreferences()
-                .getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT)
-                == PreferenceManager.READER_ORIENTATION_PORTRAIT;
-        int value = isPortrait ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-        setRequestedOrientation(value);
+        mode = getIntent().getIntExtra(EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
+        String key = mode == PreferenceManager.READER_MODE_PAGE ?
+                PreferenceManager.PREF_READER_PAGE_ORIENTATION : PreferenceManager.PREF_READER_STREAM_ORIENTATION;
+        orientation = mPreference.getInt(key, PreferenceManager.READER_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT ?
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
     @Override
@@ -109,11 +110,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initView() {
-        hide = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_HIDE, false);
+        hide = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
         if (hide) {
             mInfoLayout.setVisibility(View.INVISIBLE);
         }
-        turn = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
+        String key = mode == PreferenceManager.READER_MODE_PAGE ?
+                PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
+        turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
         mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
         mSeekBar.setOnProgressChangeListener(this);
         initLayoutManager();
@@ -129,7 +132,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         mReaderAdapter.setFitMode(turn == PreferenceManager.READER_TURN_ATB ? ReaderAdapter.FIT_WIDTH : ReaderAdapter.FIT_HEIGHT);
-        mReaderAdapter.setAutoSplit(CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_SPLIT, false));
+        mReaderAdapter.setAutoSplit(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
     }
 
     private void initLayoutManager() {
@@ -141,8 +144,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initData(Bundle savedInstanceState) {
-        mClickArray = EventUtils.getClickEventChoice(CimocApplication.getPreferences());
-        mLongClickArray = EventUtils.getLongClickEventChoice(CimocApplication.getPreferences());
+        mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
+                EventUtils.getPageClickEventChoice(mPreference) : EventUtils.getStreamClickEventChoice(mPreference);
+        mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
+                EventUtils.getPageLongClickEventChoice(mPreference) : EventUtils.getStreamLongClickEventChoice(mPreference);
         Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
         Chapter[] chapter = new Chapter[array.length];
         for (int i = 0; i != array.length; ++i) {
@@ -176,7 +181,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
             mImagePipelineFactory = null;
         }
-        mReaderAdapter = null;
     }
 
     @OnClick(R.id.reader_back_btn) void onBackClick() {
@@ -444,20 +448,24 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     protected void switchScreen() {
-        isPortrait = !isPortrait;
-        int value = isPortrait ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-        setRequestedOrientation(value);
+        if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
+            orientation = PreferenceManager.READER_ORIENTATION_LANDSCAPE;
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            orientation = PreferenceManager.READER_ORIENTATION_PORTRAIT;
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
     protected void switchMode() {
         Intent intent = getIntent();
-        boolean page = intent.getBooleanExtra(EXTRA_PAGE, true);
-        if (page) {
+        if (mode == PreferenceManager.READER_MODE_PAGE) {
             intent.setClass(this, StreamReaderActivity.class);
+            intent.putExtra(EXTRA_MODE, PreferenceManager.READER_MODE_STREAM);
         } else {
             intent.setClass(this, PageReaderActivity.class);
+            intent.putExtra(EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
         }
-        intent.putExtra(EXTRA_PAGE, !page);
         finish();
         startActivity(intent);
     }
@@ -481,14 +489,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     private static final String EXTRA_ID = "a";
     private static final String EXTRA_CHAPTER = "b";
-    private static final String EXTRA_PAGE = "c";
+    private static final String EXTRA_MODE = "c";
 
-    public static Intent createIntent(Context context, long id, List<Chapter> list) {
-        int mode = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+    public static Intent createIntent(Context context, long id, int mode, List<Chapter> list) {
         Intent intent = getIntent(context, mode);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
-        intent.putExtra(EXTRA_PAGE, mode == PreferenceManager.READER_MODE_PAGE);
+        intent.putExtra(EXTRA_MODE, mode);
         return intent;
     }
 

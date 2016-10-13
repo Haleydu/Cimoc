@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.activity;
+package com.hiroshi.cimoc.ui.activity.settings;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,9 +9,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.EventUtils;
 
@@ -23,7 +22,7 @@ import butterknife.BindViews;
  * Created by Hiroshi on 2016/10/9.
  */
 
-public class EventActivity extends BaseActivity {
+public class EventSettingsActivity extends BaseActivity {
 
     @BindViews({ R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right })
     List<Button> mButtonList;
@@ -32,8 +31,6 @@ public class EventActivity extends BaseActivity {
     private int[] mChoiceArray;
     private String[] mKeyArray;
     private boolean isLong;
-
-    private PreferenceManager mPreference;
 
     @Override
     protected void initTheme() {
@@ -52,11 +49,18 @@ public class EventActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        mPreference = CimocApplication.getPreferences();
+        boolean isStream = getIntent().getBooleanExtra(EXTRA_IS_STREAM, false);
         isLong = getIntent().getBooleanExtra(EXTRA_IS_LONG, false);
-        mKeyArray = isLong ? EventUtils.getLongClickEvents() : EventUtils.getClickEvents();
-        mChoiceArray = isLong ? EventUtils.getLongClickEventChoice(mPreference) :
-                EventUtils.getClickEventChoice(mPreference);
+        if (isStream) {
+            mKeyArray = isLong ? EventUtils.getStreamLongClickEvents() : EventUtils.getStreamClickEvents();
+            mChoiceArray = isLong ? EventUtils.getStreamLongClickEventChoice(mPreference) :
+                    EventUtils.getStreamClickEventChoice(mPreference);
+        } else {
+            mKeyArray = isLong ? EventUtils.getPageLongClickEvents() : EventUtils.getPageClickEvents();
+            mChoiceArray = isLong ? EventUtils.getPageLongClickEventChoice(mPreference) :
+                    EventUtils.getPageClickEventChoice(mPreference);
+        }
+
         for (int i = 0; i != 5; ++i) {
             final int index = i;
             mButtonList.get(i).setText(EventUtils.getTitleId(mChoiceArray[i]));
@@ -110,11 +114,13 @@ public class EventActivity extends BaseActivity {
 
     private static final String EXTRA_IS_LONG = "a";
     private static final String EXTRA_IS_PORTRAIT = "b";
+    private static final String EXTRA_IS_STREAM = "c";
 
-    public static Intent createIntent(Context context, boolean isLong, boolean isPortrait) {
-        Intent intent = new Intent(context, EventActivity.class);
+    public static Intent createIntent(Context context, boolean isLong, boolean isPortrait, boolean isStream) {
+        Intent intent = new Intent(context, EventSettingsActivity.class);
         intent.putExtra(EXTRA_IS_LONG, isLong);
         intent.putExtra(EXTRA_IS_PORTRAIT, isPortrait);
+        intent.putExtra(EXTRA_IS_STREAM, isStream);
         return intent;
     }
 

@@ -114,7 +114,7 @@
                             android:text="@string/settings_reader_mode_summary"/>
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/settings_reader_orientation_btn"
+                        android:id="@+id/settings_reader_page_config_btn"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -127,16 +127,16 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_orientation"/>
+                            android:text="@string/settings_reader_page_config"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="2dp"
                             android:textSize="14sp"
-                            android:text="@string/settings_reader_orientation_summary"/>
+                            android:text="@string/settings_reader_page_config_summary"/>
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/settings_reader_turn_btn"
+                        android:id="@+id/settings_reader_stream_config_btn"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -149,90 +149,14 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_turn"/>
+                            android:text="@string/settings_reader_stream_config"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="2dp"
                             android:textSize="14sp"
-                            android:text="@string/settings_reader_turn_summary"/>
+                            android:text="@string/settings_reader_stream_config_summary"/>
                     </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/settings_reader_click_event_btn"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_click_event"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_click_event_summary"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/settings_reader_long_click_event_btn"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_long_click_event"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_long_click_event_summary"/>
-                    </LinearLayout>
-                    <RelativeLayout
-                        android:id="@+id/settings_reader_split_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
-                            android:id="@+id/settings_reader_split_checkbox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:clickable="false"
-                            android:focusable="false"
-                            android:background="@null"/>
-                        <TextView
-                            android:id="@+id/settings_reader_split_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_split_checkbox"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_split"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_split_checkbox"
-                            android:layout_below="@id/settings_reader_split_title"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_split_summary"/>
-                    </RelativeLayout>
                     <RelativeLayout
                         android:id="@+id/settings_reader_bright_btn"
                         android:layout_width="match_parent"
@@ -297,61 +221,6 @@
                             android:textSize="14sp"
                             android:text="@string/settings_reader_hide_summary"/>
                     </RelativeLayout>
-                    <RelativeLayout
-                        android:id="@+id/settings_reader_blank_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
-                            android:id="@+id/settings_reader_blank_checkbox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:clickable="false"
-                            android:focusable="false"
-                            android:background="@null"/>
-                        <TextView
-                            android:id="@+id/settings_reader_blank_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_blank_checkbox"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_blank"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_reader_blank_checkbox"
-                            android:layout_below="@id/settings_reader_blank_title"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_blank_summary"/>
-                    </RelativeLayout>
-                    <LinearLayout
-                        android:id="@+id/settings_reader_trigger_btn"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:text="@string/settings_reader_trigger"
-                            android:textColor="?android:attr/textColorPrimary" />
-                        <TextView
-                            android:id="@+id/settings_reader_trigger_summary"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:text="@string/settings_reader_trigger_summary"
-                            android:textSize="14sp"/>
-                    </LinearLayout>
                 </LinearLayout>
                 <LinearLayout
                     android:orientation="vertical"

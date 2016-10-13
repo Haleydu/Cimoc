@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.fragment.classical;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.presenter.SourcePresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.SourceView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
@@ -24,11 +25,13 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/8/11.
  */
-public class SourceFragment extends ClassicalFragment implements SourceView, SourceAdapter.OnItemCheckedListener {
+public class SourceFragment extends ClassicalFragment implements SourceView, SourceAdapter.OnItemCheckedListener,
+        MessageDialogFragment.MessageDialogListener {
 
     private SourcePresenter mPresenter;
     private SourceAdapter mSourceAdapter;
     protected AlertDialog mProgressDialog;
+    private int mTempPosition = -1;
 
     @Override
     protected void initPresenter() {
@@ -59,15 +62,18 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
 
     @Override
     public void onItemLongClick(View view, final int position) {
-        DialogUtils.buildPositiveDialog(getActivity(), R.string.dialog_confirm, R.string.source_delete_confirm,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mProgressDialog.show();
-                        Source source = mSourceAdapter.getItem(position);
-                        mPresenter.delete(source.getId(), source.getType(), position);
-                    }
-                }).show();
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.source_delete_confirm, true);
+        mTempPosition = position;
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onMessagePositiveClick(int type) {
+        mProgressDialog.show();
+        Source source = mSourceAdapter.getItem(mTempPosition);
+        mPresenter.delete(source.getId(), source.getType(), mTempPosition);
     }
 
     @Override
@@ -109,7 +115,6 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
-        mSourceAdapter = null;
     }
 
     @Override

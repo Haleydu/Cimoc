@@ -22,39 +22,73 @@ public class EventUtils {
     public static final int EVENT_SWITCH_MODE = 10;
     public static final int EVENT_SWITCH_CONTROL = 11;
 
-    public static String[] getClickEvents() {
-        return new String[] { PreferenceManager.PREF_CLICK_LEFT, PreferenceManager.PREF_CLICK_TOP,
-                PreferenceManager.PREF_CLICK_MIDDLE, PreferenceManager.PREF_CLICK_BOTTOM,
-                PreferenceManager.PREF_CLICK_RIGHT, PreferenceManager.PREF_CLICK_UP,
-                PreferenceManager.PREF_CLICK_DOWN };
+    public static String[] getPageClickEvents() {
+        return new String[] { PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
+                PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, PreferenceManager.PREF_READER_PAGE_CLICK_UP,
+                PreferenceManager.PREF_READER_PAGE_CLICK_DOWN };
     }
 
-
-    public static String[] getLongClickEvents() {
-        return new String[] { PreferenceManager.PREF_LONG_CLICK_LEFT, PreferenceManager.PREF_LONG_CLICK_TOP,
-                PreferenceManager.PREF_LONG_CLICK_MIDDLE, PreferenceManager.PREF_LONG_CLICK_BOTTOM,
-                PreferenceManager.PREF_LONG_CLICK_RIGHT };
+    public static String[] getPageLongClickEvents() {
+        return new String[] { PreferenceManager.PREF_READER_PAGE_LONG_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_LONG_CLICK_TOP,
+                PreferenceManager.PREF_READER_PAGE_LONG_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_LONG_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_PAGE_LONG_CLICK_RIGHT };
     }
 
-    public static int[] getClickEventChoice(PreferenceManager manager) {
+    public static int[] getPageClickEventChoice(PreferenceManager manager) {
         int[] array = new int[7];
-        array[0] = manager.getInt(PreferenceManager.PREF_CLICK_LEFT, 0);
-        array[1] = manager.getInt(PreferenceManager.PREF_CLICK_TOP, 0);
-        array[2] = manager.getInt(PreferenceManager.PREF_CLICK_MIDDLE, 0);
-        array[3] = manager.getInt(PreferenceManager.PREF_CLICK_BOTTOM, 0);
-        array[4] = manager.getInt(PreferenceManager.PREF_CLICK_RIGHT, 0);
-        array[5] = manager.getInt(PreferenceManager.PREF_CLICK_UP, 0);
-        array[6] = manager.getInt(PreferenceManager.PREF_CLICK_DOWN, 0);
+        array[0] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, 0);
+        array[1] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_TOP, 0);
+        array[2] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, 0);
+        array[3] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM, 0);
+        array[4] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, 0);
+        array[5] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_UP, 0);
+        array[6] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_DOWN, 0);
         return array;
     }
 
-    public static int[] getLongClickEventChoice(PreferenceManager manager) {
+    public static int[] getPageLongClickEventChoice(PreferenceManager manager) {
         int[] array = new int[5];
-        array[0] = manager.getInt(PreferenceManager.PREF_LONG_CLICK_LEFT, 0);
-        array[1] = manager.getInt(PreferenceManager.PREF_LONG_CLICK_TOP, 0);
-        array[2] = manager.getInt(PreferenceManager.PREF_LONG_CLICK_MIDDLE, 0);
-        array[3] = manager.getInt(PreferenceManager.PREF_LONG_CLICK_BOTTOM, 0);
-        array[4] = manager.getInt(PreferenceManager.PREF_LONG_CLICK_RIGHT, 0);
+        array[0] = manager.getInt(PreferenceManager.PREF_READER_PAGE_LONG_CLICK_LEFT, 0);
+        array[1] = manager.getInt(PreferenceManager.PREF_READER_PAGE_LONG_CLICK_TOP, 0);
+        array[2] = manager.getInt(PreferenceManager.PREF_READER_PAGE_LONG_CLICK_MIDDLE, 0);
+        array[3] = manager.getInt(PreferenceManager.PREF_READER_PAGE_LONG_CLICK_BOTTOM, 0);
+        array[4] = manager.getInt(PreferenceManager.PREF_READER_PAGE_LONG_CLICK_RIGHT, 0);
+        return array;
+    }
+
+    public static String[] getStreamClickEvents() {
+        return new String[] { PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, PreferenceManager.PREF_READER_STREAM_CLICK_TOP,
+                PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, PreferenceManager.PREF_READER_STREAM_CLICK_UP,
+                PreferenceManager.PREF_READER_STREAM_CLICK_DOWN };
+    }
+
+    public static String[] getStreamLongClickEvents() {
+        return new String[] { PreferenceManager.PREF_READER_STREAM_LONG_CLICK_LEFT, PreferenceManager.PREF_READER_STREAM_LONG_CLICK_TOP,
+                PreferenceManager.PREF_READER_STREAM_LONG_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_LONG_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_STREAM_LONG_CLICK_RIGHT };
+    }
+
+    public static int[] getStreamClickEventChoice(PreferenceManager manager) {
+        int[] array = new int[7];
+        array[0] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, 0);
+        array[1] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_TOP, 0);
+        array[2] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, 0);
+        array[3] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM, 0);
+        array[4] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, 0);
+        array[5] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, 0);
+        array[6] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, 0);
+        return array;
+    }
+
+    public static int[] getStreamLongClickEventChoice(PreferenceManager manager) {
+        int[] array = new int[5];
+        array[0] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_LEFT, 0);
+        array[1] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_TOP, 0);
+        array[2] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_MIDDLE, 0);
+        array[3] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_BOTTOM, 0);
+        array[4] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_RIGHT, 0);
         return array;
     }
 

@@ -59,8 +59,19 @@ public class TagManager {
         return mRefDao.insert(ref);
     }
 
+    public void insert(Iterable<TagRef> entities) {
+        mRefDao.insertInTx(entities);
+    }
+
     public void update(Tag tag) {
         mTagDao.update(tag);
+    }
+
+    public void delete(long tid, long cid) {
+        mRefDao.queryBuilder()
+                .where(TagRefDao.Properties.Tid.eq(tid), TagRefDao.Properties.Cid.eq(cid))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
     }
 
     public static TagManager getInstance() {

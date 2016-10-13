@@ -22,47 +22,62 @@ import butterknife.BindView;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class ComicAdapter extends BaseAdapter<MiniComic> {
+public class GridAdapter extends BaseAdapter<MiniComic> {
+
+    public static int GRID_ITEM_TYPE = 2016101213;
 
     private ControllerBuilderProvider mProvider;
+    private boolean symbol = false;
 
-    public class ViewHolder extends BaseViewHolder {
+    static class GridHolder extends BaseViewHolder {
         @BindView(R.id.item_grid_image) SimpleDraweeView comicImage;
         @BindView(R.id.item_grid_title) TextView comicTitle;
         @BindView(R.id.item_grid_subtitle) TextView comicSource;
         @BindView(R.id.item_grid_symbol) View comicHighlight;
 
-        public ViewHolder(View view) {
+        GridHolder(View view) {
             super(view);
         }
     }
 
-    public ComicAdapter(Context context, List<MiniComic> list) {
+    public GridAdapter(Context context, List<MiniComic> list) {
         super(context, list);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public int getItemViewType(int position) {
+        return GRID_ITEM_TYPE;
+    }
+
+    @Override
+    public GridHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item_grid, parent, false);
-        return new ViewHolder(view);
+        return new GridHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         MiniComic comic = mDataSet.get(position);
-        ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.comicTitle.setText(comic.getTitle());
-        viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
-        DraweeController controller = mProvider.get(comic.getSource())
-                .setOldController(viewHolder.comicImage.getController())
-                .setUri(comic.getCover())
-                .build();
-        viewHolder.comicImage.setController(controller);
-        viewHolder.comicHighlight.setVisibility(comic.isHighlight() ? View.VISIBLE : View.INVISIBLE);
+        GridHolder gridHolder = (GridHolder) holder;
+        gridHolder.comicTitle.setText(comic.getTitle());
+        gridHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
+        if (mProvider != null) {
+            DraweeController controller = mProvider.get(comic.getSource())
+                    .setOldController(gridHolder.comicImage.getController())
+                    .setUri(comic.getCover())
+                    .build();
+            gridHolder.comicImage.setController(controller);
+        }
+        gridHolder.comicHighlight.setVisibility(symbol && comic.isHighlight() ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void setProvider(ControllerBuilderProvider provider) {
         mProvider = provider;
+    }
+
+    public void setSymbol(boolean symbol) {
+        this.symbol = symbol;
     }
 
     @Override
@@ -104,7 +119,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
         notifyDataSetChanged();
     }
 
-    public void removeById(long id) {
+    public void removeItemById(long id) {
         for (MiniComic comic : mDataSet) {
             if (id == comic.getId()) {
                 remove(comic);
@@ -124,7 +139,7 @@ public class ComicAdapter extends BaseAdapter<MiniComic> {
 
     public MiniComic clickItem(int which) {
         final MiniComic comic = mDataSet.get(which);
-        if (comic.isHighlight()) {
+        if (symbol && comic.isHighlight()) {
             comic.setHighlight(false);
             remove(which);
             int pos = findFirstNotHighlight();

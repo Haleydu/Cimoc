@@ -12,15 +12,6 @@ import com.hiroshi.cimoc.R;
  */
 public class DialogUtils {
 
-    public static AlertDialog buildPositiveDialog(Context context, int titleId, int messageId, OnClickListener listener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(titleId);
-        builder.setMessage(messageId);
-        builder.setPositiveButton(R.string.dialog_positive, listener);
-        builder.setNegativeButton(R.string.dialog_negative, null);
-        return builder.create();
-    }
-
     public static AlertDialog buildSingleChoiceDialog(Context context, int titleId, int itemsId, int choice,
                                                       OnClickListener listener, OnClickListener positive) {
         return buildSingleChoiceDialog(context, titleId, context.getResources().getStringArray(itemsId), choice, listener, positive);

@@ -7,17 +7,21 @@ import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/4.
@@ -35,7 +39,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.COMIC_CHAPTER_CHANGE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 String last = (String) rxEvent.getData();
@@ -46,7 +50,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 mBaseView.onChapterChange(last);
             }
         });
-        addSubscription(RxEvent.COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 mComic.setPage((Integer) rxEvent.getData());
@@ -104,24 +108,31 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }));
     }
 
-    public void loadDownload(final String[] array) {
+    public void loadDownload(final List<Chapter> chapters) {
         Long key = mComic.getId() == null ? -1 : mComic.getId();
         mCompositeSubscription.add(mTaskManager.list(key)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Task>>() {
+                .map(new Func1<List<Task>, Map<String, Boolean>>() {
                     @Override
-                    public void call(List<Task> list) {
-                        boolean[] download = new boolean[array.length];
-                        boolean[] complete = new boolean[array.length];
-                        for (int i = 0; i != array.length; ++i) {
-                            for (Task task : list) {
-                                if (task.getPath().equals(array[i])) {
-                                    download[i] = true;
-                                    complete[i] = task.getMax() != 0 && task.getProgress() == task.getMax();
-                                }
-                            }
+                    public Map<String, Boolean> call(List<Task> list) {
+                        Map<String, Boolean> map = new HashMap<>();
+                        for (Task task : list) {
+                            boolean finish = task.getMax() != 0 && task.getProgress() == task.getMax();
+                            map.put(task.getPath(), finish);
                         }
-                        mBaseView.onDownloadLoadSuccess(download, complete);
+                        return map;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Map<String, Boolean>>() {
+                    @Override
+                    public void call(Map<String, Boolean> map) {
+                        ArrayList<Selectable> select = new ArrayList<>(chapters.size());
+                        for (Chapter chapter : chapters) {
+                            boolean download = map.containsKey(chapter.getPath());
+                            select.add(new Selectable(download, download, chapter.getTitle()));
+                            chapter.setDownload(download && map.get(chapter.getPath()));
+                        }
+                        mBaseView.onDownloadLoadSuccess(select);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -152,7 +163,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     task.setState(Task.STATE_WAIT);
                     taskList.add(task);
                 }
-                RxBus.getInstance().post(new RxEvent(RxEvent.TASK_ADD, new MiniComic(mComic), taskList));
+                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(mComic), taskList));
                 return taskList;
             }
         }).observeOn(AndroidSchedulers.mainThread())
@@ -181,7 +192,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             long id = mComicManager.insert(mComic);
             mComic.setId(id);
         }
-        RxBus.getInstance().post(new RxEvent(RxEvent.HISTORY_COMIC, new MiniComic(mComic)));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_HISTORY, new MiniComic(mComic)));
         return mComic.getId();
     }
 
@@ -201,7 +212,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             long id = mComicManager.insert(mComic);
             mComic.setId(id);
         }
-        RxBus.getInstance().post(new RxEvent(RxEvent.FAVORITE_COMIC, new MiniComic(mComic)));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE, new MiniComic(mComic)));
     }
 
     public void unfavoriteComic() {
@@ -211,7 +222,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             mComicManager.deleteByKey(id);
             mComic.setId(null);
         }
-        RxBus.getInstance().post(new RxEvent(RxEvent.UN_FAVORITE_COMIC, id));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UNFAVORITE, id));
     }
 
 }

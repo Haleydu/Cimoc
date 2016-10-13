@@ -65,7 +65,7 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                 .subscribe(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, sid));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_REMOVE, sid));
                         mBaseView.onSourceDeleteSuccess(position);
                     }
                 }, new Action1<Throwable>() {

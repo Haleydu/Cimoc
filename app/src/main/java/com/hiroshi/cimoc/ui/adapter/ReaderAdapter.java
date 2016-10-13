@@ -40,8 +40,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     public static final int FIT_HEIGHT = 0;
     public static final int FIT_WIDTH = 1;
 
-    private static final int TYPE_LOADING = 0;
-    private static final int TYPE_IMAGE = 1;
+    public static final int TYPE_LOADING = 2016101214;
+    public static final int TYPE_IMAGE = 2016101215;
 
     @IntDef({READER_PAGE, READER_STREAM})
     @Retention(RetentionPolicy.SOURCE)

@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -14,24 +13,24 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
-import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -42,7 +41,9 @@ import rx.functions.Func1;
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
+public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.OnItemClickListener,
+        BaseAdapter.OnItemLongClickListener, MessageDialogFragment.MessageDialogListener,
+        SelectDialogFragment.SelectDialogListener {
 
     @BindView(R.id.task_layout) View mTaskLayout;
     @BindView(R.id.task_recycler_view) RecyclerView mRecyclerView;
@@ -51,6 +52,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     private TaskPresenter mPresenter;
     private ServiceConnection mConnection;
     private DownloadServiceBinder mBinder;
+    private List<Task> mTempList;
 
     @Override
     protected void initPresenter() {
@@ -72,6 +74,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     @Override
     protected void initData(Bundle savedInstanceState) {
+        mTempList = new LinkedList<>();
         long key = getIntent().getLongExtra(EXTRA_KEY, -1);
         mPresenter.load(key);
     }
@@ -86,7 +89,6 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
             mConnection = null;
             mBinder = null;
         }
-        mTaskAdapter = null;
     }
 
     @Override
@@ -95,50 +97,15 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.task_delete_multi:
-                final List<Task> data = mTaskAdapter.getDateSet();
-                final String[] chapter = mTaskAdapter.getTaskTitle();
-                final Set<Task> set = new HashSet<>(chapter.length);
-                DialogUtils.buildMultiChoiceDialog(this, R.string.task_delete_multi, chapter, null,
-                        new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                if (isChecked) {
-                                    set.add(data.get(which));
-                                } else {
-                                    set.remove(data.get(which));
-                                }
-                            }
-                        }, R.string.task_delete_all, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                deleteTask(new ArrayList<>(data));
-                            }
-                        }, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                deleteTask(set);
-                            }
-                        }).show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+    @OnClick(R.id.task_launch_btn) void onLaunchClick() {
+        Comic comic = mPresenter.getComic();
+        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        startActivity(intent);
     }
 
-    private void deleteTask(Collection<Task> collection) {
-        mProgressDialog.show();
-        if (collection.isEmpty()) {
-            mProgressDialog.hide();
-        } else {
-            for (Task task : collection) {
-                mBinder.getService().removeDownload(task.getId());
-            }
-            mPresenter.deleteTask(collection, mTaskAdapter.getItemCount() == collection.size());
-            mTaskAdapter.removeAll(collection);
-        }
+    @Override
+    public void onChapterChange(String last) {
+        mTaskAdapter.setLast(mPresenter.getComic().getLast());
     }
 
     @Override
@@ -168,7 +135,8 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                                     if (chapter.getPath().equals(last)) {
                                         mTaskAdapter.setLast(last);
                                         long id = mPresenter.updateLast(last);
-                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, list);
+                                        int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, mode, list);
                                         startActivity(readerIntent);
                                         break;
                                     }
@@ -193,30 +161,83 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         }
     }
 
-    @Override
-    public void onItemLongClick(View view, final int position) {
-        DialogUtils.buildPositiveDialog(TaskActivity.this, R.string.dialog_confirm, R.string.task_delete_confirm,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mProgressDialog.show();
-                        Task task = mTaskAdapter.getItem(position);
-                        mPresenter.deleteTask(task, mTaskAdapter.getItemCount() == 1);
-                        mTaskAdapter.remove(position);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.task_launch_btn) void onLaunchClick() {
-        Comic comic = mPresenter.getComic();
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
-        startActivity(intent);
-    }
+    /**
+     *  delete task
+     */
 
     @Override
-    public void onChapterChange(String last) {
-        mTaskAdapter.setLast(mPresenter.getComic().getLast());
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.task_delete_multi:
+                ArrayList<Selectable> list = new ArrayList<>(mTaskAdapter.getItemCount());
+                for (Task task : mTaskAdapter.getDateSet()) {
+                    list.add(new Selectable(false, false, task.getTitle()));
+                }
+                SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.task_delete_multi);
+                fragment.show(getFragmentManager(), null);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onSelectPositiveClick(int type, List<Selectable> list) {
+        for (int i = 0; i != list.size(); ++i) {
+            if (list.get(i).isChecked()) {
+                mTempList.add(mTaskAdapter.getItem(i));
+            }
+        }
+        deleteTask();
+    }
+
+    @Override
+    public void onSelectNeutralClick(int type, List<Selectable> list) {
+        mTempList = mTaskAdapter.getDateSet();
+        deleteTask();
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.task_delete_confirm, true);
+        Task task = mTaskAdapter.getItem(position);
+        mTempList.add(task);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onMessagePositiveClick(int type) {
+        deleteTask();
+    }
+
+    private void deleteTask() {
+        if (!mTempList.isEmpty()) {
+            mProgressDialog.show();
+            for (Task task : mTempList) {
+                mBinder.getService().removeDownload(task.getId());
+            }
+            mPresenter.deleteTask(mTempList, mTaskAdapter.getItemCount() == mTempList.size());
+        }
+    }
+
+    @Override
+    public void onTaskDeleteSuccess() {
+        mTaskAdapter.removeAll(mTempList);
+        mTempList.clear();
+        mProgressDialog.hide();
+        showSnackbar(R.string.task_delete_success);
+    }
+
+    @Override
+    public void onTaskDeleteFail() {
+        mTempList.clear();
+        mProgressDialog.hide();
+        showSnackbar(R.string.task_delete_fail);
+    }
+
+    /**
+     *  init: load task -> sort task
+     */
 
     @Override
     public void onTaskLoadSuccess(final List<Task> list) {
@@ -261,17 +282,9 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         mTaskAdapter.addAll(0, list);
     }
 
-    @Override
-    public void onTaskDeleteSuccess() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.task_delete_success);
-    }
-
-    @Override
-    public void onTaskDeleteFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.task_delete_fail);
-    }
+    /**
+     *  task state
+     */
 
     @Override
     public void onTaskError(long id) {

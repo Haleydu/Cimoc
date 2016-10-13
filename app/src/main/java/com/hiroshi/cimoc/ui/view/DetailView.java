@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Task;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public interface DetailView extends BaseView {
 
     void onChapterChange(String chapter);
 
-    void onDownloadLoadSuccess(boolean[] download, boolean[] complete);
+    void onDownloadLoadSuccess(ArrayList<Selectable> select);
 
     void onDownloadLoadFail();
 

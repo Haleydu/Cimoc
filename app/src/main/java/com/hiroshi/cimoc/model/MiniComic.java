@@ -22,12 +22,17 @@ public class MiniComic {
         this.cover = comic.getCover();
         this.update = comic.getUpdate();
         this.finish = comic.getFinish();
-        this.highlight = comic.getFavorite() != null && comic.getHighlight();
+        this.highlight = comic.getHighlight();
     }
 
     @Override
     public boolean equals(Object o) {
         return o instanceof MiniComic && ((MiniComic) o).id.equals(id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id == null ? super.hashCode() : id.hashCode();
     }
 
     public Boolean isFinish() {

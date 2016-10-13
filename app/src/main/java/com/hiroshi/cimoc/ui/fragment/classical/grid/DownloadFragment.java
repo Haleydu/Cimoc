@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.fragment.classical.grid;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -11,11 +11,10 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.DownloadPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
-import com.hiroshi.cimoc.ui.adapter.ComicAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  * Created by Hiroshi on 2016/9/1.
@@ -52,7 +51,15 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    protected void onActionConfirm() {
+    protected void onActionButtonClick() {
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.download_action_confirm, true);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onMessagePositiveClick(int type) {
         if (start) {
             getActivity().stopService(new Intent(getActivity(), DownloadService.class));
             onDownloadStop();
@@ -65,7 +72,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mComicAdapter.getItem(position);
+        MiniComic comic = mGridAdapter.getItem(position);
         Intent intent =
                 TaskActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
@@ -89,7 +96,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             showSnackbar(R.string.download_task_empty);
         } else {
             for (Task task : list) {
-                MiniComic comic = mComicAdapter.getItemById(task.getKey());
+                MiniComic comic = mGridAdapter.getItemById(task.getKey());
                 if (comic != null) {
                     task.setInfo(comic.getSource(), comic.getCid(), comic.getTitle());
                 }
@@ -104,14 +111,14 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     public void onDownloadAdd(MiniComic comic) {
-        if (!mComicAdapter.exist(comic)) {
-            mComicAdapter.add(0, comic);
+        if (!mGridAdapter.exist(comic)) {
+            mGridAdapter.add(0, comic);
         }
     }
 
     @Override
     public void onDownloadDelete(long id) {
-        mComicAdapter.removeById(id);
+        mGridAdapter.removeItemById(id);
     }
 
     @Override
@@ -128,11 +135,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             start = false;
             mActionButton.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         }
-    }
-
-    @Override
-    protected int getActionRes() {
-        return R.string.download_action_confirm;
     }
 
     @Override

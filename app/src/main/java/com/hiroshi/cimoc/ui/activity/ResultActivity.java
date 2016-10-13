@@ -79,7 +79,6 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
             mProvider.clear();
             mProvider = null;
         }
-        mResultAdapter = null;
     }
 
     @Override

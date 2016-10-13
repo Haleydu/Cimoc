@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <CheckBox
-            android:id="@+id/download_chapter_checkbox"
+            android:id="@+id/item_select_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -22,10 +22,10 @@
             android:focusable="false"
             android:background="@null"/>
         <TextView
-            android:id="@+id/download_chapter_title"
+            android:id="@+id/item_select_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/download_chapter_checkbox"
+            android:layout_toLeftOf="@id/item_select_checkbox"
             android:layout_centerVertical="true"
             android:maxLines="1"
             android:ellipsize="end"

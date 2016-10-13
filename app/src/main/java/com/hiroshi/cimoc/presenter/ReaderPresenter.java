@@ -119,7 +119,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             mComic.setLast(chapter.getPath());
             mComic.setPage(1);
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
         }
     }
 
@@ -130,7 +130,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             mComic.setLast(chapter.getPath());
             mComic.setPage(chapter.getCount());
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
         }
     }
 
@@ -154,7 +154,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         if (status != LOAD_INIT) {
             mComic.setPage(page);
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, mComic.getLast(), page));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, mComic.getLast(), page));
         }
     }
 

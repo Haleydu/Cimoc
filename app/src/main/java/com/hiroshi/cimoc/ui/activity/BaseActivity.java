@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.utils.HintUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.ButterKnife;
@@ -24,10 +25,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected View mNightMask;
     protected Toolbar mToolbar;
     protected ProgressBar mProgressBar;
+    protected PreferenceManager mPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPreference = ((CimocApplication) getApplication()).getPreferenceManager();
         initTheme();
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
@@ -40,13 +43,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initTheme() {
-        int theme = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
+        int theme = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
         setTheme(ThemeUtils.getThemeById(theme));
     }
 
     protected void initNight() {
-        mNightMask = ButterKnife.findById(this, R.id.night_mask);
-        boolean night = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_NIGHT, false);
+        mNightMask = ButterKnife.findById(this, R.id.custom_night_mask);
+        boolean night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         if (night) {
             mNightMask.setVisibility(View.VISIBLE);
         }
@@ -84,15 +87,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getLayoutRes();
 
     protected void showSnackbar(String msg) {
-        HintUtils.showSnackBar(getLayoutView(), msg);
+        HintUtils.showSnackbar(getLayoutView(), msg);
     }
 
     protected void showSnackbar(int resId) {
-        HintUtils.showSnackBar(getLayoutView(), getString(resId));
+        showSnackbar(getString(resId));
     }
 
     protected void showSnackbar(int resId, Object... args) {
-        HintUtils.showSnackBar(getLayoutView(), getString(resId), args);
+        showSnackbar(StringUtils.format(getString(resId), args));
     }
 
     public void showProgressBar() {

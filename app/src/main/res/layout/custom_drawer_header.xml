@@ -10,12 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         fresco:actualImageScaleType="centerCrop"/>
-    <View
-        android:id="@+id/drawer_cover_mask"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:background="@color/trans_white"/>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -24,7 +18,7 @@
         android:padding="8dp">
         <TextView
             android:id="@+id/drawer_last_title"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="8dp"
             android:maxLines="2"

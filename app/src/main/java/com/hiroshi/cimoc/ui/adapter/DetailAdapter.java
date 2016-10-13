@@ -117,18 +117,13 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         this.last = last;
     }
 
-    public void setDownload(boolean[] download) {
-        for (int i = 0; i != download.length; ++i) {
-            mDataSet.get(i).setDownload(download[i]);
-        }
-    }
-
     public void setOnTitleClickListener(OnTitleClickListener listener) {
         mTitleClickListener = listener;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
             PipelineDraweeControllerBuilder builder = ControllerBuilderSupplierFactory.get(mContext, source);
@@ -191,15 +186,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             list.add(chapter.getTitle());
         }
         return list;
-    }
-
-    public String[] getPaths() {
-        int size = mDataSet.size();
-        String[] paths = new String[size];
-        for (int i = 0; i != size; ++i) {
-            paths[i] = mDataSet.get(i).getPath();
-        }
-        return paths;
     }
 
     public interface OnTitleClickListener {

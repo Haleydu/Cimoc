@@ -33,7 +33,7 @@ public abstract class GridPresenter<T extends GridView> extends BasePresenter<T>
     @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.COMIC_FILTER, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_FILTER, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 int type = (int) rxEvent.getData();

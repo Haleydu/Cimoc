@@ -67,6 +67,11 @@ public class Task implements Parcelable {
         return o instanceof Task && ((Task) o).id.equals(id);
     }
 
+    @Override
+    public int hashCode() {
+        return id == null ? super.hashCode() : id.hashCode();
+    }
+
     public Long getId() {
         return this.id;
     }

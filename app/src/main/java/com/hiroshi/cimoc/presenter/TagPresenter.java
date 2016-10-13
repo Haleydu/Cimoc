@@ -38,7 +38,7 @@ public class TagPresenter extends BasePresenter<TagView> {
     }
 
     public void insert(String title) {
-        Tag tag = new Tag(null, title, 0, null);
+        Tag tag = new Tag(null, title);
         long id = mTagManager.insert(tag);
         tag.setId(id);
         mBaseView.onTagAddSuccess(tag);

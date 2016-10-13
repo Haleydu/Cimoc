@@ -10,13 +10,13 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.CheckBox;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
+import com.hiroshi.cimoc.ui.activity.settings.PageSettingsActivity;
+import com.hiroshi.cimoc.ui.activity.settings.StreamSettingsActivity;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.DialogUtils;
-import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.BindView;
@@ -29,21 +29,15 @@ import butterknife.OnClick;
 public class SettingsActivity extends BackActivity implements SettingsView {
 
     @BindView(R.id.settings_layout) View mSettingsLayout;
-    @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) CheckBox mHideBox;
-    @BindView(R.id.settings_reader_blank_checkbox) CheckBox mBlankBox;
 
     private SettingsPresenter mPresenter;
-    private PreferenceManager mPreference;
 
     private int mHomeChoice;
     private int mThemeChoice;
     private int mReaderModeChoice;
-    private int mReaderTurnChoice;
-    private int mReaderOrientationChoice;
     private int mTempChoice;
-    private int mTriggerNum;
 
     private DialogInterface.OnClickListener mSingleChoiceListener = new DialogInterface.OnClickListener() {
         @Override
@@ -64,17 +58,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     protected void initView() {
         super.initView();
-        mPreference = CimocApplication.getPreferences();
-        mHomeChoice = mPreference.getInt(PreferenceManager.PREF_LAUNH_HOME, PreferenceManager.HOME_SEARCH);
+        mHomeChoice = mPreference.getInt(PreferenceManager.PREF_LAUNCH_HOME, PreferenceManager.HOME_SEARCH);
         mThemeChoice = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
         mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-        mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
-        mReaderOrientationChoice = mPreference.getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
-        mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
-        mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SPLIT, false));
-        mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BRIGHT, false));
-        mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_HIDE, false));
-        mBlankBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BLANK, false));
+        mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
+        mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
     }
 
     @Override
@@ -106,21 +94,14 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
     }
 
-    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_bright_btn,
-            R.id.settings_reader_hide_btn, R.id.settings_reader_blank_btn})
+    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
-            case R.id.settings_reader_split_btn:
-                checkedAndSave(mSplitBox, PreferenceManager.PREF_SPLIT);
-                break;
             case R.id.settings_reader_bright_btn:
-                checkedAndSave(mBrightBox, PreferenceManager.PREF_BRIGHT);
+                checkedAndSave(mBrightBox, PreferenceManager.PREF_READER_KEEP_ON);
                 break;
             case R.id.settings_reader_hide_btn:
-                checkedAndSave(mHideBox, PreferenceManager.PREF_HIDE);
-                break;
-            case R.id.settings_reader_blank_btn:
-                checkedAndSave(mBlankBox, PreferenceManager.PREF_BLANK);
+                checkedAndSave(mHideBox, PreferenceManager.PREF_READER_HIDE_INFO);
                 break;
         }
     }
@@ -131,20 +112,15 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPreference.putBoolean(key, checked);
     }
 
-    @OnClick(R.id.settings_reader_trigger_btn) void onTriggerBtnClick() {
-        final String[] array = StringUtils.range(5, 50, 5);
-        for (int i = 0; i != array.length; ++i) {
-            if (Integer.parseInt(array[i]) == mTriggerNum) {
-                DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_trigger, array, i,
-                        mSingleChoiceListener, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mTriggerNum = Integer.parseInt(array[mTempChoice]);
-                                mPreference.putInt(PreferenceManager.PREF_TRIGGER, mTriggerNum);
-                            }
-                        }).show();
-            }
+    @OnClick({R.id.settings_reader_page_config_btn, R.id.settings_reader_stream_config_btn})
+    void onConfigBtnClick(View view) {
+        Intent intent;
+        if (view.getId() == R.id.settings_reader_page_config_btn) {
+            intent = new Intent(this, PageSettingsActivity.class);
+        } else {
+            intent = new Intent(this, StreamSettingsActivity.class);
         }
+        startActivity(intent);
     }
 
     @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
@@ -158,20 +134,13 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
     }
 
-    @OnClick({ R.id.settings_reader_click_event_btn, R.id.settings_reader_long_click_event_btn })
-    void onReaderEventBtnClick(View view) {
-        boolean isLong = view.getId() == R.id.settings_reader_long_click_event_btn;
-        Intent intent = EventActivity.createIntent(this, isLong, mReaderOrientationChoice == PreferenceManager.READER_ORIENTATION_PORTRAIT);
-        startActivity(intent);
-    }
-
     @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {
         DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_home, R.array.home_items, mHomeChoice, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mHomeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_LAUNH_HOME, mHomeChoice);
+                        mPreference.putInt(PreferenceManager.PREF_LAUNCH_HOME, mHomeChoice);
                     }
                 }).show();
     }
@@ -183,28 +152,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     public void onClick(DialogInterface dialog, int which) {
                         mReaderModeChoice = mTempChoice;
                         mPreference.putInt(PreferenceManager.PREF_READER_MODE, mReaderModeChoice);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_turn, R.array.reader_turn_items, mReaderTurnChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderTurnChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_TURN, mReaderTurnChoice);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_orientation, R.array.reader_orientation_items, mReaderOrientationChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderOrientationChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_ORIENTATION, mReaderOrientationChoice);
                     }
                 }).show();
     }

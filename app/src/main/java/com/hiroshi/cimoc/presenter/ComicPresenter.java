@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
@@ -45,7 +44,7 @@ public class ComicPresenter extends BasePresenter<ComicView> {
 
     public void filter(int type, long id) {
         if (type != TagManager.TAG_NORMAL) {
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_FILTER, type));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FILTER, type));
         } else {
             mCompositeSubscription.add(mTagManager.listByTag(id)
                     .flatMap(new Func1<List<TagRef>, Observable<TagRef>>() {
@@ -65,7 +64,7 @@ public class ComicPresenter extends BasePresenter<ComicView> {
                     .subscribe(new Action1<List<Long>>() {
                         @Override
                         public void call(List<Long> list) {
-                            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_FILTER, TagManager.TAG_NORMAL, list));
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FILTER, TagManager.TAG_NORMAL, list));
                         }
                     }, new Action1<Throwable>() {
                         @Override

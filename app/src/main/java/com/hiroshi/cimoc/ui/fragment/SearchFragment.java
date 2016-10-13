@@ -166,7 +166,7 @@ public class SearchFragment extends BaseFragment implements SearchView,
     }
 
     @Override
-    protected int getLayoutView() {
+    protected int getLayoutRes() {
         return R.layout.fragment_search;
     }
 
