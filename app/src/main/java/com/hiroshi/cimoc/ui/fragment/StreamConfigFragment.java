@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.activity.settings;
+package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.widget.CheckBox;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.ui.activity.BackActivity;
+import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
 import com.hiroshi.cimoc.utils.DialogUtils;
 
 import butterknife.BindView;
@@ -17,7 +17,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/13.
  */
 
-public class StreamSettingsActivity extends BackActivity {
+public class StreamConfigFragment extends BaseFragment {
 
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_interval_checkbox) CheckBox mBlankBox;
@@ -25,9 +25,6 @@ public class StreamSettingsActivity extends BackActivity {
     private int mReaderOrientationChoice;
     private int mReaderTurnChoice;
     private int mTempChoice;
-
-    @Override
-    protected void initProgressBar() {}
 
     private DialogInterface.OnClickListener mSingleChoiceListener = new DialogInterface.OnClickListener() {
         @Override
@@ -47,13 +44,13 @@ public class StreamSettingsActivity extends BackActivity {
     @OnClick({ R.id.settings_reader_click_event_btn, R.id.settings_reader_long_click_event_btn })
     void onReaderEventBtnClick(View view) {
         boolean isLong = view.getId() == R.id.settings_reader_long_click_event_btn;
-        Intent intent = EventSettingsActivity.createIntent(this, isLong,
+        Intent intent = EventSettingsActivity.createIntent(getActivity(), isLong,
                 mReaderOrientationChoice == PreferenceManager.READER_ORIENTATION_PORTRAIT, true);
         startActivity(intent);
     }
 
     @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_orientation, R.array.reader_orientation_items,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_reader_orientation, R.array.reader_orientation_items,
                 mReaderOrientationChoice, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -65,7 +62,7 @@ public class StreamSettingsActivity extends BackActivity {
     }
 
     @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_turn, R.array.reader_turn_items,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_reader_turn, R.array.reader_turn_items,
                 mReaderTurnChoice, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -95,13 +92,8 @@ public class StreamSettingsActivity extends BackActivity {
     }
 
     @Override
-    protected String getDefaultTitle() {
-        return getString(R.string.settings_reader_stream_config);
-    }
-
-    @Override
     protected int getLayoutRes() {
-        return R.layout.activity_stream_settings;
+        return R.layout.fragment_stream_config;
     }
 
 }

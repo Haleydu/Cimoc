@@ -40,11 +40,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.settings.PageSettingsActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity
-            android:name=".ui.activity.settings.StreamSettingsActivity"
+            android:name=".ui.activity.settings.ReaderConfigActivity"
             android:screenOrientation="portrait"/>
 
         <activity

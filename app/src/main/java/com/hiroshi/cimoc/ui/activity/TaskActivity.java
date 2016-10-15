@@ -4,7 +4,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -73,7 +72,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initData() {
         mTempList = new LinkedList<>();
         long key = getIntent().getLongExtra(EXTRA_KEY, -1);
         mPresenter.load(key);
@@ -212,7 +211,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     private void deleteTask() {
         if (!mTempList.isEmpty()) {
-            mProgressDialog.show();
+            showProgressDialog();
             for (Task task : mTempList) {
                 mBinder.getService().removeDownload(task.getId());
             }
@@ -224,15 +223,15 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     public void onTaskDeleteSuccess() {
         mTaskAdapter.removeAll(mTempList);
         mTempList.clear();
-        mProgressDialog.hide();
-        showSnackbar(R.string.task_delete_success);
+        hideProgressDialog();
+        showSnackbar(R.string.common_delete_success);
     }
 
     @Override
     public void onTaskDeleteFail() {
         mTempList.clear();
-        mProgressDialog.hide();
-        showSnackbar(R.string.task_delete_fail);
+        hideProgressDialog();
+        showSnackbar(R.string.common_delete_fail);
     }
 
     /**

@@ -1,17 +1,15 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.support.v4.util.LongSparseArray;
+
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.GridView;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -24,10 +22,10 @@ import rx.functions.Func1;
 
 public abstract class GridPresenter<T extends GridView> extends BasePresenter<T> {
 
-    private Map<Long, MiniComic> mComicMap;
+    protected LongSparseArray<MiniComic> mComicArray;
 
     public GridPresenter() {
-        mComicMap = new LinkedHashMap<>();
+        mComicArray = new LongSparseArray<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -58,7 +56,7 @@ public abstract class GridPresenter<T extends GridView> extends BasePresenter<T>
                     @Override
                     public MiniComic call(Comic comic) {
                         MiniComic ret = new MiniComic(comic);
-                        mComicMap.put(ret.getId(), ret);
+                        mComicArray.put(ret.getId(), ret);
                         return ret;
                     }
                 })
@@ -80,24 +78,28 @@ public abstract class GridPresenter<T extends GridView> extends BasePresenter<T>
     private void filter(List<Long> list) {
         List<MiniComic> result = new LinkedList<>();
         for (Long id : list) {
-            result.add(mComicMap.get(id));
-        }
-        mBaseView.onComicLoadSuccess(result);
-    }
-
-    private void filter(int id) {
-        Collection<MiniComic> collection = mComicMap.values();
-        if (id != TagManager.TAG_ALL) {
-            Iterator<MiniComic> iterator = collection.iterator();
-            while (iterator.hasNext()) {
-                MiniComic comic = iterator.next();
-                if (id == TagManager.TAG_CONTINUE && comic.isFinish()
-                        || id == TagManager.TAG_END && !comic.isFinish()) {
-                    iterator.remove();
-                }
+            MiniComic comic = mComicArray.get(id);
+            if (comic != null) {
+                result.add(comic);
             }
         }
-        mBaseView.onComicFilterSuccess(collection);
+        mBaseView.onComicFilterSuccess(result);
+    }
+
+    private void filter(int type) {
+        List<MiniComic> list = new LinkedList<>();
+        for (int i = 0; i != mComicArray.size(); ++i) {
+            if (type != TagManager.TAG_ALL) {
+                Boolean finish = mComicArray.valueAt(i).isFinish();
+                if (type == TagManager.TAG_CONTINUE && (finish == null || !finish) ||
+                        type == TagManager.TAG_END && finish != null && finish) {
+                    list.add(mComicArray.valueAt(i));
+                }
+            } else {
+                list.add(mComicArray.valueAt(i));
+            }
+        }
+        mBaseView.onComicFilterSuccess(list);
     }
 
     protected abstract Observable<List<Comic>> getRawObservable();

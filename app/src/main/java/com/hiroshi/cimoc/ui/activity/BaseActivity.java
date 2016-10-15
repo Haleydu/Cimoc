@@ -1,20 +1,20 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -22,10 +22,10 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected View mNightMask;
-    protected Toolbar mToolbar;
-    protected ProgressBar mProgressBar;
+    @Nullable @BindView(R.id.custom_night_mask) View mNightMask;
+    @Nullable @BindView(R.id.custom_toolbar) Toolbar mToolbar;
     protected PreferenceManager mPreference;
+    private ProgressDialogFragment mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +36,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initNight();
         initToolbar();
-        initProgressBar();
         initPresenter();
+        mProgressDialog = ProgressDialogFragment.newInstance();
         initView();
-        initData(savedInstanceState);
+        initData();
     }
 
     protected void initTheme() {
@@ -48,26 +48,22 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initNight() {
-        mNightMask = ButterKnife.findById(this, R.id.custom_night_mask);
-        boolean night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
-        if (night) {
-            mNightMask.setVisibility(View.VISIBLE);
+        if (mNightMask != null) {
+            boolean night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
+            if (night) {
+                mNightMask.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     protected void initToolbar() {
-        mToolbar = ButterKnife.findById(this, R.id.custom_toolbar);
-        mToolbar.setTitle(getDefaultTitle());
-        setSupportActionBar(mToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (mToolbar != null) {
+            mToolbar.setTitle(getDefaultTitle());
+            setSupportActionBar(mToolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
         }
-    }
-
-    protected void initProgressBar() {
-        mProgressBar = ButterKnife.findById(this, R.id.custom_progress_bar);
-        int resId = ThemeUtils.getResourceId(this, R.attr.colorAccent);
-        mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, resId), PorterDuff.Mode.SRC_ATOP);
     }
 
     protected View getLayoutView() {
@@ -82,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void initView() {}
 
-    protected void initData(Bundle savedInstanceState) {}
+    protected void initData() {}
 
     protected abstract int getLayoutRes();
 
@@ -98,12 +94,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         showSnackbar(StringUtils.format(getString(resId), args));
     }
 
-    public void showProgressBar() {
-        mProgressBar.setVisibility(View.VISIBLE);
+    public void showProgressDialog() {
+        mProgressDialog.show(getFragmentManager(), null);
     }
 
-    public void hideProgressBar() {
-        mProgressBar.setVisibility(View.GONE);
+    public void hideProgressDialog() {
+        mProgressDialog.dismiss();
     }
 
 }

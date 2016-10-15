@@ -41,6 +41,15 @@ public abstract class ClassicalFragment extends BaseFragment implements BaseAdap
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden) {
+            mActionButton.hide();
+        } else {
+            mActionButton.show();
+        }
+    }
+
+    @Override
     public void onItemClick(View view, int position) {}
 
     @Override

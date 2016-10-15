@@ -14,7 +14,6 @@ import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
 
-import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -91,8 +90,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         };
     }
 
-    @Override
-    public void add(MiniComic data) {
+    public void addAfterHighlight(MiniComic data) {
         add(findFirstNotHighlight(), data);
     }
 
@@ -106,17 +104,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
             mDataSet.add(0, comic);
             notifyItemInserted(0);
         }
-    }
-
-    public void removeBySource(int source) {
-        Iterator<MiniComic> iterator = mDataSet.iterator();
-        while (iterator.hasNext()) {
-            MiniComic comic = iterator.next();
-            if (source == comic.getSource()) {
-                iterator.remove();
-            }
-        }
-        notifyDataSetChanged();
     }
 
     public void removeItemById(long id) {

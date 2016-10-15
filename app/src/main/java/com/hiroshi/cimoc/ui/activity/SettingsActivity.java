@@ -13,8 +13,7 @@ import android.widget.CheckBox;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
-import com.hiroshi.cimoc.ui.activity.settings.PageSettingsActivity;
-import com.hiroshi.cimoc.ui.activity.settings.StreamSettingsActivity;
+import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
@@ -53,9 +52,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @Override
-    protected void initProgressBar() {}
-
-    @Override
     protected void initView() {
         super.initView();
         mHomeChoice = mPreference.getInt(PreferenceManager.PREF_LAUNCH_HOME, PreferenceManager.HOME_SEARCH);
@@ -78,7 +74,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         switch (requestCode) {
             case 1:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mProgressDialog.show();
+                    showProgressDialog();
                     mPresenter.backup();
                 } else {
                     onBackupFail();
@@ -86,7 +82,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case 2:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mProgressDialog.show();
+                    showProgressDialog();
                     mPresenter.loadFiles();
                 } else {
                     onFilesLoadFail();
@@ -112,14 +108,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPreference.putBoolean(key, checked);
     }
 
-    @OnClick({R.id.settings_reader_page_config_btn, R.id.settings_reader_stream_config_btn})
-    void onConfigBtnClick(View view) {
-        Intent intent;
-        if (view.getId() == R.id.settings_reader_page_config_btn) {
-            intent = new Intent(this, PageSettingsActivity.class);
-        } else {
-            intent = new Intent(this, StreamSettingsActivity.class);
-        }
+    @OnClick(R.id.settings_reader_config_btn) void onReaderConfigBtnClick() {
+        Intent intent = new Intent(this, ReaderConfigActivity.class);
         startActivity(intent);
     }
 
@@ -129,7 +119,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
         } else {
-            mProgressDialog.show();
+            showProgressDialog();
             mPresenter.loadFiles();
         }
     }
@@ -174,26 +164,26 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             ActivityCompat.requestPermissions(this, new String[]
                     {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         } else {
-            mProgressDialog.show();
+            showProgressDialog();
             mPresenter.backup();
         }
     }
 
     @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
-        mProgressDialog.show();
+        showProgressDialog();
         mPresenter.clearCache();
     }
 
     @Override
     public void onFilesLoadSuccess(final String[] files) {
-        mProgressDialog.hide();
+        hideProgressDialog();
         mTempChoice = -1;
         DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_file, files, -1, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (mTempChoice != -1) {
-                            mProgressDialog.show();
+                            showProgressDialog();
                             mPresenter.restore(files[mTempChoice]);
                         }
                     }
@@ -202,43 +192,43 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onFilesLoadFail() {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_backup_save_not_found);
     }
 
     @Override
     public void onRestoreSuccess(int count) {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_backup_restore_success, count);
     }
 
     @Override
     public void onRestoreFail() {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_backup_restore_fail);
     }
 
     @Override
     public void onBackupSuccess(int count) {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_backup_save_success, count);
     }
 
     @Override
     public void onBackupFail() {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_backup_save_fail);
     }
 
     @Override
     public void onCacheClearSuccess() {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_other_cache_success);
     }
 
     @Override
     public void onCacheClearFail() {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.settings_other_cache_fail);
     }
 

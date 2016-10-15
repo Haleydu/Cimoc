@@ -65,7 +65,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             onDownloadStop();
             showSnackbar(R.string.download_stop_success);
         } else {
-            mProgressDialog.show();
+            showProgressDialog();
             mPresenter.loadTask();
         }
     }
@@ -86,8 +86,8 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     public void onTaskLoadFail() {
+        hideProgressDialog();
         showSnackbar(R.string.download_task_fail);
-        mProgressDialog.hide();
     }
 
     @Override
@@ -106,7 +106,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             getActivity().startService(intent);
             showSnackbar(R.string.download_start_success);
         }
-        mProgressDialog.hide();
+        hideProgressDialog();
     }
 
     @Override

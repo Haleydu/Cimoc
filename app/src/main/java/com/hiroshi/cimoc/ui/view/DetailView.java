@@ -25,6 +25,14 @@ public interface DetailView extends BaseView {
 
     void onDownloadLoadFail();
 
+    void onTagLoadSuccess(ArrayList<Selectable> list);
+
+    void onTagLoadFail();
+
+    void onTagUpdateSuccess();
+
+    void onTagUpdateFail();
+
     void onTaskAddSuccess(ArrayList<Task> list);
 
     void onTaskAddFail();

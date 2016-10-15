@@ -16,8 +16,6 @@ public interface FavoriteView extends GridView {
 
     void onItemRemove(long id);
 
-    void onSourceRemove(int source);
-
     void onComicUpdate(Comic comic, int progress, int max);
 
     void onCheckComplete();

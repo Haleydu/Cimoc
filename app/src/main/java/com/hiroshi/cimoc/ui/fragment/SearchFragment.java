@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.ui.fragment;
 
-import android.content.DialogInterface;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
@@ -14,11 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
+import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
-import com.hiroshi.cimoc.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,15 +33,15 @@ import butterknife.OnClick;
  */
 
 public class SearchFragment extends BaseFragment implements SearchView,
-        TextView.OnEditorActionListener, DialogInterface.OnMultiChoiceClickListener {
+        TextView.OnEditorActionListener, SelectDialogFragment.SelectDialogListener {
 
     @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
     @BindView(R.id.search_keyword_input) EditText mEditText;
-    @BindView(R.id.search_action_button) FloatingActionButton mSearchBtn;
+    @BindView(R.id.search_action_button) FloatingActionButton mActionButton;
 
     private SearchPresenter mPresenter;
     private List<Source> mSourceList;
-    private Set<Integer> mFilterSet;
+    private Set<Source> mFilterSet;
 
     @Override
     protected void initPresenter() {
@@ -79,8 +79,10 @@ public class SearchFragment extends BaseFragment implements SearchView,
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (!hidden) {
-            mPresenter.load();
+        if (hidden) {
+            mActionButton.hide();
+        } else {
+            mActionButton.show();
         }
     }
 
@@ -94,33 +96,36 @@ public class SearchFragment extends BaseFragment implements SearchView,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.search_menu_source:
-                int size = mSourceList.size();
-                boolean[] select = new boolean[size];
-                String[] title = new String[size];
-                for (int i = 0; i != size; ++i) {
-                    select[i] = mFilterSet.contains(mSourceList.get(i).getType());
-                    title[i] = mSourceList.get(i).getTitle();
+                ArrayList<Selectable> list = new ArrayList<>();
+                for (Source source : mSourceList) {
+                    list.add(new Selectable(false, mFilterSet.contains(source), source.getTitle()));
                 }
-                DialogUtils.buildMultiChoiceDialog(getActivity(), R.string.search_source_select,
-                        title, select, this, -1, null, null).show();
+                SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.search_source_select);
+                fragment.setTargetFragment(this, 0);
+                fragment.show(getFragmentManager(), null);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-        if (isChecked) {
-            mFilterSet.add(mSourceList.get(which).getType());
-        } else {
-            mFilterSet.remove(mSourceList.get(which).getType());
+    public void onSelectPositiveClick(int type, List<Selectable> list) {
+        for (int i = 0; i != list.size(); ++i) {
+            if (list.get(i).isChecked()) {
+                mFilterSet.add(mSourceList.get(i));
+            } else {
+                mFilterSet.remove(mSourceList.get(i));
+            }
         }
     }
 
     @Override
+    public void onSelectNeutralClick(int type, List<Selectable> list) {}
+
+    @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-            mSearchBtn.performClick();
+            mActionButton.performClick();
             return true;
         }
         return false;
@@ -131,11 +136,10 @@ public class SearchFragment extends BaseFragment implements SearchView,
         if (keyword.isEmpty()) {
             mInputLayout.setError(getString(R.string.search_keyword_empty));
         } else {
-            ArrayList<Integer> list = new ArrayList<>(10);
+            ArrayList<Integer> list = new ArrayList<>();
             for (Source source : mSourceList) {
-                int type = source.getType();
-                if (mFilterSet.contains(type)) {
-                    list.add(type);
+                if (mFilterSet.contains(source)) {
+                    list.add(source.getType());
                 }
             }
             if (list.isEmpty()) {
@@ -148,21 +152,30 @@ public class SearchFragment extends BaseFragment implements SearchView,
 
     @Override
     public void onSourceLoadSuccess(List<Source> list) {
-        if (mSourceList == null) {
-            mFilterSet = new HashSet<>(10);
-            for (Source source : list) {
-                int type = source.getType();
-                if (type < 100) {
-                    mFilterSet.add(type);
-                }
+        mSourceList = list;
+        mFilterSet = new HashSet<>();
+        for (Source source : list) {
+            if (source.getType() < 100) {
+                mFilterSet.add(source);
             }
         }
-        mSourceList = list;
+        mActionButton.show();
     }
 
     @Override
     public void onSourceLoadFail() {
         showSnackbar(R.string.search_source_load_fail);
+    }
+
+    @Override
+    public void onSourceEnable(Source source) {
+        mSourceList.remove(source);
+        mSourceList.add(source);
+    }
+
+    @Override
+    public void onSourceDisable(Source source) {
+        mSourceList.remove(source);
     }
 
     @Override

@@ -29,6 +29,16 @@ public class Source {
     public Source() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Source && ((Source) o).id.equals(id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id == null ? super.hashCode() : id.hashCode();
+    }
+
     public Long getId() {
         return this.id;
     }

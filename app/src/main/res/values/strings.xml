@@ -30,12 +30,16 @@
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
     <string name="detail_tag">标签</string>
+    <string name="detail_tag_load_fail">读取标签失败</string>
+    <string name="detail_tag_update_success">更新标签成功</string>
+    <string name="detail_tag_update_fail">更新标签失败</string>
     <string name="detail_download">下载</string>
     <string name="detail_download_load_fail">读取下载列表失败</string>
     <string name="detail_download_all">下载全部</string>
     <string name="detail_download_queue_success">已加入下载队列</string>
     <string name="detail_download_queue_fail">加入下载队列失败</string>
     <string name="detail_select_chapter">选择章节</string>
+    <string name="detail_select_tag">选择标签</string>
 
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
@@ -65,6 +69,10 @@
     <string name="reader_picture_save_success">保存成功</string>
     <string name="reader_picture_save_fail">保存失败</string>
 
+    <string name="reader_config_title">阅读配置</string>
+    <string name="reader_config_page">翻页模式</string>
+    <string name="reader_config_stream">卷纸模式</string>
+
     <string name="settings_backup">备份设置</string>
     <string name="settings_backup_save">备份</string>
     <string name="settings_backup_save_summary">备份到本地文件</string>
@@ -78,10 +86,8 @@
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
     <string name="settings_reader_mode_summary">选择默认阅读模式</string>
-    <string name="settings_reader_page_config">翻页模式配置</string>
-    <string name="settings_reader_page_config_summary">自定义翻页模式下各项功能</string>
-    <string name="settings_reader_stream_config">卷纸模式配置</string>
-    <string name="settings_reader_stream_config_summary">自定义卷纸模式下各项功能</string>
+    <string name="settings_reader_config">阅读配置</string>
+    <string name="settings_reader_config_summary">自定义阅读模式下各项功能</string>
     <string name="settings_reader_turn">阅读方向</string>
     <string name="settings_reader_turn_summary">选择默认阅读方向</string>
     <string name="settings_reader_orientation">屏幕方向</string>
@@ -139,19 +145,15 @@
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>
-    <string name="dialog_doing">正在执行中..</string>
+    <string name="dialog_doing">正在执行中</string>
 
-    <string name="source_delete_confirm">是否删除该图源\n相关的漫画也会被删除</string>
-    <string name="source_delete_success">删除图源成功</string>
-    <string name="source_delete_fail">删除图源失败</string>
+    <string name="source_delete_confirm">是否删除该图源\n相关的漫画不会被删除</string>
     <string name="source_add">添加图源</string>
     <string name="source_add_exist">图源已存在</string>
-    <string name="source_add_success">添加成功</string>
-    <string name="source_add_error">添加失败</string>
 
     <string name="tag_add">添加标签</string>
     <string name="tag_add_empty">标签名称不能为空</string>
-    <string name="tag_add_success">添加成功</string>
+    <string name="tag_delete_confirm">是否删除标签</string>
 
     <string name="tag_comic">标签详情</string>
     <string name="tag_comic_select">选择漫画</string>
@@ -177,8 +179,6 @@
     <string name="task_delete_multi">批量删除</string>
     <string name="task_delete_all">删除所有</string>
     <string name="task_delete_confirm">是否删除下载内容</string>
-    <string name="task_delete_success">删除成功</string>
-    <string name="task_delete_fail">删除失败</string>
 
     <string name="event_select">事件选择</string>
     <string name="event_null">无</string>
@@ -197,6 +197,7 @@
     <string name="common_add_success">添加成功</string>
     <string name="common_add_fail">添加失败</string>
     <string name="common_delete_success">删除成功</string>
+    <string name="common_delete_fail">删除失败</string>
     <string name="common_data_load_fail">读取数据失败</string>
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>

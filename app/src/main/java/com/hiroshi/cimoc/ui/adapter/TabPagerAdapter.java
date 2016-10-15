@@ -5,18 +5,18 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 
-import com.hiroshi.cimoc.ui.fragment.classical.grid.GridFragment;
+import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 
 /**
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class ComicTabAdapter extends FragmentPagerAdapter {
+public class TabPagerAdapter extends FragmentPagerAdapter {
 
-    private GridFragment[] fragment;
+    private BaseFragment[] fragment;
     private String[] title;
 
-    public ComicTabAdapter(FragmentManager manager, GridFragment[] fragment, String[] title) {
+    public TabPagerAdapter(FragmentManager manager, BaseFragment[] fragment, String[] title) {
         super(manager);
         this.fragment = fragment;
         this.title = title;

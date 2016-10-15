@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -42,14 +41,18 @@ import butterknife.OnClick;
 public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener,
         SelectDialogFragment.SelectDialogListener {
 
+    private static int TYPE_SELECT_DOWNLOAD = 0;
+    private static int TYPE_SELECT_TAG = 1;
+
     @BindView(R.id.detail_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.detail_layout) CoordinatorLayout mCoordinatorLayout;
     @BindView(R.id.detail_action_button) FloatingActionButton mStarButton;
 
     private DetailAdapter mDetailAdapter;
     private DetailPresenter mPresenter;
-    private ArrayList<Selectable> mSelectList;
-    private List<Chapter> mTempList;
+    private List<Selectable> mDownloadList;
+    private List<Selectable> mTagList;
+    private ArrayList<Selectable> mTempList;
 
     @Override
     protected void initPresenter() {
@@ -58,8 +61,8 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
-        mTempList = new LinkedList<>();
+    protected void initData() {
+        mTempList = new ArrayList<>();
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
@@ -78,6 +81,26 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail_menu, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (!isProgressBarShown()) {
+            switch (item.getItemId()) {
+                case R.id.detail_download:
+                    showDownloadList();
+                    break;
+                case R.id.detail_tag:
+                    if (mTagList == null) {
+                        showProgressDialog();
+                        mPresenter.loadTag();
+                    } else {
+                        showTagList();
+                    }
+                    break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @OnClick(R.id.detail_action_button) void onClick() {
@@ -111,58 +134,100 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
         mDetailAdapter.setLast(last);
     }
 
-    /**
-     * download: select chapter -> check permission -> update index -> add task
-     */
+    @Override
+    public void onTagLoadSuccess(ArrayList<Selectable> list) {
+        hideProgressDialog();
+        mTagList = list;
+        showTagList();
+    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.detail_download:
-                if (mSelectList != null) {
-                    SelectDialogFragment fragment =
-                            SelectDialogFragment.newInstance(mSelectList, R.string.detail_select_chapter, R.string.detail_download_all);
-                    fragment.show(getFragmentManager(), null);
-                }
-                break;
+    public void onTagLoadFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.detail_tag_load_fail);
+    }
+
+    @Override
+    public void onTagUpdateSuccess() {
+        mTagList.clear();
+        mTagList.addAll(mTempList);
+        hideProgressDialog();
+        showSnackbar(R.string.detail_tag_update_success);
+    }
+
+    @Override
+    public void onTagUpdateFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.detail_tag_update_fail);
+    }
+
+    private void showTagList() {
+        try {
+            mTempList.clear();
+            for (Selectable selectable : mTagList) {
+                mTempList.add((Selectable) selectable.clone());
+            }
+            SelectDialogFragment fragment =
+                    SelectDialogFragment.newInstance(mTempList, R.string.detail_select_tag, -1, TYPE_SELECT_TAG);
+            fragment.show(getFragmentManager(), null);
+        } catch (CloneNotSupportedException e) {
+            showSnackbar(R.string.detail_tag_load_fail);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void showDownloadList() {
+        if (mDownloadList != null) {
+            try {
+                mTempList.clear();
+                for (Selectable selectable : mDownloadList) {
+                    mTempList.add((Selectable) selectable.clone());
+                }
+                SelectDialogFragment fragment =
+                        SelectDialogFragment.newInstance(mTempList, R.string.detail_select_chapter,
+                                R.string.detail_download_all, TYPE_SELECT_DOWNLOAD);
+                fragment.show(getFragmentManager(), null);
+            } catch (CloneNotSupportedException e) {
+                showSnackbar(R.string.detail_download_queue_fail);
+            }
+        }
     }
 
     @Override
     public void onSelectPositiveClick(int type, List<Selectable> list) {
-        boolean isEmpty = true;
-        for (int i = 0; i != mSelectList.size(); ++i) {
-            if (mSelectList.get(i).isChecked() && !mSelectList.get(i).isDisable()) {
-                mTempList.add(mDetailAdapter.getItem(i));
-                isEmpty = false;
+        if (type == TYPE_SELECT_TAG) {
+            showProgressDialog();
+            List<Long> temp = new LinkedList<>();
+            for (Selectable selectable : mTempList) {
+                if (selectable.isChecked()) {
+                    temp.add(selectable.getId());
+                }
             }
+            mPresenter.updateRef(temp);
+        } else {
+            download();
         }
-        download(isEmpty);
     }
 
     @Override
     public void onSelectNeutralClick(int type, List<Selectable> list) {
-        boolean isEmpty = true;
-        for (int i = 0; i != mSelectList.size(); ++i) {
-            if (!mSelectList.get(i).isChecked()) {
-                mTempList.add(mDetailAdapter.getItem(i));
-                isEmpty = false;
-            }
+        for (Selectable selectable : mTempList) {
+            selectable.setChecked(true);
         }
-        download(isEmpty);
+        download();
     }
 
-    private void download(boolean isEmpty) {
-        if (!isEmpty) {
-            mProgressDialog.show();
-            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
-                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            } else {
-                mPresenter.updateIndex(mDetailAdapter.getDateSet());
-            }
+    /**
+     * download: select chapter -> check permission -> update index -> add task
+     */
+
+    private void download() {
+        showProgressDialog();
+        if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(DetailActivity.this, new String[]
+                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            mPresenter.updateIndex(mDetailAdapter.getDateSet());
         }
     }
 
@@ -182,13 +247,18 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     public void onUpdateIndexSuccess() {
-        mPresenter.addTask(mTempList);
+        List<Chapter> list = new LinkedList<>();
+        for (int i = 0; i != mTempList.size(); ++i) {
+            if (mTempList.get(i).isChecked() && !mTempList.get(i).isDisable()) {
+                list.add(mDetailAdapter.getItem(i));
+            }
+        }
+        mPresenter.addTask(list);
     }
 
     @Override
     public void onUpdateIndexFail() {
-        mProgressDialog.hide();
-        mTempList.clear();
+        hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_fail);
     }
 
@@ -196,25 +266,24 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     public void onTaskAddSuccess(ArrayList<Task> list) {
         Intent intent = DownloadService.createIntent(DetailActivity.this, list);
         startService(intent);
-        for (Selectable selectable : mSelectList) {
-            if (selectable.isChecked()) {
-                selectable.setDisable(true);
-            }
+        for (Selectable selectable : mTempList) {
+            selectable.setDisable(selectable.isChecked());
         }
-        mTempList.clear();
-        mProgressDialog.hide();
+        mDownloadList.clear();
+        mDownloadList.addAll(mTempList);
+        hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_success);
     }
 
     @Override
     public void onTaskAddFail() {
-        mProgressDialog.hide();
+        hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_fail);
     }
 
     /**
      *  init: load comic -> load chapter -> load download
-     *  if load download fail, we show the layout without accent chapter button
+     *  if load download fail, we still show the layout
      */
 
     @Override
@@ -262,7 +331,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     @Override
     public void onDownloadLoadSuccess(ArrayList<Selectable> select) {
         hideProgressBar();
-        mSelectList = select;
+        mDownloadList = select;
     }
 
     @Override

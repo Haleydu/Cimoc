@@ -77,7 +77,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 .flatMap(new Func1<List<Comic>, Observable<List<MiniComic>>>() {
                     @Override
                     public Observable<List<MiniComic>> call(final List<Comic> list) {
-                        return mComicManager.callInTx(new Callable<List<MiniComic>>() {
+                        return mComicManager.callInRx(new Callable<List<MiniComic>>() {
                             @Override
                             public List<MiniComic> call() throws Exception {
                                 long favorite = System.currentTimeMillis() + list.size() * 10;

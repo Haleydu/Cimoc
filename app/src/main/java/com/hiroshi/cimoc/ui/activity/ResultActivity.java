@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -66,7 +65,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initData() {
         mPresenter.load();
     }
 

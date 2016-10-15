@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -19,11 +22,13 @@ import butterknife.Unbinder;
 public abstract class BaseFragment extends Fragment {
 
     private Unbinder unbinder;
+    protected PreferenceManager mPreference;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutRes(), container, false);
         unbinder = ButterKnife.bind(this, view);
+        mPreference = ((CimocApplication) getActivity().getApplication()).getPreferenceManager();
         initPresenter();
         initView();
         initData();
@@ -55,5 +60,13 @@ public abstract class BaseFragment extends Fragment {
     protected void initPresenter() {}
 
     protected abstract @LayoutRes int getLayoutRes();
+
+    protected void showProgressDialog() {
+        ((BaseActivity) getActivity()).showProgressDialog();
+    }
+
+    protected void hideProgressDialog() {
+        ((BaseActivity) getActivity()).hideProgressDialog();
+    }
 
 }

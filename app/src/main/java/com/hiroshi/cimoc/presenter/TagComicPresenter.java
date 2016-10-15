@@ -53,7 +53,7 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
                 .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
                     @Override
                     public Observable<List<MiniComic>> call(final List<TagRef> tagRefs) {
-                        return mComicManager.callInTx(new Callable<List<MiniComic>>() {
+                        return mComicManager.callInRx(new Callable<List<MiniComic>>() {
                             @Override
                             public List<MiniComic> call() throws Exception {
                                 List<MiniComic> list = new LinkedList<>();
@@ -112,6 +112,10 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
                         mBaseView.onComicLoadFail();
                     }
                 }));
+    }
+
+    public void insert(long tid, long cid) {
+        mTagManager.insert(new TagRef(null, tid, cid));
     }
 
     public void insert(final long tid, List<MiniComic> list) {

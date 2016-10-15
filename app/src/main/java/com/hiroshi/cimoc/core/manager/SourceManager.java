@@ -119,23 +119,23 @@ public class SourceManager {
     public static Source getSource(String key) {
         switch (key) {
             case "IKanman":
-                return new Source(null, "看漫画", SOURCE_IKANMAN, true);
+                return new Source(null, "看漫画", SOURCE_IKANMAN, false);
             case "DMZJ":
-                return new Source(null, "动漫之家", SOURCE_DMZJ, true);
+                return new Source(null, "动漫之家", SOURCE_DMZJ, false);
             case "HHAAZZ":
-                return new Source(null, "手机汗汗", SOURCE_HHAAZZ, true);
+                return new Source(null, "手机汗汗", SOURCE_HHAAZZ, false);
             case "CCTuku":
-                return new Source(null, "CC图库", SOURCE_CCTUKU, true);
+                return new Source(null, "CC图库", SOURCE_CCTUKU, false);
             case "U17":
-                return new Source(null, "有妖气", SOURCE_U17, true);
+                return new Source(null, "有妖气", SOURCE_U17, false);
             case "DM5":
-                return new Source(null, "动漫屋", SOURCE_DM5, true);
+                return new Source(null, "动漫屋", SOURCE_DM5, false);
             case "Webtoon":
-                return new Source(null, "Webtoon", SOURCE_WEBTOON, true);
+                return new Source(null, "Webtoon", SOURCE_WEBTOON, false);
             case "HHSSEE":
-                return new Source(null, "汗汗漫画", SOURCE_HHSSEE, true);
+                return new Source(null, "汗汗漫画", SOURCE_HHSSEE, false);
             case "57MH":
-                return new Source(null, "57漫画", SOURCE_57MH, true);
+                return new Source(null, "57漫画", SOURCE_57MH, false);
             case "EHentai":
                 return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
             case "ExHentai":

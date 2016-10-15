@@ -31,6 +31,10 @@ public class TagManager {
         mRefDao = CimocApplication.getDaoSession().getTagRefDao();
     }
 
+    public Observable<Void> runInTx(Runnable runnable) {
+        return mRefDao.getSession().rxTx().run(runnable);
+    }
+
     public Observable<List<Tag>> list() {
         return mTagDao.queryBuilder()
                 .rx()
@@ -44,7 +48,7 @@ public class TagManager {
                 .list();
     }
 
-    public Observable<List<TagRef>> listByComic(int cid) {
+    public Observable<List<TagRef>> listByComic(long cid) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Cid.eq(cid))
                 .rx()
@@ -65,6 +69,24 @@ public class TagManager {
 
     public void update(Tag tag) {
         mTagDao.update(tag);
+    }
+
+    public void deleteByComic(long cid) {
+        mRefDao.queryBuilder()
+                .where(TagRefDao.Properties.Cid.eq(cid))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
+    }
+
+    public void deleteByTag(long tid) {
+        mRefDao.queryBuilder()
+                .where(TagRefDao.Properties.Tid.eq(tid))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
+    }
+
+    public void delete(Tag entity) {
+        mTagDao.delete(entity);
     }
 
     public void delete(long tid, long cid) {

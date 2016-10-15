@@ -14,6 +14,8 @@ public interface TagView extends BaseView {
 
     void onTagLoadFail();
 
-    void onTagAddSuccess(Tag tag);
+    void onTagDeleteSuccess();
+
+    void onTagDeleteFail();
 
 }

@@ -7,22 +7,29 @@ import android.os.Parcelable;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class Selectable implements Parcelable {
+public class Selectable implements Parcelable, Cloneable {
 
     private boolean disable;
     private boolean checked;
+    private long id;
     private String title;
 
     public Selectable(Parcel source) {
         this.disable = source.readByte() == 1;
         this.checked = source.readByte() == 1;
+        this.id =  source.readLong();
         this.title = source.readString();
     }
 
-    public Selectable(boolean disable, boolean checked, String title) {
+    public Selectable(boolean disable, boolean checked, long id, String title) {
         this.disable = disable;
         this.checked = checked;
+        this.id = id;
         this.title = title;
+    }
+
+    public Selectable(boolean disable, boolean checked, String title) {
+        this(disable, checked, -1, title);
     }
 
     public boolean isDisable() {
@@ -49,6 +56,14 @@ public class Selectable implements Parcelable {
         this.title = title;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -58,6 +73,7 @@ public class Selectable implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (disable ? 1 : 0));
         dest.writeByte((byte) (checked ? 1 : 0));
+        dest.writeLong(id);
         dest.writeString(title);
     }
 
@@ -73,4 +89,8 @@ public class Selectable implements Parcelable {
         }
     };
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

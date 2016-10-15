@@ -31,13 +31,9 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
         addSubscription(RxEvent.EVENT_COMIC_HISTORY, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onItemUpdate((MiniComic) rxEvent.getData());
-            }
-        });
-        addSubscription(RxEvent.EVENT_COMIC_REMOVE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onSourceRemove((int) rxEvent.getData());
+                MiniComic comic = (MiniComic) rxEvent.getData();
+                mComicArray.put(comic.getId(), comic);
+                mBaseView.onItemUpdate(comic);
             }
         });
     }
@@ -55,6 +51,7 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
             comic.setHistory(null);
             mComicManager.update(comic);
         }
+        mComicArray.remove(history.getId());
     }
 
     public void clear() {
@@ -62,9 +59,9 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
                 .flatMap(new Func1<List<Comic>, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(final List<Comic> list) {
-                        return mComicManager.callInTx(new Callable<Void>() {
+                        return mComicManager.runInRx(new Runnable() {
                             @Override
-                            public Void call() throws Exception {
+                            public void run() {
                                 for (Comic comic : list) {
                                     if (comic.getFavorite() == null && comic.getDownload() == null) {
                                         mComicManager.delete(comic);
@@ -73,7 +70,7 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
                                         mComicManager.update(comic);
                                     }
                                 }
-                                return null;
+                                mComicArray.clear();
                             }
                         });
                     }
@@ -81,7 +78,7 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call(Void v) {
                         mBaseView.onHistoryClearSuccess();
                     }
                 }, new Action1<Throwable>() {

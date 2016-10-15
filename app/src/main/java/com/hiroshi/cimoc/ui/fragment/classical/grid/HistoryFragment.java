@@ -59,7 +59,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     public void onMessagePositiveClick(int type) {
         switch (type) {
             case TYPE_ACTION_BUTTON:
-                mProgressDialog.show();
+                showProgressDialog();
                 mPresenter.clear();
                 break;
             case TYPE_LONG_CLICK:
@@ -83,24 +83,19 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     public void onHistoryClearSuccess() {
         int count = mGridAdapter.getItemCount();
         mGridAdapter.clear();
+        hideProgressDialog();
         showSnackbar(R.string.history_clear_success, count);
-        mProgressDialog.hide();
     }
 
     @Override
     public void onHistoryClearFail() {
+        hideProgressDialog();
         showSnackbar(R.string.history_clear_fail);
-        mProgressDialog.hide();
     }
 
     @Override
     public void onItemUpdate(MiniComic comic) {
         mGridAdapter.update(comic);
-    }
-
-    @Override
-    public void onSourceRemove(int source) {
-        mGridAdapter.removeBySource(source);
     }
 
     @Override

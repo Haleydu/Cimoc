@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.ui.fragment.classical;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
@@ -15,22 +12,21 @@ import com.hiroshi.cimoc.presenter.SourcePresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.SourceView;
-import com.hiroshi.cimoc.utils.DialogUtils;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/8/11.
  */
 public class SourceFragment extends ClassicalFragment implements SourceView, SourceAdapter.OnItemCheckedListener,
-        MessageDialogFragment.MessageDialogListener {
+        MessageDialogFragment.MessageDialogListener, EditorDialogFragment.EditorDialogListener {
 
     private SourcePresenter mPresenter;
     private SourceAdapter mSourceAdapter;
-    protected AlertDialog mProgressDialog;
     private int mTempPosition = -1;
 
     @Override
@@ -41,8 +37,7 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
 
     @Override
     protected void initView() {
-        mProgressDialog = DialogUtils.buildCancelableFalseDialog(getActivity(), R.string.dialog_doing);
-        mSourceAdapter = new SourceAdapter(getActivity(), new LinkedList<Source>());
+        mSourceAdapter = new SourceAdapter(getActivity(), new ArrayList<Source>());
         mSourceAdapter.setOnItemLongClickListener(this);
         mSourceAdapter.setOnItemCheckedListener(this);
         super.initView();
@@ -52,6 +47,13 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
     @Override
     protected void initData() {
         mPresenter.load();
+    }
+
+    @Override
+    public void onDestroyView() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -71,9 +73,10 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
 
     @Override
     public void onMessagePositiveClick(int type) {
-        mProgressDialog.show();
         Source source = mSourceAdapter.getItem(mTempPosition);
-        mPresenter.delete(source.getId(), source.getType(), mTempPosition);
+        mPresenter.delete(source.getId());
+        mSourceAdapter.remove(mTempPosition);
+        showSnackbar(R.string.common_delete_success);
     }
 
     @Override
@@ -85,42 +88,23 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
 
     @Override
     protected void onActionButtonClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_single_editor, null);
-        final EditText editText = (EditText) view.findViewById(R.id.dialog_single_edit_text);
-        builder.setTitle(R.string.source_add);
-        builder.setView(view);
-        builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Source source = SourceManager.getSource(editText.getText().toString());
-                if (source == null) {
-                    showSnackbar(R.string.source_add_error);
-                } else if (mSourceAdapter.contain(source.getType())) {
-                    showSnackbar(R.string.source_add_exist);
-                } else {
-                    mPresenter.insert(source);
-                }
-            }
-        });
-        builder.show();
+        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.source_add);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
     }
 
     @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+    public void onEditorPositiveClick(String text) {
+        Source source = SourceManager.getSource(text);
+        if (source == null) {
+            showSnackbar(R.string.common_add_fail);
+        } else if (mSourceAdapter.contain(source.getType())) {
+            showSnackbar(R.string.source_add_exist);
+        } else {
+            mPresenter.insert(source);
+            mSourceAdapter.add(source);
+            showSnackbar(R.string.common_add_success);
         }
-    }
-
-    @Override
-    public void onSourceAdd(Source source) {
-        mSourceAdapter.add(source);
-        showSnackbar(R.string.source_add_success);
     }
 
     @Override
@@ -131,19 +115,6 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
     @Override
     public void onSourceLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
-    }
-
-    @Override
-    public void onSourceDeleteSuccess(int position) {
-        mProgressDialog.hide();
-        mSourceAdapter.remove(position);
-        showSnackbar(R.string.source_delete_success);
-    }
-
-    @Override
-    public void onSourceDeleteFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.source_delete_fail);
     }
 
     @Override

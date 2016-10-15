@@ -14,4 +14,8 @@ public interface SearchView extends BaseView {
 
     void onSourceLoadFail();
 
+    void onSourceEnable(Source source);
+
+    void onSourceDisable(Source source);
+
 }

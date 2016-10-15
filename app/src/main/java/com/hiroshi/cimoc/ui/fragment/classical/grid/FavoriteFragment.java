@@ -125,7 +125,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onItemAdd(MiniComic comic) {
-        mGridAdapter.add(comic);
+        mGridAdapter.addAfterHighlight(comic);
     }
 
     @Override
@@ -136,11 +136,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     public void onItemRemove(long id) {
         mGridAdapter.removeItemById(id);
-    }
-
-    @Override
-    public void onSourceRemove(int source) {
-        mGridAdapter.removeBySource(source);
     }
 
     @Override

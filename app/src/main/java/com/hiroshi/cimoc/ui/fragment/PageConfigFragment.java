@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.activity.settings;
+package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.ui.activity.BackActivity;
+import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
 import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -16,7 +16,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/13.
  */
 
-public class PageSettingsActivity extends BackActivity {
+public class PageConfigFragment extends BaseFragment {
 
     private int mReaderOrientationChoice;
     private int mReaderTurnChoice;
@@ -31,9 +31,6 @@ public class PageSettingsActivity extends BackActivity {
     };
 
     @Override
-    protected void initProgressBar() {}
-
-    @Override
     protected void initView() {
         mReaderOrientationChoice = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
         mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TURN, PreferenceManager.READER_TURN_LTR);
@@ -43,13 +40,13 @@ public class PageSettingsActivity extends BackActivity {
     @OnClick({ R.id.settings_reader_click_event_btn, R.id.settings_reader_long_click_event_btn })
     void onReaderEventBtnClick(View view) {
         boolean isLong = view.getId() == R.id.settings_reader_long_click_event_btn;
-        Intent intent = EventSettingsActivity.createIntent(this, isLong,
+        Intent intent = EventSettingsActivity.createIntent(getActivity(), isLong,
                 mReaderOrientationChoice == PreferenceManager.READER_ORIENTATION_PORTRAIT, false);
         startActivity(intent);
     }
 
     @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_orientation, R.array.reader_orientation_items,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_reader_orientation, R.array.reader_orientation_items,
                 mReaderOrientationChoice, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -61,7 +58,7 @@ public class PageSettingsActivity extends BackActivity {
     }
 
     @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_turn, R.array.reader_turn_items,
+        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_reader_turn, R.array.reader_turn_items,
                 mReaderTurnChoice, mSingleChoiceListener,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -76,7 +73,7 @@ public class PageSettingsActivity extends BackActivity {
         final String[] array = StringUtils.range(5, 50, 5);
         for (int i = 0; i != array.length; ++i) {
             if (Integer.parseInt(array[i]) == mTriggerNum) {
-                DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_trigger, array, i,
+                DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_trigger, array, i,
                         mSingleChoiceListener, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -89,13 +86,8 @@ public class PageSettingsActivity extends BackActivity {
     }
 
     @Override
-    protected String getDefaultTitle() {
-        return getString(R.string.settings_reader_page_config);
-    }
-
-    @Override
     protected int getLayoutRes() {
-        return R.layout.activity_page_settings;
+        return R.layout.fragment_page_config;
     }
 
 }

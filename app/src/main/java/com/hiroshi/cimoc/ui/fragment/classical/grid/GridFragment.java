@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.ui.fragment.classical.grid;
 
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -12,10 +11,9 @@ import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.classical.ClassicalFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.GridView;
-import com.hiroshi.cimoc.utils.DialogUtils;
 
-import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/9/22.
@@ -23,12 +21,10 @@ import java.util.LinkedList;
 
 public abstract class GridFragment extends ClassicalFragment implements GridView, MessageDialogFragment.MessageDialogListener {
 
-    protected AlertDialog mProgressDialog;
     protected GridAdapter mGridAdapter;
 
     @Override
     protected void initView() {
-        mProgressDialog = DialogUtils.buildCancelableFalseDialog(getActivity(), R.string.dialog_doing);
         mGridAdapter = new GridAdapter(getActivity(), new LinkedList<MiniComic>());
         mGridAdapter.setProvider(((CimocApplication) getActivity().getApplication()).getBuilderProvider());
         mRecyclerView.setRecycledViewPool(((CimocApplication) getActivity().getApplication()).getGridRecycledPool());
@@ -36,16 +32,7 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
-    @Override
-    public void onComicLoadSuccess(Collection<MiniComic> list) {
+    public void onComicLoadSuccess(List<MiniComic> list) {
         mGridAdapter.addAll(list);
     }
 
@@ -55,7 +42,7 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
     }
 
     @Override
-    public void onComicFilterSuccess(Collection<MiniComic> list) {
+    public void onComicFilterSuccess(List<MiniComic> list) {
         mGridAdapter.setData(list);
     }
 

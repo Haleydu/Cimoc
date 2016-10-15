@@ -42,12 +42,6 @@ public class EventSettingsActivity extends BaseActivity {
     }
 
     @Override
-    protected void initToolbar() {}
-
-    @Override
-    protected void initProgressBar() {}
-
-    @Override
     protected void initView() {
         boolean isStream = getIntent().getBooleanExtra(EXTRA_IS_STREAM, false);
         isLong = getIntent().getBooleanExtra(EXTRA_IS_LONG, false);

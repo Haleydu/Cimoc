@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
-import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -97,12 +96,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    protected void initToolbar() {}
-
-    @Override
-    protected void initProgressBar() {}
-
-    @Override
     protected void initPresenter() {
         mPresenter = new ReaderPresenter();
         mPresenter.attachView(this);
@@ -143,7 +136,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initData() {
         mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
                 EventUtils.getPageClickEventChoice(mPreference) : EventUtils.getStreamClickEventChoice(mPreference);
         mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?

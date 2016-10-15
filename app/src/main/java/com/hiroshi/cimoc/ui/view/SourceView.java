@@ -13,10 +13,4 @@ public interface SourceView extends BaseView {
 
     void onSourceLoadFail();
 
-    void onSourceAdd(Source source);
-
-    void onSourceDeleteSuccess(int position);
-
-    void onSourceDeleteFail();
-
 }

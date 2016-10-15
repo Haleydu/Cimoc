@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.ui.fragment.classical;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
-import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
@@ -14,19 +11,24 @@ import com.hiroshi.cimoc.presenter.TagPresenter;
 import com.hiroshi.cimoc.ui.activity.TagComicActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TagAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.TagView;
+import com.hiroshi.cimoc.utils.StringUtils;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/10/10.
  */
 
-public class TagFragment extends ClassicalFragment implements TagView {
+public class TagFragment extends ClassicalFragment implements TagView, EditorDialogFragment.EditorDialogListener,
+        MessageDialogFragment.MessageDialogListener {
 
     private TagPresenter mPresenter;
     private TagAdapter mTagAdapter;
+    private int mTempPosition = -1;
 
     @Override
     protected void initPresenter() {
@@ -36,7 +38,7 @@ public class TagFragment extends ClassicalFragment implements TagView {
 
     @Override
     protected void initView() {
-        mTagAdapter = new TagAdapter(getActivity(), new LinkedList<Tag>());
+        mTagAdapter = new TagAdapter(getActivity(), new ArrayList<Tag>());
         mTagAdapter.setOnItemLongClickListener(this);
         super.initView();
     }
@@ -54,23 +56,46 @@ public class TagFragment extends ClassicalFragment implements TagView {
 
     @Override
     public void onItemLongClick(View view, int position) {
+        mTempPosition = position;
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.tag_delete_confirm, true);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
+    }
 
+    @Override
+    public void onMessagePositiveClick(int type) {
+        showProgressDialog();
+        mPresenter.delete(mTagAdapter.getItem(mTempPosition));
     }
 
     @Override
     protected void onActionButtonClick() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_single_editor, null);
-        final EditText editText = (EditText) view.findViewById(R.id.dialog_single_edit_text);
-        builder.setTitle(R.string.tag_add);
-        builder.setView(view);
-        builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mPresenter.insert(editText.getText().toString());
-            }
-        });
-        builder.show();
+        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onEditorPositiveClick(String text) {
+        if (!StringUtils.isEmpty(text)) {
+            Tag tag = new Tag(null, text);
+            mPresenter.insert(tag);
+            mTagAdapter.add(tag);
+            showSnackbar(R.string.common_add_success);
+        }
+    }
+
+    @Override
+    public void onTagDeleteSuccess() {
+        hideProgressDialog();
+        mTagAdapter.remove(mTempPosition);
+        showSnackbar(R.string.common_delete_success);
+    }
+
+    @Override
+    public void onTagDeleteFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.common_delete_fail);
     }
 
     @Override
@@ -81,12 +106,6 @@ public class TagFragment extends ClassicalFragment implements TagView {
     @Override
     public void onTagLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
-    }
-
-    @Override
-    public void onTagAddSuccess(Tag tag) {
-        mTagAdapter.add(tag);
-        showSnackbar(R.string.tag_add_success);
     }
 
     @Override

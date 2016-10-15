@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initData() {
         mPresenter.loadLast();
     }
 
@@ -85,7 +85,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        hideProgressBar();
     }
 
     private void initNavigation() {
@@ -193,14 +192,18 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 case R.id.drawer_tag:
                     mCheckItem = itemId;
                     getFragmentManager().beginTransaction().hide(mCurrentFragment).commit();
-                    mToolbar.setTitle(item.getTitle().toString());
+                    if (mToolbar != null) {
+                        mToolbar.setTitle(item.getTitle().toString());
+                    }
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.drawer_night:
                     night = !night;
                     mPreference.putBoolean(PreferenceManager.PREF_NIGHT, night);
                     mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-                    mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
+                    if (mNightMask != null) {
+                        mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
+                    }
                     break;
                 case R.id.drawer_settings:
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));

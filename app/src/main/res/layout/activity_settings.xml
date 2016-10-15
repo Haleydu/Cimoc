@@ -114,7 +114,7 @@
                             android:text="@string/settings_reader_mode_summary"/>
                     </LinearLayout>
                     <LinearLayout
-                        android:id="@+id/settings_reader_page_config_btn"
+                        android:id="@+id/settings_reader_config_btn"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -127,35 +127,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_page_config"/>
+                            android:text="@string/settings_reader_config"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="2dp"
                             android:textSize="14sp"
-                            android:text="@string/settings_reader_page_config_summary"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/settings_reader_stream_config_btn"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_reader_stream_config"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/settings_reader_stream_config_summary"/>
+                            android:text="@string/settings_reader_config_summary"/>
                     </LinearLayout>
                     <RelativeLayout
                         android:id="@+id/settings_reader_bright_btn"

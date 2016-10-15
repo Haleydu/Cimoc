@@ -26,6 +26,22 @@ public class ComicPresenter extends BasePresenter<ComicView> {
         mTagManager = TagManager.getInstance();
     }
 
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.EVENT_TAG_DELETE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onTagDelete((Tag) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.EVENT_TAG_INSERT, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onTagInsert((Tag) rxEvent.getData());
+            }
+        });
+    }
+
     public void load() {
         mCompositeSubscription.add(mTagManager.list()
                 .observeOn(AndroidSchedulers.mainThread())

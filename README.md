@@ -42,7 +42,7 @@ Online manga reader based on Android
 
 # ToDo
 - ~~综合搜索~~
-- 漫画标签分类
+- ~~漫画标签分类~~
 - 多线程下载
 - 更改下载路径
 - 扫描已下载漫画

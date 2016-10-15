@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -39,7 +39,7 @@ public class TagComicActivity extends BackActivity implements TagComicView,
 
     private TagComicPresenter mPresenter;
     private GridAdapter mGridAdapter;
-    private List<MiniComic> mComicList;
+    private LongSparseArray<MiniComic> mComicArray;
     private List<MiniComic> mTempList;
     private int mTempPosition = -1;
 
@@ -64,7 +64,7 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initData() {
         mTempList = new LinkedList<>();
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         mPresenter.loadTagComic(id);
@@ -78,7 +78,7 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     }
 
     @OnClick(R.id.tag_comic_action_button) void onActionButtonClick() {
-        if (mComicList == null) {
+        if (mComicArray == null) {
             mPresenter.loadComic(new HashSet<>(mGridAdapter.getDateSet()));
         } else {
             showSelectDialog();
@@ -114,7 +114,7 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     public void onSelectPositiveClick(int type, List<Selectable> list) {
         for (int i = 0; i != list.size(); ++i) {
             if (list.get(i).isChecked()) {
-                mTempList.add(mComicList.get(i));
+                mTempList.add(mComicArray.valueAt(i));
             }
         }
         if (!mTempList.isEmpty()) {
@@ -128,14 +128,14 @@ public class TagComicActivity extends BackActivity implements TagComicView,
 
     @Override
     public void onTagComicLoadFail() {
-        showSnackbar(R.string.common_data_load_fail);
         hideProgressBar();
+        showSnackbar(R.string.common_data_load_fail);
     }
 
     @Override
     public void onTagComicLoadSuccess(List<MiniComic> list) {
-        mGridAdapter.addAll(list);
         hideProgressBar();
+        mGridAdapter.addAll(list);
     }
 
     @Override
@@ -145,14 +145,18 @@ public class TagComicActivity extends BackActivity implements TagComicView,
 
     @Override
     public void onComicLoadSuccess(List<MiniComic> list) {
-        mComicList = list;
+        mComicArray = new LongSparseArray<>();
+        for (MiniComic comic : list) {
+            mComicArray.put(comic.getId(), comic);
+        }
         showSelectDialog();
     }
 
     private void showSelectDialog() {
-        ArrayList<Selectable> list = new ArrayList<>(mComicList.size());
-        for (MiniComic comic : mComicList) {
-            list.add(new Selectable(false, false, comic.getTitle()));
+        int size = mComicArray.size();
+        ArrayList<Selectable> list = new ArrayList<>(size);
+        for (int i = 0; i != size; ++i) {
+            list.add(new Selectable(false, false, mComicArray.keyAt(i), mComicArray.valueAt(i).getTitle()));
         }
         SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.tag_comic_select);
         fragment.show(getFragmentManager(), null);
@@ -160,26 +164,33 @@ public class TagComicActivity extends BackActivity implements TagComicView,
 
     @Override
     public void onComicInsertSuccess() {
-        mComicList.removeAll(mTempList);
-        mGridAdapter.addAll(0, mTempList);
+        for (MiniComic comic : mTempList) {
+            mComicArray.remove(comic.getId());
+        }
+        mGridAdapter.addAll(mTempList);
         mTempList.clear();
         showSnackbar(R.string.common_add_success);
     }
 
     @Override
     public void onComicInsertFail() {
+        mTempList.clear();
         showSnackbar(R.string.common_add_fail);
     }
 
     @Override
-    public void onComicUnFavorite(long id) {
-        mGridAdapter.removeItemById(id);
+    public void onComicUnFavorite(long cid) {
+        long tid = getIntent().getLongExtra(EXTRA_ID, -1);
+        mPresenter.delete(tid, cid);
+        mGridAdapter.removeItemById(cid);
     }
 
     @Override
     public void onComicFavorite(MiniComic comic) {
         // We can insert it because we can assert the comic we unfavorite belong to the tag.
-        mGridAdapter.add(0, comic);
+        long tid = getIntent().getLongExtra(EXTRA_ID, -1);
+        mPresenter.insert(tid, comic.getId());
+        mGridAdapter.add(comic);
     }
 
     @Override

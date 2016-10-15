@@ -14,6 +14,10 @@ public interface ComicView extends BaseView {
 
     void onTagLoadFail();
 
+    void onTagInsert(Tag tag);
+
+    void onTagDelete(Tag tag);
+
     void onFilterFail();
 
 }

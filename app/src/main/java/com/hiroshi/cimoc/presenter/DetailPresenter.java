@@ -3,11 +3,14 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Selectable;
+import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -15,10 +18,13 @@ import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -30,11 +36,13 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
+    private TagManager mTagManager;
     private Comic mComic;
 
     public DetailPresenter() {
-        this.mComicManager = ComicManager.getInstance();
-        this.mTaskManager = TaskManager.getInstance();
+        mComicManager = ComicManager.getInstance();
+        mTaskManager = TaskManager.getInstance();
+        mTagManager = TagManager.getInstance();
     }
 
     @Override
@@ -92,6 +100,79 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }));
     }
 
+    public void loadTag() {
+        final Set<Long> mTempSet = new HashSet<>();
+        mCompositeSubscription.add(mTagManager.listByComic(mComic.getId())
+                .flatMap(new Func1<List<TagRef>, Observable<TagRef>>() {
+                    @Override
+                    public Observable<TagRef> call(List<TagRef> tagRefs) {
+                        return Observable.from(tagRefs);
+                    }
+                })
+                .map(new Func1<TagRef, Long>() {
+                    @Override
+                    public Long call(TagRef ref) {
+                        return ref.getTid();
+                    }
+                })
+                .toList()
+                .flatMap(new Func1<List<Long>, Observable<List<Tag>>>() {
+                    @Override
+                    public Observable<List<Tag>> call(List<Long> list) {
+                        mTempSet.addAll(list);
+                        return mTagManager.list();
+                    }
+                })
+                .flatMap(new Func1<List<Tag>, Observable<Tag>>() {
+                    @Override
+                    public Observable<Tag> call(List<Tag> list) {
+                        return Observable.from(list);
+                    }
+                })
+                .map(new Func1<Tag, Selectable>() {
+                    @Override
+                    public Selectable call(Tag tag) {
+                        return new Selectable(false, mTempSet.contains(tag.getId()), tag.getId(), tag.getTitle());
+                    }
+                })
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Selectable>>() {
+                    @Override
+                    public void call(List<Selectable> list) {
+                        mBaseView.onTagLoadSuccess(new ArrayList<>(list));
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTagLoadFail();
+                    }
+                }));
+    }
+
+    public void updateRef(final List<Long> list) {
+        mCompositeSubscription.add(mTagManager.runInTx(new Runnable() {
+            @Override
+            public void run() {
+                mTagManager.deleteByComic(mComic.getId());
+                for (Long tid : list) {
+                    mTagManager.insert(new TagRef(null, tid, mComic.getId()));
+                }
+            }
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        mBaseView.onTagUpdateSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTagUpdateFail();
+                    }
+                }));
+    }
+
     public void updateIndex(List<Chapter> list) {
         mCompositeSubscription.add(Download.update(list, mComic.getSource(), mComic.getCid(), mComic.getTitle(), mComic.getCover())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -143,7 +224,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void addTask(final List<Chapter> list) {
-        mCompositeSubscription.add(mComicManager.callInTx(new Callable<ArrayList<Task>>() {
+        mCompositeSubscription.add(mComicManager.callInRx(new Callable<ArrayList<Task>>() {
             @Override
             public ArrayList<Task> call() throws Exception {
                 Long key = mComic.getId();
