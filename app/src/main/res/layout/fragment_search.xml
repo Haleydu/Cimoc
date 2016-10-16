@@ -9,7 +9,9 @@
         android:id="@+id/search_frame_layout"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:background="?attr/colorPrimary">
+        android:background="?attr/colorPrimary"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
         <android.support.design.widget.TextInputLayout
             android:id="@+id/search_text_layout"
             android:layout_width="match_parent"

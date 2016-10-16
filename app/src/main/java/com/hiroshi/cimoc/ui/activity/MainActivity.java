@@ -1,10 +1,14 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StyleRes;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -106,7 +110,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initFragment() {
-        int home = mPreference.getInt(PreferenceManager.PREF_LAUNCH_HOME, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
         switch (home) {
             default:
             case PreferenceManager.HOME_SEARCH:
@@ -239,8 +243,23 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
+    public void onThemeChange(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
+        setTheme(theme);
+        ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+                new int[]{mNavigationView.getItemTextColor().getDefaultColor(), ContextCompat.getColor(this, accent)});
+        mNavigationView.setItemTextColor(itemList);
+        ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+                new int[]{mNavigationView.getItemIconTintList().getDefaultColor(), ContextCompat.getColor(this, accent)});
+        mNavigationView.setItemIconTintList(iconList);
+        mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));
+        if (mToolbar != null) {
+            mToolbar.setBackgroundColor(ContextCompat.getColor(this, primary));
+        }
+    }
+
+    @Override
     protected String getDefaultTitle() {
-        int home = mPreference.getInt(PreferenceManager.PREF_LAUNCH_HOME, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
         return getResources().getStringArray(R.array.home_items)[home];
     }
 

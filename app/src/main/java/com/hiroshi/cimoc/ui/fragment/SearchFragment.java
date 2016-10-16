@@ -1,13 +1,16 @@
 package com.hiroshi.cimoc.ui.fragment;
 
+import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -35,6 +38,7 @@ import butterknife.OnClick;
 public class SearchFragment extends BaseFragment implements SearchView,
         TextView.OnEditorActionListener, SelectDialogFragment.SelectDialogListener {
 
+    @BindView(R.id.search_frame_layout) View mFrameLayout;
     @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
     @BindView(R.id.search_keyword_input) EditText mEditText;
     @BindView(R.id.search_action_button) FloatingActionButton mActionButton;
@@ -52,6 +56,14 @@ public class SearchFragment extends BaseFragment implements SearchView,
     @Override
     protected void initView() {
         setHasOptionsMenu(true);
+        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (mActionButton != null && !mActionButton.isShown()) {
+                    mActionButton.show();
+                }
+            }
+        });
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -159,7 +171,6 @@ public class SearchFragment extends BaseFragment implements SearchView,
                 mFilterSet.add(source);
             }
         }
-        mActionButton.show();
     }
 
     @Override
@@ -176,6 +187,13 @@ public class SearchFragment extends BaseFragment implements SearchView,
     @Override
     public void onSourceDisable(Source source) {
         mSourceList.remove(source);
+    }
+
+    @Override
+    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
+        mFrameLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
+        mInputLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
+        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
     }
 
     @Override

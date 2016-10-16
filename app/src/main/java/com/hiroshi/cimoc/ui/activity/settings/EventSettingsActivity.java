@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.activity.settings;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.view.KeyEvent;
@@ -11,7 +10,7 @@ import android.widget.Button;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
-import com.hiroshi.cimoc.utils.DialogUtils;
+import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.utils.EventUtils;
 
 import java.util.List;
@@ -22,12 +21,11 @@ import butterknife.BindViews;
  * Created by Hiroshi on 2016/10/9.
  */
 
-public class EventSettingsActivity extends BaseActivity {
+public class EventSettingsActivity extends BaseActivity implements ChoiceDialogFragment.ChoiceDialogListener {
 
     @BindViews({ R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right })
     List<Button> mButtonList;
 
-    private int mTempChoice;
     private int[] mChoiceArray;
     private String[] mKeyArray;
     private boolean isLong;
@@ -82,23 +80,19 @@ public class EventSettingsActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void showEventList(final int index) {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.event_select, R.array.event_items, mChoiceArray[index],
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mTempChoice = which;
-                    }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mChoiceArray[index] = mTempChoice;
-                        mPreference.putInt(mKeyArray[index], mTempChoice);
-                        if (index < 5) {
-                            mButtonList.get(index).setText(EventUtils.getTitleId(mTempChoice));
-                        }
-                    }
-                }).show();
+    private void showEventList(int index) {
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
+                getResources().getStringArray(R.array.event_items), mChoiceArray[index], index);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onChoicePositiveClick(int type, int choice, String value) {
+        mChoiceArray[type] = choice;
+        mPreference.putInt(mKeyArray[type], choice);
+        if (type < 5) {
+            mButtonList.get(type).setText(EventUtils.getTitleId(choice));
+        }
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.support.annotation.ColorRes;
+import android.support.annotation.StyleRes;
+
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.core.manager.ComicManager;
@@ -114,6 +117,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         mBaseView.onRestoreFail();
                     }
                 }));
+    }
+
+    public void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_THEME_CHANGE, theme, primary, accent));
     }
 
 }

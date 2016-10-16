@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.view;
 
+import android.support.annotation.ColorRes;
+
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
@@ -17,5 +19,7 @@ public interface GridView extends BaseView {
     void onComicFilterSuccess(List<MiniComic> list);
 
     void onComicFilterFail();
+
+    void onThemeChange(@ColorRes int primary, @ColorRes int accent);
 
 }

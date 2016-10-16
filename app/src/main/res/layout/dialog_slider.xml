@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_slider_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:padding="30dp"
+    app:dsb_indicatorPopupEnabled="true"
+    app:dsb_trackColor="?attr/colorPrimary"
+    app:dsb_rippleColor="?attr/colorPrimaryDark"
+    app:dsb_progressColor="?attr/colorPrimaryDark"
+    app:dsb_indicatorColor="?attr/colorPrimaryDark"
+    app:dsb_trackHeight="4dp"
+    app:dsb_thumbSize="12dp"/>

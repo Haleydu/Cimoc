@@ -47,9 +47,6 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     case Task.STATE_DOING:
                         mBaseView.onTaskDoing(id, (int) rxEvent.getData(2));
                         break;
-                    case Task.STATE_FINISH:
-                        mBaseView.onTaskFinish(id);
-                        break;
                     case Task.STATE_ERROR:
                         mBaseView.onTaskError(id);
                         break;

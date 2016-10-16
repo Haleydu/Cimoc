@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.support.annotation.ColorInt;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import butterknife.BindView;
  */
 
 public class TagAdapter extends BaseAdapter<Tag> {
+
+    private @ColorInt int color = -1;
 
     static class TagHolder extends BaseViewHolder {
         @BindView(R.id.item_tag_title) TextView tagTitle;
@@ -44,6 +47,9 @@ public class TagAdapter extends BaseAdapter<Tag> {
         Tag tag = mDataSet.get(position);
         TagHolder viewHolder = (TagHolder) holder;
         viewHolder.tagTitle.setText(tag.getTitle());
+        if (color != -1) {
+            viewHolder.tagTitle.setBackgroundColor(color);
+        }
     }
 
     @Override
@@ -55,6 +61,10 @@ public class TagAdapter extends BaseAdapter<Tag> {
                 outRect.set(offset, 0, offset, (int) (offset * 1.5));
             }
         };
+    }
+
+    public void setColor(@ColorInt int color) {
+        this.color = color;
     }
 
 }

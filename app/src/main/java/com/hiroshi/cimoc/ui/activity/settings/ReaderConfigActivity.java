@@ -7,8 +7,8 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.BackActivity;
 import com.hiroshi.cimoc.ui.adapter.TabPagerAdapter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
-import com.hiroshi.cimoc.ui.fragment.PageConfigFragment;
-import com.hiroshi.cimoc.ui.fragment.StreamConfigFragment;
+import com.hiroshi.cimoc.ui.fragment.config.PageConfigFragment;
+import com.hiroshi.cimoc.ui.fragment.config.StreamConfigFragment;
 
 import butterknife.BindView;
 

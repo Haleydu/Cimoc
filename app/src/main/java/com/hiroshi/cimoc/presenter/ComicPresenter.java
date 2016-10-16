@@ -40,6 +40,12 @@ public class ComicPresenter extends BasePresenter<ComicView> {
                 mBaseView.onTagInsert((Tag) rxEvent.getData());
             }
         });
+        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
+            }
+        });
     }
 
     public void load() {

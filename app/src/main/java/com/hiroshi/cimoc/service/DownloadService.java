@@ -10,8 +10,10 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
@@ -156,12 +158,13 @@ public class DownloadService extends Service {
         private Task task;
         private boolean running;
 
-        public Download(Task task) {
+        Download(Task task) {
             this.task = task;
         }
 
         @Override
         public void run() {
+            int connect = ((CimocApplication) getApplication()).getPreferenceManager().getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
             int source = task.getSource();
 
             task.setState(Task.STATE_PARSE);
@@ -175,41 +178,33 @@ public class DownloadService extends Service {
                 onDownloadDoing(size);
 
                 for (int i = task.getProgress(); i != size; ++i) {
-                    int error = 0;
-                    ImageUrl image = list.get(i);
-                    String[] urls = image.getUrl();
-                    for (String url : urls) {
-                        url = image.isLazy() ? Manga.downloadLazy(client, source, url) : url;
-                        if (url != null) {
-                            Request request = new Request.Builder()
-                                    .headers(headers)
-                                    .url(url)
-                                    .build();
-                            Response response = null;
-                            try {
-                                response = client.newCall(request).execute();
-                                if (response.isSuccessful()) {
-                                    InputStream byteStream = response.body().byteStream();
-                                    if (writeToFile(byteStream, i + 1, url)) {
-                                        if (i + 1 == size) {
-                                            onDownloadFinish();
-                                        } else {
-                                            onDownloadProgress(i + 1);
-                                        }
-                                        break;
-                                    }
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            } finally {
-                                if (response != null) {
-                                    response.close();
+                    int count = 0;  // page download error
+                    while (count <= connect) {
+                        int error = 0;  // url download error
+                        ImageUrl image = list.get(i);
+                        String[] urls = image.getUrl();
+                        for (String url : urls) {
+                            url = image.isLazy() ? Manga.downloadLazy(client, source, url) : url;
+                            if (url != null) {
+                                Request request = new Request.Builder()
+                                        .headers(headers)
+                                        .url(url)
+                                        .build();
+                                InputStream byteStream = downloadUrl(request);
+                                if (byteStream != null && writeToFile(byteStream, i + 1, url)) {
+                                    onDownloadProgress(i + 1);
+                                    break;
                                 }
                             }
+                            ++error;
                         }
-                        ++error;
+                        if (error == urls.length) {
+                            ++count;
+                        } else {
+                            break;
+                        }
                     }
-                    if (error == urls.length) {
+                    if (count == connect + 1) {     // page download error
                         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                         break;
                     }
@@ -219,6 +214,23 @@ public class DownloadService extends Service {
             }
 
             removeDownload(task.getId());
+        }
+
+        private InputStream downloadUrl(Request request) {
+            Response response = null;
+            try {
+                response = client.newCall(request).execute();
+                if (response.isSuccessful()) {
+                    return response.body().byteStream();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (response != null) {
+                    response.close();
+                }
+            }
+            return null;
         }
 
         private void onDownloadDoing(int max) {
@@ -232,13 +244,6 @@ public class DownloadService extends Service {
             task.setProgress(progress);
             manager.update(task);
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_PROCESS, task.getId(), progress, task.getMax()));
-        }
-
-        private void onDownloadFinish() {
-            task.setProgress(task.getMax());
-            task.setState(Task.STATE_FINISH);
-            manager.update(task);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_FINISH, task.getId()));
         }
 
         private boolean writeToFile(InputStream byteStream, int count, String url) {

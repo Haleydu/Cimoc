@@ -42,6 +42,12 @@ public abstract class GridPresenter<T extends GridView> extends BasePresenter<T>
                 }
             }
         });
+        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
+            }
+        });
     }
 
     public void loadComic() {

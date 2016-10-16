@@ -1,7 +1,8 @@
 package com.hiroshi.cimoc.ui.fragment;
 
-import android.content.DialogInterface;
+import android.support.annotation.ColorRes;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,8 +17,8 @@ import com.hiroshi.cimoc.ui.fragment.classical.grid.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.classical.grid.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.classical.grid.GridFragment;
 import com.hiroshi.cimoc.ui.fragment.classical.grid.HistoryFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.ComicView;
-import com.hiroshi.cimoc.utils.DialogUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import butterknife.BindView;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class ComicFragment extends BaseFragment implements ComicView {
+public class ComicFragment extends BaseFragment implements ComicView, ChoiceDialogFragment.ChoiceDialogListener {
 
     @BindView(R.id.comic_tab_layout) TabLayout mTabLayout;
     @BindView(R.id.comic_view_pager) ViewPager mViewPager;
@@ -37,7 +38,6 @@ public class ComicFragment extends BaseFragment implements ComicView {
     private TabPagerAdapter mTabAdapter;
     private List<Tag> mTagList;
     private int mFilterChoice;
-    private int mTempChoice;
 
     @Override
     protected void initPresenter() {
@@ -89,39 +89,35 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     private void showTagList() {
-        String[] title = new String[mTagList.size() + 3];
-        title[0] = "全部漫画";
-        title[1] = "连载中";
-        title[2] = "已完结";
+        String[] item = new String[mTagList.size() + 3];
+        item[0] = "全部漫画";
+        item[1] = "连载中";
+        item[2] = "已完结";
         for (int i = 0; i != mTagList.size(); ++i) {
-            title[i + 3] = mTagList.get(i).getTitle();
+            item[i + 3] = mTagList.get(i).getTitle();
         }
-        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.comic_filter, title, mFilterChoice,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mTempChoice = which;
-                    }
-                }, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mFilterChoice = mTempChoice;
-                        switch (mFilterChoice) {
-                            case 0:
-                                mPresenter.filter(TagManager.TAG_ALL, 0);
-                                break;
-                            case 1:
-                                mPresenter.filter(TagManager.TAG_CONTINUE, 0);
-                                break;
-                            case 2:
-                                mPresenter.filter(TagManager.TAG_END, 0);
-                                break;
-                            default:
-                                mPresenter.filter(TagManager.TAG_NORMAL, mTagList.get(mFilterChoice - 3).getId());
-                                break;
-                        }
-                    }
-                }).show();
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.comic_filter, item, mFilterChoice, -1);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onChoicePositiveClick(int type, int choice, String value) {
+        mFilterChoice = choice;
+        switch (mFilterChoice) {
+            case 0:
+                mPresenter.filter(TagManager.TAG_ALL, 0);
+                break;
+            case 1:
+                mPresenter.filter(TagManager.TAG_CONTINUE, 0);
+                break;
+            case 2:
+                mPresenter.filter(TagManager.TAG_END, 0);
+                break;
+            default:
+                mPresenter.filter(TagManager.TAG_NORMAL, mTagList.get(mFilterChoice - 3).getId());
+                break;
+        }
     }
 
     @Override
@@ -136,7 +132,9 @@ public class ComicFragment extends BaseFragment implements ComicView {
 
     @Override
     public void onTagInsert(Tag tag) {
-        mTagList.add(tag);
+        if (mTagList != null) {
+            mTagList.add(tag);
+        }
     }
 
     @Override
@@ -160,6 +158,11 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onTagLoadFail() {
         showSnackbar(R.string.comic_load_filter_fail);
+    }
+
+    @Override
+    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
+        mTabLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
     }
 
     @Override

@@ -22,6 +22,7 @@ public class EditorDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_editor, null);
         final EditText editText = ButterKnife.findById(view, R.id.dialog_editor_text);
+        editText.setText(getArguments().getString(EXTRA_TEXT));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getArguments().getInt(EXTRA_TITLE))
                 .setView(view)
@@ -44,14 +45,19 @@ public class EditorDialogFragment extends DialogFragment {
     }
 
     private static final String EXTRA_TITLE = "a";
+    private static final String EXTRA_TEXT = "b";
 
     public static EditorDialogFragment newInstance(int title) {
+        return newInstance(title, null);
+    }
+
+    public static EditorDialogFragment newInstance(int title, String text) {
         EditorDialogFragment fragment = new EditorDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(EXTRA_TITLE, title);
+        bundle.putString(EXTRA_TEXT, text);
         fragment.setArguments(bundle);
         return fragment;
     }
-
 
 }

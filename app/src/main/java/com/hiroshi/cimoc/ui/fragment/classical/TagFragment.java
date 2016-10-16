@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.ui.fragment.classical;
 
 import android.content.Intent;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -106,6 +108,13 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
     @Override
     public void onTagLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
+    }
+
+    @Override
+    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
+        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
+        mTagAdapter.setColor(ContextCompat.getColor(getActivity(), primary));
+        mTagAdapter.notifyDataSetChanged();
     }
 
     @Override

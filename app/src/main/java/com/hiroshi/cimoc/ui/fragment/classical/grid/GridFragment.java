@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment.classical.grid;
 
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -49,6 +51,11 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
     @Override
     public void onComicFilterFail() {
         showSnackbar(R.string.comic_filter_fail);
+    }
+
+    @Override
+    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
+        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
     }
 
     @Override

@@ -22,6 +22,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/settings_backup_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
@@ -82,6 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/settings_reader_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
@@ -143,7 +145,7 @@
                         android:padding="16dp"
                         android:clickable="true"
                         android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
+                        <android.support.v7.widget.AppCompatCheckBox
                             android:id="@+id/settings_reader_bright_checkbox"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -175,7 +177,7 @@
                         android:padding="16dp"
                         android:clickable="true"
                         android:background="?android:attr/selectableItemBackground">
-                        <CheckBox
+                        <android.support.v7.widget.AppCompatCheckBox
                             android:id="@+id/settings_reader_hide_checkbox"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -200,11 +202,50 @@
                             android:text="@string/settings_reader_hide_summary"/>
                     </RelativeLayout>
                 </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/settings_download_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="?attr/colorPrimary"
+                    android:textSize="14sp"
+                    android:text="@string/settings_download"/>
+                <LinearLayout
+                    android:id="@+id/settings_download_connection_btn"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:background="?android:attr/selectableItemBackground">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="@string/settings_download_connection"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
+                        android:textSize="14sp"
+                        android:text="@string/settings_download_connection_summary"/>
+                </LinearLayout>
+            </LinearLayout>
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:id="@+id/settings_other_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
@@ -215,7 +256,7 @@
                         android:textSize="14sp"
                         android:text="@string/settings_other"/>
                     <LinearLayout
-                        android:id="@+id/settings_other_home_btn"
+                        android:id="@+id/settings_other_launch_btn"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -228,13 +269,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_other_home"/>
+                            android:text="@string/settings_other_launch"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:paddingTop="2dp"
                             android:textSize="14sp"
-                            android:text="@string/settings_other_home_summary"/>
+                            android:text="@string/settings_other_launch_summary"/>
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/settings_other_theme_btn"
@@ -257,6 +298,28 @@
                             android:paddingTop="2dp"
                             android:textSize="14sp"
                             android:text="@string/settings_other_theme_summary"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/settings_other_storage_btn"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:background="?android:attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/settings_other_storage"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:textSize="14sp"
+                            android:text="@string/settings_other_storage_summary"/>
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/settings_other_cache_btn"

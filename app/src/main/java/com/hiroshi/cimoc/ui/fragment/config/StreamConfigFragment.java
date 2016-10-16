@@ -1,6 +1,5 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.fragment.config;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -8,7 +7,8 @@ import android.widget.CheckBox;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
-import com.hiroshi.cimoc.utils.DialogUtils;
+import com.hiroshi.cimoc.ui.fragment.BaseFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -17,21 +17,16 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/13.
  */
 
-public class StreamConfigFragment extends BaseFragment {
+public class StreamConfigFragment extends BaseFragment implements ChoiceDialogFragment.ChoiceDialogListener {
+
+    private static final int TYPE_ORIENTATION = 0;
+    private static final int TYPE_TURN = 1;
 
     @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
     @BindView(R.id.settings_reader_interval_checkbox) CheckBox mBlankBox;
 
     private int mReaderOrientationChoice;
     private int mReaderTurnChoice;
-    private int mTempChoice;
-
-    private DialogInterface.OnClickListener mSingleChoiceListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            mTempChoice = which;
-        }
-    };
 
     @Override
     protected void initView() {
@@ -42,35 +37,39 @@ public class StreamConfigFragment extends BaseFragment {
     }
 
     @OnClick({ R.id.settings_reader_click_event_btn, R.id.settings_reader_long_click_event_btn })
-    void onReaderEventBtnClick(View view) {
+    void onReaderEventClick(View view) {
         boolean isLong = view.getId() == R.id.settings_reader_long_click_event_btn;
         Intent intent = EventSettingsActivity.createIntent(getActivity(), isLong,
                 mReaderOrientationChoice == PreferenceManager.READER_ORIENTATION_PORTRAIT, true);
         startActivity(intent);
     }
 
-    @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_reader_orientation, R.array.reader_orientation_items,
-                mReaderOrientationChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderOrientationChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_STREAM_ORIENTATION, mReaderOrientationChoice);
-                    }
-                }).show();
+    @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationClick() {
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_orientation,
+                getResources().getStringArray(R.array.reader_orientation_items), mReaderOrientationChoice, TYPE_ORIENTATION);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
     }
 
-    @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(getActivity(), R.string.settings_select_reader_turn, R.array.reader_turn_items,
-                mReaderTurnChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderTurnChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_STREAM_TURN, mReaderTurnChoice);
-                    }
-                }).show();
+    @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnClick() {
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_turn,
+                getResources().getStringArray(R.array.reader_turn_items), mReaderTurnChoice, TYPE_TURN);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onChoicePositiveClick(int type, int choice, String value) {
+        switch (type) {
+            case TYPE_ORIENTATION:
+                mPreference.putInt(PreferenceManager.PREF_READER_STREAM_ORIENTATION, choice);
+                mReaderOrientationChoice = choice;
+                break;
+            case TYPE_TURN:
+                mPreference.putInt(PreferenceManager.PREF_READER_STREAM_TURN, choice);
+                mReaderTurnChoice = choice;
+                break;
+        }
     }
 
     @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_interval_btn})

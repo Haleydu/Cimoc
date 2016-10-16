@@ -27,8 +27,6 @@ public interface TaskView extends BaseView {
 
     void onTaskProcess(long id, int progress, int max);
 
-    void onTaskFinish(long id);
-
     void onTaskError(long id);
 
     void onTaskDeleteSuccess();

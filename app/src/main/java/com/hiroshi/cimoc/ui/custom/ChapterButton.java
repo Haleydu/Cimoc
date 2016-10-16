@@ -53,7 +53,7 @@ public class ChapterButton extends TextView {
     }
 
     private void initColorDrawableState() {
-        ColorStateList colorStateList = new ColorStateList(new int[][] {NORMAL_STATE, SELECTED_STATE },
+        ColorStateList colorStateList = new ColorStateList(new int[][] {NORMAL_STATE, SELECTED_STATE},
                 new int[] { normalColor, Color.WHITE });
         setTextColor(colorStateList);
     }

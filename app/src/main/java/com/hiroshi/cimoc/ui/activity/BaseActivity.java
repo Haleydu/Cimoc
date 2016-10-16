@@ -43,7 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initTheme() {
-        int theme = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
+        int theme = mPreference.getInt(PreferenceManager.PREF_OTHER_THEME, ThemeUtils.THEME_BLUE);
         setTheme(ThemeUtils.getThemeById(theme));
     }
 

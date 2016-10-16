@@ -61,9 +61,12 @@ public class PreferenceManager {
     public static final String PREF_READER_STREAM_INTERVAL = "pref_reader_stream_interval";
 
     public static final String PREF_NIGHT = "pref_night";
-    public static final String PREF_THEME = "pref_theme";
-    public static final String PREF_LAUNCH_HOME = "pref_launch_home";
 
+    public static final String PREF_OTHER_STORAGE = "pref_other_storage";
+    public static final String PREF_OTHER_THEME = "pref_other_theme";
+    public static final String PREF_OTHER_LAUNCH = "pref_other_launch";
+
+    public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

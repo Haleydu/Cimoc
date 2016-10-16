@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.view;
 
+import android.support.annotation.ColorRes;
+
 import com.hiroshi.cimoc.model.Tag;
 
 import java.util.List;
@@ -17,5 +19,7 @@ public interface TagView extends BaseView {
     void onTagDeleteSuccess();
 
     void onTagDeleteFail();
+
+    void onThemeChange(@ColorRes int primary, @ColorRes int accent);
 
 }

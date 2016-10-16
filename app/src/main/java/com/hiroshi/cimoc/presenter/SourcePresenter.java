@@ -22,6 +22,16 @@ public class SourcePresenter extends BasePresenter<SourceView> {
         mSourceManager = SourceManager.getInstance();
     }
 
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
+            }
+        });
+    }
+
     public void load() {
         mCompositeSubscription.add(mSourceManager.list()
                 .observeOn(AndroidSchedulers.mainThread())

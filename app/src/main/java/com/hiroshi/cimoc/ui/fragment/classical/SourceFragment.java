@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.ui.fragment.classical;
 
 import android.content.Intent;
+import android.support.annotation.ColorRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -41,7 +43,6 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
         mSourceAdapter.setOnItemLongClickListener(this);
         mSourceAdapter.setOnItemCheckedListener(this);
         super.initView();
-
     }
 
     @Override
@@ -115,6 +116,13 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
     @Override
     public void onSourceLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
+    }
+
+    @Override
+    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
+        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
+        mSourceAdapter.setColor(ContextCompat.getColor(getActivity(), accent));
+        mSourceAdapter.notifyDataSetChanged();
     }
 
     @Override
