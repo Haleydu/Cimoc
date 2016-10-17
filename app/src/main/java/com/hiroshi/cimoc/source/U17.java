@@ -86,7 +86,7 @@ public class U17 extends MangaParser {
 
     @Override
     public Request getRecentRequest(int page) {
-        String url = StringUtils.format("http://m.u17.com/update/list/%d?page=0&pageSize=1000", (page - 1));
+        String url = StringUtils.format("http://m.u17.com/updateComicIndex/list/%d?page=0&pageSize=1000", (page - 1));
         return new Request.Builder().url(url).build();
     }
 

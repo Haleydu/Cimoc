@@ -26,4 +26,8 @@ public interface TagComicView extends BaseView {
 
     void onComicFavorite(MiniComic comic);
 
+    void onTagUpdateInsert(MiniComic comic);
+
+    void onTagUpdateDelete(MiniComic comic);
+
 }

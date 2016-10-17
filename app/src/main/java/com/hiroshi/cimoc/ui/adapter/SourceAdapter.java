@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.support.annotation.ColorInt;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
@@ -25,7 +26,7 @@ import butterknife.BindView;
 public class SourceAdapter extends BaseAdapter<Source> {
 
     private OnItemCheckedListener mOnItemCheckedListener;
-    private int color = -1;
+    private @ColorInt int color = -1;
 
     static class SourceHolder extends BaseViewHolder {
         @BindView(R.id.item_source_title) TextView sourceTitle;
@@ -86,7 +87,7 @@ public class SourceAdapter extends BaseAdapter<Source> {
         mOnItemCheckedListener = listener;
     }
 
-    public void setColor(int color) {
+    public void setColor(@ColorInt int color) {
         this.color = color;
     }
 

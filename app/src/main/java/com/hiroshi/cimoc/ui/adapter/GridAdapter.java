@@ -94,15 +94,9 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         add(findFirstNotHighlight(), data);
     }
 
-    public void update(MiniComic comic) {
-        int position = mDataSet.indexOf(comic);
-        if (position != -1) {
-            mDataSet.remove(position);
-            mDataSet.add(0, comic);
-            notifyItemMoved(position, 0);
-        } else {
-            mDataSet.add(0, comic);
-            notifyItemInserted(0);
+    public void update(MiniComic comic, boolean insert) {
+        if (remove(comic) || insert) {
+            add(findFirstNotHighlight(), comic);
         }
     }
 
@@ -124,25 +118,15 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         return null;
     }
 
-    public MiniComic clickItem(int which) {
-        final MiniComic comic = mDataSet.get(which);
-        if (symbol && comic.isHighlight()) {
-            comic.setHighlight(false);
-            remove(which);
-            int pos = findFirstNotHighlight();
-            add(pos, comic);
-            notifyItemInserted(pos);
-        }
-        return comic;
-    }
-
     private int findFirstNotHighlight() {
         int count = 0;
-        for (MiniComic comic : mDataSet) {
-            if (!comic.isHighlight()) {
-                break;
+        if (symbol) {
+            for (MiniComic comic : mDataSet) {
+                if (!comic.isHighlight()) {
+                    break;
+                }
+                ++count;
             }
-            ++count;
         }
         return count;
     }

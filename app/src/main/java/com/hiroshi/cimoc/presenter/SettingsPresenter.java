@@ -5,6 +5,7 @@ import android.support.annotation.StyleRes;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Backup;
+import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -34,7 +35,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     public void clearCache() {
         Fresco.getImagePipeline().clearDiskCaches();
-        mBaseView.onCacheClearSuccess();
     }
 
     public void backup() {
@@ -71,6 +71,22 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                     @Override
                     public void call(Throwable throwable) {
                         mBaseView.onFilesLoadFail();
+                    }
+                }));
+    }
+
+    public void moveFiles(final String path) {
+        mCompositeSubscription.add(Storage.moveFolder(path)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        mBaseView.onFileMoveSuccess(path);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onFileMoveFail();
                     }
                 }));
     }

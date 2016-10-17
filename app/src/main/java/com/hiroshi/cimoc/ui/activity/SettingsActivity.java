@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
+import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
@@ -49,11 +50,11 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
 
     private SettingsPresenter mPresenter;
 
-    private String mStoragePath;
     private int mLaunchChoice;
     private int mThemeChoice;
     private int mReaderModeChoice;
     private int mConnectionValue;
+    private String mStoragePath;
 
     @Override
     protected void initPresenter() {
@@ -217,7 +218,11 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
 
     @Override
     public void onEditorPositiveClick(String text) {
-        // Todo 验证写入
+        if (text != null) {
+            stopService(new Intent(this, DownloadService.class));
+            showProgressDialog();
+            mPresenter.moveFiles(text.trim());
+        }
     }
 
     @OnClick(R.id.settings_download_connection_btn) void onDownloadConnectionClick() {
@@ -235,6 +240,8 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {
         showProgressDialog();
         mPresenter.clearCache();
+        hideProgressDialog();
+        showSnackbar(R.string.settings_other_cache_success);
     }
 
     @Override
@@ -249,6 +256,20 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     public void onFilesLoadFail() {
         hideProgressDialog();
         showSnackbar(R.string.settings_backup_save_not_found);
+    }
+
+    @Override
+    public void onFileMoveSuccess(String path) {
+        hideProgressDialog();
+        mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, path);
+        mStoragePath = path;
+        showSnackbar(R.string.settings_other_storage_move_success);
+    }
+
+    @Override
+    public void onFileMoveFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.settings_other_storage_move_fail);
     }
 
     @Override
@@ -273,18 +294,6 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     public void onBackupFail() {
         hideProgressDialog();
         showSnackbar(R.string.settings_backup_save_fail);
-    }
-
-    @Override
-    public void onCacheClearSuccess() {
-        hideProgressDialog();
-        showSnackbar(R.string.settings_other_cache_success);
-    }
-
-    @Override
-    public void onCacheClearFail() {
-        hideProgressDialog();
-        showSnackbar(R.string.settings_other_cache_fail);
     }
 
     @Override

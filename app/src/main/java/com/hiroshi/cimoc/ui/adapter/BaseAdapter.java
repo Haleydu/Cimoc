@@ -53,11 +53,13 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         return mDataSet.indexOf(data) != -1;
     }
 
-    public void remove(T data) {
+    public boolean remove(T data) {
         int position = mDataSet.indexOf(data);
         if (position != -1) {
             remove(position);
+            return true;
         }
+        return false;
     }
 
     public void remove(int position) {

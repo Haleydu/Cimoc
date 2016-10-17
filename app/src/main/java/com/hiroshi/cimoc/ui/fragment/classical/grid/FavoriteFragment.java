@@ -4,8 +4,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -13,11 +11,11 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
+import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,43 +39,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mGridAdapter.setSymbol(true);
         mGridAdapter.setOnItemLongClickListener(null);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                int flag = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
-                return makeMovementFlags(flag, 0);
-            }
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                int fromPosition = viewHolder.getAdapterPosition();
-                int toPosition = target.getAdapterPosition();
-                if (fromPosition == toPosition) {
-                    return false;
-                }
-
-                List<MiniComic> list = mGridAdapter.getDateSet();
-                long fromId = list.get(fromPosition).getId();
-                long toId = list.get(toPosition).getId();
-                boolean isBack = fromPosition < toPosition;
-                if (isBack) {
-                    for (int i = fromPosition; i < toPosition; i++) {
-                        Collections.swap(list, i, i + 1);
-                    }
-                } else {
-                    for (int i = fromPosition; i > toPosition; i--) {
-                        Collections.swap(list, i, i - 1);
-                    }
-                }
-                mPresenter.updateComic(fromId, toId, isBack);
-                mGridAdapter.notifyItemMoved(fromPosition, toPosition);
-                return true;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {}
-        });
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     @Override
@@ -118,8 +79,13 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mGridAdapter.clickItem(position);
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
+        MiniComic comic = mGridAdapter.getItem(position);
+        if (comic.isHighlight()) {
+            comic.setHighlight(false);
+            mGridAdapter.update(comic, false);
+        }
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(),
+                comic.getSource(), comic.getCid(), ComicFragment.TYPE_FAVORITE);
         startActivity(intent);
     }
 
@@ -139,9 +105,24 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
+    public void onComicRead(MiniComic comic) {
+        mGridAdapter.update(comic, false);
+    }
+
+    @Override
+    public void onComicFilterSuccess(List<MiniComic> list) {
+        mGridAdapter.setData(list);
+    }
+
+    @Override
+    public void onComicFilterFail() {
+        showSnackbar(R.string.comic_filter_fail);
+    }
+
+    @Override
     public void onComicUpdate(Comic comic, int progress, int max) {
         if (comic != null) {
-            mGridAdapter.update(new MiniComic(comic));
+            mGridAdapter.update(new MiniComic(comic), false);
         }
         mBuilder.setProgress(max, progress, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);

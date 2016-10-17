@@ -6,13 +6,14 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
@@ -44,10 +45,7 @@ import okhttp3.Response;
  */
 public class DownloadService extends Service {
 
-    private String dirPath =
-            FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
-
-    private HashMap<Long, Download> hashMap;
+    private HashMap<Long, DownloadTask> hashMap;
     private ExecutorService executor;
     private Future future;
     private OkHttpClient client;
@@ -75,12 +73,12 @@ public class DownloadService extends Service {
         if (intent != null) {
             List<Task> list =  intent.getParcelableArrayListExtra(EXTRA_TASK);
             for (Task task : list) {
-                Download download = new Download(task);
-                addDownload(task.getId(), download);
+                DownloadTask downloadTask = new DownloadTask(task);
+                addDownload(task.getId(), downloadTask);
                 if (future == null) {
                     RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_START));
-                    download.running = true;
-                    future = executor.submit(download);
+                    downloadTask.running = true;
+                    future = executor.submit(downloadTask);
                     if (notification == null) {
                         notification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                         builder = NotificationUtils.getBuilder(this, R.drawable.ic_file_download_white_24dp,
@@ -104,17 +102,17 @@ public class DownloadService extends Service {
         }
     }
 
-    private Download nextDownload() {
-        for (Download download : hashMap.values()) {
-            if (!download.running) {
-                download.running = true;
-                return download;
+    private DownloadTask nextDownload() {
+        for (DownloadTask downloadTask : hashMap.values()) {
+            if (!downloadTask.running) {
+                downloadTask.running = true;
+                return downloadTask;
             }
         }
         return null;
     }
 
-    public synchronized void addDownload(long id, Download task) {
+    public synchronized void addDownload(long id, DownloadTask task) {
         if (!hashMap.containsKey(id)) {
             hashMap.put(id, task);
         }
@@ -124,9 +122,9 @@ public class DownloadService extends Service {
         if (hashMap.containsKey(id)) {
             if (hashMap.get(id).running) {
                 future.cancel(true);
-                Download download = nextDownload();
-                if (download != null) {
-                    future = executor.submit(download);
+                DownloadTask downloadTask = nextDownload();
+                if (downloadTask != null) {
+                    future = executor.submit(downloadTask);
                 } else {
                     notifyCompleted();
                     stopSelf();
@@ -146,19 +144,19 @@ public class DownloadService extends Service {
 
     public synchronized void initTask(List<Task> list) {
         for (Task task : list) {
-            Download download = hashMap.get(task.getId());
-            if (download != null) {
-                task.setState(download.task.getState());
+            DownloadTask downloadTask = hashMap.get(task.getId());
+            if (downloadTask != null) {
+                task.setState(downloadTask.task.getState());
             }
         }
     }
 
-    public class Download implements Runnable {
+    public class DownloadTask implements Runnable {
 
         private Task task;
         private boolean running;
 
-        Download(Task task) {
+        DownloadTask(Task task) {
             this.task = task;
         }
 
@@ -174,31 +172,43 @@ public class DownloadService extends Service {
             List<ImageUrl> list = Manga.downloadImages(client, source, task.getCid(), task.getPath());
             int size = list.size();
 
-            if (size != 0) {
-                onDownloadDoing(size);
-
+            if (size != 0 && Download.updateChapterIndex(task.getSource(), task.getComic(), task.getTitle(), task.getPath())) {
+                task.setMax(size);
+                task.setState(Task.STATE_DOING);
                 for (int i = task.getProgress(); i != size; ++i) {
                     int count = 0;  // page download error
                     while (count <= connect) {
-                        int error = 0;  // url download error
+                        boolean success = false;  // url download success
+                        onDownloadProgress(i);
                         ImageUrl image = list.get(i);
-                        String[] urls = image.getUrl();
-                        for (String url : urls) {
+                        for (String url : image.getUrl()) {
                             url = image.isLazy() ? Manga.downloadLazy(client, source, url) : url;
                             if (url != null) {
                                 Request request = new Request.Builder()
                                         .headers(headers)
                                         .url(url)
                                         .build();
-                                InputStream byteStream = downloadUrl(request);
-                                if (byteStream != null && writeToFile(byteStream, i + 1, url)) {
-                                    onDownloadProgress(i + 1);
-                                    break;
+                                Response response = null;
+                                try {
+                                    response = client.newCall(request).execute();
+                                    if (response.isSuccessful() && writeToFile(response.body().byteStream(), i + 1, url)) {
+                                        success = true;
+                                        if (i + 1 == size) {
+                                            onDownloadProgress(size);
+                                        }
+                                        break;
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (response != null) {
+                                        response.close();
+                                    }
                                 }
                             }
-                            ++error;
                         }
-                        if (error == urls.length) {
+                        if (!success) {
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                             ++count;
                         } else {
                             break;
@@ -216,30 +226,6 @@ public class DownloadService extends Service {
             removeDownload(task.getId());
         }
 
-        private InputStream downloadUrl(Request request) {
-            Response response = null;
-            try {
-                response = client.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    return response.body().byteStream();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (response != null) {
-                    response.close();
-                }
-            }
-            return null;
-        }
-
-        private void onDownloadDoing(int max) {
-            task.setMax(max);
-            task.setState(Task.STATE_DOING);
-            manager.update(task);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_DOING, task.getId(), max));
-        }
-
         private void onDownloadProgress(int progress) {
             task.setProgress(progress);
             manager.update(task);
@@ -253,7 +239,8 @@ public class DownloadService extends Service {
             } else {
                 suffix = suffix.split("\\?")[0];
             }
-            String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(task.getSource()), task.getComic(), task.getTitle());
+            String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(task.getSource()),
+                    task.getComic(), task.getTitle());
             return FileUtils.writeBinaryToFile(dir, StringUtils.format("%03d.%s", count, suffix), byteStream);
         }
 

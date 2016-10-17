@@ -16,7 +16,7 @@ import rx.functions.Func1;
 /**
  * Created by Hiroshi on 2016/7/18.
  */
-public class HistoryPresenter extends GridPresenter<HistoryView> {
+public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     private ComicManager mComicManager;
 
@@ -27,19 +27,47 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
     @Override
     protected void initSubscription() {
         super.initSubscription();
-        addSubscription(RxEvent.EVENT_COMIC_HISTORY, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                MiniComic comic = (MiniComic) rxEvent.getData();
-                mComicArray.put(comic.getId(), comic);
-                mBaseView.onItemUpdate(comic);
+                mBaseView.onItemUpdate((MiniComic) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
             }
         });
     }
 
-    @Override
-    protected Observable<List<Comic>> getRawObservable() {
-        return mComicManager.listHistory();
+    public void loadComic() {
+        mCompositeSubscription.add(mComicManager.listHistory()
+                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
+                    @Override
+                    public Observable<Comic> call(List<Comic> list) {
+                        return Observable.from(list);
+                    }
+                })
+                .map(new Func1<Comic, MiniComic>() {
+                    @Override
+                    public MiniComic call(Comic comic) {
+                        return new MiniComic(comic);
+                    }
+                })
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<MiniComic>>() {
+                    @Override
+                    public void call(List<MiniComic> list) {
+                        mBaseView.onComicLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadFail();
+                    }
+                }));
     }
 
     public void delete(MiniComic history) {
@@ -50,7 +78,6 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
             comic.setHistory(null);
             mComicManager.update(comic);
         }
-        mComicArray.remove(history.getId());
     }
 
     public void clear() {
@@ -69,7 +96,6 @@ public class HistoryPresenter extends GridPresenter<HistoryView> {
                                         mComicManager.update(comic);
                                     }
                                 }
-                                mComicArray.clear();
                             }
                         });
                     }

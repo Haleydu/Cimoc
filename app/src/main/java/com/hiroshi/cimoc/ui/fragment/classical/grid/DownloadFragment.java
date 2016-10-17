@@ -138,6 +138,11 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
+    public void onComicRead(MiniComic comic) {
+        mGridAdapter.update(comic, false);
+    }
+
+    @Override
     protected int getImageRes() {
         return R.drawable.ic_play_arrow_white_24dp;
     }

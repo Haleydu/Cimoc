@@ -17,8 +17,8 @@ public interface SettingsView extends BaseView {
 
     void onBackupFail();
 
-    void onCacheClearSuccess();
+    void onFileMoveSuccess(String path);
 
-    void onCacheClearFail();
+    void onFileMoveFail();
 
 }

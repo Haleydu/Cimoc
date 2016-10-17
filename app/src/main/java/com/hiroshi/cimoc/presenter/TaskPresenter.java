@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
 
 import java.util.Collections;
@@ -43,9 +44,6 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 switch ((int) rxEvent.getData()) {
                     case Task.STATE_PARSE:
                         mBaseView.onTaskParse(id);
-                        break;
-                    case Task.STATE_DOING:
-                        mBaseView.onTaskDoing(id, (int) rxEvent.getData(2));
                         break;
                     case Task.STATE_ERROR:
                         mBaseView.onTaskError(id);
@@ -118,7 +116,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     }
 
     public void sortTask(final List<Task> list) {
-        mCompositeSubscription.add(Download.get(mComic.getSource(), mComic.getTitle())
+        mCompositeSubscription.add(Download.getComicIndex(mComic.getSource(), mComic.getTitle())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<String>>() {
                     @Override
@@ -198,7 +196,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
             long id = mComicManager.insert(mComic);
             mComic.setId(id);
         }
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_HISTORY, new MiniComic(mComic)));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_READ, new MiniComic(mComic), ComicFragment.TYPE_DOWNLOAD));
         return mComic.getId();
     }
 

@@ -20,4 +20,10 @@ public interface FavoriteView extends GridView {
 
     void onCheckComplete();
 
+    void onComicRead(MiniComic comic);
+
+    void onComicFilterSuccess(List<MiniComic> list);
+
+    void onComicFilterFail();
+
 }

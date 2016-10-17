@@ -25,6 +25,7 @@ import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
+import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
@@ -41,8 +42,8 @@ import butterknife.OnClick;
 public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener,
         SelectDialogFragment.SelectDialogListener {
 
-    private static int TYPE_SELECT_DOWNLOAD = 0;
-    private static int TYPE_SELECT_TAG = 1;
+    private static final int TYPE_SELECT_DOWNLOAD = 0;
+    private static final int TYPE_SELECT_TAG = 1;
 
     @BindView(R.id.detail_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.detail_layout) CoordinatorLayout mCoordinatorLayout;
@@ -91,11 +92,15 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
                     showDownloadList();
                     break;
                 case R.id.detail_tag:
-                    if (mTagList == null) {
-                        showProgressDialog();
-                        mPresenter.loadTag();
+                    if (mPresenter.getComic().getFavorite() != null) {
+                        if (mTagList == null) {
+                            showProgressDialog();
+                            mPresenter.loadTag();
+                        } else {
+                            showTagList();
+                        }
                     } else {
-                        showTagList();
+                        showSnackbar(R.string.detail_tag_favorite);
                     }
                     break;
             }
@@ -123,7 +128,8 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
             last = mDetailAdapter.getItem(list.size() - 1).getPath();
             mDetailAdapter.setLast(last);
         }
-        mPresenter.updateLast(last);
+        int type = getIntent().getIntExtra(EXTRA_TYPE, ComicFragment.TYPE_HISTORY);
+        mPresenter.updateLast(last, type);
         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
         Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic().getId(), mode, list);
         startActivity(intent);
@@ -196,13 +202,19 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     public void onSelectPositiveClick(int type, List<Selectable> list) {
         if (type == TYPE_SELECT_TAG) {
             showProgressDialog();
-            List<Long> temp = new LinkedList<>();
-            for (Selectable selectable : mTempList) {
+            List<Long> oldTagList = new LinkedList<>();
+            for (Selectable selectable: mTagList) {
                 if (selectable.isChecked()) {
-                    temp.add(selectable.getId());
+                    oldTagList.add(selectable.getId());
                 }
             }
-            mPresenter.updateRef(temp);
+            List<Long> newTagList = new LinkedList<>();
+            for (Selectable selectable : mTempList) {
+                if (selectable.isChecked()) {
+                    newTagList.add(selectable.getId());
+                }
+            }
+            mPresenter.updateRef(oldTagList, newTagList);
         } else {
             download();
         }
@@ -217,7 +229,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     /**
-     * download: select chapter -> check permission -> update index -> add task
+     * download: select chapter -> check permission -> updateComicIndex index -> add task
      */
 
     private void download() {
@@ -311,7 +323,8 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
                 if (position != 0) {
                     String last = mDetailAdapter.getItem(position - 1).getPath();
                     mDetailAdapter.setLast(last);
-                    long id = mPresenter.updateLast(last);
+                    int type = getIntent().getIntExtra(EXTRA_TYPE, ComicFragment.TYPE_HISTORY);
+                    long id = mPresenter.updateLast(last, type);
                     int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
                     Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mode, mDetailAdapter.getDateSet());
                     startActivity(intent);
@@ -374,12 +387,18 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     public static final String EXTRA_ID = "a";
     public static final String EXTRA_SOURCE = "b";
     public static final String EXTRA_CID = "c";
+    public static final String EXTRA_TYPE = "d";
 
     public static Intent createIntent(Context context, Long id, int source, String cid) {
+        return createIntent(context, id, source, cid, ComicFragment.TYPE_HISTORY);
+    }
+
+    public static Intent createIntent(Context context, Long id, int source, String cid, int type) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_SOURCE, source);
         intent.putExtra(EXTRA_CID, cid);
+        intent.putExtra(EXTRA_TYPE, type);
         return intent;
     }
 

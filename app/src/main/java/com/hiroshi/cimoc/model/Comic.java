@@ -73,9 +73,15 @@ public class Comic {
     }
 
     public void setInfo(String title, String cover, String update, String intro, String author, boolean finish) {
-        this.title = title;
-        this.cover = cover;
-        this.update = update;
+        if (title != null) {
+            this.title = title;
+        }
+        if (cover != null) {
+            this.cover = cover;
+        }
+        if (update != null) {
+            this.update = update;
+        }
         this.intro = intro;
         this.author = author;
         this.finish = finish;

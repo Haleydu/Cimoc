@@ -16,10 +16,6 @@ public interface GridView extends BaseView {
 
     void onComicLoadFail();
 
-    void onComicFilterSuccess(List<MiniComic> list);
-
-    void onComicFilterFail();
-
     void onThemeChange(@ColorRes int primary, @ColorRes int accent);
 
 }

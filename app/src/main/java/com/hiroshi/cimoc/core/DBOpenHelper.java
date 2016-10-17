@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.greenrobot.greendao.database.Database;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,26 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 TagDao.createTable(db, false);
                 TagRefDao.createTable(db, false);
                 initSource(db);
+                renameDownload();
+        }
+    }
+
+    private void renameDownload() {
+        try {
+            for (File sourceDir : FileUtils.listFiles(FileUtils.getPath(Storage.STORAGE_DIR, "download"))) {
+                if (sourceDir.isDirectory()) {
+                    for (File comicDir : FileUtils.listFiles(sourceDir)) {
+                        if (comicDir.isDirectory()) {
+                            String filter = FileUtils.filterFilename(comicDir.getAbsolutePath());
+                            if (!filter.equals(comicDir.getAbsolutePath())) {
+                                FileUtils.rename(comicDir.getAbsolutePath(), filter);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -72,9 +93,9 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     }
 
     private void updateHHAAZZ() {
-        if (FileUtils.isDirsExist(FileUtils.getPath(Download.dirPath, "汗汗漫画"))
-                && !FileUtils.isDirsExist(FileUtils.getPath(Download.dirPath, "手机汗汗"))) {
-            FileUtils.rename(FileUtils.getPath(Download.dirPath, "汗汗漫画"), FileUtils.getPath(Download.dirPath, "手机汗汗"));
+        if (FileUtils.isDirsExist(FileUtils.getPath(Storage.STORAGE_DIR, "download", "汗汗漫画"))
+                && !FileUtils.isDirsExist(FileUtils.getPath(Storage.STORAGE_DIR, "download", "手机汗汗"))) {
+            FileUtils.rename(FileUtils.getPath(Storage.STORAGE_DIR, "download", "汗汗漫画"), FileUtils.getPath(Storage.STORAGE_DIR, "download", "手机汗汗"));
         }
     }
 

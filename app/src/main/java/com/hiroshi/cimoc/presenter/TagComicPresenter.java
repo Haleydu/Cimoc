@@ -26,12 +26,14 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
 
     private ComicManager mComicManager;
     private TagManager mTagManager;
+    private long mTagId;
 
     public TagComicPresenter() {
         mComicManager = ComicManager.getInstance();
         mTagManager = TagManager.getInstance();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.EVENT_COMIC_UNFAVORITE, new Action1<RxEvent>() {
@@ -46,9 +48,22 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
                 mBaseView.onComicFavorite((MiniComic) rxEvent.getData());
             }
         });
+        addSubscription(RxEvent.EVENT_TAG_UPDATE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                List<Long> deleteList = (List<Long>) rxEvent.getData(1);
+                List<Long> insertList = (List<Long>) rxEvent.getData(2);
+                if (deleteList.contains(mTagId)) {
+                    mBaseView.onTagUpdateDelete((MiniComic) rxEvent.getData());
+                } else if (insertList.contains(mTagId)) {
+                    mBaseView.onTagUpdateInsert((MiniComic) rxEvent.getData());
+                }
+            }
+        });
     }
 
     public void loadTagComic(long id) {
+        mTagId = id;
         mCompositeSubscription.add(mTagManager.listByTag(id)
                 .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
                     @Override

@@ -129,7 +129,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getRecentRequest(int page) {
-        String url = StringUtils.format("http://m.ikanman.com/update/?ajax=1&page=%d", page);
+        String url = StringUtils.format("http://m.ikanman.com/updateComicIndex/?ajax=1&page=%d", page);
         return new Request.Builder().url(url).build();
     }
 

@@ -51,6 +51,13 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
     }
 
     @Override
+    public void onDestroyView() {
+        mPresenter.detachView();
+        mPresenter = null;
+        super.onDestroyView();
+    }
+
+    @Override
     public void onItemClick(View view, int position) {
         Intent intent = TagComicActivity.createIntent(getActivity(), mTagAdapter.getItem(position).getId());
         startActivity(intent);

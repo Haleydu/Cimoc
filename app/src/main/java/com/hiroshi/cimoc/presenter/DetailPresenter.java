@@ -14,11 +14,13 @@ import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -150,14 +152,23 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }));
     }
 
-    public void updateRef(final List<Long> list) {
+    public void updateRef(final List<Long> oldList, final List<Long> newList) {
         mCompositeSubscription.add(mTagManager.runInTx(new Runnable() {
             @Override
             public void run() {
-                mTagManager.deleteByComic(mComic.getId());
-                for (Long tid : list) {
+                List<Long> deleteList = new LinkedList<>(oldList);
+                deleteList.removeAll(newList);
+                for (Long tid : deleteList) {
+                    mTagManager.delete(tid, mComic.getId());
+                }
+
+                List<Long> insertList = new LinkedList<>(newList);
+                insertList.removeAll(oldList);
+                for (Long tid : insertList) {
                     mTagManager.insert(new TagRef(null, tid, mComic.getId()));
                 }
+
+                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, new MiniComic(mComic), deleteList, insertList));
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
@@ -174,7 +185,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void updateIndex(List<Chapter> list) {
-        mCompositeSubscription.add(Download.update(list, mComic.getSource(), mComic.getCid(), mComic.getTitle(), mComic.getCover())
+        mCompositeSubscription.add(Download.updateComicIndex(list, mComic.getSource(), mComic.getCid(), mComic.getTitle(), mComic.getCover())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
@@ -261,7 +272,10 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }));
     }
 
-    public long updateLast(String last) {
+    public long updateLast(String last, int type) {
+        if (type == ComicFragment.TYPE_FAVORITE) {
+            mComic.setFavorite(System.currentTimeMillis());
+        }
         mComic.setHistory(System.currentTimeMillis());
         if (!last.equals(mComic.getLast())) {
             mComic.setLast(last);
@@ -273,7 +287,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             long id = mComicManager.insert(mComic);
             mComic.setId(id);
         }
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_HISTORY, new MiniComic(mComic)));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_READ, new MiniComic(mComic), type));
         return mComic.getId();
     }
 

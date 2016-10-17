@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.os.Environment;
-
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -22,9 +20,6 @@ import rx.schedulers.Schedulers;
  */
 public class Backup {
 
-    public static String dirPath =
-            FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "backup");
-
     public static Observable<Integer> save(final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
@@ -44,7 +39,7 @@ public class Backup {
                         array.put(object);
                     }
                     String name = StringUtils.getDateStringWithSuffix("cimoc");
-                    if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
+                    if (FileUtils.writeStringToFile(FileUtils.getPath(Storage.STORAGE_DIR, "backup"), name, array.toString())) {
                         subscriber.onNext(array.length());
                         subscriber.onCompleted();
                     } else {
@@ -61,7 +56,7 @@ public class Backup {
         return Observable.create(new Observable.OnSubscribe<String[]>() {
             @Override
             public void call(Subscriber<? super String[]> subscriber) {
-                String[] files = FileUtils.listFilesNameHaveSuffix(dirPath, "cimoc");
+                String[] files = FileUtils.listFilesNameHaveSuffix(FileUtils.getPath(Storage.STORAGE_DIR, "backup"), "cimoc");
                 if (files != null) {
                     Arrays.sort(files);
                     if (files.length == 0) {
@@ -70,6 +65,8 @@ public class Backup {
                         subscriber.onNext(files);
                         subscriber.onCompleted();
                     }
+                } else {
+                    subscriber.onError(new Exception());
                 }
             }
         }).subscribeOn(Schedulers.io());
@@ -81,7 +78,7 @@ public class Backup {
             public void call(Subscriber<? super List<Comic>> subscriber) {
                 try {
                     List<Comic> list = new LinkedList<>();
-                    String jsonString = FileUtils.readSingleLineFromFile(dirPath, name);
+                    String jsonString = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, "backup"), name);
                     JSONArray array = new JSONArray(jsonString);
                     for (int i = 0; i != array.length(); ++i) {
                         JSONObject object = array.getJSONObject(i);

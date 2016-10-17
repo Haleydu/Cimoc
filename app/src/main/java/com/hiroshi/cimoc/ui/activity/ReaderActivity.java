@@ -402,6 +402,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         try {
             for (String url : urls) {
                 String suffix = StringUtils.getSplit(url, "\\.", -1);
+                if (suffix == null) {
+                    suffix = "jpg";
+                } else {
+                    suffix = suffix.split("\\?")[0];
+                }
                 if (url.startsWith("file")) {
                     InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
                     mPresenter.savePicture(inputStream, suffix);

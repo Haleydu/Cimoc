@@ -71,13 +71,6 @@ public class TagManager {
         mTagDao.update(tag);
     }
 
-    public void deleteByComic(long cid) {
-        mRefDao.queryBuilder()
-                .where(TagRefDao.Properties.Cid.eq(cid))
-                .buildDelete()
-                .executeDeleteWithoutDetachingEntities();
-    }
-
     public void deleteByTag(long tid) {
         mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Tid.eq(tid))

@@ -219,7 +219,7 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     /**
-     * get item position in center of viewpager
+     * getComicIndex item position in center of viewpager
      */
     public int getCurrentPosition() {
         int curPosition;

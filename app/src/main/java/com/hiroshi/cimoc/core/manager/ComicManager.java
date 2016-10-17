@@ -93,10 +93,6 @@ public class ComicManager {
         mComicDao.deleteByKey(id);
     }
 
-    public void deleteInTx(List<Comic> list) {
-        mComicDao.deleteInTx(list);
-    }
-
     public long insert(Comic comic) {
         return mComicDao.insert(comic);
     }

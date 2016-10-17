@@ -44,16 +44,6 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
     }
 
     @Override
-    public void onComicFilterSuccess(List<MiniComic> list) {
-        mGridAdapter.setData(list);
-    }
-
-    @Override
-    public void onComicFilterFail() {
-        showSnackbar(R.string.comic_filter_fail);
-    }
-
-    @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
         mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
     }

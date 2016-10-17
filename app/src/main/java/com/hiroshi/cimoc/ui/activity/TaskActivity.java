@@ -298,17 +298,6 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    public void onTaskDoing(long id, int max) {
-        int position = mTaskAdapter.getPositionById(id);
-        if (position != -1) {
-            Task task = mTaskAdapter.getItem(position);
-            task.setMax(max);
-            task.setState(Task.STATE_DOING);
-            notifyItemChanged(position);
-        }
-    }
-
-    @Override
     public void onTaskParse(long id) {
         int position = mTaskAdapter.getPositionById(id);
         if (position != -1) {
@@ -324,9 +313,8 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
             Task task = mTaskAdapter.getItem(position);
             task.setMax(max);
             task.setProgress(progress);
-            if (max == progress) {
-                task.setState(Task.STATE_FINISH);
-            }
+            int state = max == progress ? Task.STATE_FINISH : Task.STATE_DOING;
+            task.setState(state);
             notifyItemChanged(position);
         }
     }

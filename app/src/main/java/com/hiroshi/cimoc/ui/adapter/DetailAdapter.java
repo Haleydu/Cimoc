@@ -15,7 +15,6 @@ import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.custom.ChapterButton;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -178,14 +177,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 notifyItemChanged(i + 1);
             }
         }
-    }
-
-    public List<String> getTitles() {
-        List<String> list = new ArrayList<>(mDataSet.size());
-        for (Chapter chapter : mDataSet) {
-            list.add(chapter.getTitle());
-        }
-        return list;
     }
 
     public interface OnTitleClickListener {
