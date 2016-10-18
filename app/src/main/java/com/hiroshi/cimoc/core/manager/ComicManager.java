@@ -75,6 +75,7 @@ public class ComicManager {
 
     public Observable<Comic> loadLast() {
         return mComicDao.queryBuilder()
+                .where(Properties.History.isNotNull())
                 .orderDesc(Properties.History)
                 .limit(1)
                 .rx()

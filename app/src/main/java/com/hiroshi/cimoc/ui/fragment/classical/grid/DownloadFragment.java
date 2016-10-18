@@ -21,9 +21,13 @@ import java.util.ArrayList;
  */
 public class DownloadFragment extends GridFragment implements DownloadView {
 
-    private DownloadPresenter mPresenter;
+    private static final int TYPE_PAUSE = 1;
+    private static final int TYPE_DELETE = 2;
 
-    private boolean start;
+    private DownloadPresenter mPresenter;
+    private int mTempPosition = -1;
+
+    private boolean start = false;
 
     @Override
     protected void initPresenter() {
@@ -33,7 +37,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     protected void initData() {
-        start = false;
         ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo info : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (info.service.getClassName().equals(DownloadService.class.getName())) {
@@ -53,29 +56,49 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     @Override
     protected void onActionButtonClick() {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.download_action_confirm, true);
+                R.string.download_action_confirm, true, TYPE_PAUSE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 
     @Override
     public void onMessagePositiveClick(int type) {
-        if (start) {
-            getActivity().stopService(new Intent(getActivity(), DownloadService.class));
-            onDownloadStop();
-            showSnackbar(R.string.download_stop_success);
-        } else {
-            showProgressDialog();
-            mPresenter.loadTask();
+        switch (type) {
+            case TYPE_PAUSE:
+                if (start) {
+                    getActivity().stopService(new Intent(getActivity(), DownloadService.class));
+                    onDownloadStop();
+                    showSnackbar(R.string.download_stop_success);
+                } else {
+                    showProgressDialog();
+                    mPresenter.loadTask();
+                }
+                break;
+            case TYPE_DELETE:
+                if (start) {
+                    showSnackbar(R.string.download_ask_stop);
+                } else {
+                    showProgressDialog();
+                    mPresenter.deleteComic(mGridAdapter.getItem(mTempPosition).getId());
+                }
+                break;
         }
     }
 
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent =
-                TaskActivity.createIntent(getActivity(), comic.getId());
+        Intent intent = TaskActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemLongClick(View view, int position) {
+        mTempPosition = position;
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.download_delete_confirm, true, TYPE_DELETE);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
     }
 
     @Override
@@ -140,6 +163,19 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     @Override
     public void onComicRead(MiniComic comic) {
         mGridAdapter.update(comic, false);
+    }
+
+    @Override
+    public void onDownloadDeleteSuccess() {
+        hideProgressDialog();
+        mGridAdapter.remove(mTempPosition);
+        showSnackbar(R.string.common_delete_success);
+    }
+
+    @Override
+    public void onDownloadDeleteFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.common_delete_fail);
     }
 
     @Override

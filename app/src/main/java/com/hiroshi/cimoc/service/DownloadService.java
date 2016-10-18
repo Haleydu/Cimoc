@@ -13,9 +13,7 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -35,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import okhttp3.CacheControl;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -185,8 +184,10 @@ public class DownloadService extends Service {
                             url = image.isLazy() ? Manga.downloadLazy(client, source, url) : url;
                             if (url != null) {
                                 Request request = new Request.Builder()
+                                        .cacheControl(new CacheControl.Builder().noStore().build())
                                         .headers(headers)
                                         .url(url)
+                                        .get()
                                         .build();
                                 Response response = null;
                                 try {
@@ -239,8 +240,7 @@ public class DownloadService extends Service {
             } else {
                 suffix = suffix.split("\\?")[0];
             }
-            String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(task.getSource()),
-                    task.getComic(), task.getTitle());
+            String dir = Download.buildPath(task.getSource(), task.getComic(), task.getTitle());
             return FileUtils.writeBinaryToFile(dir, StringUtils.format("%03d.%s", count, suffix), byteStream);
         }
 

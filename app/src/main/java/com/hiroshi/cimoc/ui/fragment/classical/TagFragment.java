@@ -110,11 +110,13 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
     @Override
     public void onTagLoadSuccess(List<Tag> list) {
         mTagAdapter.addAll(list);
+        hideProgressBar();
     }
 
     @Override
     public void onTagLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
+        hideProgressBar();
     }
 
     @Override

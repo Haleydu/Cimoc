@@ -81,10 +81,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 int type = (int) rxEvent.getData();
                 if (type == TagManager.TAG_NORMAL) {
                     mTagId = (long) rxEvent.getData(1);
-                    filter();
-                } else {
-                    filter(type);
                 }
+                filter(type);
             }
         });
         addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
@@ -138,55 +136,55 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 }));
     }
 
-    private void filter() {
-        mCompositeSubscription.add(mTagManager.listByTag(mTagId)
-                .flatMap(new Func1<List<TagRef>, Observable<TagRef>>() {
-                    @Override
-                    public Observable<TagRef> call(List<TagRef> tagRefs) {
-                        return Observable.from(tagRefs);
-                    }
-                })
-                .map(new Func1<TagRef, MiniComic>() {
-                    @Override
-                    public MiniComic call(TagRef ref) {
-                        return mComicArray.get(ref.getCid());
-                    }
-                })
-                .filter(new Func1<MiniComic, Boolean>() {
-                    @Override
-                    public Boolean call(MiniComic comic) {
-                        return comic != null;
-                    }
-                })
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
-                    @Override
-                    public void call(List<MiniComic> list) {
-                        mBaseView.onComicFilterSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onComicFilterFail();
-                    }
-                }));
-    }
-
     private void filter(int type) {
-        List<MiniComic> list = new LinkedList<>();
-        for (int i = 0; i != mComicArray.size(); ++i) {
-            if (type != TagManager.TAG_ALL) {
-                Boolean finish = mComicArray.valueAt(i).isFinish();
-                if (type == TagManager.TAG_CONTINUE && (finish == null || !finish) ||
-                        type == TagManager.TAG_END && finish != null && finish) {
+        if (type == TagManager.TAG_NORMAL) {
+            mCompositeSubscription.add(mTagManager.listByTag(mTagId)
+                    .flatMap(new Func1<List<TagRef>, Observable<TagRef>>() {
+                        @Override
+                        public Observable<TagRef> call(List<TagRef> tagRefs) {
+                            return Observable.from(tagRefs);
+                        }
+                    })
+                    .map(new Func1<TagRef, MiniComic>() {
+                        @Override
+                        public MiniComic call(TagRef ref) {
+                            return mComicArray.get(ref.getCid());
+                        }
+                    })
+                    .filter(new Func1<MiniComic, Boolean>() {
+                        @Override
+                        public Boolean call(MiniComic comic) {
+                            return comic != null;
+                        }
+                    })
+                    .toList()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<MiniComic>>() {
+                        @Override
+                        public void call(List<MiniComic> list) {
+                            mBaseView.onComicFilterSuccess(list);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            mBaseView.onComicFilterFail();
+                        }
+                    }));
+        } else {
+            List<MiniComic> list = new LinkedList<>();
+            for (int i = 0; i != mComicArray.size(); ++i) {
+                if (type != TagManager.TAG_ALL) {
+                    Boolean finish = mComicArray.valueAt(i).isFinish();
+                    if (type == TagManager.TAG_CONTINUE && (finish == null || !finish) ||
+                            type == TagManager.TAG_END && finish != null && finish) {
+                        list.add(mComicArray.valueAt(i));
+                    }
+                } else {
                     list.add(mComicArray.valueAt(i));
                 }
-            } else {
-                list.add(mComicArray.valueAt(i));
             }
+            mBaseView.onComicFilterSuccess(list);
         }
-        mBaseView.onComicFilterSuccess(list);
     }
 
     private int size;

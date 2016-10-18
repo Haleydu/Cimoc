@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Comic;
@@ -13,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/9/1.
@@ -70,6 +73,37 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
             }
         });
+    }
+
+    public void deleteComic(final long id) {
+        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Void>() {
+            @Override
+            public void call(Subscriber<? super Void> subscriber) {
+                Comic comic = mComicManager.load(id);
+                if (comic.getFavorite() == null && comic.getHistory() == null) {
+                    mComicManager.delete(comic);
+                } else {
+                    comic.setDownload(null);
+                    mComicManager.update(comic);
+                }
+                Download.delete(comic.getSource(), comic.getTitle());
+                subscriber.onNext(null);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void v) {
+                        mBaseView.onDownloadDeleteSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                        mBaseView.onDownloadDeleteFail();
+                    }
+                }));
     }
 
     public void loadComic() {

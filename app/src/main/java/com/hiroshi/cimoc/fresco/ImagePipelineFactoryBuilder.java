@@ -45,7 +45,7 @@ public class ImagePipelineFactoryBuilder {
                 return Headers.of("Referer", "http://www.hhssee.com");
             case SourceManager.SOURCE_57MH:
                 return Headers.of("Referer", "http://m.57mh.com");
-            case SourceManager.SOURCE_EHENTAI:
+/*            case SourceManager.SOURCE_EHENTAI:
                 return Headers.of("Referer", "http://g.e-hentai.org");
             case SourceManager.SOURCE_EXHENTAI:
                 return Headers.of("Referer", "https://exhentai.org", "Cookie", "igneous=583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12583e748d60dc007822213a471d8e71dcba801b6a55cd0ffe04953e8adb63f294d4b60f303d9182b4276281ac883cec4c48a669db0b6c4914da78073945f49b12");
@@ -54,7 +54,7 @@ public class ImagePipelineFactoryBuilder {
             case SourceManager.SOURCE_WNACG:
                 return Headers.of("Referer", "https://www.wnacg.com");
             case SourceManager.SOURCE_177PIC:
-                return Headers.of("Referer", "http://www.177pic66.com");
+                return Headers.of("Referer", "http://www.177pic66.com");    */
         }
         return Headers.of();
     }

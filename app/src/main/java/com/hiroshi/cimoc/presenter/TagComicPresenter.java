@@ -5,6 +5,7 @@ import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.TagRef;
+import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TagComicView;
 
@@ -151,7 +152,6 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onComicInsertFail();
                     }
                 });

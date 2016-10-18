@@ -102,7 +102,7 @@ public class SourceManager {
                 return "汗汗漫画";
             case SOURCE_57MH:
                 return "57漫画";
-            case SOURCE_EHENTAI:
+/*            case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
                 return "ExHentai";
@@ -111,7 +111,7 @@ public class SourceManager {
             case SOURCE_WNACG:
                 return "绅士漫画";
             case SOURCE_177PIC:
-                return "177漫画";
+                return "177漫画"; */
         }
         return "null";
     }
@@ -136,7 +136,7 @@ public class SourceManager {
                 return new Source(null, "汗汗漫画", SOURCE_HHSSEE, false);
             case "57MH":
                 return new Source(null, "57漫画", SOURCE_57MH, false);
-            case "EHentai":
+/*            case "EHentai":
                 return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
             case "ExHentai":
                 return new Source(null, "ExHentai", SOURCE_EXHENTAI, false);
@@ -145,7 +145,7 @@ public class SourceManager {
             case "Wnacg":
                 return new Source(null, "绅士漫画", SOURCE_WNACG, false);
             case "177Pic":
-                return new Source(null, "177漫画", SOURCE_177PIC, false);
+                return new Source(null, "177漫画", SOURCE_177PIC, false); */
         }
         return null;
     }
@@ -183,7 +183,7 @@ public class SourceManager {
                 case SOURCE_57MH:
                     parser = new MH57();
                     break;
-                case SOURCE_EHENTAI:
+/*                case SOURCE_EHENTAI:
                     parser = new EHentai();
                     break;
                 case SOURCE_EXHENTAI:
@@ -197,7 +197,7 @@ public class SourceManager {
                     break;
                 case SOURCE_177PIC:
                     parser = new Pic177();
-                    break;
+                    break;  */
             }
             sparseArray.put(source, parser);
         }

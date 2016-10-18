@@ -16,8 +16,6 @@ import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
-import java.io.File;
-
 import okhttp3.OkHttpClient;
 
 /**
@@ -41,7 +39,6 @@ public class CimocApplication extends Application {
         mPreferenceManager = new PreferenceManager(getApplicationContext());
         Storage.STORAGE_DIR = FileUtils.getPath(mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE,
                 Environment.getExternalStorageDirectory().getAbsolutePath()), "Cimoc");
-        renameDownload();
         Fresco.initialize(this);
     }
 
@@ -70,25 +67,6 @@ public class CimocApplication extends Application {
             mBuilderProvider = new ControllerBuilderProvider(getApplicationContext());
         }
         return mBuilderProvider;
-    }
-
-    private void renameDownload() {
-        try {
-            for (File sourceDir : FileUtils.listFiles(FileUtils.getPath(Storage.STORAGE_DIR, "download"))) {
-                if (sourceDir.isDirectory()) {
-                    for (File comicDir : FileUtils.listFiles(sourceDir)) {
-                        if (comicDir.isDirectory()) {
-                            String filter = FileUtils.filterFilename(comicDir.getAbsolutePath());
-                            if (!filter.equals(comicDir.getAbsolutePath())) {
-                                FileUtils.rename(comicDir.getAbsolutePath(), filter);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

@@ -103,7 +103,7 @@ public class StreamReaderActivity extends ReaderActivity {
         if (turn == PreferenceManager.READER_TURN_ATB) {
             mRecyclerView.smoothScrollBy(0, -point.y);
         } else {
-            mRecyclerView.smoothScrollBy(0, -point.x);
+            mRecyclerView.smoothScrollBy(-point.x, 0);
         }
         if (mLayoutManager.findFirstVisibleItemPosition() == 0) {
             loadPrev();
@@ -117,7 +117,7 @@ public class StreamReaderActivity extends ReaderActivity {
         if (turn == PreferenceManager.READER_TURN_ATB) {
             mRecyclerView.smoothScrollBy(0, point.y);
         } else {
-            mRecyclerView.smoothScrollBy(0, point.x);
+            mRecyclerView.smoothScrollBy(point.x, 0);
         }
         if (mLayoutManager.findLastVisibleItemPosition() == mReaderAdapter.getItemCount() - 1) {
             loadNext();

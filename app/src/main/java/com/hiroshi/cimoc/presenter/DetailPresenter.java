@@ -168,7 +168,9 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     mTagManager.insert(new TagRef(null, tid, mComic.getId()));
                 }
 
-                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, new MiniComic(mComic), deleteList, insertList));
+                if (!deleteList.isEmpty() || !insertList.isEmpty()) {
+                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, new MiniComic(mComic), deleteList, insertList));
+                }
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {

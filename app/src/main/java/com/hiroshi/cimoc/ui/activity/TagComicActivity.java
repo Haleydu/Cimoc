@@ -196,13 +196,17 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     @Override
     public void onTagUpdateDelete(MiniComic comic) {
         mGridAdapter.remove(comic);
-        mComicArray.put(comic.getId(), comic);
+        if (mComicArray != null) {
+            mComicArray.put(comic.getId(), comic);
+        }
     }
 
     @Override
     public void onTagUpdateInsert(MiniComic comic) {
         mGridAdapter.add(0, comic);
-        mComicArray.remove(comic.getId());
+        if (mComicArray != null) {
+            mComicArray.remove(comic.getId());
+        }
     }
 
     @Override

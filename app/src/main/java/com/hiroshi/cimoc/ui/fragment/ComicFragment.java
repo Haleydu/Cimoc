@@ -62,6 +62,7 @@ public class ComicFragment extends BaseFragment implements ComicView, ChoiceDial
         mViewPager.setAdapter(mTabAdapter);
         mViewPager.setCurrentItem(1);
         mTabLayout.setupWithViewPager(mViewPager);
+        hideProgressBar();
     }
 
     @Override
@@ -138,11 +139,13 @@ public class ComicFragment extends BaseFragment implements ComicView, ChoiceDial
 
     @Override
     public void onTagDelete(Tag tag) {
-        int index = mTagList.indexOf(tag);
-        mTagList.remove(tag);
-        if (index != -1 && index == mFilterChoice - 3) {
-            mFilterChoice = 0;
-            mPresenter.filter(TagManager.TAG_ALL, 0);
+        if (mTagList != null) {
+            int index = mTagList.indexOf(tag);
+            mTagList.remove(tag);
+            if (index != -1 && index == mFilterChoice - 3) {
+                mFilterChoice = 0;
+                mPresenter.filter(TagManager.TAG_ALL, 0);
+            }
         }
     }
 

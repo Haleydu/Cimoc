@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <include layout="@layout/custom_progress_bar"/>
     <FrameLayout
         android:id="@+id/search_frame_layout"
         android:layout_width="match_parent"

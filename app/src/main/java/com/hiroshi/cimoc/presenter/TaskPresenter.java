@@ -151,23 +151,19 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     @Override
                     public void call(List<String> strings) {
                         Download.delete(mComic.getSource(), mComic.getTitle(), strings);
-                        mComicManager.runInTx(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (isEmpty) {
-                                    if (mComic.getFavorite() == null && mComic.getHistory() == null) {
-                                        mComicManager.delete(mComic);
-                                    } else {
-                                        mComic.setDownload(null);
-                                        mComicManager.update(mComic);
-                                    }
-                                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, mComic.getId()));
-                                }
-                                for (Task task : list) {
-                                    mTaskManager.delete(task);
-                                }
+                        mTaskManager.deleteInTx(list);
+                        if (isEmpty) {
+                            long id = mComic.getId();
+                            mComic.setDownload(null);
+                            if (mComic.getFavorite() == null && mComic.getHistory() == null) {
+                                mComic.setId(null);
+                                mComicManager.delete(mComic);
+                            } else {
+                                mComicManager.update(mComic);
                             }
-                        });
+                            Download.delete(mComic.getSource(), mComic.getTitle());
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
+                        }
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

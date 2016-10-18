@@ -22,14 +22,14 @@ public class FileUtils {
     public static String getPath(String... filename) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i != filename.length - 1; ++i) {
-            builder.append(filterFilename(filename[i])).append(File.separator);
+            builder.append(filename[i]).append(File.separator);
         }
-        builder.append(filterFilename(filename[filename.length - 1]));
+        builder.append(filename[filename.length - 1]);
         return builder.toString();
     }
 
     public static String filterFilename(String text) {
-        return text.replaceAll("[\\|\\?\\*\\\\:<>]", "");
+        return text.replaceAll("[\\|\\?\\*\\\\/:<>]", "");
     }
 
     public static void deleteDir(File dir) {
@@ -233,12 +233,12 @@ public class FileUtils {
         }
 
         if (srcDir.getAbsolutePath().equals(dstDir.getAbsolutePath())) {
-            return true;
+            return false;
         }
 
         for (File file : srcDir.listFiles()) {
-            if (file.isFile() && !copyFile(file.getAbsolutePath(), getPath(dstPath, file.getName())) ||
-                    file.isDirectory() && !copyFolder(file.getAbsolutePath(), getPath(dstPath, file.getName()))) {
+            if (file.isFile() && !copyFile(file.getAbsolutePath(), getPath(dstPath, filterFilename(file.getName()))) ||
+                    file.isDirectory() && !copyFolder(file.getAbsolutePath(), getPath(dstPath, filterFilename(file.getName())))) {
                 return false;
             }
         }

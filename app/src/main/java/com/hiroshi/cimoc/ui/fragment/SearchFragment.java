@@ -171,11 +171,13 @@ public class SearchFragment extends BaseFragment implements SearchView,
                 mFilterSet.add(source);
             }
         }
+        hideProgressBar();
     }
 
     @Override
     public void onSourceLoadFail() {
         showSnackbar(R.string.search_source_load_fail);
+        hideProgressBar();
     }
 
     @Override

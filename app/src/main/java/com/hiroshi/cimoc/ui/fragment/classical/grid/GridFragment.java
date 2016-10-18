@@ -36,11 +36,13 @@ public abstract class GridFragment extends ClassicalFragment implements GridView
     @Override
     public void onComicLoadSuccess(List<MiniComic> list) {
         mGridAdapter.addAll(list);
+        hideProgressBar();
     }
 
     @Override
     public void onComicLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
+        hideProgressBar();
     }
 
     @Override

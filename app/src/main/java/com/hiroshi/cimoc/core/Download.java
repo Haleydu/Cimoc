@@ -30,7 +30,7 @@ public class Download {
                 try {
                     FileUtils.createFile(FileUtils.getPath(Storage.STORAGE_DIR, "download"), ".nomedia");
                     String jsonString = writeComicToJson(list, source, cid, title, cover);
-                    String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source), title);
+                    String dir = buildPath(source, title);
                     if (FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString))) {
                         subscriber.onNext(null);
                         subscriber.onCompleted();
@@ -75,7 +75,7 @@ public class Download {
     public static boolean updateChapterIndex(int source, String comic, String title, String path) {
         try {
             String jsonString = writeChapterToJson(title, path);
-            String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source), comic, title);
+            String dir = buildPath(source, comic, title);
             return FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString));
         } catch (JSONException e) {
             return false;
@@ -86,7 +86,7 @@ public class Download {
         return Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
-                String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source), comic);
+                String dir = buildPath(source, comic);
                 char[] magic = FileUtils.readCharFromFile(dir, "index.cdif", 5);
                 if (!Arrays.equals(magic, "cimoc".toCharArray())) {
                     subscriber.onError(new Exception());
@@ -126,7 +126,7 @@ public class Download {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source), comic, title);
+                String dir = buildPath(source, comic, title);
                 String[] filenames = FileUtils.listFilesNameNoSuffix(dir, "cdif");
                 if (filenames.length == 0) {
                     subscriber.onError(new Exception());
@@ -142,11 +142,26 @@ public class Download {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static void delete(final int source, final String comic, final List<String> list) {
+    public static void delete(int source, String comic, List<String> list) {
         for (String title : list) {
-            String dir = FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source), comic, title);
+            String dir = buildPath(source, comic, title);
             FileUtils.deleteDir(dir);
         }
+    }
+
+    public static void delete(int source, String comic) {
+        String dir = buildPath(source, comic);
+        FileUtils.deleteDir(dir);
+    }
+
+    public static String buildPath(int source, String comic) {
+        return FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source),
+                FileUtils.filterFilename(comic));
+    }
+
+    public static String buildPath(int source, String comic, String chapter) {
+        return FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source),
+                FileUtils.filterFilename(comic), FileUtils.filterFilename(chapter));
     }
 
 }

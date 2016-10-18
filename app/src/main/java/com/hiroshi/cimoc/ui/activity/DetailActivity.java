@@ -201,7 +201,6 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     @Override
     public void onSelectPositiveClick(int type, List<Selectable> list) {
         if (type == TYPE_SELECT_TAG) {
-            showProgressDialog();
             List<Long> oldTagList = new LinkedList<>();
             for (Selectable selectable: mTagList) {
                 if (selectable.isChecked()) {
@@ -214,7 +213,11 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
                     newTagList.add(selectable.getId());
                 }
             }
-            mPresenter.updateRef(oldTagList, newTagList);
+
+            if (!oldTagList.isEmpty() || !newTagList.isEmpty()) {
+                showProgressDialog();
+                mPresenter.updateRef(oldTagList, newTagList);
+            }
         } else {
             download();
         }

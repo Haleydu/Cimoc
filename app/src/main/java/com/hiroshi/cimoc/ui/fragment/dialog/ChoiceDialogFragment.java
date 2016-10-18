@@ -33,12 +33,13 @@ public class ChoiceDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (item != null) {
+                            String value = choice == -1 ? null : item[choice];
                             if (getTargetFragment() != null) {
                                 ((ChoiceDialogListener) getTargetFragment())
-                                        .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, item[choice]);
+                                        .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, value);
                             } else {
                                 ((ChoiceDialogListener) getActivity())
-                                        .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, item[choice]);
+                                        .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, value);
                             }
                         }
                         dismiss();

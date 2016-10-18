@@ -164,7 +164,9 @@
     <string name="download_stop_success">已暂停全部下载任务</string>
     <string name="download_task_empty">下载任务为空</string>
     <string name="download_task_fail">读取任务失败</string>
+    <string name="download_ask_stop">请先暂停下载任务</string>
     <string name="download_action_confirm">是否开始或暂停下载</string>
+    <string name="download_delete_confirm">是否删除下载</string>
 
     <string name="task_parse">正在解析</string>
     <string name="task_pause">暂停下载</string>

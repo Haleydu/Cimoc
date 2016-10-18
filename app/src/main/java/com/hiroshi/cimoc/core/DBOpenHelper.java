@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.core;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.ComicDao;
@@ -62,13 +63,16 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     private void renameDownload() {
         try {
-            for (File sourceDir : FileUtils.listFiles(FileUtils.getPath(Storage.STORAGE_DIR, "download"))) {
+            File[] sourceDirs =
+                    FileUtils.listFiles(FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download"));
+            for (File sourceDir : sourceDirs) {
                 if (sourceDir.isDirectory()) {
                     for (File comicDir : FileUtils.listFiles(sourceDir)) {
                         if (comicDir.isDirectory()) {
-                            String filter = FileUtils.filterFilename(comicDir.getAbsolutePath());
-                            if (!filter.equals(comicDir.getAbsolutePath())) {
-                                FileUtils.rename(comicDir.getAbsolutePath(), filter);
+                            String filter = FileUtils.filterFilename(comicDir.getName());
+                            if (!filter.equals(comicDir.getName())) {
+                                String newPath = FileUtils.getPath(sourceDir.getAbsolutePath(), filter);
+                                comicDir.renameTo(new File(newPath));
                             }
                         }
                     }

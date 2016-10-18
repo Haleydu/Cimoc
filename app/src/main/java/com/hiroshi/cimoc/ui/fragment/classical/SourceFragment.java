@@ -111,11 +111,13 @@ public class SourceFragment extends ClassicalFragment implements SourceView, Sou
     @Override
     public void onSourceLoadSuccess(List<Source> list) {
         mSourceAdapter.addAll(list);
+        hideProgressBar();
     }
 
     @Override
     public void onSourceLoadFail() {
         showSnackbar(R.string.common_data_load_fail);
+        hideProgressBar();
     }
 
     @Override
