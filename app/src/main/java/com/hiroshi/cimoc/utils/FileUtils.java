@@ -142,19 +142,24 @@ public class FileUtils {
         return listFilesNameHaveSuffix(new File(dirPath), "");
     }
 
-    private static String[] listFilesNameHaveSuffix(File dir, final String suffix) {
+    private static String[] listFilesNameHaveSuffix(File dir, final String... suffix) {
         if (dir.exists() && dir.isDirectory()) {
             return dir.list(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String filename) {
-                    return filename.endsWith(suffix);
+                    for (String s : suffix) {
+                        if (filename.endsWith(s)) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
             });
         }
         return null;
     }
 
-    public static String[] listFilesNameHaveSuffix(String dirPath, String suffix) {
+    public static String[] listFilesNameHaveSuffix(String dirPath, String... suffix) {
         return listFilesNameHaveSuffix(new File(dirPath), suffix);
     }
 

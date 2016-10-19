@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -124,7 +126,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setSingleTapListener(this);
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
-        mReaderAdapter.setFitMode(turn == PreferenceManager.READER_TURN_ATB ? ReaderAdapter.FIT_WIDTH : ReaderAdapter.FIT_HEIGHT);
+        mReaderAdapter.setTurn(turn);
         mReaderAdapter.setAutoSplit(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
     }
 
@@ -269,7 +271,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onPictureSaveSuccess() {
+    public void onPictureSaveSuccess(String path) {
+        MediaScannerConnection.scanFile(getApplicationContext(), new String[] { path },
+                null, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {}
+                });
         HintUtils.showToast(this, R.string.reader_picture_save_success);
     }
 

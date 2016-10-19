@@ -67,7 +67,8 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     protected void initData() {
         mTempList = new LinkedList<>();
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.loadTagComic(id);
+        String title = getIntent().getStringExtra(EXTRA_TITLE);
+        mPresenter.loadTagComic(id, title);
     }
 
     @Override
@@ -128,14 +129,14 @@ public class TagComicActivity extends BackActivity implements TagComicView,
 
     @Override
     public void onTagComicLoadFail() {
-        hideProgressBar();
         showSnackbar(R.string.common_data_load_fail);
+        hideProgressBar();
     }
 
     @Override
     public void onTagComicLoadSuccess(List<MiniComic> list) {
-        hideProgressBar();
         mGridAdapter.addAll(list);
+        hideProgressBar();
     }
 
     @Override
@@ -179,18 +180,13 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     }
 
     @Override
-    public void onComicUnFavorite(long cid) {
-        long tid = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.delete(tid, cid);
-        mGridAdapter.removeItemById(cid);
+    public void onComicUnFavorite(long id) {
+        mGridAdapter.removeItemById(id);
     }
 
     @Override
     public void onComicFavorite(MiniComic comic) {
-        // We can insert it because we can assert the comic we unfavorite belong to the tag.
-        long tid = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.insert(tid, comic.getId());
-        mGridAdapter.add(comic);
+        mComicArray.put(comic.getId(), comic);
     }
 
     @Override
@@ -225,10 +221,12 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     }
 
     private static final String EXTRA_ID = "a";
+    private static final String EXTRA_TITLE = "b";
 
-    public static Intent createIntent(Context context, long id) {
+    public static Intent createIntent(Context context, long id, String title) {
         Intent intent = new Intent(context, TagComicActivity.class);
         intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(EXTRA_TITLE, title);
         return intent;
     }
 

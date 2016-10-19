@@ -16,7 +16,6 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.utils.HintUtils;
-import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.BindView;
@@ -59,10 +58,6 @@ public abstract class BaseFragment extends Fragment {
 
     public void showSnackbar(int resId) {
         showSnackbar(getString(resId));
-    }
-
-    public void showSnackbar(int resId, Object... args) {
-        showSnackbar(StringUtils.format(getString(resId), args));
     }
 
     public void showSnackbar(String msg) {

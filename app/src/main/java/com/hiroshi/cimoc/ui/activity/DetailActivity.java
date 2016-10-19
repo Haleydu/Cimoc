@@ -32,6 +32,7 @@ import com.hiroshi.cimoc.ui.view.DetailView;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -51,9 +52,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     private DetailAdapter mDetailAdapter;
     private DetailPresenter mPresenter;
-    private List<Selectable> mDownloadList;
-    private List<Selectable> mTagList;
-    private ArrayList<Selectable> mTempList;
+    private List<Chapter> mDownloadList;
 
     @Override
     protected void initPresenter() {
@@ -62,8 +61,18 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
+    protected void initView() {
+        super.initView();
+        mDetailAdapter = new DetailAdapter(this, new LinkedList<Chapter>());
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        mRecyclerView.setAdapter(mDetailAdapter);
+        mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
+    }
+
+    @Override
     protected void initData() {
-        mTempList = new ArrayList<>();
+        mDownloadList = new ArrayList<>();
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
@@ -89,16 +98,13 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
         if (!isProgressBarShown()) {
             switch (item.getItemId()) {
                 case R.id.detail_download:
-                    showDownloadList();
+                    showProgressDialog();
+                    mPresenter.loadDownload();
                     break;
                 case R.id.detail_tag:
                     if (mPresenter.getComic().getFavorite() != null) {
-                        if (mTagList == null) {
-                            showProgressDialog();
-                            mPresenter.loadTag();
-                        } else {
-                            showTagList();
-                        }
+                        showProgressDialog();
+                        mPresenter.loadTag();
                     } else {
                         showSnackbar(R.string.detail_tag_favorite);
                     }
@@ -141,108 +147,76 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    public void onTagLoadSuccess(ArrayList<Selectable> list) {
+    public void onTagLoadSuccess(List<Selectable> list) {
+        SelectDialogFragment fragment =
+                SelectDialogFragment.newInstance(new ArrayList<>(list), R.string.detail_select_tag, -1, TYPE_SELECT_TAG);
+        fragment.show(getFragmentManager(), null);
         hideProgressDialog();
-        mTagList = list;
-        showTagList();
     }
 
     @Override
     public void onTagLoadFail() {
-        hideProgressDialog();
         showSnackbar(R.string.detail_tag_load_fail);
+        hideProgressDialog();
     }
 
     @Override
     public void onTagUpdateSuccess() {
-        mTagList.clear();
-        mTagList.addAll(mTempList);
-        hideProgressDialog();
         showSnackbar(R.string.detail_tag_update_success);
+        hideProgressDialog();
     }
 
     @Override
     public void onTagUpdateFail() {
-        hideProgressDialog();
         showSnackbar(R.string.detail_tag_update_fail);
-    }
-
-    private void showTagList() {
-        try {
-            mTempList.clear();
-            for (Selectable selectable : mTagList) {
-                mTempList.add((Selectable) selectable.clone());
-            }
-            SelectDialogFragment fragment =
-                    SelectDialogFragment.newInstance(mTempList, R.string.detail_select_tag, -1, TYPE_SELECT_TAG);
-            fragment.show(getFragmentManager(), null);
-        } catch (CloneNotSupportedException e) {
-            showSnackbar(R.string.detail_tag_load_fail);
-        }
-    }
-
-    private void showDownloadList() {
-        if (mDownloadList != null) {
-            try {
-                mTempList.clear();
-                for (Selectable selectable : mDownloadList) {
-                    mTempList.add((Selectable) selectable.clone());
-                }
-                SelectDialogFragment fragment =
-                        SelectDialogFragment.newInstance(mTempList, R.string.detail_select_chapter,
-                                R.string.detail_download_all, TYPE_SELECT_DOWNLOAD);
-                fragment.show(getFragmentManager(), null);
-            } catch (CloneNotSupportedException e) {
-                showSnackbar(R.string.detail_download_queue_fail);
-            }
-        }
+        hideProgressDialog();
     }
 
     @Override
     public void onSelectPositiveClick(int type, List<Selectable> list) {
         if (type == TYPE_SELECT_TAG) {
-            List<Long> oldTagList = new LinkedList<>();
-            for (Selectable selectable: mTagList) {
-                if (selectable.isChecked()) {
-                    oldTagList.add(selectable.getId());
-                }
-            }
             List<Long> newTagList = new LinkedList<>();
-            for (Selectable selectable : mTempList) {
+            for (Selectable selectable : list) {
                 if (selectable.isChecked()) {
                     newTagList.add(selectable.getId());
                 }
             }
-
-            if (!oldTagList.isEmpty() || !newTagList.isEmpty()) {
-                showProgressDialog();
-                mPresenter.updateRef(oldTagList, newTagList);
-            }
+            showProgressDialog();
+            mPresenter.updateRef(newTagList);
         } else {
+            for (int i = 0; i != list.size(); ++i) {
+                if (list.get(i).isChecked() && !list.get(i).isDisable()) {
+                    mDownloadList.add(mDetailAdapter.getItem(i));
+                }
+            }
             download();
         }
     }
 
     @Override
     public void onSelectNeutralClick(int type, List<Selectable> list) {
-        for (Selectable selectable : mTempList) {
-            selectable.setChecked(true);
+        for (int i = 0; i != list.size(); ++i) {
+            if (!list.get(i).isDisable()) {
+                mDownloadList.add(mDetailAdapter.getItem(i));
+            }
         }
         download();
     }
 
     /**
-     * download: select chapter -> check permission -> updateComicIndex index -> add task
+     * download: load download -> select chapter -> check permission -> update index -> add task
      */
 
     private void download() {
-        showProgressDialog();
-        if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(DetailActivity.this, new String[]
-                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        } else {
-            mPresenter.updateIndex(mDetailAdapter.getDateSet());
+        if (!mDownloadList.isEmpty()) {
+            showProgressDialog();
+            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
+                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            } else {
+                mPresenter.updateIndex(mDetailAdapter.getDateSet());
+            }
         }
     }
 
@@ -262,38 +236,27 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     public void onUpdateIndexSuccess() {
-        List<Chapter> list = new LinkedList<>();
-        for (int i = 0; i != mTempList.size(); ++i) {
-            if (mTempList.get(i).isChecked() && !mTempList.get(i).isDisable()) {
-                list.add(mDetailAdapter.getItem(i));
-            }
-        }
-        mPresenter.addTask(list);
+        mPresenter.addTask(mDownloadList);
     }
 
     @Override
     public void onUpdateIndexFail() {
-        hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_fail);
+        hideProgressDialog();
     }
 
     @Override
     public void onTaskAddSuccess(ArrayList<Task> list) {
         Intent intent = DownloadService.createIntent(DetailActivity.this, list);
         startService(intent);
-        for (Selectable selectable : mTempList) {
-            selectable.setDisable(selectable.isChecked());
-        }
-        mDownloadList.clear();
-        mDownloadList.addAll(mTempList);
-        hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_success);
+        hideProgressDialog();
     }
 
     @Override
     public void onTaskAddFail() {
-        hideProgressDialog();
         showSnackbar(R.string.detail_download_queue_fail);
+        hideProgressDialog();
     }
 
     /**
@@ -302,14 +265,9 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
      */
 
     @Override
-    public void onComicLoad(Comic comic) {
-        mDetailAdapter = new DetailAdapter(this, new LinkedList<Chapter>());
+    public void onComicLoadSuccess(Comic comic) {
         mDetailAdapter.setInfo(comic.getSource(), comic.getCover(), comic.getTitle(), comic.getAuthor(),
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        mRecyclerView.setAdapter(mDetailAdapter);
-        mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
             int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
@@ -319,7 +277,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    public void onChapterLoad(final List<Chapter> list) {
+    public void onChapterLoadSuccess(List<Chapter> list) {
         mDetailAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -335,37 +293,51 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
             }
         });
         mDetailAdapter.setOnTitleClickListener(this);
-        mDetailAdapter.setData(list);
+        mDetailAdapter.addAll(list);
     }
 
     @Override
     public void onDetailLoadSuccess() {
-        // loadDownload will set the 'download' field of chapter
-        mPresenter.loadDownload(mDetailAdapter.getDateSet());
+        mPresenter.loadDownload();
     }
 
     @Override
-    public void onDownloadLoadSuccess(ArrayList<Selectable> select) {
-        hideProgressBar();
-        mDownloadList = select;
+    public void onDownloadLoadSuccess(Set<String> set) {
+        if (isProgressBarShown()) {
+            for (Chapter chapter : mDetailAdapter.getDateSet()) {
+                chapter.setDownload(set.contains(chapter.getPath()));
+            }
+            hideProgressBar();
+        } else {
+            mDownloadList.clear();
+            ArrayList<Selectable> list = new ArrayList<>();
+            for (Chapter chapter : mDetailAdapter.getDateSet()) {
+                boolean download = set.contains(chapter.getPath());
+                list.add(new Selectable(download, download, chapter.getTitle()));
+            }
+            hideProgressDialog();
+            SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.detail_select_chapter,
+                            R.string.detail_download_all, TYPE_SELECT_DOWNLOAD);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @Override
     public void onDownloadLoadFail() {
-        hideProgressBar();
         showSnackbar(R.string.detail_download_load_fail);
+        hideProgressBar();
     }
 
     @Override
     public void onNetworkError() {
-        hideProgressBar();
         showSnackbar(R.string.common_network_error);
+        hideProgressBar();
     }
 
     @Override
     public void onParseError() {
-        hideProgressBar();
         showSnackbar(R.string.common_parse_error);
+        hideProgressBar();
     }
 
     /**

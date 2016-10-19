@@ -42,7 +42,6 @@ public class SelectDialogFragment extends DialogFragment implements BaseAdapter.
                             ((SelectDialogListener) getActivity())
                                     .onSelectPositiveClick(getArguments().getInt(EXTRA_TYPE), mSelectAdapter.getDateSet());
                         }
-                        dismiss();
                     }
                 });
         if (getArguments().getInt(EXTRA_NEUTRAL) != -1) {
@@ -56,7 +55,6 @@ public class SelectDialogFragment extends DialogFragment implements BaseAdapter.
                         ((SelectDialogListener) getActivity())
                                 .onSelectNeutralClick(getArguments().getInt(EXTRA_TYPE), mSelectAdapter.getDateSet());
                     }
-                    dismiss();
                 }
             });
         }

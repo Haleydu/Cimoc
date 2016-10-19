@@ -137,10 +137,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     public void savePicture(InputStream inputStream, String suffix) {
         mCompositeSubscription.add(Storage.savePicture(inputStream, suffix)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Action1<String>() {
                     @Override
-                    public void call(Void aVoid) {
-                        mBaseView.onPictureSaveSuccess();
+                    public void call(String path) {
+                        mBaseView.onPictureSaveSuccess(path);
                     }
                 }, new Action1<Throwable>() {
                     @Override

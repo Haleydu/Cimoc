@@ -30,6 +30,10 @@
             android:id="@+id/drawer_night"
             android:icon="@drawable/ic_brightness_4_black_24dp"/>
         <item
+            android:id="@+id/drawer_backup"
+            android:icon="@drawable/ic_save_black_24dp"
+            android:title="@string/drawer_backup"/>
+        <item
             android:id="@+id/drawer_settings"
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/drawer_settings"/>

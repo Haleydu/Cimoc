@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.presenter.HistoryPresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.HistoryView;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 /**
  * Created by Hiroshi on 2016/7/1.
@@ -83,14 +84,14 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     public void onHistoryClearSuccess() {
         int count = mGridAdapter.getItemCount();
         mGridAdapter.clear();
+        showSnackbar(StringUtils.format(getString(R.string.history_clear_success), count));
         hideProgressDialog();
-        showSnackbar(R.string.history_clear_success, count);
     }
 
     @Override
     public void onHistoryClearFail() {
-        hideProgressDialog();
         showSnackbar(R.string.history_clear_fail);
+        hideProgressDialog();
     }
 
     @Override

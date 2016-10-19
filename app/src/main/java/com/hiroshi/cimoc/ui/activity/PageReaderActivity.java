@@ -19,9 +19,14 @@ import java.util.List;
  */
 public class PageReaderActivity extends ReaderActivity implements OnPageChangedListener {
 
+    private boolean loadNext = true;
+    private boolean loadPrev = true;
+
     @Override
     protected void initView() {
         super.initView();
+        loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true);
+        loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true);
         int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 5);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
@@ -44,9 +49,10 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
             return;
         }
 
-        if (newPosition == 0) {
+        if (loadPrev && newPosition == 0) {
             mPresenter.loadPrev();
-        } else if (newPosition == mReaderAdapter.getItemCount() - 1) {
+        }
+        if (loadNext && newPosition == mReaderAdapter.getItemCount() - 1) {
             mPresenter.loadNext();
         }
 

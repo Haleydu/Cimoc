@@ -38,7 +38,6 @@ public class SliderDialogFragment extends DialogFragment {
                         } else {
                             ((SliderDialogListener) getActivity()).onSliderPositiveClick(seekBar.getProgress());
                         }
-                        dismiss();
                     }
                 });
         return builder.create();

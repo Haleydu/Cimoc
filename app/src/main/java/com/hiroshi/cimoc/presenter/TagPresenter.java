@@ -56,7 +56,7 @@ public class TagPresenter extends BasePresenter<TagView> {
     }
 
     public void delete(final Tag tag) {
-        mCompositeSubscription.add(mTagManager.runInTx(new Runnable() {
+        mCompositeSubscription.add(mTagManager.runInRx(new Runnable() {
             @Override
             public void run() {
                 mTagManager.deleteByTag(tag.getId());

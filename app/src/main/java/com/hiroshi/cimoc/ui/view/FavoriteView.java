@@ -10,11 +10,11 @@ import java.util.List;
  */
 public interface FavoriteView extends GridView {
 
-    void onItemAdd(MiniComic comic);
+    void OnComicFavorite(MiniComic comic);
 
-    void onItemAdd(List<MiniComic> list);
+    void OnComicRestore(List<MiniComic> list);
 
-    void onItemRemove(long id);
+    void OnComicUnFavorite(long id);
 
     void onComicUpdate(Comic comic, int progress, int max);
 

@@ -23,6 +23,8 @@ public class PreferenceManager {
     public static final int HOME_SOURCE = 2;
     public static final int HOME_TAG = 3;
 
+    public static final String PREF_MAIN_NOTICE = "pref_main_notice";
+
     public static final String PREF_READER_MODE = "pref_reader_mode";
     public static final String PREF_READER_KEEP_ON = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide_info";
@@ -41,6 +43,8 @@ public class PreferenceManager {
     public static final String PREF_READER_PAGE_LONG_CLICK_MIDDLE = "pref_reader_page_long_click_middle";
     public static final String PREF_READER_PAGE_LONG_CLICK_BOTTOM = "pref_reader_page_long_click_bottom";
     public static final String PREF_READER_PAGE_LONG_CLICK_RIGHT = "pref_reader_page_long_click_right";
+    public static final String PREF_READER_PAGE_LOAD_PREV = "pref_reader_page_load_prev";
+    public static final String PREF_READER_PAGE_LOAD_NEXT = "pref_reader_page_load_next";
     public static final String PREF_READER_PAGE_TRIGGER = "pref_reader_page_trigger";
 
     public static final String PREF_READER_STREAM_TURN = "pref_reader_stream_turn";
@@ -57,6 +61,8 @@ public class PreferenceManager {
     public static final String PREF_READER_STREAM_LONG_CLICK_MIDDLE = "pref_reader_stream_long_click_middle";
     public static final String PREF_READER_STREAM_LONG_CLICK_BOTTOM = "pref_reader_stream_long_click_bottom";
     public static final String PREF_READER_STREAM_LONG_CLICK_RIGHT = "pref_reader_stream_long_click_right";
+    public static final String PREF_READER_STREAM_LOAD_PREV = "pref_reader_stream_load_prev";
+    public static final String PREF_READER_STREAM_LOAD_NEXT = "pref_reader_stream_load_next";
     public static final String PREF_READER_STREAM_SPLIT = "pref_reader_stream_split";
     public static final String PREF_READER_STREAM_INTERVAL = "pref_reader_stream_interval";
 

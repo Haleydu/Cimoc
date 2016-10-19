@@ -34,7 +34,6 @@ public class EditorDialogFragment extends DialogFragment {
                         } else {
                             ((EditorDialogListener) getActivity()).onEditorPositiveClick(editText.getText().toString());
                         }
-                        dismiss();
                     }
                 });
         return builder.create();

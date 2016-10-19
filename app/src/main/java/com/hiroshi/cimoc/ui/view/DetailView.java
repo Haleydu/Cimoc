@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Hiroshi on 2016/8/21.
@@ -15,17 +16,17 @@ public interface DetailView extends BaseView {
 
     void onDetailLoadSuccess();
 
-    void onComicLoad(Comic comic);
+    void onComicLoadSuccess(Comic comic);
 
-    void onChapterLoad(List<Chapter> list);
+    void onChapterLoadSuccess(List<Chapter> list);
 
     void onChapterChange(String chapter);
 
-    void onDownloadLoadSuccess(ArrayList<Selectable> select);
+    void onDownloadLoadSuccess(Set<String> set);
 
     void onDownloadLoadFail();
 
-    void onTagLoadSuccess(ArrayList<Selectable> list);
+    void onTagLoadSuccess(List<Selectable> list);
 
     void onTagLoadFail();
 

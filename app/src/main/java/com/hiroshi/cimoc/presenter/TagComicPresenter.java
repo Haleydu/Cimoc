@@ -4,8 +4,8 @@ import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
-import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TagComicView;
 
@@ -27,7 +27,7 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
 
     private ComicManager mComicManager;
     private TagManager mTagManager;
-    private long mTagId;
+    private Tag mTag;
 
     public TagComicPresenter() {
         mComicManager = ComicManager.getInstance();
@@ -54,17 +54,17 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
             public void call(RxEvent rxEvent) {
                 List<Long> deleteList = (List<Long>) rxEvent.getData(1);
                 List<Long> insertList = (List<Long>) rxEvent.getData(2);
-                if (deleteList.contains(mTagId)) {
+                if (deleteList.contains(mTag.getId())) {
                     mBaseView.onTagUpdateDelete((MiniComic) rxEvent.getData());
-                } else if (insertList.contains(mTagId)) {
+                } else if (insertList.contains(mTag.getId())) {
                     mBaseView.onTagUpdateInsert((MiniComic) rxEvent.getData());
                 }
             }
         });
     }
 
-    public void loadTagComic(long id) {
-        mTagId = id;
+    public void loadTagComic(long id, String title) {
+        mTag = new Tag(id, title);
         mCompositeSubscription.add(mTagManager.listByTag(id)
                 .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
                     @Override

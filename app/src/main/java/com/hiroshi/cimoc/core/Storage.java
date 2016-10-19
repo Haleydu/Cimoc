@@ -38,13 +38,14 @@ public class Storage {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Void> savePicture(final InputStream inputStream, final String suffix) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
+    public static Observable<String> savePicture(final InputStream inputStream, final String suffix) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public void call(Subscriber<? super Void> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 String filename = StringUtils.getDateStringWithSuffix(suffix);
+                String path = FileUtils.getPath(STORAGE_DIR, "picture", filename);
                 if (FileUtils.writeBinaryToFile(FileUtils.getPath(STORAGE_DIR, "picture"), filename, inputStream)) {
-                    subscriber.onNext(null);
+                    subscriber.onNext(path);
                     subscriber.onCompleted();
                 } else {
                     subscriber.onError(new Exception());

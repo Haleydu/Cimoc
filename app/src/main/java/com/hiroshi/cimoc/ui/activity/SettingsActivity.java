@@ -1,12 +1,10 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
@@ -40,9 +38,8 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     private static final int TYPE_OTHER_LAUNCH = 0;
     private static final int TYPE_READER_MODE = 1;
     private static final int TYPE_OTHER_THEME = 2;
-    private static final int TYPE_BACKUP_RESTORE = 3;
 
-    @BindViews({R.id.settings_backup_title, R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
+    @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
     List<TextView> mTitleList;
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
@@ -88,17 +85,17 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
             case 1:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showProgressDialog();
-                    mPresenter.backup();
+                   // mPresenter.backup();
                 } else {
-                    onBackupFail();
+                    //onBackupFail();
                 }
                 break;
             case 2:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showProgressDialog();
-                    mPresenter.loadFiles();
+                 //   mPresenter.loadFiles();
                 } else {
-                    onFilesLoadFail();
+                    //onFilesLoadFail();
                 }
         }
     }
@@ -124,17 +121,6 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     @OnClick(R.id.settings_reader_config_btn) void onReaderConfigBtnClick() {
         Intent intent = new Intent(this, ReaderConfigActivity.class);
         startActivity(intent);
-    }
-
-    @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
-        } else {
-            showProgressDialog();
-            mPresenter.loadFiles();
-        }
     }
 
     @OnClick(R.id.settings_reader_mode_btn) void onReaderModeClick() {
@@ -178,12 +164,6 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
                     mPresenter.changeTheme(theme, primary, accent);
                 }
                 break;
-            case TYPE_BACKUP_RESTORE:
-                if (choice != -1) {
-                    showProgressDialog();
-                    mPresenter.restore(value);
-                }
-                break;
         }
     }
 
@@ -198,17 +178,6 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mBrightBox.setSupportButtonTintList(stateList);
         mHideBox.setSupportButtonTintList(stateList);
-    }
-
-    @OnClick(R.id.settings_backup_save_btn) void onBackupSaveClick() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        } else {
-            showProgressDialog();
-            mPresenter.backup();
-        }
     }
 
     @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {
@@ -240,60 +209,22 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {
         showProgressDialog();
         mPresenter.clearCache();
-        hideProgressDialog();
         showSnackbar(R.string.settings_other_cache_success);
-    }
-
-    @Override
-    public void onFilesLoadSuccess(String[] files) {
         hideProgressDialog();
-        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_backup_restore,
-                files, -1, TYPE_BACKUP_RESTORE);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
-    public void onFilesLoadFail() {
-        hideProgressDialog();
-        showSnackbar(R.string.settings_backup_save_not_found);
     }
 
     @Override
     public void onFileMoveSuccess(String path) {
-        hideProgressDialog();
         mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, path);
         mStoragePath = path;
         showSnackbar(R.string.settings_other_storage_move_success);
+        hideProgressDialog();
     }
 
     @Override
     public void onFileMoveFail() {
-        hideProgressDialog();
         showSnackbar(R.string.settings_other_storage_move_fail);
-    }
-
-    @Override
-    public void onRestoreSuccess(int count) {
         hideProgressDialog();
-        showSnackbar(R.string.settings_backup_restore_success, count);
-    }
-
-    @Override
-    public void onRestoreFail() {
-        hideProgressDialog();
-        showSnackbar(R.string.settings_backup_restore_fail);
-    }
-
-    @Override
-    public void onBackupSuccess(int count) {
-        hideProgressDialog();
-        showSnackbar(R.string.settings_backup_save_success, count);
-    }
-
-    @Override
-    public void onBackupFail() {
-        hideProgressDialog();
-        showSnackbar(R.string.settings_backup_save_fail);
     }
 
     @Override

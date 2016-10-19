@@ -81,6 +81,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
         if (comic.isHighlight()) {
+            comic.setFavorite(System.currentTimeMillis());
             comic.setHighlight(false);
             mGridAdapter.update(comic, false);
         }
@@ -90,17 +91,17 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onItemAdd(MiniComic comic) {
+    public void OnComicFavorite(MiniComic comic) {
         mGridAdapter.addAfterHighlight(comic);
     }
 
     @Override
-    public void onItemAdd(List<MiniComic> list) {
+    public void OnComicRestore(List<MiniComic> list) {
         mGridAdapter.addAll(0, list);
     }
 
     @Override
-    public void onItemRemove(long id) {
+    public void OnComicUnFavorite(long id) {
         mGridAdapter.removeItemById(id);
     }
 

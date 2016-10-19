@@ -59,7 +59,8 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
 
     @Override
     public void onItemClick(View view, int position) {
-        Intent intent = TagComicActivity.createIntent(getActivity(), mTagAdapter.getItem(position).getId());
+        Tag tag = mTagAdapter.getItem(position);
+        Intent intent = TagComicActivity.createIntent(getActivity(), tag.getId(), tag.getTitle());
         startActivity(intent);
     }
 

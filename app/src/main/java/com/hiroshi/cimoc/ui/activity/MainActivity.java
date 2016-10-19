@@ -29,6 +29,7 @@ import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.SearchFragment;
 import com.hiroshi.cimoc.ui.fragment.classical.SourceFragment;
 import com.hiroshi.cimoc.ui.fragment.classical.TagFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
 
 import butterknife.BindView;
@@ -37,7 +38,8 @@ import butterknife.ButterKnife;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener,
+        MessageDialogFragment.MessageDialogListener {
 
     private static final int FRAGMENT_NUM = 4;
 
@@ -74,6 +76,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
+        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     private void initDrawerToggle() {
@@ -215,9 +221,17 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 case R.id.drawer_about:
                     startActivity(new Intent(MainActivity.this, AboutActivity.class));
                     break;
+                case R.id.drawer_backup:
+                    startActivity(new Intent(MainActivity.this, BackupActivity.class));
+                    break;
             }
         }
         return true;
+    }
+
+    @Override
+    public void onMessagePositiveClick(int type) {
+        mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
     }
 
     @Override

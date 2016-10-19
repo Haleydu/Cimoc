@@ -18,10 +18,14 @@ import java.util.List;
 public class StreamReaderActivity extends ReaderActivity {
 
     private int position = 0;
+    private boolean loadNext = true;
+    private boolean loadPrev = false;
 
     @Override
     protected void initView() {
         super.initView();
+        loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
+        loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_STREAM);
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
@@ -35,9 +39,17 @@ public class StreamReaderActivity extends ReaderActivity {
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:
                     case RecyclerView.SCROLL_STATE_SETTLING:
-                        int item = mLayoutManager.findLastVisibleItemPosition();
-                        if (item == mReaderAdapter.getItemCount() - 1) {
-                            mPresenter.loadNext();
+                        if (loadPrev) {
+                            int item = mLayoutManager.findFirstVisibleItemPosition();
+                            if (item == 0) {
+                                mPresenter.loadPrev();
+                            }
+                        }
+                        if (loadNext) {
+                            int item = mLayoutManager.findLastVisibleItemPosition();
+                            if (item == mReaderAdapter.getItemCount() - 1) {
+                                mPresenter.loadNext();
+                            }
                         }
                         break;
                 }
@@ -68,7 +80,6 @@ public class StreamReaderActivity extends ReaderActivity {
                             }
                         }
                         break;
-
                     case PreferenceManager.READER_TURN_ATB:
                         item = mLayoutManager.findFirstVisibleItemPosition();
                         if (item != position) {

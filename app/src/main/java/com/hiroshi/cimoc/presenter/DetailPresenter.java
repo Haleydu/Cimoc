@@ -18,18 +18,18 @@ import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/4.
@@ -40,11 +40,13 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     private TaskManager mTaskManager;
     private TagManager mTagManager;
     private Comic mComic;
+    private Set<Long> mTagSet;
 
     public DetailPresenter() {
         mComicManager = ComicManager.getInstance();
         mTaskManager = TaskManager.getInstance();
         mTagManager = TagManager.getInstance();
+        mTagSet = new HashSet<>();
     }
 
     @Override
@@ -85,17 +87,17 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .subscribe(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
-                        mBaseView.onComicLoad(mComic);
-                        mBaseView.onChapterLoad(list);
+                        mBaseView.onComicLoadSuccess(mComic);
+                        mBaseView.onChapterLoadSuccess(list);
                         mBaseView.onDetailLoadSuccess();
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        mBaseView.onComicLoadSuccess(mComic);
                         if (throwable instanceof Manga.NetworkErrorException) {
                             mBaseView.onNetworkError();
                         } else {
-                            mBaseView.onComicLoad(mComic);
                             mBaseView.onParseError();
                         }
                     }
@@ -103,7 +105,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void loadTag() {
-        final Set<Long> mTempSet = new HashSet<>();
+        mTagSet.clear();
         mCompositeSubscription.add(mTagManager.listByComic(mComic.getId())
                 .flatMap(new Func1<List<TagRef>, Observable<TagRef>>() {
                     @Override
@@ -121,7 +123,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .flatMap(new Func1<List<Long>, Observable<List<Tag>>>() {
                     @Override
                     public Observable<List<Tag>> call(List<Long> list) {
-                        mTempSet.addAll(list);
+                        mTagSet.addAll(list);
                         return mTagManager.list();
                     }
                 })
@@ -134,7 +136,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .map(new Func1<Tag, Selectable>() {
                     @Override
                     public Selectable call(Tag tag) {
-                        return new Selectable(false, mTempSet.contains(tag.getId()), tag.getId(), tag.getTitle());
+                        return new Selectable(false, mTagSet.contains(tag.getId()), tag.getId(), tag.getTitle());
                     }
                 })
                 .toList()
@@ -142,40 +144,46 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .subscribe(new Action1<List<Selectable>>() {
                     @Override
                     public void call(List<Selectable> list) {
-                        mBaseView.onTagLoadSuccess(new ArrayList<>(list));
+                        mBaseView.onTagLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        throwable.printStackTrace();
                         mBaseView.onTagLoadFail();
                     }
                 }));
     }
 
-    public void updateRef(final List<Long> oldList, final List<Long> newList) {
-        mCompositeSubscription.add(mTagManager.runInTx(new Runnable() {
+    public void updateRef(final List<Long> insertList) {
+        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
-            public void run() {
-                List<Long> deleteList = new LinkedList<>(oldList);
-                deleteList.removeAll(newList);
-                for (Long tid : deleteList) {
-                    mTagManager.delete(tid, mComic.getId());
-                }
-
-                List<Long> insertList = new LinkedList<>(newList);
-                insertList.removeAll(oldList);
-                for (Long tid : insertList) {
-                    mTagManager.insert(new TagRef(null, tid, mComic.getId()));
-                }
-
+            public void call(Subscriber<? super Void> subscriber) {
+                final List<Long> deleteList = new LinkedList<>(mTagSet);
+                deleteList.removeAll(insertList);
+                insertList.removeAll(mTagSet);
                 if (!deleteList.isEmpty() || !insertList.isEmpty()) {
+                    mTagManager.runInTx(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (Long tid : deleteList) {
+                                mTagManager.delete(tid, mComic.getId());
+                            }
+                            for (Long tid : insertList) {
+                                mTagManager.insert(new TagRef(null, tid, mComic.getId()));
+                            }
+                        }
+                    });
                     RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, new MiniComic(mComic), deleteList, insertList));
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
                 }
             }
-        }).observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void call(Void v) {
                         mBaseView.onTagUpdateSuccess();
                     }
                 }, new Action1<Throwable>() {
@@ -202,38 +210,30 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }));
     }
 
-    public void loadDownload(final List<Chapter> chapters) {
-        Long key = mComic.getId() == null ? -1 : mComic.getId();
-        mCompositeSubscription.add(mTaskManager.list(key)
-                .map(new Func1<List<Task>, Map<String, Boolean>>() {
-                    @Override
-                    public Map<String, Boolean> call(List<Task> list) {
-                        Map<String, Boolean> map = new HashMap<>();
-                        for (Task task : list) {
-                            boolean finish = task.getMax() != 0 && task.getProgress() == task.getMax();
-                            map.put(task.getPath(), finish);
+    public void loadDownload() {
+        if (mComic.getDownload() != null) {
+            mCompositeSubscription.add(mTaskManager.list(mComic.getId())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<Task>>() {
+                        @Override
+                        public void call(List<Task> list) {
+                            Set<String> set = new HashSet<>();
+                            for (Task task : list) {
+                                if (task.isFinish()) {
+                                    set.add(task.getPath());
+                                }
+                            }
+                            mBaseView.onDownloadLoadSuccess(set);
                         }
-                        return map;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Map<String, Boolean>>() {
-                    @Override
-                    public void call(Map<String, Boolean> map) {
-                        ArrayList<Selectable> select = new ArrayList<>(chapters.size());
-                        for (Chapter chapter : chapters) {
-                            boolean download = map.containsKey(chapter.getPath());
-                            select.add(new Selectable(download, download, chapter.getTitle()));
-                            chapter.setDownload(download && map.get(chapter.getPath()));
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            mBaseView.onDownloadLoadFail();
                         }
-                        mBaseView.onDownloadLoadSuccess(select);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onDownloadLoadFail();
-                    }
-                }));
+                    }));
+        } else {
+            mBaseView.onDownloadLoadSuccess(new HashSet<String>());
+        }
     }
 
     public void addTask(final List<Chapter> list) {
@@ -315,6 +315,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     public void unfavoriteComic() {
         long id = mComic.getId();
         mComic.setFavorite(null);
+        mTagManager.deleteByComic(mComic.getId());
         if (mComic.getHistory() == null && mComic.getDownload() == null) {
             mComicManager.deleteByKey(id);
             mComic.setId(null);

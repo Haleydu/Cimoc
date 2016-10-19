@@ -28,16 +28,10 @@ public class MessageDialogFragment extends DialogFragment {
                         } else {
                             ((MessageDialogListener) getActivity()).onMessagePositiveClick(getArguments().getInt(EXTRA_TYPE));
                         }
-                        dismiss();
                     }
                 });
         if (getArguments().getBoolean(EXTRA_NEGATIVE, false)) {
-            builder.setNegativeButton(R.string.dialog_negative, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dismiss();
-                }
-            });
+            builder.setNegativeButton(R.string.dialog_negative, null);
         }
         return builder.create();
     }

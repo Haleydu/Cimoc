@@ -97,6 +97,70 @@
                 android:text="@string/settings_reader_long_click_event_summary"/>
         </LinearLayout>
         <RelativeLayout
+            android:id="@+id/settings_reader_load_prev_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <CheckBox
+                android:id="@+id/settings_reader_load_prev_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@null"/>
+            <TextView
+                android:id="@+id/settings_reader_load_prev_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/settings_reader_load_prev_checkbox"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@string/settings_reader_load_prev"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/settings_reader_load_prev_checkbox"
+                android:layout_below="@id/settings_reader_load_prev_title"
+                android:textSize="14sp"
+                android:text="@string/settings_reader_load_prev_summary"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/settings_reader_load_next_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <CheckBox
+                android:id="@+id/settings_reader_load_next_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@null"/>
+            <TextView
+                android:id="@+id/settings_reader_load_next_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/settings_reader_load_next_checkbox"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@string/settings_reader_load_next"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/settings_reader_load_next_checkbox"
+                android:layout_below="@id/settings_reader_load_next_title"
+                android:textSize="14sp"
+                android:text="@string/settings_reader_load_next_summary"/>
+        </RelativeLayout>
+        <RelativeLayout
             android:id="@+id/settings_reader_interval_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

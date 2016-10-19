@@ -22,8 +22,10 @@ public class StreamConfigFragment extends BaseFragment implements ChoiceDialogFr
     private static final int TYPE_ORIENTATION = 0;
     private static final int TYPE_TURN = 1;
 
-    @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
-    @BindView(R.id.settings_reader_interval_checkbox) CheckBox mBlankBox;
+    @BindView(R.id.settings_reader_split_checkbox) CheckBox mReaderSplitBox;
+    @BindView(R.id.settings_reader_interval_checkbox) CheckBox mReaderIntervalBox;
+    @BindView(R.id.settings_reader_load_prev_checkbox) CheckBox mReaderLoadPrevBox;
+    @BindView(R.id.settings_reader_load_next_checkbox) CheckBox mReaderLoadNextBox;
 
     private int mReaderOrientationChoice;
     private int mReaderTurnChoice;
@@ -32,8 +34,10 @@ public class StreamConfigFragment extends BaseFragment implements ChoiceDialogFr
     protected void initView() {
         mReaderOrientationChoice = mPreference.getInt(PreferenceManager.PREF_READER_STREAM_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
         mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_STREAM_TURN, PreferenceManager.READER_TURN_LTR);
-        mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
-        mBlankBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false));
+        mReaderLoadPrevBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false));
+        mReaderLoadNextBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true));
+        mReaderSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderIntervalBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false));
     }
 
     @OnClick({ R.id.settings_reader_click_event_btn, R.id.settings_reader_long_click_event_btn })
@@ -72,14 +76,21 @@ public class StreamConfigFragment extends BaseFragment implements ChoiceDialogFr
         }
     }
 
-    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_interval_btn})
+    @OnClick({R.id.settings_reader_load_prev_btn, R.id.settings_reader_load_next_btn,
+            R.id.settings_reader_split_btn, R.id.settings_reader_interval_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
+            case R.id.settings_reader_load_prev_btn:
+                checkedAndSave(mReaderLoadPrevBox, PreferenceManager.PREF_READER_STREAM_LOAD_PREV);
+                break;
+            case R.id.settings_reader_load_next_btn:
+                checkedAndSave(mReaderLoadNextBox, PreferenceManager.PREF_READER_STREAM_LOAD_NEXT);
+                break;
             case R.id.settings_reader_split_btn:
-                checkedAndSave(mSplitBox, PreferenceManager.PREF_READER_STREAM_SPLIT);
+                checkedAndSave(mReaderSplitBox, PreferenceManager.PREF_READER_STREAM_SPLIT);
                 break;
             case R.id.settings_reader_interval_btn:
-                checkedAndSave(mBlankBox, PreferenceManager.PREF_READER_STREAM_INTERVAL);
+                checkedAndSave(mReaderIntervalBox, PreferenceManager.PREF_READER_STREAM_INTERVAL);
                 break;
         }
     }

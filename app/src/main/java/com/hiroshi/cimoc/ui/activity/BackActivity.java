@@ -33,7 +33,6 @@ public abstract class BackActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        super.initView();
         if (mProgressBar != null) {
             int resId = ThemeUtils.getResourceId(this, R.attr.colorAccent);
             mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, resId), PorterDuff.Mode.SRC_ATOP);

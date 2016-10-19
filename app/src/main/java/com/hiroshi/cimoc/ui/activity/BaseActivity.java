@@ -11,7 +11,6 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
 import com.hiroshi.cimoc.utils.HintUtils;
-import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.BindView;
@@ -88,10 +87,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void showSnackbar(int resId) {
         showSnackbar(getString(resId));
-    }
-
-    protected void showSnackbar(int resId, Object... args) {
-        showSnackbar(StringUtils.format(getString(resId), args));
     }
 
     public void showProgressDialog() {

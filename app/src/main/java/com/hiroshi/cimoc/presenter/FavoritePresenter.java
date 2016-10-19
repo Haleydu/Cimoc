@@ -12,6 +12,8 @@ import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,11 +32,24 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     private TagManager mTagManager;
     private LongSparseArray<MiniComic> mComicArray;
     private long mTagId = -1;
+    private Comparator<MiniComic> mComparator;
 
     public FavoritePresenter() {
         mComicManager = ComicManager.getInstance();
         mTagManager = TagManager.getInstance();
         mComicArray = new LongSparseArray<>();
+        mComparator = new Comparator<MiniComic>() {
+            @Override
+            public int compare(MiniComic o1, MiniComic o2) {
+                if (o1.isHighlight() && !o2.isHighlight()) {
+                    return -1;
+                } else if (!o1.isHighlight() && o2.isHighlight()) {
+                    return 1;
+                } else {
+                    return o1.getFavorite() - o2.getFavorite() > 0L ? -1 : 1;
+                }
+            }
+        };
     }
 
     @SuppressWarnings("unchecked")
@@ -46,7 +61,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();
                 mComicArray.put(comic.getId(), comic);
-                mBaseView.onItemAdd(comic);
+                mBaseView.OnComicFavorite(comic);
             }
         });
         addSubscription(RxEvent.EVENT_COMIC_UNFAVORITE, new Action1<RxEvent>() {
@@ -54,7 +69,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
             public void call(RxEvent rxEvent) {
                 long id = (long) rxEvent.getData();
                 mComicArray.remove(id);
-                mBaseView.onItemRemove(id);
+                mBaseView.OnComicUnFavorite(id);
             }
         });
         addSubscription(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, new Action1<RxEvent>() {
@@ -64,14 +79,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 for (MiniComic comic : list) {
                     mComicArray.put(comic.getId(), comic);
                 }
-                mBaseView.onItemAdd(list);
+                mBaseView.OnComicRestore(list);
             }
         });
         addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 if ((int) rxEvent.getData(1) == ComicFragment.TYPE_FAVORITE) {
-                    mBaseView.onComicRead((MiniComic) rxEvent.getData());
+                    MiniComic comic = (MiniComic) rxEvent.getData();
+                    mComicArray.put(comic.getId(), comic);
+                    mBaseView.onComicRead(comic);
                 }
             }
         });
@@ -97,9 +114,9 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 List<Long> deleteList = (List<Long>) rxEvent.getData(1);
                 List<Long> insertList = (List<Long>) rxEvent.getData(2);
                 if (deleteList.contains(mTagId)) {
-                    mBaseView.onItemRemove(((MiniComic) rxEvent.getData()).getId());
+                    mBaseView.OnComicUnFavorite(((MiniComic) rxEvent.getData()).getId());
                 } else if (insertList.contains(mTagId)) {
-                    mBaseView.onItemAdd((MiniComic) rxEvent.getData());
+                    mBaseView.OnComicFavorite((MiniComic) rxEvent.getData());
                 }
             }
         });
@@ -162,6 +179,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     .subscribe(new Action1<List<MiniComic>>() {
                         @Override
                         public void call(List<MiniComic> list) {
+                            Collections.sort(list, mComparator);
                             mBaseView.onComicFilterSuccess(list);
                         }
                     }, new Action1<Throwable>() {
@@ -183,6 +201,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     list.add(mComicArray.valueAt(i));
                 }
             }
+            Collections.sort(list, mComparator);
             mBaseView.onComicFilterSuccess(list);
         }
     }

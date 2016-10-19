@@ -17,6 +17,7 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.SplitPostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
@@ -37,9 +38,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     public static final int READER_PAGE = 0;
     public static final int READER_STREAM = 1;
 
-    public static final int FIT_HEIGHT = 0;
-    public static final int FIT_WIDTH = 1;
-
     public static final int TYPE_LOADING = 2016101214;
     public static final int TYPE_IMAGE = 2016101215;
 
@@ -47,16 +45,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     @Retention(RetentionPolicy.SOURCE)
     @interface ReaderMode {}
 
-    @IntDef({FIT_HEIGHT, FIT_WIDTH})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface FitMode {}
-
     private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
     private OnSingleTapListener mSingleTapListener;
     private OnLongPressListener mLongPressListener;
     private OnLazyLoadListener mLazyLoadListener;
     private @ReaderMode int reader;
-    private @FitMode int fit;
+    private int turn;
     private boolean split = false;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
@@ -95,11 +89,15 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             return;
         }
         final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
+        if (turn == PreferenceManager.READER_TURN_ATB) {
+            draweeView.setVerticalMode();
+        } else {
+            draweeView.setHorizontalMode();
+        }
         PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
                 draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                draweeView.setHorizontalMode();
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
@@ -112,18 +110,14 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 break;
             case READER_STREAM:
                 draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                draweeView.setVerticalMode();
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
                         if (imageInfo != null) {
-                            switch (fit) {
-                                case FIT_HEIGHT:
-                                    draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                                    break;
-                                case FIT_WIDTH:
-                                    draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                                    break;
+                            if (turn == PreferenceManager.READER_TURN_ATB) {
+                                draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            } else {
+                                draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
                             }
                             draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
                         }
@@ -132,13 +126,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (imageInfo != null) {
-                            switch (fit) {
-                                case FIT_HEIGHT:
-                                    draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                                    break;
-                                case FIT_WIDTH:
-                                    draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                                    break;
+                            if (turn == PreferenceManager.READER_TURN_ATB) {
+                                draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            } else {
+                                draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
                             }
                             draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
                             draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
@@ -152,7 +143,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         for (int i = 0; i != url.length; ++i) {
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url[i]));
-            if (reader == READER_STREAM && fit == FIT_WIDTH && split) {
+            if (reader == READER_STREAM && turn == PreferenceManager.READER_TURN_ATB && split) {
                 imageRequestBuilder.setPostprocessor(new SplitPostprocessor(url[i]));
             }
             request[i] = imageRequestBuilder.build();
@@ -185,8 +176,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         this.reader = reader;
     }
 
-    public void setFitMode(@FitMode int fit) {
-        this.fit = fit;
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 
     @Override
@@ -204,7 +195,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 return new RecyclerView.ItemDecoration() {
                     @Override
                     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                        if (fit == FIT_WIDTH) {
+                        if (turn == PreferenceManager.READER_TURN_ATB) {
                             outRect.set(0, 10, 0, 10);
                         } else {
                             outRect.set(10, 0, 10, 0);

@@ -42,7 +42,6 @@ public class ChoiceDialogFragment extends DialogFragment {
                                         .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, value);
                             }
                         }
-                        dismiss();
                     }
                 });
         return builder.create();

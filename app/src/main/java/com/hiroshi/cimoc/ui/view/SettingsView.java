@@ -5,18 +5,6 @@ package com.hiroshi.cimoc.ui.view;
  */
 public interface SettingsView extends BaseView {
 
-    void onFilesLoadSuccess(String[] files);
-
-    void onFilesLoadFail();
-
-    void onRestoreSuccess(int count);
-
-    void onRestoreFail();
-
-    void onBackupSuccess(int count);
-
-    void onBackupFail();
-
     void onFileMoveSuccess(String path);
 
     void onFileMoveFail();
