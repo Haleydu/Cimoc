@@ -1,16 +1,14 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.BackupPresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.BackupView;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.BindView;
@@ -50,28 +48,28 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
 
     @OnClick(R.id.backup_save_favorite_btn) void onSaveFavoriteClick() {
         showProgressDialog();
-        if (checkPermission(REQUEST_SAVE_FAVORITE)) {
+        if (PermissionUtils.requestPermission(this, REQUEST_SAVE_FAVORITE)) {
             mPresenter.saveFavorite();
         }
     }
 
     @OnClick(R.id.backup_save_tag_btn) void onSaveTagClick() {
         showProgressDialog();
-        if (checkPermission(REQUEST_SAVE_TAG)) {
+        if (PermissionUtils.requestPermission(this, REQUEST_SAVE_TAG)) {
             mPresenter.loadTag();
         }
     }
 
     @OnClick(R.id.backup_restore_favorite_btn) void onRestoreFavoriteClick() {
         showProgressDialog();
-        if (checkPermission(REQUEST_LOAD_FAVORITE)) {
+        if (PermissionUtils.requestPermission(this, REQUEST_LOAD_FAVORITE)) {
             mPresenter.loadFavoriteFile();
         }
     }
 
     @OnClick(R.id.backup_restore_tag_btn) void onRestoreTagClick() {
         showProgressDialog();
-        if (checkPermission(REQUEST_LOAD_TAG)) {
+        if (PermissionUtils.requestPermission(this, REQUEST_LOAD_TAG)) {
             mPresenter.loadTagFile();
         }
     }
@@ -131,7 +129,12 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
 
     @Override
     public void onTagLoadSuccess(String[] tag) {
-        showChoiceDialog(R.string.backup_save_tag, tag, TYPE_TAG);
+        if (tag.length != 0) {
+            showChoiceDialog(R.string.backup_save_tag, tag, TYPE_TAG);
+        } else {
+            showSnackbar(R.string.backup_save_tag_not_found);
+            hideProgressDialog();
+        }
     }
 
     @Override
@@ -163,8 +166,8 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
     }
 
     @Override
-    public void onBackupRestoreSuccess(int size) {
-        showSnackbar(StringUtils.format(getString(R.string.backup_restore_success), size));
+    public void onBackupRestoreSuccess() {
+        showSnackbar(R.string.backup_restore_success);
         hideProgressDialog();
     }
 
@@ -184,15 +187,6 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
     public void onBackupSaveFail() {
         showSnackbar(R.string.backup_save_fail);
         hideProgressDialog();
-    }
-
-    private boolean checkPermission(int requestCode) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
-            return false;
-        }
-        return true;
     }
 
     @Override

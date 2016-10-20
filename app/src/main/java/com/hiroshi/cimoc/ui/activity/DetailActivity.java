@@ -1,14 +1,11 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -28,8 +25,10 @@ import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
 import com.hiroshi.cimoc.ui.view.DetailView;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -41,7 +40,9 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/7/2.
  */
 public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener,
-        SelectDialogFragment.SelectDialogListener {
+        SelectDialogFragment.SelectDialogListener, BaseAdapter.OnItemClickListener {
+
+    private static final int REQUEST_DOWNLOAD = 0;
 
     private static final int TYPE_SELECT_DOWNLOAD = 0;
     private static final int TYPE_SELECT_TAG = 1;
@@ -114,7 +115,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.detail_action_button) void onClick() {
+    @OnClick(R.id.detail_action_button) void onActionButtonClick() {
         if (mPresenter.getComic().getFavorite() != null) {
             mPresenter.unfavoriteComic();
             mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
@@ -123,6 +124,19 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
             mPresenter.favoriteComic();
             mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
             showSnackbar(R.string.detail_favorite);
+        }
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        if (position != 0) {
+            String last = mDetailAdapter.getItem(position - 1).getPath();
+            int type = getIntent().getIntExtra(EXTRA_TYPE, ComicFragment.TYPE_HISTORY);
+            long id = mPresenter.updateLast(last, type);
+            mDetailAdapter.setLast(last);
+            int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+            Intent intent = ReaderActivity.createIntent(this, id, mode, mDetailAdapter.getDateSet());
+            startActivity(intent);
         }
     }
 
@@ -148,10 +162,14 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     public void onTagLoadSuccess(List<Selectable> list) {
-        SelectDialogFragment fragment =
-                SelectDialogFragment.newInstance(new ArrayList<>(list), R.string.detail_select_tag, -1, TYPE_SELECT_TAG);
-        fragment.show(getFragmentManager(), null);
         hideProgressDialog();
+        if (!list.isEmpty()) {
+            SelectDialogFragment fragment =
+                    SelectDialogFragment.newInstance(new ArrayList<>(list), R.string.detail_select_tag, -1, TYPE_SELECT_TAG);
+            fragment.show(getFragmentManager(), null);
+        } else {
+            showSnackbar(R.string.backup_save_tag_not_found);
+        }
     }
 
     @Override
@@ -175,46 +193,38 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     @Override
     public void onSelectPositiveClick(int type, List<Selectable> list) {
         if (type == TYPE_SELECT_TAG) {
+            showProgressDialog();
             List<Long> newTagList = new LinkedList<>();
             for (Selectable selectable : list) {
                 if (selectable.isChecked()) {
                     newTagList.add(selectable.getId());
                 }
             }
-            showProgressDialog();
             mPresenter.updateRef(newTagList);
         } else {
-            for (int i = 0; i != list.size(); ++i) {
-                if (list.get(i).isChecked() && !list.get(i).isDisable()) {
-                    mDownloadList.add(mDetailAdapter.getItem(i));
-                }
-            }
-            download();
+            download(false, list);
         }
     }
 
     @Override
     public void onSelectNeutralClick(int type, List<Selectable> list) {
-        for (int i = 0; i != list.size(); ++i) {
-            if (!list.get(i).isDisable()) {
-                mDownloadList.add(mDetailAdapter.getItem(i));
-            }
-        }
-        download();
+        download(true, list);
     }
 
     /**
      * download: load download -> select chapter -> check permission -> update index -> add task
      */
 
-    private void download() {
+    private void download(boolean neutral, List<Selectable> list) {
+        for (int i = 0; i != list.size(); ++i) {
+            if ((neutral || list.get(i).isChecked()) && !list.get(i).isDisable()) {
+                mDownloadList.add(mDetailAdapter.getItem(i));
+            }
+        }
+
         if (!mDownloadList.isEmpty()) {
             showProgressDialog();
-            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
-                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            } else {
+            if (PermissionUtils.requestPermission(this, REQUEST_DOWNLOAD)) {
                 mPresenter.updateIndex(mDetailAdapter.getDateSet());
             }
         }
@@ -224,7 +234,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case 1:
+            case REQUEST_DOWNLOAD:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mPresenter.updateIndex(mDetailAdapter.getDateSet());
                 } else {
@@ -278,20 +288,7 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     public void onChapterLoadSuccess(List<Chapter> list) {
-        mDetailAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position != 0) {
-                    String last = mDetailAdapter.getItem(position - 1).getPath();
-                    mDetailAdapter.setLast(last);
-                    int type = getIntent().getIntExtra(EXTRA_TYPE, ComicFragment.TYPE_HISTORY);
-                    long id = mPresenter.updateLast(last, type);
-                    int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mode, mDetailAdapter.getDateSet());
-                    startActivity(intent);
-                }
-            }
-        });
+        mDetailAdapter.setOnItemClickListener(this);
         mDetailAdapter.setOnTitleClickListener(this);
         mDetailAdapter.addAll(list);
     }
@@ -302,7 +299,14 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    public void onDownloadLoadSuccess(Set<String> set) {
+    public void onDownloadLoadSuccess(List<Task> list) {
+        Set<String> set = new HashSet<>();
+        for (Task task : list) {
+            if (!isProgressBarShown() || task.isFinish()) {
+                set.add(task.getPath());
+            }
+        }
+
         if (isProgressBarShown()) {
             for (Chapter chapter : mDetailAdapter.getDateSet()) {
                 chapter.setDownload(set.contains(chapter.getPath()));
@@ -310,13 +314,13 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
             hideProgressBar();
         } else {
             mDownloadList.clear();
-            ArrayList<Selectable> list = new ArrayList<>();
+            ArrayList<Selectable> result = new ArrayList<>();
             for (Chapter chapter : mDetailAdapter.getDateSet()) {
                 boolean download = set.contains(chapter.getPath());
-                list.add(new Selectable(download, download, chapter.getTitle()));
+                result.add(new Selectable(download, download, chapter.getTitle()));
             }
             hideProgressDialog();
-            SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.detail_select_chapter,
+            SelectDialogFragment fragment = SelectDialogFragment.newInstance(result, R.string.detail_select_chapter,
                             R.string.detail_download_all, TYPE_SELECT_DOWNLOAD);
             fragment.show(getFragmentManager(), null);
         }

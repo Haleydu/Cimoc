@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
@@ -260,10 +262,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     public void onThemeChange(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
         ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
-                new int[]{mNavigationView.getItemTextColor().getDefaultColor(), ContextCompat.getColor(this, accent)});
+                new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemTextColor(itemList);
         ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
-                new int[]{mNavigationView.getItemIconTintList().getDefaultColor(), ContextCompat.getColor(this, accent)});
+                new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemIconTintList(iconList);
         mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));
         if (mToolbar != null) {

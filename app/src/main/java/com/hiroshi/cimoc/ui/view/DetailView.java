@@ -22,7 +22,7 @@ public interface DetailView extends BaseView {
 
     void onChapterChange(String chapter);
 
-    void onDownloadLoadSuccess(Set<String> set);
+    void onDownloadLoadSuccess(List<Task> list);
 
     void onDownloadLoadFail();
 

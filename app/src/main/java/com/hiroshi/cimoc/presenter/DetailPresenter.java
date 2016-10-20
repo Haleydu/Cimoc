@@ -175,9 +175,9 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                         }
                     });
                     RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, new MiniComic(mComic), deleteList, insertList));
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
                 }
+                subscriber.onNext(null);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -217,13 +217,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     .subscribe(new Action1<List<Task>>() {
                         @Override
                         public void call(List<Task> list) {
-                            Set<String> set = new HashSet<>();
-                            for (Task task : list) {
-                                if (task.isFinish()) {
-                                    set.add(task.getPath());
-                                }
-                            }
-                            mBaseView.onDownloadLoadSuccess(set);
+                            mBaseView.onDownloadLoadSuccess(list);
                         }
                     }, new Action1<Throwable>() {
                         @Override
@@ -232,7 +226,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                         }
                     }));
         } else {
-            mBaseView.onDownloadLoadSuccess(new HashSet<String>());
+            mBaseView.onDownloadLoadSuccess(new LinkedList<Task>());
         }
     }
 

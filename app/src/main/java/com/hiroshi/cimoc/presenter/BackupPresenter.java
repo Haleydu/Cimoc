@@ -183,7 +183,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                     @Override
                     public void call(List<MiniComic> list) {
                         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, list));
-                        mBaseView.onBackupRestoreSuccess(list.size());
+                        mBaseView.onBackupRestoreSuccess();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -250,7 +250,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                         }
                         List<Comic> list = (List<Comic>) object.getData(1);
                         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, list));
-                        mBaseView.onBackupRestoreSuccess(list.size());
+                        mBaseView.onBackupRestoreSuccess();
                     }
                 }, new Action1<Throwable>() {
                     @Override

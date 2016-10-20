@@ -10,7 +10,7 @@ public interface BackupView extends BaseView {
 
     void onBackupSaveFail();
 
-    void onBackupRestoreSuccess(int size);
+    void onBackupRestoreSuccess();
 
     void onBackupRestoreFail();
 

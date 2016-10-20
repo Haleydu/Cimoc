@@ -20,6 +20,7 @@ import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.List;
@@ -34,6 +35,8 @@ import butterknife.OnClick;
 
 public class SettingsActivity extends BackActivity implements SettingsView, EditorDialogFragment.EditorDialogListener,
         SliderDialogFragment.SliderDialogListener, ChoiceDialogFragment.ChoiceDialogListener {
+
+    private static final int REQUEST_MOVE_FILE = 0;
 
     private static final int TYPE_OTHER_LAUNCH = 0;
     private static final int TYPE_READER_MODE = 1;
@@ -52,6 +55,7 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     private int mReaderModeChoice;
     private int mConnectionValue;
     private String mStoragePath;
+    private String mTempPath;
 
     @Override
     protected void initPresenter() {
@@ -82,21 +86,13 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case 1:
+            case REQUEST_MOVE_FILE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showProgressDialog();
-                   // mPresenter.backup();
+                    mPresenter.moveFiles(mTempPath);
                 } else {
-                    //onBackupFail();
+                    onFileMoveFail();
                 }
                 break;
-            case 2:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showProgressDialog();
-                 //   mPresenter.loadFiles();
-                } else {
-                    //onFilesLoadFail();
-                }
         }
     }
 
@@ -190,7 +186,10 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
         if (text != null) {
             stopService(new Intent(this, DownloadService.class));
             showProgressDialog();
-            mPresenter.moveFiles(text.trim());
+            mTempPath = text.trim();
+            if (PermissionUtils.requestPermission(this, REQUEST_MOVE_FILE)) {
+                mPresenter.moveFiles(mTempPath);
+            }
         }
     }
 
@@ -214,9 +213,9 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     }
 
     @Override
-    public void onFileMoveSuccess(String path) {
-        mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, path);
-        mStoragePath = path;
+    public void onFileMoveSuccess() {
+        mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempPath);
+        mStoragePath = mTempPath;
         showSnackbar(R.string.settings_other_storage_move_success);
         hideProgressDialog();
     }

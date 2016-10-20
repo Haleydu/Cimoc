@@ -138,4 +138,5 @@
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
+    <include layout="@layout/custom_night_mask"/>
 </FrameLayout>

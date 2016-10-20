@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--optimizationpasses 0
+-optimizationpasses 5
 -dontusemixedcaseclassnames
 -dontskipnonpubliclibraryclasses
 -dontpreverify
@@ -64,6 +64,7 @@
 -keepclassmembers class * {
     native <methods>;
 }
+-keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
 -keep @com.facebook.common.internal.DoNotStrip class *
 -keepclassmembers class * {
     @com.facebook.common.internal.DoNotStrip *;

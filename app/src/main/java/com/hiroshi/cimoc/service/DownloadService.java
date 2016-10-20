@@ -209,7 +209,6 @@ public class DownloadService extends Service {
                             }
                         }
                         if (!success) {
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
                             ++count;
                         } else {
                             break;

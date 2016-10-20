@@ -108,7 +108,7 @@ public class MH57 extends MangaParser {
             String cid = node.attr("a:eq(1)", "href", "/", 1);
             String title = node.text("a:eq(1) > h3");
             String cover = node.attr("a:eq(1) > div.thumb > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
+            String update = node.text("dl:eq(6) > dd");
             String author = node.text("dl:eq(2) > a > dd");
             list.add(new Comic(SourceManager.SOURCE_57MH, cid, title, cover, update, author));
         }

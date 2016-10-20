@@ -21,13 +21,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         Fresco.getImagePipeline().clearDiskCaches();
     }
 
-    public void moveFiles(final String path) {
+    public void moveFiles(String path) {
         mCompositeSubscription.add(Storage.moveFolder(path)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        mBaseView.onFileMoveSuccess(path);
+                        mBaseView.onFileMoveSuccess();
                     }
                 }, new Action1<Throwable>() {
                     @Override

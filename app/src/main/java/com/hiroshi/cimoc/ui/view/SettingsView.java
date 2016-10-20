@@ -5,7 +5,7 @@ package com.hiroshi.cimoc.ui.view;
  */
 public interface SettingsView extends BaseView {
 
-    void onFileMoveSuccess(String path);
+    void onFileMoveSuccess();
 
     void onFileMoveFail();
 
