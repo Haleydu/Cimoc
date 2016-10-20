@@ -1,12 +1,13 @@
 package com.hiroshi.cimoc.core;
 
-import android.os.Environment;
-
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.rx.RxObject;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -22,46 +23,52 @@ import rx.schedulers.Schedulers;
  */
 public class Backup {
 
-    public static String dirPath =
-            FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "backup");
+    private static final String FOLDER_NAME = "backup";
 
-    public static Observable<Integer> save(final List<Comic> list) {
-        return Observable.create(new Observable.OnSubscribe<Integer>() {
-            @Override
-            public void call(Subscriber<? super Integer> subscriber) {
-                try {
-                    JSONArray array = new JSONArray();
-                    for (Comic comic : list) {
-                        JSONObject object = new JSONObject();
-                        object.put("s", comic.getSource());
-                        object.put("i", comic.getCid());
-                        object.put("t", comic.getTitle());
-                        object.put("c", comic.getCover());
-                        object.put("u", comic.getUpdate());
-                        object.put("f", comic.getFinish());
-                        object.put("l", comic.getLast());
-                        object.put("p", comic.getPage());
-                        array.put(object);
-                    }
-                    String name = StringUtils.getDateStringWithSuffix("cimoc");
-                    if (FileUtils.writeStringToFile(dirPath, name, array.toString())) {
-                        subscriber.onNext(array.length());
-                        subscriber.onCompleted();
-                    } else {
-                        subscriber.onError(new Exception());
-                    }
-                } catch (Exception e) {
-                    subscriber.onError(new Exception());
-                }
-            }
-        });
+    // before 1.4.3
+    private static final String SUFFIX_CIMOC = "cimoc";
+
+    // cfbf = Cimoc Favorite Backup File
+    private static final String SUFFIX_CFBF = "cfbf";
+
+    // ctbf = Cimoc Tag Backup File
+    private static final String SUFFIX_CTBF = "ctbf";
+
+    private static final String JSON_CIMOC_KEY_COMIC_SOURCE = "s";
+    private static final String JSON_CIMOC_KEY_COMIC_CID = "i";
+    private static final String JSON_CIMOC_KEY_COMIC_TITLE = "t";
+    private static final String JSON_CIMOC_KEY_COMIC_COVER = "c";
+    private static final String JSON_CIMOC_KEY_COMIC_UPDATE = "u";
+    private static final String JSON_CIMOC_KEY_COMIC_FINISH = "f";
+    private static final String JSON_CIMOC_KEY_COMIC_LAST = "l";
+    private static final String JSON_CIMOC_KEY_COMIC_PAGE = "p";
+
+    private static final String JSON_KEY_VERSION = "version";
+    private static final String JSON_KEY_TAG_OBJECT = "tag";
+    private static final String JSON_KEY_TAG_TITLE = "title";
+    private static final String JSON_KEY_COMIC_ARRAY = "comic";
+    private static final String JSON_KEY_COMIC_SOURCE = "source";
+    private static final String JSON_KEY_COMIC_CID = "cid";
+    private static final String JSON_KEY_COMIC_TITLE = "title";
+    private static final String JSON_KEY_COMIC_COVER = "cover";
+    private static final String JSON_KEY_COMIC_UPDATE = "update";
+    private static final String JSON_KEY_COMIC_FINISH = "finish";
+    private static final String JSON_KEY_COMIC_LAST = "last";
+    private static final String JSON_KEY_COMIC_PAGE = "page";
+
+    public static Observable<String[]> loadFavorite() {
+        return load(SUFFIX_CIMOC, SUFFIX_CFBF);
     }
 
-    public static Observable<String[]> load() {
+    public static Observable<String[]> loadTag() {
+        return load(SUFFIX_CTBF);
+    }
+
+    private static Observable<String[]> load(final String... suffix) {
         return Observable.create(new Observable.OnSubscribe<String[]>() {
             @Override
             public void call(Subscriber<? super String[]> subscriber) {
-                String[] files = FileUtils.listFilesNameHaveSuffix(dirPath, "cimoc");
+                String[] files = FileUtils.listFilesNameHaveSuffix(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), suffix);
                 if (files != null) {
                     Arrays.sort(files);
                     if (files.length == 0) {
@@ -70,38 +77,155 @@ public class Backup {
                         subscriber.onNext(files);
                         subscriber.onCompleted();
                     }
+                } else {
+                    subscriber.onError(new Exception());
                 }
             }
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Comic>> restore(final String name) {
+    public static Observable<Integer> saveFavorite(final List<Comic> list) {
+        return Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                try {
+                    JSONObject result = new JSONObject();
+                    result.put(JSON_KEY_VERSION, 1);
+                    result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
+                    String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CFBF);
+                    String path = FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME);
+                    if (FileUtils.writeStringToFile(path, filename, result.toString())) {
+                        subscriber.onNext(list.size());
+                        subscriber.onCompleted();
+                    } else {
+                        subscriber.onError(new Exception());
+                    }
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<Integer> saveTag(final Tag tag, final List<Comic> list) {
+        return Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                try {
+                    JSONObject result = new JSONObject();
+                    result.put(JSON_KEY_VERSION, 1);
+                    result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
+                    result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
+                    String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
+                    if (FileUtils.writeStringToFile(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), filename, result.toString())) {
+                        subscriber.onNext(list.size());
+                        subscriber.onCompleted();
+                    } else {
+                        subscriber.onError(new Exception());
+                    }
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    private static JSONObject buildTagObject(Tag tag) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put(JSON_KEY_TAG_TITLE, tag.getTitle());
+        return object;
+    }
+
+    private static JSONArray buildComicArray(List<Comic> list) throws JSONException {
+        JSONArray array = new JSONArray();
+        for (Comic comic : list) {
+            JSONObject object = new JSONObject();
+            object.put(JSON_KEY_COMIC_SOURCE, comic.getSource());
+            object.put(JSON_KEY_COMIC_CID, comic.getCid());
+            object.put(JSON_KEY_COMIC_TITLE, comic.getTitle());
+            object.put(JSON_KEY_COMIC_COVER, comic.getCover());
+            object.put(JSON_KEY_COMIC_UPDATE, comic.getUpdate());
+            object.put(JSON_KEY_COMIC_FINISH, comic.getFinish());
+            object.put(JSON_KEY_COMIC_LAST, comic.getLast());
+            object.put(JSON_KEY_COMIC_PAGE, comic.getPage());
+            array.put(object);
+        }
+        return array;
+    }
+
+    public static Observable<RxObject> restoreTag(final String filename) {
+        return Observable.create(new Observable.OnSubscribe<RxObject>() {
+            @Override
+            public void call(Subscriber<? super RxObject> subscriber) {
+                try {
+                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), filename);
+                    JSONObject object = new JSONObject(json);
+                    List<Comic> list = loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF);
+                    subscriber.onNext(new RxObject(object.getJSONObject(JSON_KEY_TAG_OBJECT).getString(JSON_KEY_TAG_TITLE), list));
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<List<Comic>> restoreFavorite(final String filename) {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
                 try {
+                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), filename);
                     List<Comic> list = new LinkedList<>();
-                    String jsonString = FileUtils.readSingleLineFromFile(dirPath, name);
-                    JSONArray array = new JSONArray(jsonString);
-                    for (int i = 0; i != array.length(); ++i) {
-                        JSONObject object = array.getJSONObject(i);
-                        int source = object.getInt("s");
-                        String cid = object.getString("i");
-                        String title = object.getString("t");
-                        String cover = object.getString("c");
-                        String update = object.optString("u", null);
-                        Boolean finish = object.has("f") ? object.getBoolean("f") : null;
-                        String last = object.optString("l", null);
-                        Integer page = object.has("p") ? object.getInt("p") : null;
-                        list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
+                    if (filename.endsWith(SUFFIX_CIMOC)) {
+                        list.addAll(loadComicArray(new JSONArray(json), SUFFIX_CIMOC));
+                    } else if (filename.endsWith(SUFFIX_CFBF)) {
+                        JSONObject object = new JSONObject(json);
+                        list.addAll(loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CFBF));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();
                 } catch (Exception e) {
-                    subscriber.onError(new Exception());
+                    subscriber.onError(e);
                 }
             }
         }).subscribeOn(Schedulers.io());
+    }
+
+    private static List<Comic> loadComicArray(JSONArray array, String suffix) throws JSONException {
+        List<Comic> list = new LinkedList<>();
+        switch (suffix) {
+            case SUFFIX_CIMOC:
+                for (int i = 0; i != array.length(); ++i) {
+                    JSONObject object = array.getJSONObject(i);
+                    int source = object.getInt(JSON_CIMOC_KEY_COMIC_SOURCE);
+                    String cid = object.getString(JSON_CIMOC_KEY_COMIC_CID);
+                    String title = object.getString(JSON_CIMOC_KEY_COMIC_TITLE);
+                    String cover = object.getString(JSON_CIMOC_KEY_COMIC_COVER);
+                    String update = object.optString(JSON_CIMOC_KEY_COMIC_UPDATE, null);
+                    Boolean finish = object.has(JSON_CIMOC_KEY_COMIC_FINISH) ? object.getBoolean(JSON_CIMOC_KEY_COMIC_FINISH) : null;
+                    String last = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
+                    Integer page = object.has(JSON_CIMOC_KEY_COMIC_PAGE) ? object.getInt(JSON_CIMOC_KEY_COMIC_PAGE) : null;
+                    list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
+                }
+                break;
+            case SUFFIX_CFBF:
+            case SUFFIX_CTBF:
+                for (int i = 0; i != array.length(); ++i) {
+                    JSONObject object = array.getJSONObject(i);
+                    int source = object.getInt(JSON_KEY_COMIC_SOURCE);
+                    String cid = object.getString(JSON_KEY_COMIC_CID);
+                    String title = object.getString(JSON_KEY_COMIC_TITLE);
+                    String cover = object.getString(JSON_KEY_COMIC_COVER);
+                    String update = object.optString(JSON_KEY_COMIC_UPDATE, null);
+                    Boolean finish = object.has(JSON_KEY_COMIC_FINISH) ? object.getBoolean(JSON_KEY_COMIC_FINISH) : null;
+                    String last = object.optString(JSON_KEY_COMIC_LAST, null);
+                    Integer page = object.has(JSON_KEY_COMIC_PAGE) ? object.getInt(JSON_KEY_COMIC_PAGE) : null;
+                    list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
+                }
+                break;
+        }
+        return list;
     }
 
 }

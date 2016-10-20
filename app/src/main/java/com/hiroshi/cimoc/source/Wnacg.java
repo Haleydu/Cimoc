@@ -51,7 +51,19 @@ public class Wnacg extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
+        Node body = new Node(html);
+        String title = body.text("#bodywrap > h2");
+        String intro = body.text("#bodywrap > div > div.uwconn > p", 3);
+        String author = body.text("#bodywrap > div > div.uwuinfo > p");
+        String cover = body.attr("#bodywrap > div > div.uwthumb > img", "data-original");
+        comic.setInfo(title, cover, null, intro, author, true);
+
+        return null;
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         String length = body.text("#bodywrap > div > div.uwconn > label:eq(1)", 3, -2);
@@ -59,13 +71,6 @@ public class Wnacg extends MangaParser {
         for (int i = 1; i <= size; ++i) {
             list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
         }
-
-        String title = body.text("#bodywrap > h2");
-        String intro = body.text("#bodywrap > div > div.uwconn > p", 3);
-        String author = body.text("#bodywrap > div > div.uwuinfo > p");
-        String cover = body.attr("#bodywrap > div > div.uwthumb > img", "data-original");
-        comic.setInfo(title, cover, null, intro, author, true);
-
         return list;
     }
 
@@ -117,9 +122,6 @@ public class Wnacg extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
-        if (html == null) {
-            return null;
-        }
         return new Node(html).attr("#picarea", "src");
     }
 

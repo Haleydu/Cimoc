@@ -55,15 +55,8 @@ public class EHentai extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
-        int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
-        for (int i = 0; i != size; ++i) {
-            list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
-        }
-
         String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
         String title = body.text("#gn");
         String intro = body.text("#gj");
@@ -71,6 +64,18 @@ public class EHentai extends MangaParser {
         String cover = body.attr("#gd1 > img", "src");
         comic.setInfo(title, cover, update, intro, author, true);
 
+        return null;
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
+        int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
+        for (int i = 0; i != size; ++i) {
+            list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
+        }
         return list;
     }
 
@@ -125,9 +130,6 @@ public class EHentai extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
-        if (html == null) {
-            return null;
-        }
         return new Node(html).attr("a > img[style]", "src");
     }
 

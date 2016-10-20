@@ -1,8 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -12,7 +10,6 @@ import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/8/11.
@@ -20,11 +17,19 @@ import rx.schedulers.Schedulers;
 public class SourcePresenter extends BasePresenter<SourceView> {
 
     private SourceManager mSourceManager;
-    private ComicManager mComicManager;
 
     public SourcePresenter() {
         mSourceManager = SourceManager.getInstance();
-        mComicManager = ComicManager.getInstance();
+    }
+
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
+            }
+        });
     }
 
     public void load() {
@@ -43,34 +48,19 @@ public class SourcePresenter extends BasePresenter<SourceView> {
                 }));
     }
 
-    public void add(int sid) {
-        Source source = new Source(null, sid, true);
+    public void insert(Source source) {
         long id = mSourceManager.insert(source);
         source.setId(id);
-        mBaseView.onSourceAdd(source);
     }
 
     public void update(Source source) {
         mSourceManager.update(source);
+        int type = source.getEnable() ? RxEvent.EVENT_SOURCE_ENABLE : RxEvent.EVENT_SOURCE_DISABLE;
+        RxBus.getInstance().post(new RxEvent(type, source));
     }
 
-    public void delete(final Source source, final int position) {
-        mCompositeSubscription.add(mComicManager.listSource(source.getSid())
-                .observeOn(Schedulers.io())
-                .subscribe(new Action1<List<Comic>>() {
-                    @Override
-                    public void call(List<Comic> list) {
-                        mSourceManager.delete(source);
-                        mComicManager.deleteInTx(list);
-                        mBaseView.onSourceDeleteSuccess(position);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onSourceDeleteFail();
-                    }
-                }));
-        RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_DELETE, source.getSid()));
+    public void delete(final long id) {
+        mSourceManager.deleteByKey(id);
     }
 
 }

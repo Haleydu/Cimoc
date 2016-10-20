@@ -9,21 +9,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorBackground">
+            android:layout_height="match_parent">
             <include layout="@layout/custom_toolbar"/>
-            <include layout="@layout/custom_progress_bar"/>
             <FrameLayout
                 android:id="@+id/main_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </FrameLayout>
+                android:layout_height="match_parent"/>
         </LinearLayout>
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"
-            android:layout_width="300dp"
+            android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:headerLayout="@layout/custom_drawer_header"

@@ -8,21 +8,21 @@
     android:foreground="?android:attr/selectableItemBackground"
     android:background="@color/white">
     <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <android.support.v7.widget.SwitchCompat
-            android:id="@+id/source_switch"
+            android:id="@+id/item_source_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"/>
         <TextView
-            android:id="@+id/source_title"
+            android:id="@+id/item_source_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@id/source_switch"
+            android:layout_toLeftOf="@id/item_source_switch"
             android:maxLines="1"
             android:ellipsize="end"
             android:textColor="?android:attr/textColorPrimary"

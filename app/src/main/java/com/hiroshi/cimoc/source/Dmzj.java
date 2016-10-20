@@ -73,23 +73,7 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        String jsonString = StringUtils.match("\"data\":(\\[.*?\\])", html, 1);
-        List<Chapter> list = new LinkedList<>();
-        if (jsonString != null) {
-            try {
-                JSONArray array = new JSONArray(jsonString);
-                for (int i = 0; i != array.length(); ++i) {
-                    JSONObject object = array.getJSONObject(i);
-                    String c_title = object.getString("chapter_name");
-                    String c_path = object.getString("id");
-                    list.add(new Chapter(c_title, c_path));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String intro = body.text("p.txtDesc", 3);
         String title = body.attr("#Cover > img", "title");
@@ -99,6 +83,26 @@ public class Dmzj extends MangaParser {
         String update = body.text("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
         comic.setInfo(title, cover, update, intro, author, status);
 
+        return null;
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        String jsonString = StringUtils.match("\"data\":(\\[.*?\\])", html, 1);
+        List<Chapter> list = new LinkedList<>();
+        if (jsonString != null) {
+            try {
+                JSONArray array = new JSONArray(jsonString);
+                for (int i = 0; i != array.length(); ++i) {
+                    JSONObject object = array.getJSONObject(i);
+                    String title = object.getString("chapter_name");
+                    String path = object.getString("id");
+                    list.add(new Chapter(title, path));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return list;
     }
 

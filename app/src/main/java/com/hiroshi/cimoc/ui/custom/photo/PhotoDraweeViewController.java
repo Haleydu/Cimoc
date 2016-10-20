@@ -40,7 +40,7 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     }
 
     public interface OnLongPressListener {
-        void onLongPress(PhotoDraweeView draweeView);
+        void onLongPress(PhotoDraweeView draweeView, float x, float y);
     }
 
     private static final int EDGE_NONE = -1;
@@ -86,7 +86,7 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
             public void onLongPress(MotionEvent e) {
                 PhotoDraweeView draweeView = mDraweeView.get();
                 if (draweeView != null && mOnLongPressListener != null) {
-                    mOnLongPressListener.onLongPress(draweeView);
+                    mOnLongPressListener.onLongPress(draweeView, e.getRawX(), e.getRawY());
                 }
             }
         });
@@ -342,11 +342,8 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
 
     @Override public boolean onSingleTapConfirmed(MotionEvent e) {
         PhotoDraweeView draweeView = mDraweeView.get();
-        if (draweeView == null) {
-            return false;
-        }
-        if (mSingleTapListener != null) {
-            mSingleTapListener.onSingleTap(draweeView, e.getX(), e.getY());
+        if (draweeView != null && mSingleTapListener != null) {
+            mSingleTapListener.onSingleTap(draweeView, e.getRawX(), e.getRawY());
             return true;
         }
         return false;

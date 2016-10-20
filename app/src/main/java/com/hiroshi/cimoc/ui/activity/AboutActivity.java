@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,22 +26,13 @@ public class AboutActivity extends BackActivity implements AboutView {
     @BindView(R.id.about_layout) View mLayoutView;
 
     private AboutPresenter mPresenter;
-    private boolean update;
-    private boolean checking;
+    private boolean update = false;
+    private boolean checking = false;
 
     @Override
     protected void initPresenter() {
         mPresenter = new AboutPresenter();
         mPresenter.attachView(this);
-    }
-
-    @Override
-    protected void initProgressBar() {}
-
-    @Override
-    protected void initData(Bundle savedInstanceState) {
-        update = false;
-        checking = false;
     }
 
     @Override

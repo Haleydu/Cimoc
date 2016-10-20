@@ -75,27 +75,8 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        Set<Chapter> set = new LinkedHashSet<>();
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        int count = 0;
-        for (Node node : body.list("ul[id^=cbc_] > li > a")) {
-            String c_title = node.text();
-            try {
-                String c_path = node.attr("href", "/", 1);
-                if (count % 4 == 0) {
-                    String[] array = c_title.split(" ", 2);
-                    if (array.length == 2) {
-                        c_title = array[1];
-                    }
-                }
-                set.add(new Chapter(c_title, c_path));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            ++count;
-        }
-
         String title = body.text("#mhinfo > div.inbt > h1.new_h2");
         String cover = body.attr("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img", "src");
         String update = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
@@ -104,6 +85,24 @@ public class DM5 extends MangaParser {
         boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
         comic.setInfo(title, cover, update, intro, author, status);
 
+        return StringUtils.match("var DM5_COMIC_MID=(\\d+?);", html, 1);
+    }
+
+    @Override
+    public Request getChapterRequest(String mid) {
+        String url = StringUtils.format("http://www.dm5.com/template-%s-t2-s2", mid);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        Set<Chapter> set = new LinkedHashSet<>();
+        Node body = new Node(html);
+        for (Node node : body.list("ul.nr6 > li > a[title]")) {
+            String title = node.text();
+            String path = node.attr("href", "/", 1);
+            set.add(new Chapter(title, path));
+        }
         return new LinkedList<>(set);
     }
 
@@ -175,14 +174,15 @@ public class DM5 extends MangaParser {
 
     @Override
     public Request getLazyRequest(String url) {
-        return new Request.Builder().url(url).header("Referer", "http://www.dm5.com").build();
+        return new Request.Builder().url(url)
+                .addHeader("Referer", "http://www.dm5.com")
+                .addHeader("Accept-Language", "en-us,en")
+                .addHeader("X-Forwarded-For", "003.000.000.000")
+                .build();
     }
 
     @Override
     public String parseLazy(String html, String url) {
-        if (html == null) {
-            return null;
-        }
         String result = DecryptionUtils.evalDecrypt(html);
         if (result != null) {
             return result.split(",")[0];

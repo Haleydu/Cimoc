@@ -57,13 +57,30 @@ public class Manga {
 
     public static Observable<List<Chapter>> info(final int source, final Comic comic) {
         final Parser parser = SourceManager.getParser(source);
-        return create(parser.getInfoRequest(comic.getCid()),
-                new OnResponseSuccessHandler<Chapter>() {
-                    @Override
-                    public List<Chapter> onSuccess(String html) {
-                        return parser.parseInfo(html, comic);
+        return Observable.create(new Observable.OnSubscribe<List<Chapter>>() {
+            @Override
+            public void call(Subscriber<? super List<Chapter>> subscriber) {
+                try {
+                    Request request = parser.getInfoRequest(comic.getCid());
+                    String html = getResponseBody(mClient, request);
+                    String msg = parser.parseInfo(html, comic);
+                    if (msg != null) {
+                        request = parser.getChapterRequest(msg);
+                        html = getResponseBody(mClient, request);
                     }
-                });
+                    List<Chapter> list = parser.parseChapter(html);
+                    if (list.isEmpty()) {
+                        subscriber.onError(new EmptyResultException());
+                    } else {
+                        subscriber.onNext(list);
+                        subscriber.onCompleted();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
     }
 
     public static Observable<List<Comic>> recent(final int source, final int page) {
@@ -130,13 +147,12 @@ public class Manga {
             public void call(Subscriber<? super String> subscriber) {
                 Parser parser = SourceManager.getParser(source);
                 Request request = parser.getLazyRequest(url);
-                String html = null;
+                String newUrl = null;
                 try {
-                    html = getResponseBody(mClient, request);
+                    newUrl = parser.parseLazy(getResponseBody(mClient, request), url);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String newUrl = parser.parseLazy(html, url);
                 subscriber.onNext(newUrl);
                 subscriber.onCompleted();
             }

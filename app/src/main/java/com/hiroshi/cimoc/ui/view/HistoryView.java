@@ -9,8 +9,6 @@ public interface HistoryView extends GridView {
 
     void onItemUpdate(MiniComic comic);
 
-    void onSourceRemove(int source);
-
     void onHistoryClearSuccess();
 
     void onHistoryClearFail();

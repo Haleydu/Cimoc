@@ -1,56 +1,59 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
-import com.hiroshi.cimoc.ui.adapter.SelectAdapter;
+import com.hiroshi.cimoc.ui.fragment.ComicFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
 import com.hiroshi.cimoc.ui.view.DetailView;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener {
+public class DetailActivity extends BackActivity implements DetailView, DetailAdapter.OnTitleClickListener,
+        SelectDialogFragment.SelectDialogListener, BaseAdapter.OnItemClickListener {
+
+    private static final int REQUEST_DOWNLOAD = 0;
+
+    private static final int TYPE_SELECT_DOWNLOAD = 0;
+    private static final int TYPE_SELECT_TAG = 1;
 
     @BindView(R.id.detail_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.detail_layout) CoordinatorLayout mCoordinatorLayout;
-    @BindView(R.id.detail_star_btn) FloatingActionButton mStarButton;
+    @BindView(R.id.detail_action_button) FloatingActionButton mStarButton;
 
     private DetailAdapter mDetailAdapter;
-    private SelectAdapter mSelectAdapter;
     private DetailPresenter mPresenter;
+    private List<Chapter> mDownloadList;
 
     @Override
     protected void initPresenter() {
@@ -59,7 +62,18 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    protected void initData(Bundle savedInstanceState) {
+    protected void initView() {
+        super.initView();
+        mDetailAdapter = new DetailAdapter(this, new LinkedList<Chapter>());
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        mRecyclerView.setAdapter(mDetailAdapter);
+        mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
+    }
+
+    @Override
+    protected void initData() {
+        mDownloadList = new ArrayList<>();
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(EXTRA_CID);
@@ -72,8 +86,6 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
         mPresenter.detachView();
         mPresenter = null;
         super.onDestroy();
-        mDetailAdapter = null;
-        mSelectAdapter = null;
     }
 
     @Override
@@ -84,68 +96,26 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.detail_download:
-                if (mSelectAdapter != null && mSelectAdapter.getItemCount() != 0) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    View view = getLayoutInflater().inflate(R.layout.dialog_select_chapter, null);
-                    RecyclerView recyclerView = ButterKnife.findById(view, R.id.chapter_recycler_view);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                    recyclerView.setHasFixedSize(true);
-                    recyclerView.setAdapter(mSelectAdapter);
-                    builder.setTitle(R.string.detail_select_chapter);
-                    builder.setView(view);
-                    builder.setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            download();
-                        }
-                    });
-                    builder.setNeutralButton(R.string.detail_download_all, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mSelectAdapter.checkAll();
-                            download();
-                        }
-                    });
-                    builder.show();
-                }
-                break;
+        if (!isProgressBarShown()) {
+            switch (item.getItemId()) {
+                case R.id.detail_download:
+                    showProgressDialog();
+                    mPresenter.loadDownload();
+                    break;
+                case R.id.detail_tag:
+                    if (mPresenter.getComic().getFavorite() != null) {
+                        showProgressDialog();
+                        mPresenter.loadTag();
+                    } else {
+                        showSnackbar(R.string.detail_tag_favorite);
+                    }
+                    break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPresenter.updateIndex(mDetailAdapter.getDateSet());
-                } else {
-                    onUpdateIndexFail();
-                }
-                break;
-        }
-    }
-
-    private void download() {
-        List<Integer> list = mSelectAdapter.getCheckedList();
-        if (!list.isEmpty()) {
-            mProgressDialog.show();
-            if (ContextCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(DetailActivity.this, new String[]
-                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            } else {
-                mPresenter.updateIndex(mDetailAdapter.getDateSet());
-            }
-        } else {
-            mPresenter.updateIndex(mDetailAdapter.getDateSet());
-        }
-    }
-
-    @OnClick(R.id.detail_star_btn) void onClick() {
+    @OnClick(R.id.detail_action_button) void onActionButtonClick() {
         if (mPresenter.getComic().getFavorite() != null) {
             mPresenter.unfavoriteComic();
             mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
@@ -158,6 +128,19 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
+    public void onItemClick(View view, int position) {
+        if (position != 0) {
+            String last = mDetailAdapter.getItem(position - 1).getPath();
+            int type = getIntent().getIntExtra(EXTRA_TYPE, ComicFragment.TYPE_HISTORY);
+            long id = mPresenter.updateLast(last, type);
+            mDetailAdapter.setLast(last);
+            int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+            Intent intent = ReaderActivity.createIntent(this, id, mode, mDetailAdapter.getDateSet());
+            startActivity(intent);
+        }
+    }
+
+    @Override
     public void onTitleClick() {
         String last = mPresenter.getComic().getLast();
         List<Chapter> list = mDetailAdapter.getDateSet();
@@ -165,8 +148,10 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
             last = mDetailAdapter.getItem(list.size() - 1).getPath();
             mDetailAdapter.setLast(last);
         }
-        mPresenter.updateLast(last);
-        Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic().getId(), list);
+        int type = getIntent().getIntExtra(EXTRA_TYPE, ComicFragment.TYPE_HISTORY);
+        mPresenter.updateLast(last, type);
+        int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+        Intent intent = ReaderActivity.createIntent(DetailActivity.this, mPresenter.getComic().getId(), mode, list);
         startActivity(intent);
     }
 
@@ -176,117 +161,192 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     }
 
     @Override
-    public void onDownloadLoadSuccess(boolean[] download, boolean[] complete) {
-        mSelectAdapter = new SelectAdapter(this, mDetailAdapter.getTitles());
-        mSelectAdapter.initState(download);
-        mSelectAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                CheckBox box = ButterKnife.findById(view, R.id.download_chapter_checkbox);
-                if (box.isEnabled()) {
-                    boolean checked = !box.isChecked();
-                    box.setChecked(checked);
-                    mSelectAdapter.onClick(position, checked);
-                }
-            }
-        });
-        mDetailAdapter.setDownload(complete);
-        hideProgressBar();
+    public void onTagLoadSuccess(List<Selectable> list) {
+        hideProgressDialog();
+        if (!list.isEmpty()) {
+            SelectDialogFragment fragment =
+                    SelectDialogFragment.newInstance(new ArrayList<>(list), R.string.detail_select_tag, -1, TYPE_SELECT_TAG);
+            fragment.show(getFragmentManager(), null);
+        } else {
+            showSnackbar(R.string.backup_save_tag_not_found);
+        }
     }
 
     @Override
-    public void onDownloadLoadFail() {
-        hideProgressBar();
-        showSnackbar(R.string.detail_download_load_fail);
+    public void onTagLoadFail() {
+        showSnackbar(R.string.detail_tag_load_fail);
+        hideProgressDialog();
+    }
+
+    @Override
+    public void onTagUpdateSuccess() {
+        showSnackbar(R.string.detail_tag_update_success);
+        hideProgressDialog();
+    }
+
+    @Override
+    public void onTagUpdateFail() {
+        showSnackbar(R.string.detail_tag_update_fail);
+        hideProgressDialog();
+    }
+
+    @Override
+    public void onSelectPositiveClick(int type, List<Selectable> list) {
+        if (type == TYPE_SELECT_TAG) {
+            showProgressDialog();
+            List<Long> newTagList = new LinkedList<>();
+            for (Selectable selectable : list) {
+                if (selectable.isChecked()) {
+                    newTagList.add(selectable.getId());
+                }
+            }
+            mPresenter.updateRef(newTagList);
+        } else {
+            download(false, list);
+        }
+    }
+
+    @Override
+    public void onSelectNeutralClick(int type, List<Selectable> list) {
+        download(true, list);
+    }
+
+    /**
+     * download: load download -> select chapter -> check permission -> update index -> add task
+     */
+
+    private void download(boolean neutral, List<Selectable> list) {
+        for (int i = 0; i != list.size(); ++i) {
+            if ((neutral || list.get(i).isChecked()) && !list.get(i).isDisable()) {
+                mDownloadList.add(mDetailAdapter.getItem(i));
+            }
+        }
+
+        if (!mDownloadList.isEmpty()) {
+            showProgressDialog();
+            if (PermissionUtils.requestPermission(this, REQUEST_DOWNLOAD)) {
+                mPresenter.updateIndex(mDetailAdapter.getDateSet());
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_DOWNLOAD:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mPresenter.updateIndex(mDetailAdapter.getDateSet());
+                } else {
+                    onUpdateIndexFail();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onUpdateIndexSuccess() {
+        mPresenter.addTask(mDownloadList);
+    }
+
+    @Override
+    public void onUpdateIndexFail() {
+        showSnackbar(R.string.detail_download_queue_fail);
+        hideProgressDialog();
     }
 
     @Override
     public void onTaskAddSuccess(ArrayList<Task> list) {
         Intent intent = DownloadService.createIntent(DetailActivity.this, list);
         startService(intent);
-        mSelectAdapter.refreshChecked();
-        mProgressDialog.hide();
         showSnackbar(R.string.detail_download_queue_success);
+        hideProgressDialog();
     }
 
     @Override
     public void onTaskAddFail() {
-        mProgressDialog.hide();
         showSnackbar(R.string.detail_download_queue_fail);
+        hideProgressDialog();
     }
 
-    @Override
-    public void onUpdateIndexSuccess() {
-        List<Integer> checked = mSelectAdapter.getCheckedList();
-        if (!checked.isEmpty()) {
-            List<Chapter> list = new ArrayList<>(checked.size());
-            for (int position : checked) {
-                list.add(mDetailAdapter.getItem(position));
-            }
-            mPresenter.addTask(list);
-        }
-    }
+    /**
+     *  init: load comic -> load chapter -> load download
+     *  if load download fail, we still show the layout
+     */
 
     @Override
-    public void onUpdateIndexFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.detail_download_queue_fail);
-    }
-
-    @Override
-    public void onDetailLoadSuccess() {
-        mPresenter.loadDownload(mDetailAdapter.getPaths());
-    }
-
-    @Override
-    public void onComicLoad(Comic comic) {
-        mDetailAdapter = new DetailAdapter(this, new LinkedList<Chapter>());
+    public void onComicLoadSuccess(Comic comic) {
         mDetailAdapter.setInfo(comic.getSource(), comic.getCover(), comic.getTitle(), comic.getAuthor(),
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        mRecyclerView.setAdapter(mDetailAdapter);
-        mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
-            if (comic.getFavorite() != null) {
-                mStarButton.setImageResource(R.drawable.ic_favorite_white_24dp);
-            } else {
-                mStarButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-            }
+            int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
+            mStarButton.setImageResource(resId);
             mStarButton.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
-    public void onChapterLoad(final List<Chapter> list) {
-        mDetailAdapter.setOnItemClickListener(new BaseAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                if (position != 0) {
-                    String last = mDetailAdapter.getItem(position - 1).getPath();
-                    mDetailAdapter.setLast(last);
-                    long id = mPresenter.updateLast(last);
-                    Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet());
-                    startActivity(intent);
-                }
-            }
-        });
+    public void onChapterLoadSuccess(List<Chapter> list) {
+        mDetailAdapter.setOnItemClickListener(this);
         mDetailAdapter.setOnTitleClickListener(this);
-        mDetailAdapter.setData(list);
+        mDetailAdapter.addAll(list);
+    }
+
+    @Override
+    public void onDetailLoadSuccess() {
+        mPresenter.loadDownload();
+    }
+
+    @Override
+    public void onDownloadLoadSuccess(List<Task> list) {
+        Set<String> set = new HashSet<>();
+        for (Task task : list) {
+            if (!isProgressBarShown() || task.isFinish()) {
+                set.add(task.getPath());
+            }
+        }
+
+        if (isProgressBarShown()) {
+            for (Chapter chapter : mDetailAdapter.getDateSet()) {
+                chapter.setDownload(set.contains(chapter.getPath()));
+            }
+            hideProgressBar();
+        } else {
+            mDownloadList.clear();
+            ArrayList<Selectable> result = new ArrayList<>();
+            for (Chapter chapter : mDetailAdapter.getDateSet()) {
+                boolean download = set.contains(chapter.getPath());
+                result.add(new Selectable(download, download, chapter.getTitle()));
+            }
+            hideProgressDialog();
+            SelectDialogFragment fragment = SelectDialogFragment.newInstance(result, R.string.detail_select_chapter,
+                            R.string.detail_download_all, TYPE_SELECT_DOWNLOAD);
+            fragment.show(getFragmentManager(), null);
+        }
+    }
+
+    @Override
+    public void onDownloadLoadFail() {
+        showSnackbar(R.string.detail_download_load_fail);
+        hideProgressBar();
     }
 
     @Override
     public void onNetworkError() {
-        hideProgressBar();
         showSnackbar(R.string.common_network_error);
+        hideProgressBar();
     }
 
     @Override
     public void onParseError() {
-        hideProgressBar();
         showSnackbar(R.string.common_parse_error);
+        hideProgressBar();
     }
+
+    /**
+     *  method we don't care
+     */
 
     @Override
     protected int getLayoutRes() {
@@ -306,12 +366,18 @@ public class DetailActivity extends BackActivity implements DetailView, DetailAd
     public static final String EXTRA_ID = "a";
     public static final String EXTRA_SOURCE = "b";
     public static final String EXTRA_CID = "c";
+    public static final String EXTRA_TYPE = "d";
 
     public static Intent createIntent(Context context, Long id, int source, String cid) {
+        return createIntent(context, id, source, cid, ComicFragment.TYPE_HISTORY);
+    }
+
+    public static Intent createIntent(Context context, Long id, int source, String cid, int type) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_SOURCE, source);
         intent.putExtra(EXTRA_CID, cid);
+        intent.putExtra(EXTRA_TYPE, type);
         return intent;
     }
 

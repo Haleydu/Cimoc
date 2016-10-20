@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.os.Environment;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -24,17 +22,15 @@ import rx.schedulers.Schedulers;
  */
 public class Download {
 
-    public static String dirPath =
-            FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download");
-
-    public static Observable<Void> update(final List<Chapter> list, final int source, final String cid, final String comic, final String cover) {
+    public static Observable<Void> updateComicIndex(final List<Chapter> list, final int source, final String cid,
+                                                    final String title, final String cover) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
                 try {
-                    FileUtils.createFile(dirPath, ".nomedia");
-                    String jsonString = writeInfoToJson(list, source, cid, comic, cover);
-                    String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic);
+                    FileUtils.createFile(FileUtils.getPath(Storage.STORAGE_DIR, "download"), ".nomedia");
+                    String jsonString = writeComicToJson(list, source, cid, title, cover);
+                    String dir = buildPath(source, title);
                     if (FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString))) {
                         subscriber.onNext(null);
                         subscriber.onCompleted();
@@ -48,29 +44,49 @@ public class Download {
         }).observeOn(Schedulers.io());
     }
 
-    private static String writeInfoToJson(List<Chapter> list, int source, String cid, String comic, String cover) throws JSONException {
+    private static String writeComicToJson(List<Chapter> list, int source, String cid, String title, String cover) throws JSONException {
         JSONObject object = new JSONObject();
-        object.put("s", source);
-        object.put("i", cid);
-        object.put("m", comic);
-        object.put("o", cover);
+        object.put("version", "1");
+        object.put("type", "comic");
+        object.put("source", source);
+        object.put("cid", cid);
+        object.put("title", title);
+        object.put("cover", cover);
         JSONArray array = new JSONArray();
         for (Chapter chapter : list) {
             JSONObject temp = new JSONObject();
-            temp.put("t", chapter.getTitle());
-            temp.put("p", chapter.getPath());
+            temp.put("title", chapter.getTitle());
+            temp.put("path", chapter.getPath());
             array.put(temp);
         }
-        object.put("c", array);
+        object.put("list", array);
         return object.toString();
     }
 
-    public static Observable<List<String>> get(final int source, final String comic) {
+    private static String writeChapterToJson(String title, String path) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put("version", "1");
+        object.put("type", "chapter");
+        object.put("title", title);
+        object.put("path", path);
+        return object.toString();
+    }
+
+    public static boolean updateChapterIndex(int source, String comic, String title, String path) {
+        try {
+            String jsonString = writeChapterToJson(title, path);
+            String dir = buildPath(source, comic, title);
+            return FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString));
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    public static Observable<List<String>> getComicIndex(final int source, final String comic) {
         return Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
-                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic);
-
+                String dir = buildPath(source, comic);
                 char[] magic = FileUtils.readCharFromFile(dir, "index.cdif", 5);
                 if (!Arrays.equals(magic, "cimoc".toCharArray())) {
                     subscriber.onError(new Exception());
@@ -94,12 +110,14 @@ public class Download {
     }
 
     private static List<String> readPathFromJson(String jsonString) throws JSONException {
-        JSONArray array = new JSONObject(jsonString).getJSONArray("c");
+        JSONObject jsonObject = new JSONObject(jsonString);
+        // We use "c" as the key in old version
+        JSONArray array = jsonObject.has("list") ? jsonObject.getJSONArray("list") : jsonObject.getJSONArray("c");
         int size = array.length();
         List<String> list = new ArrayList<>(size);
         for (int i = 0; i != size; ++i) {
             JSONObject object = array.getJSONObject(i);
-            list.add(object.getString("p"));
+            list.add(object.has("path") ? object.getString("path") : object.getString("p"));
         }
         return list;
     }
@@ -108,8 +126,8 @@ public class Download {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
-                String[] filenames = FileUtils.listFilesName(dir);
+                String dir = buildPath(source, comic, title);
+                String[] filenames = FileUtils.listFilesNameNoSuffix(dir, "cdif");
                 if (filenames.length == 0) {
                     subscriber.onError(new Exception());
                 } else {
@@ -124,30 +142,26 @@ public class Download {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Void> delete(final int source, final String comic, final String title) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
-                FileUtils.deleteDir(dir);
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io());
+    public static void delete(int source, String comic, List<String> list) {
+        for (String title : list) {
+            String dir = buildPath(source, comic, title);
+            FileUtils.deleteDir(dir);
+        }
     }
 
-    public static Observable<Void> delete(final int source, final String comic, final List<String> list) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                for (String title : list) {
-                    String dir = FileUtils.getPath(dirPath, SourceManager.getTitle(source), comic, title);
-                    FileUtils.deleteDir(dir);
-                }
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io());
+    public static void delete(int source, String comic) {
+        String dir = buildPath(source, comic);
+        FileUtils.deleteDir(dir);
+    }
+
+    public static String buildPath(int source, String comic) {
+        return FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source),
+                FileUtils.filterFilename(comic));
+    }
+
+    public static String buildPath(int source, String comic, String chapter) {
+        return FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source),
+                FileUtils.filterFilename(comic), FileUtils.filterFilename(chapter));
     }
 
 }

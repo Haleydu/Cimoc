@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
+        android:id="@+id/drawer_group_fragment"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/drawer_cimoc"
+            android:id="@+id/drawer_search"
             android:checkable="true"
-            android:title="@string/drawer_main"/>
+            android:icon="@drawable/ic_search_black_24dp"
+            android:title="@string/drawer_search"/>
         <item
-            android:id="@+id/drawer_favorite"
+            android:id="@+id/drawer_comic"
             android:checkable="true"
+            android:icon="@drawable/ic_import_contacts_black_24dp"
             android:title="@string/drawer_comic"/>
-        <item
-            android:id="@+id/drawer_history"
-            android:checkable="true"
-            android:title="@string/drawer_history"/>
-        <item
-            android:id="@+id/drawer_download"
-            android:checkable="true"
-            android:title="@string/drawer_download"/>
         <item
             android:id="@+id/drawer_source"
             android:checkable="true"
+            android:icon="@drawable/ic_widgets_black_24dp"
             android:title="@string/drawer_source"/>
         <item
-            android:title="@string/drawer_system">
-            <menu>
-                <item
-                    android:id="@+id/drawer_night"
-                    android:icon="@drawable/ic_brightness_4_black_24dp"/>
-                <item
-                    android:id="@+id/drawer_settings"
-                    android:icon="@drawable/ic_settings_black_24dp"
-                    android:title="@string/drawer_settings"/>
-                <item
-                    android:id="@+id/drawer_about"
-                    android:icon="@drawable/ic_about_black_24dp"
-                    android:title="@string/drawer_about"/>
-            </menu>
-        </item>
+            android:id="@+id/drawer_tag"
+            android:checkable="true"
+            android:icon="@drawable/ic_class_black_24dp"
+            android:title="@string/drawer_tag"/>
+    </group>
+    <group
+        android:id="@+id/drawer_group_system">
+        <item
+            android:id="@+id/drawer_night"
+            android:icon="@drawable/ic_brightness_4_black_24dp"/>
+        <item
+            android:id="@+id/drawer_backup"
+            android:icon="@drawable/ic_save_black_24dp"
+            android:title="@string/drawer_backup"/>
+        <item
+            android:id="@+id/drawer_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/drawer_settings"/>
+        <item
+            android:id="@+id/drawer_about"
+            android:icon="@drawable/ic_about_black_24dp"
+            android:title="@string/drawer_about"/>
     </group>
 </menu>

@@ -49,6 +49,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         Comic comic = mDataSet.get(position);
         ResultViewHolder viewHolder = (ResultViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());

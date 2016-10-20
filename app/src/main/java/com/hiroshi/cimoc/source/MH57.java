@@ -24,6 +24,10 @@ import okhttp3.Request;
 
 public class MH57 extends MangaParser {
 
+    public MH57() {
+        server = new String[]{ "http://images.333dm.com", "http://cartoon.akshk.com" };
+    }
+
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("http://m.57mh.com/search/q_%s-p-%d", keyword, page);
@@ -62,15 +66,8 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
-        List<Chapter> list = new LinkedList<>();
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        for (Node node : body.list("#chapterList > ul > li > a")) {
-            String c_title = node.text();
-            String c_path = node.attr("href", "/|\\.", 2);
-            list.add(new Chapter(c_title, c_path));
-        }
-
         String title = body.text("div.main-bar > h1");
         String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(7) > dd");
@@ -79,6 +76,18 @@ public class MH57 extends MangaParser {
         boolean status = "已完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
 
+        return null;
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
+        List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#chapterList > ul > li > a")) {
+            String title = node.text();
+            String path = node.attr("href", "/|\\.", 2);
+            list.add(new Chapter(title, path));
+        }
         return list;
     }
 
@@ -99,7 +108,7 @@ public class MH57 extends MangaParser {
             String cid = node.attr("a:eq(1)", "href", "/", 1);
             String title = node.text("a:eq(1) > h3");
             String cover = node.attr("a:eq(1) > div.thumb > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
+            String update = node.text("dl:eq(6) > dd");
             String author = node.text("dl:eq(2) > a > dd");
             list.add(new Comic(SourceManager.SOURCE_57MH, cid, title, cover, update, author));
         }
@@ -123,27 +132,13 @@ public class MH57 extends MangaParser {
                 JSONArray array = new JSONArray(jsonString);
                 int size = array.length();
                 for (int i = 0; i != size; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://play.333dm.com/get.php?url=".concat(array.getString(i)), true));
+                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i)), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return list;
-    }
-
-    @Override
-    public Request getLazyRequest(String url) {
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
-    public String parseLazy(String html, String url) {
-        if (html == null) {
-            String path = url.split("=")[1];
-            return "http://images.333dm.com".concat(path);
-        }
-        return url;
     }
 
     @Override

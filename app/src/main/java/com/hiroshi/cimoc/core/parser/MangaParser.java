@@ -7,6 +7,13 @@ import okhttp3.Request;
  */
 public abstract class MangaParser implements Parser {
 
+    protected String[] server;
+
+    @Override
+    public Request getChapterRequest(String cid) {
+        return null;
+    }
+
     @Override
     public Request getLazyRequest(String url) {
         return null;
@@ -34,5 +41,16 @@ public abstract class MangaParser implements Parser {
 
     @Override
     public void beforeImages(String html) {}
+
+    protected String[] buildUrl(String path) {
+        if (server != null) {
+            String[] url = new String[server.length];
+            for (int i = 0; i != server.length; ++i) {
+                url[i] = server[i].concat(path);
+            }
+            return url;
+        }
+        return null;
+    }
 
 }

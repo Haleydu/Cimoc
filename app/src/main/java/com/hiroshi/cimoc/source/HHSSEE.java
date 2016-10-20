@@ -52,7 +52,7 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseInfo(String html, Comic comic) {
+    public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#about_kit > ul > li:eq(0) > h1").trim();
         String cover = body.attr("#about_style > img", "src");
@@ -64,19 +64,25 @@ public class HHSSEE extends MangaParser {
         boolean status = body.text("#about_kit > ul > li:eq(2)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
+        return null;
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
+        Node body = new Node(html);
+        String name = body.text("#about_kit > ul > li:eq(0) > h1").trim();
         for (Node node : body.list("#permalink > div.cVolList > ul.cVolUl > li > a")) {
-            String c_title = node.text();
-            c_title = c_title.replaceFirst(title, "");
-            String temp = StringUtils.match("\\d+(-\\d+)?[集话卷]$", c_title, 0);
+            String title = node.text();
+            title = title.replaceFirst(name, "");
+            String temp = StringUtils.match("\\d+(-\\d+)?[集话卷]$", title, 0);
             if (temp != null) {
-                c_title = temp;
+                title = temp;
             }
             String[] array = StringUtils.match("/page(\\d+).*s=(\\d+)", node.attr("href"), 1, 2);
-            String c_path = array != null ? array[0].concat(" ").concat(array[1]) : "";
-            list.add(new Chapter(c_title.trim(), c_path));
+            String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
+            list.add(new Chapter(title.trim(), path));
         }
-
         return list;
     }
 
@@ -134,9 +140,6 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public String parseLazy(String html, String url) {
-        if (html == null) {
-            return null;
-        }
         Node body = new Node(html);
         String server = body.attr("#hdDomain", "value").split("\\|")[0];
         String name = body.attr("#iBodyQ > img", "name");

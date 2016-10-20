@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.view;
 
+import android.support.annotation.ColorRes;
+
 import com.hiroshi.cimoc.model.Source;
 
 import java.util.List;
@@ -9,14 +11,10 @@ import java.util.List;
  */
 public interface SourceView extends BaseView {
 
-    void onSourceAdd(Source source);
-
     void onSourceLoadSuccess(List<Source> list);
 
     void onSourceLoadFail();
 
-    void onSourceDeleteSuccess(int position);
-
-    void onSourceDeleteFail();
+    void onThemeChange(@ColorRes int primary, @ColorRes int accent);
 
 }

@@ -172,7 +172,7 @@ public class RecyclerViewPager extends RecyclerView {
 
                         @Override
                         protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                            return getContext().getResources().getDisplayMetrics().density * 0.14f / displayMetrics.density;
+                            return 0.14f;
                         }
                     };
             linearSmoothScroller.setTargetPosition(position);
@@ -219,7 +219,7 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     /**
-     * get item position in center of viewpager
+     * getComicIndex item position in center of viewpager
      */
     public int getCurrentPosition() {
         int curPosition;

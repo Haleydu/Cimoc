@@ -12,12 +12,12 @@ import com.facebook.imagepipeline.core.ImagePipelineFactory;
 public class ControllerBuilderSupplierFactory {
 
     public static PipelineDraweeControllerBuilderSupplier get(Context context, ImagePipelineFactory factory) {
-        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory);
+        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory, null);
     }
 
     public static PipelineDraweeControllerBuilder get(Context context, int source) {
         ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(context, source);
-        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory).get();
+        return new PipelineDraweeControllerBuilderSupplier(context.getApplicationContext(), factory, null).get();
     }
 
 }

@@ -53,11 +53,13 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         return mDataSet.indexOf(data) != -1;
     }
 
-    public void remove(T data) {
+    public boolean remove(T data) {
         int position = mDataSet.indexOf(data);
         if (position != -1) {
             remove(position);
+            return true;
         }
+        return false;
     }
 
     public void remove(int position) {
@@ -79,9 +81,9 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         return mDataSet;
     }
 
-    public void setData(List<T> list) {
+    public void setData(Collection<T> collection) {
         mDataSet.clear();
-        mDataSet.addAll(list);
+        mDataSet.addAll(collection);
         notifyDataSetChanged();
     }
 
@@ -112,28 +114,32 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         void onItemLongClick(View view, int position);
     }
 
-    class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    @Override
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mClickListener != null) {
+                    mClickListener.onItemClick(v, holder.getAdapterPosition());
+                }
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mLongClickListener == null) {
+                    return false;
+                }
+                mLongClickListener.onItemLongClick(v, holder.getAdapterPosition());
+                return true;
+            }
+        });
+    }
 
+    static class BaseViewHolder extends RecyclerView.ViewHolder {
         BaseViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
-            view.setOnClickListener(this);
-            view.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (mClickListener != null) {
-                mClickListener.onItemClick(v, getAdapterPosition());
-            }
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            if (mLongClickListener != null) {
-                mLongClickListener.onItemLongClick(v, getAdapterPosition());
-            }
-            return true;
         }
     }
 

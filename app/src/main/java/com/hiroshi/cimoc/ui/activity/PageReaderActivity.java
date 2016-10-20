@@ -1,15 +1,11 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager.OnPageChangedListener;
 import com.hiroshi.cimoc.utils.HintUtils;
@@ -23,28 +19,15 @@ import java.util.List;
  */
 public class PageReaderActivity extends ReaderActivity implements OnPageChangedListener {
 
-    private boolean volume;
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (volume) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_VOLUME_UP:
-                    mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() - 1);
-                    return true;
-                case KeyEvent.KEYCODE_VOLUME_DOWN:
-                    mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() + 1);
-                    return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+    private boolean loadNext = true;
+    private boolean loadPrev = true;
 
     @Override
     protected void initView() {
         super.initView();
-        int offset = CimocApplication.getPreferences().getInt(PreferenceManager.PREF_TRIGGER, 5);
-        volume = CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_VOLUME, false);
+        loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true);
+        loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true);
+        int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 5);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
         ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);
@@ -53,7 +36,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 switch (newState) {
                     case RecyclerView.SCROLL_STATE_DRAGGING:
-                        hideToolLayout();
+                        hideControl();
                         break;
                 }
             }
@@ -66,9 +49,10 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
             return;
         }
 
-        if (newPosition == 0) {
+        if (loadPrev && newPosition == 0) {
             mPresenter.loadPrev();
-        } else if (newPosition == mReaderAdapter.getItemCount() - 1) {
+        }
+        if (loadNext && newPosition == mReaderAdapter.getItemCount() - 1) {
             mPresenter.loadNext();
         }
 
@@ -97,42 +81,25 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     }
 
     @Override
-    public void onSingleTap(PhotoDraweeView draweeView, float x, float y) {
-        Point point = new Point();
-        getWindowManager().getDefaultDisplay().getSize(point);
-        float limitX = point.x / 3.0f;
-        float limitY = point.y / 3.0f;
-        if (x < limitX) {
-            int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
-            hideToolLayout();
-            if (position == 0) {
-                mPresenter.loadPrev();
-            } else if (reverse) {
-                mRecyclerView.scrollToPosition(position + 1);
-            } else {
-                mRecyclerView.scrollToPosition(position - 1);
-            }
-        } else if (x > 2 * limitX) {
-            int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
-            hideToolLayout();
-            if (position == mReaderAdapter.getItemCount() - 1) {
-                mPresenter.loadNext();
-            } else if (reverse) {
-                mRecyclerView.scrollToPosition(position - 1);
-            } else {
-                mRecyclerView.scrollToPosition(position + 1);
-            }
-        } else if (y >= 2 * limitY) {
-            switchToolLayout();
-        } else if (y >= limitY) {
-            draweeView.retry();
+    protected void prevPage() {
+        hideControl();
+        int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
+        if (position == 0) {
+            mPresenter.loadPrev();
+        } else {
+            mRecyclerView.scrollToPosition(position - 1);
         }
     }
 
     @Override
-    public void onLongPress(PhotoDraweeView draweeView) {
+    protected void nextPage() {
+        hideControl();
         int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
-        savePicture(position);
+        if (position == mReaderAdapter.getItemCount() - 1) {
+            mPresenter.loadNext();
+        } else {
+            mRecyclerView.scrollToPosition(position + 1);
+        }
     }
 
     @Override

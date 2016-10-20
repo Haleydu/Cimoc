@@ -20,11 +20,9 @@ Online manga reader based on Android
 - [Webtoon](http://m.webtoons.com)
 - [汗汗漫画](http://hhssee.com)
 - [57漫画](http://m.57mh.com)
-- ~~各种奇怪的网站~~
 
 # 可添加图源
 - IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5、Webtoon、HHSSEE、57MH
-- EHentai、ExHentai、NHentai、Wnacg
 
 # 感谢以下的开源项目及作者
 - [Android Open Source Project](http://source.android.com/)
@@ -42,11 +40,11 @@ Online manga reader based on Android
 
 # ToDo
 - ~~综合搜索~~
-- 漫画标签分类
+- ~~漫画标签分类~~
 - 多线程下载
-- 更改下载路径
+- ~~更改下载路径~~
 - 扫描已下载漫画
-- 阅读状态自定义点击事件
+- ~~阅读状态自定义点击事件~~
 
 # 应用截图
 <img src="./screenshot/01.png" width="30%" height="30%">

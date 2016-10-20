@@ -3,12 +3,10 @@ package com.hiroshi.cimoc.ui.activity;
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -20,12 +18,16 @@ import java.util.List;
 public class StreamReaderActivity extends ReaderActivity {
 
     private int position = 0;
+    private boolean loadNext = true;
+    private boolean loadPrev = false;
 
     @Override
     protected void initView() {
         super.initView();
+        loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
+        loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_STREAM);
-        if (!CimocApplication.getPreferences().getBoolean(PreferenceManager.PREF_BLANK, false)) {
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
         }
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -33,13 +35,21 @@ public class StreamReaderActivity extends ReaderActivity {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 switch (newState) {
                     case RecyclerView.SCROLL_STATE_DRAGGING:
-                        hideToolLayout();
+                        hideControl();
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:
                     case RecyclerView.SCROLL_STATE_SETTLING:
-                        int item = mLayoutManager.findLastVisibleItemPosition();
-                        if (item == mReaderAdapter.getItemCount() - 1) {
-                            mPresenter.loadNext();
+                        if (loadPrev) {
+                            int item = mLayoutManager.findFirstVisibleItemPosition();
+                            if (item == 0) {
+                                mPresenter.loadPrev();
+                            }
+                        }
+                        if (loadNext) {
+                            int item = mLayoutManager.findLastVisibleItemPosition();
+                            if (item == mReaderAdapter.getItemCount() - 1) {
+                                mPresenter.loadNext();
+                            }
                         }
                         break;
                 }
@@ -70,7 +80,6 @@ public class StreamReaderActivity extends ReaderActivity {
                             }
                         }
                         break;
-
                     case PreferenceManager.READER_TURN_ATB:
                         item = mLayoutManager.findFirstVisibleItemPosition();
                         if (item != position) {
@@ -99,21 +108,31 @@ public class StreamReaderActivity extends ReaderActivity {
     }
 
     @Override
-    public void onSingleTap(PhotoDraweeView draweeView, float x, float y) {
+    protected void prevPage() {
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
-        float limitY = point.y / 3.0f;
-        if (mRecyclerView.getChildAdapterPosition(draweeView) == 0 && y < limitY) {
-            mPresenter.loadPrev();
-        } else if (!draweeView.retry()) {
-            switchToolLayout();
+        if (turn == PreferenceManager.READER_TURN_ATB) {
+            mRecyclerView.smoothScrollBy(0, -point.y);
+        } else {
+            mRecyclerView.smoothScrollBy(-point.x, 0);
+        }
+        if (mLayoutManager.findFirstVisibleItemPosition() == 0) {
+            loadPrev();
         }
     }
 
     @Override
-    public void onLongPress(PhotoDraweeView draweeView) {
-        int position = mRecyclerView.getChildAdapterPosition(draweeView);
-        savePicture(position);
+    protected void nextPage() {
+        Point point = new Point();
+        getWindowManager().getDefaultDisplay().getSize(point);
+        if (turn == PreferenceManager.READER_TURN_ATB) {
+            mRecyclerView.smoothScrollBy(0, point.y);
+        } else {
+            mRecyclerView.smoothScrollBy(point.x, 0);
+        }
+        if (mLayoutManager.findLastVisibleItemPosition() == mReaderAdapter.getItemCount() - 1) {
+            loadNext();
+        }
     }
 
     @Override

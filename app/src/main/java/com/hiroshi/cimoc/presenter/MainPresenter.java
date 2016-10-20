@@ -23,23 +23,29 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.HISTORY_COMIC, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();
-                mBaseView.onLastChange(comic.getSource(), comic.getCid(), comic.getTitle());
+                mBaseView.onLastChange(comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
+            }
+        });
+        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onThemeChange((int) rxEvent.getData(), (int) rxEvent.getData(1), (int) rxEvent.getData(2));
             }
         });
     }
 
-    public void load() {
+    public void loadLast() {
         mCompositeSubscription.add(mComicManager.loadLast()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Comic>() {
                     @Override
                     public void call(Comic comic) {
                         if (comic != null) {
-                            mBaseView.onLastLoadSuccess(comic.getSource(), comic.getCid(), comic.getTitle());
+                            mBaseView.onLastLoadSuccess(comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
                         }
                     }
                 }, new Action1<Throwable>() {

@@ -10,16 +10,12 @@ import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
-import com.hiroshi.cimoc.source.EHentai;
-import com.hiroshi.cimoc.source.ExHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
-import com.hiroshi.cimoc.source.NHentai;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
-import com.hiroshi.cimoc.source.Wnacg;
 
 import java.util.List;
 
@@ -44,6 +40,7 @@ public class SourceManager {
     public static final int SOURCE_EXHENTAI = 101;
     public static final int SOURCE_NHENTAI = 102;
     public static final int SOURCE_WNACG = 103;
+    public static final int SOURCE_177PIC = 104;
 
     private static SourceManager mSourceManager;
 
@@ -55,7 +52,7 @@ public class SourceManager {
 
     public Observable<List<Source>> list() {
         return mSourceDao.queryBuilder()
-                .orderAsc(Properties.Sid)
+                .orderAsc(Properties.Type)
                 .rx()
                 .list();
     }
@@ -63,7 +60,7 @@ public class SourceManager {
     public Observable<List<Source>> listEnable() {
         return mSourceDao.queryBuilder()
                 .where(Properties.Enable.eq(true))
-                .orderAsc(Properties.Sid)
+                .orderAsc(Properties.Type)
                 .rx()
                 .list();
     }
@@ -72,8 +69,8 @@ public class SourceManager {
         return mSourceDao.insert(source);
     }
 
-    public void delete(Source source) {
-        mSourceDao.delete(source);
+    public void deleteByKey(long key) {
+        mSourceDao.deleteByKey(key);
     }
 
     public void update(Source source) {
@@ -100,7 +97,7 @@ public class SourceManager {
                 return "汗汗漫画";
             case SOURCE_57MH:
                 return "57漫画";
-            case SOURCE_EHENTAI:
+/*            case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
                 return "ExHentai";
@@ -108,40 +105,44 @@ public class SourceManager {
                 return "NHentai";
             case SOURCE_WNACG:
                 return "绅士漫画";
+            case SOURCE_177PIC:
+                return "177漫画"; */
         }
         return "null";
     }
 
-    public static int getId(String key) {
+    public static Source getSource(String key) {
         switch (key) {
             case "IKanman":
-                return SOURCE_IKANMAN;
+                return new Source(null, "看漫画", SOURCE_IKANMAN, false);
             case "DMZJ":
-                return SOURCE_DMZJ;
+                return new Source(null, "动漫之家", SOURCE_DMZJ, false);
             case "HHAAZZ":
-                return SOURCE_HHAAZZ;
+                return new Source(null, "手机汗汗", SOURCE_HHAAZZ, false);
             case "CCTuku":
-                return SOURCE_CCTUKU;
+                return new Source(null, "CC图库", SOURCE_CCTUKU, false);
             case "U17":
-                return SOURCE_U17;
+                return new Source(null, "有妖气", SOURCE_U17, false);
             case "DM5":
-                return SOURCE_DM5;
+                return new Source(null, "动漫屋", SOURCE_DM5, false);
             case "Webtoon":
-                return SOURCE_WEBTOON;
+                return new Source(null, "Webtoon", SOURCE_WEBTOON, false);
             case "HHSSEE":
-                return SOURCE_HHSSEE;
+                return new Source(null, "汗汗漫画", SOURCE_HHSSEE, false);
             case "57MH":
-                return SOURCE_57MH;
-            case "EHentai":
-                return SOURCE_EHENTAI;
+                return new Source(null, "57漫画", SOURCE_57MH, false);
+/*            case "EHentai":
+                return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
             case "ExHentai":
-                return SOURCE_EXHENTAI;
+                return new Source(null, "ExHentai", SOURCE_EXHENTAI, false);
             case "NHentai":
-                return SOURCE_NHENTAI;
+                return new Source(null, "NHentai", SOURCE_NHENTAI, false);
             case "Wnacg":
-                return SOURCE_WNACG;
+                return new Source(null, "绅士漫画", SOURCE_WNACG, false);
+            case "177Pic":
+                return new Source(null, "177漫画", SOURCE_177PIC, false); */
         }
-        return -1;
+        return null;
     }
 
     private static SparseArray<Parser> sparseArray = new SparseArray<>();
@@ -177,7 +178,7 @@ public class SourceManager {
                 case SOURCE_57MH:
                     parser = new MH57();
                     break;
-                case SOURCE_EHENTAI:
+/*                case SOURCE_EHENTAI:
                     parser = new EHentai();
                     break;
                 case SOURCE_EXHENTAI:
@@ -189,6 +190,9 @@ public class SourceManager {
                 case SOURCE_WNACG:
                     parser = new Wnacg();
                     break;
+                case SOURCE_177PIC:
+                    parser = new Pic177();
+                    break;  */
             }
             sparseArray.put(source, parser);
         }

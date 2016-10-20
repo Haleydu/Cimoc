@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.Picture;
+import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -47,7 +47,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getUrl())
+        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -119,7 +119,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             mComic.setLast(chapter.getPath());
             mComic.setPage(1);
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
         }
     }
 
@@ -130,17 +130,17 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             mComic.setLast(chapter.getPath());
             mComic.setPage(chapter.getCount());
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
         }
     }
 
     public void savePicture(InputStream inputStream, String suffix) {
-        mCompositeSubscription.add(Picture.save(inputStream, suffix)
+        mCompositeSubscription.add(Storage.savePicture(inputStream, suffix)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Action1<String>() {
                     @Override
-                    public void call(Void aVoid) {
-                        mBaseView.onPictureSaveSuccess();
+                    public void call(String path) {
+                        mBaseView.onPictureSaveSuccess(path);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -154,7 +154,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         if (status != LOAD_INIT) {
             mComic.setPage(page);
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.COMIC_CHAPTER_CHANGE, mComic.getLast(), page));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, mComic.getLast(), page));
         }
     }
 

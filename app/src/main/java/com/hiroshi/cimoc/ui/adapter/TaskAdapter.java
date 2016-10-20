@@ -26,16 +26,16 @@ public class TaskAdapter extends BaseAdapter<Task> {
     private String last;
     private int colorId;
 
-    public class TaskHolder extends BaseViewHolder {
+    static class TaskHolder extends BaseViewHolder {
         @BindView(R.id.task_page) TextView taskPage;
         @BindView(R.id.task_title) TextView taskTitle;
         @BindView(R.id.task_state) TextView taskState;
         @BindView(R.id.task_progress) ProgressBar taskProgress;
         @BindView(R.id.task_last) View taskLast;
 
-        public TaskHolder(View view) {
+        TaskHolder(View view, int color) {
             super(view);
-            taskProgress.getProgressDrawable().setColorFilter(ContextCompat.getColor(mContext, colorId), PorterDuff.Mode.SRC_ATOP);
+            taskProgress.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         }
     }
 
@@ -46,11 +46,12 @@ public class TaskAdapter extends BaseAdapter<Task> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item_task, parent, false);
-        return new TaskHolder(view);
+        return new TaskHolder(view, ContextCompat.getColor(mContext, colorId));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
         Task task = mDataSet.get(position);
         TaskHolder viewHolder = (TaskHolder) holder;
         viewHolder.taskTitle.setText(task.getTitle());

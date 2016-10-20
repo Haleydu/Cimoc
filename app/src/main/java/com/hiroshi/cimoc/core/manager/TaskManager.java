@@ -47,6 +47,10 @@ public class TaskManager {
         mTaskDao.delete(task);
     }
 
+    public void deleteInTx(Iterable<Task> entities) {
+        mTaskDao.deleteInTx(entities);
+    }
+
     public static TaskManager getInstance() {
         if (mTaskManager == null) {
             mTaskManager = new TaskManager();

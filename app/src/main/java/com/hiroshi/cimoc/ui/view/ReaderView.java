@@ -34,7 +34,7 @@ public interface ReaderView extends BaseView {
 
     void onImageLoadFail(int id);
 
-    void onPictureSaveSuccess();
+    void onPictureSaveSuccess(String path);
 
     void onPictureSaveFail();
 

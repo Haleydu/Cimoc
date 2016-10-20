@@ -42,21 +42,6 @@ public class StringUtils {
         return new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date()).concat(".").concat(suffix);
     }
 
-    public static String[] range(int start, int end, int step) {
-        if (step > 0) {
-            int size = (end - start) / step;
-            if (size >= 0) {
-                size += 1;
-                String[] array = new String[size];
-                for (int i = 0; i != size; ++i) {
-                    array[i] = String.valueOf(start + i * step);
-                }
-                return array;
-            }
-        }
-        return new String[0];
-    }
-
     public static String match(String regex, String input, int group) {
         try {
             Pattern pattern = Pattern.compile(regex);

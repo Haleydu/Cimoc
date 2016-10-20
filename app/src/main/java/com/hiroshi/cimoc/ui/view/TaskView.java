@@ -23,11 +23,7 @@ public interface TaskView extends BaseView {
 
     void onTaskParse(long id);
 
-    void onTaskDoing(long id, int max);
-
     void onTaskProcess(long id, int progress, int max);
-
-    void onTaskFinish(long id);
 
     void onTaskError(long id);
 

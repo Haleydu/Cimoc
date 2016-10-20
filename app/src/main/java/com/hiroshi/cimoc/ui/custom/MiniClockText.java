@@ -32,13 +32,11 @@ public class MiniClockText extends TextView {
     };
 
     public MiniClockText(Context context) {
-        super(context);
-        initClock();
+        this(context, null);
     }
 
     public MiniClockText(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initClock();
+        this(context, attrs, 0);
     }
 
     public MiniClockText(Context context, AttributeSet attrs, int defStyle) {

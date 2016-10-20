@@ -1,57 +1,61 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.Manifest;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
+import com.hiroshi.cimoc.service.DownloadService;
+import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
+import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.utils.DialogUtils;
-import com.hiroshi.cimoc.utils.StringUtils;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
+import java.util.List;
+
 import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/9/21.
  */
 
-public class SettingsActivity extends BackActivity implements SettingsView {
+public class SettingsActivity extends BackActivity implements SettingsView, EditorDialogFragment.EditorDialogListener,
+        SliderDialogFragment.SliderDialogListener, ChoiceDialogFragment.ChoiceDialogListener {
 
+    private static final int REQUEST_MOVE_FILE = 0;
+
+    private static final int TYPE_OTHER_LAUNCH = 0;
+    private static final int TYPE_READER_MODE = 1;
+    private static final int TYPE_OTHER_THEME = 2;
+
+    @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
+    List<TextView> mTitleList;
     @BindView(R.id.settings_layout) View mSettingsLayout;
-    @BindView(R.id.settings_reader_split_checkbox) CheckBox mSplitBox;
-    @BindView(R.id.settings_reader_volume_checkbox) CheckBox mVolumeBox;
-    @BindView(R.id.settings_reader_picture_checkbox) CheckBox mPictureBox;
-    @BindView(R.id.settings_reader_bright_checkbox) CheckBox mBrightBox;
-    @BindView(R.id.settings_reader_hide_checkbox) CheckBox mHideBox;
-    @BindView(R.id.settings_reader_blank_checkbox) CheckBox mBlankBox;
+    @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
+    @BindView(R.id.settings_reader_hide_checkbox) AppCompatCheckBox mHideBox;
 
     private SettingsPresenter mPresenter;
-    private PreferenceManager mPreference;
 
-    private int mHomeChoice;
+    private int mLaunchChoice;
     private int mThemeChoice;
     private int mReaderModeChoice;
-    private int mReaderTurnChoice;
-    private int mReaderOrientationChoice;
-    private int mTempChoice;
-    private int mTriggerNum;
-
-    private DialogInterface.OnClickListener mSingleChoiceListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            mTempChoice = which;
-        }
-    };
+    private int mConnectionValue;
+    private String mStoragePath;
+    private String mTempPath;
 
     @Override
     protected void initPresenter() {
@@ -60,24 +64,15 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @Override
-    protected void initProgressBar() {}
-
-    @Override
     protected void initView() {
         super.initView();
-        mPreference = CimocApplication.getPreferences();
-        mHomeChoice = mPreference.getInt(PreferenceManager.PREF_HOME, PreferenceManager.HOME_CIMOC);
-        mThemeChoice = mPreference.getInt(PreferenceManager.PREF_THEME, ThemeUtils.THEME_BLUE);
+        mLaunchChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
+        mThemeChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_THEME, ThemeUtils.THEME_BLUE);
         mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-        mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_TURN, PreferenceManager.READER_TURN_LTR);
-        mReaderOrientationChoice = mPreference.getInt(PreferenceManager.PREF_READER_ORIENTATION, PreferenceManager.READER_ORIENTATION_PORTRAIT);
-        mTriggerNum = mPreference.getInt(PreferenceManager.PREF_TRIGGER, 5);
-        mVolumeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_VOLUME, false));
-        mSplitBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SPLIT, false));
-        mPictureBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_PICTURE, false));
-        mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BRIGHT, false));
-        mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_HIDE, false));
-        mBlankBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_BLANK, false));
+        mStoragePath = mPreference.getString(PreferenceManager.PREF_OTHER_STORAGE, Environment.getExternalStorageDirectory().getAbsolutePath());
+        mConnectionValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
+        mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
+        mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
     }
 
     @Override
@@ -91,45 +86,24 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case 1:
+            case REQUEST_MOVE_FILE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mProgressDialog.show();
-                    mPresenter.backup();
+                    mPresenter.moveFiles(mTempPath);
                 } else {
-                    onBackupFail();
+                    onFileMoveFail();
                 }
                 break;
-            case 2:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mProgressDialog.show();
-                    mPresenter.loadFiles();
-                } else {
-                    onFilesLoadFail();
-                }
         }
     }
 
-    @OnClick({ R.id.settings_reader_split_btn, R.id.settings_reader_volume_btn, R.id.settings_reader_picture_btn,
-            R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_reader_blank_btn})
+    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
-            case R.id.settings_reader_split_btn:
-                checkedAndSave(mSplitBox, PreferenceManager.PREF_SPLIT);
-                break;
-            case R.id.settings_reader_volume_btn:
-                checkedAndSave(mVolumeBox, PreferenceManager.PREF_VOLUME);
-                break;
-            case R.id.settings_reader_picture_btn:
-                checkedAndSave(mPictureBox, PreferenceManager.PREF_PICTURE);
-                break;
             case R.id.settings_reader_bright_btn:
-                checkedAndSave(mBrightBox, PreferenceManager.PREF_BRIGHT);
+                checkedAndSave(mBrightBox, PreferenceManager.PREF_READER_KEEP_ON);
                 break;
             case R.id.settings_reader_hide_btn:
-                checkedAndSave(mHideBox, PreferenceManager.PREF_HIDE);
-                break;
-            case R.id.settings_reader_blank_btn:
-                checkedAndSave(mBlankBox, PreferenceManager.PREF_BLANK);
+                checkedAndSave(mHideBox, PreferenceManager.PREF_READER_HIDE_INFO);
                 break;
         }
     }
@@ -140,161 +114,116 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPreference.putBoolean(key, checked);
     }
 
-    @OnClick(R.id.settings_reader_trigger_btn) void onTriggerBtnClick() {
-        final String[] array = StringUtils.range(5, 50, 5);
-        for (int i = 0; i != array.length; ++i) {
-            if (Integer.parseInt(array[i]) == mTriggerNum) {
-                DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_trigger, array, i,
-                        mSingleChoiceListener, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mTriggerNum = Integer.parseInt(array[mTempChoice]);
-                                mPreference.putInt(PreferenceManager.PREF_TRIGGER, mTriggerNum);
-                            }
-                        }).show();
+    @OnClick(R.id.settings_reader_config_btn) void onReaderConfigBtnClick() {
+        Intent intent = new Intent(this, ReaderConfigActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.settings_reader_mode_btn) void onReaderModeClick() {
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_mode,
+                getResources().getStringArray(R.array.reader_mode_items), mReaderModeChoice, TYPE_READER_MODE);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @OnClick(R.id.settings_other_launch_btn) void onOtherLaunchClick() {
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_launch,
+                getResources().getStringArray(R.array.home_items), mLaunchChoice, TYPE_OTHER_LAUNCH);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @OnClick(R.id.settings_other_theme_btn) void onOtherThemeBtnClick() {
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_theme,
+                getResources().getStringArray(R.array.theme_items), mThemeChoice, TYPE_OTHER_THEME);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onChoicePositiveClick(int type, int choice, String value) {
+        switch (type) {
+            case TYPE_OTHER_LAUNCH:
+                mPreference.putInt(PreferenceManager.PREF_OTHER_LAUNCH, choice);
+                mLaunchChoice = choice;
+                break;
+            case TYPE_READER_MODE:
+                mPreference.putInt(PreferenceManager.PREF_READER_MODE, choice);
+                mReaderModeChoice = choice;
+                break;
+            case TYPE_OTHER_THEME:
+                if (mThemeChoice != choice) {
+                    mPreference.putInt(PreferenceManager.PREF_OTHER_THEME, choice);
+                    mThemeChoice = choice;
+                    int theme = ThemeUtils.getThemeById(choice);
+                    setTheme(theme);
+                    int primary = ThemeUtils.getResourceId(this, R.attr.colorPrimary);
+                    int accent = ThemeUtils.getResourceId(this, R.attr.colorAccent);
+                    changeTheme(primary, accent);
+                    mPresenter.changeTheme(theme, primary, accent);
+                }
+                break;
+        }
+    }
+
+    private void changeTheme(int primary, int accent) {
+        if (mToolbar != null) {
+            mToolbar.setBackgroundColor(ContextCompat.getColor(this, primary));
+        }
+        for (TextView textView : mTitleList) {
+            textView.setTextColor(ContextCompat.getColor(this, primary));
+        }
+        ColorStateList stateList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+                new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
+        mBrightBox.setSupportButtonTintList(stateList);
+        mHideBox.setSupportButtonTintList(stateList);
+    }
+
+    @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {
+        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.settings_other_storage, mStoragePath);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onEditorPositiveClick(String text) {
+        if (text != null) {
+            stopService(new Intent(this, DownloadService.class));
+            showProgressDialog();
+            mTempPath = text.trim();
+            if (PermissionUtils.requestPermission(this, REQUEST_MOVE_FILE)) {
+                mPresenter.moveFiles(mTempPath);
             }
         }
     }
 
-    @OnClick(R.id.settings_backup_restore_btn) void onRestoreBtnClick() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
-        } else {
-            mProgressDialog.show();
-            mPresenter.loadFiles();
-        }
+    @OnClick(R.id.settings_download_connection_btn) void onDownloadConnectionClick() {
+        SliderDialogFragment fragment =
+                SliderDialogFragment.newInstance(R.string.settings_download_connection, 0, 10, mConnectionValue);
+        fragment.show(getFragmentManager(), null);
     }
 
-    @OnClick(R.id.settings_other_home_btn) void onHomeBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_home, R.array.home_items, mHomeChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mHomeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_HOME, mHomeChoice);
-                    }
-                }).show();
+    @Override
+    public void onSliderPositiveClick(int value) {
+        mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, value);
+        mConnectionValue = value;
     }
 
-    @OnClick(R.id.settings_reader_mode_btn) void onReaderModeBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_mode, R.array.reader_mode_items, mReaderModeChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderModeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_MODE, mReaderModeChoice);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_turn, R.array.reader_turn_items, mReaderTurnChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderTurnChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_TURN, mReaderTurnChoice);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_reader_orientation, R.array.reader_orientation_items, mReaderOrientationChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mReaderOrientationChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_READER_ORIENTATION, mReaderOrientationChoice);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.settings_other_theme_btn) void onThemeBtnClick() {
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_theme, R.array.theme_items, mThemeChoice, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mThemeChoice = mTempChoice;
-                        mPreference.putInt(PreferenceManager.PREF_THEME, mThemeChoice);
-                        showSnackbar(R.string.settings_other_theme_reboot);
-                    }
-                }).show();
-    }
-
-    @OnClick(R.id.settings_backup_save_btn) void onSaveBtnClick() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        } else {
-            mProgressDialog.show();
-            mPresenter.backup();
-        }
-    }
-
-    @OnClick(R.id.settings_other_cache_btn) void onCacheBtnClick() {
-        mProgressDialog.show();
+    @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {
+        showProgressDialog();
         mPresenter.clearCache();
-    }
-
-    @Override
-    public void onFilesLoadSuccess(final String[] files) {
-        mProgressDialog.hide();
-        mTempChoice = -1;
-        DialogUtils.buildSingleChoiceDialog(this, R.string.settings_select_file, files, -1, mSingleChoiceListener,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mTempChoice != -1) {
-                            mProgressDialog.show();
-                            mPresenter.restore(files[mTempChoice]);
-                        }
-                    }
-                }).show();
-    }
-
-    @Override
-    public void onFilesLoadFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.settings_backup_save_not_found);
-    }
-
-    @Override
-    public void onRestoreSuccess(int count) {
-        mProgressDialog.hide();
-        showSnackbar(R.string.settings_backup_restore_success, count);
-    }
-
-    @Override
-    public void onRestoreFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.settings_backup_restore_fail);
-    }
-
-    @Override
-    public void onBackupSuccess(int count) {
-        mProgressDialog.hide();
-        showSnackbar(R.string.settings_backup_save_success, count);
-    }
-
-    @Override
-    public void onBackupFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.settings_backup_save_fail);
-    }
-
-    @Override
-    public void onCacheClearSuccess() {
-        mProgressDialog.hide();
         showSnackbar(R.string.settings_other_cache_success);
+        hideProgressDialog();
     }
 
     @Override
-    public void onCacheClearFail() {
-        mProgressDialog.hide();
-        showSnackbar(R.string.settings_other_cache_fail);
+    public void onFileMoveSuccess() {
+        mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempPath);
+        mStoragePath = mTempPath;
+        showSnackbar(R.string.settings_other_storage_move_success);
+        hideProgressDialog();
+    }
+
+    @Override
+    public void onFileMoveFail() {
+        showSnackbar(R.string.settings_other_storage_move_fail);
+        hideProgressDialog();
     }
 
     @Override

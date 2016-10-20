@@ -40,27 +40,31 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.settings.ReaderConfigActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.BackupActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.AboutActivity"
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.TagComicActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.settings.EventSettingsActivity"
+            android:configChanges="orientation|screenSize"/>
+
+        <activity
             android:name=".ui.activity.PageReaderActivity"
-            android:screenOrientation="portrait"
             android:configChanges="orientation|screenSize"/>
 
         <activity
             android:name=".ui.activity.StreamReaderActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity
-            android:name=".ui.activity.LandscapeStreamReaderActivity"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity
-            android:name=".ui.activity.LandscapePageReaderActivity"
-            android:screenOrientation="landscape"
             android:configChanges="orientation|screenSize"/>
 
         <service

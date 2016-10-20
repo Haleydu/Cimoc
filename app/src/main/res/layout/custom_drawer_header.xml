@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
+    android:layout_height="160dp"
     android:background="?attr/colorPrimary">
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/drawer_last_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        fresco:actualImageScaleType="centerCrop"/>
     <LinearLayout
-        android:id="@+id/drawer_last_read_btn"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:padding="16dp">
+        android:padding="8dp">
         <TextView
+            android:id="@+id/drawer_last_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/drawer_last_read"
-            android:textColor="@color/white"/>
-        <TextView
-            android:id="@+id/drawer_last_read_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
+            android:padding="8dp"
+            android:maxLines="2"
             android:ellipsize="end"
-            android:text="@string/drawer_last_read_null"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:background="?android:attr/selectableItemBackground"/>
     </LinearLayout>
 </FrameLayout>

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="home_items">
-        <item>Cimoc</item>
-        <item>我的漫画</item>
-        <item>历史阅读</item>
-        <item>下载管理</item>
-        <item>图源管理</item>
+        <item>搜索</item>
+        <item>漫画</item>
+        <item>图源</item>
+        <item>标签</item>
     </string-array>
     <string-array name="reader_mode_items">
         <item>翻页模式</item>
@@ -27,5 +26,19 @@
         <item>紫色</item>
         <item>粉色</item>
         <item>棕色</item>
+    </string-array>
+    <string-array name="event_items">
+        <item>无</item>
+        <item>上一页</item>
+        <item>下一页</item>
+        <item>保存图片</item>
+        <item>加载上一章</item>
+        <item>加载下一章</item>
+        <item>退出阅读器</item>
+        <item>跳到第一页</item>
+        <item>跳到最后一页</item>
+        <item>切换屏幕方向</item>
+        <item>切换阅读模式</item>
+        <item>显示/隐藏进度条</item>
     </string-array>
 </resources>
