@@ -88,16 +88,19 @@ public class Dmzj extends MangaParser {
 
     @Override
     public List<Chapter> parseChapter(String html) {
-        String jsonString = StringUtils.match("\"data\":(\\[.*?\\])", html, 1);
+        String jsonString = StringUtils.match("initIntroData\\((.*?)\\);", html, 1);
         List<Chapter> list = new LinkedList<>();
         if (jsonString != null) {
             try {
                 JSONArray array = new JSONArray(jsonString);
                 for (int i = 0; i != array.length(); ++i) {
-                    JSONObject object = array.getJSONObject(i);
-                    String title = object.getString("chapter_name");
-                    String path = object.getString("id");
-                    list.add(new Chapter(title, path));
+                    JSONArray data = array.getJSONObject(i).getJSONArray("data");
+                    for (int j = 0; j != data.length(); ++j) {
+                        JSONObject object = data.getJSONObject(j);
+                        String title = object.getString("chapter_name");
+                        String path = object.getString("id");
+                        list.add(new Chapter(title, path));
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -14,6 +14,7 @@ import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.view.DetailView;
 
@@ -107,19 +108,12 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     public void loadTag() {
         mTagSet.clear();
         mCompositeSubscription.add(mTagManager.listByComic(mComic.getId())
-                .flatMap(new Func1<List<TagRef>, Observable<TagRef>>() {
-                    @Override
-                    public Observable<TagRef> call(List<TagRef> tagRefs) {
-                        return Observable.from(tagRefs);
-                    }
-                })
-                .map(new Func1<TagRef, Long>() {
+                .compose(new ToAnotherList<>(new Func1<TagRef, Long>() {
                     @Override
                     public Long call(TagRef ref) {
                         return ref.getTid();
                     }
-                })
-                .toList()
+                }))
                 .flatMap(new Func1<List<Long>, Observable<List<Tag>>>() {
                     @Override
                     public Observable<List<Tag>> call(List<Long> list) {
@@ -127,19 +121,12 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                         return mTagManager.list();
                     }
                 })
-                .flatMap(new Func1<List<Tag>, Observable<Tag>>() {
-                    @Override
-                    public Observable<Tag> call(List<Tag> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .map(new Func1<Tag, Selectable>() {
+                .compose(new ToAnotherList<>(new Func1<Tag, Selectable>() {
                     @Override
                     public Selectable call(Tag tag) {
                         return new Selectable(false, mTagSet.contains(tag.getId()), tag.getId(), tag.getTitle());
                     }
-                })
-                .toList()
+                }))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Selectable>>() {
                     @Override
@@ -149,7 +136,6 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onTagLoadFail();
                     }
                 }));

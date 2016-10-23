@@ -72,6 +72,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyDataSetChanged();
     }
 
+    public boolean contains(T data) {
+        return mDataSet.contains(data);
+    }
+
     public void clear() {
         mDataSet.clear();
         notifyDataSetChanged();

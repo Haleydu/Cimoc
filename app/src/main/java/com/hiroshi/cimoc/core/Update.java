@@ -20,7 +20,7 @@ public class Update {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                String url = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/updateComicIndex";
+                String url = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/update";
                 OkHttpClient client = CimocApplication.getHttpClient();
                 Request request = new Request.Builder().url(url).build();
                 try {

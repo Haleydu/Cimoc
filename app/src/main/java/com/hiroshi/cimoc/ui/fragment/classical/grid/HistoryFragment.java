@@ -66,7 +66,6 @@ public class HistoryFragment extends GridFragment implements HistoryView {
             case TYPE_LONG_CLICK:
                 mPresenter.delete(mGridAdapter.getItem(mTempPosition));
                 mGridAdapter.remove(mTempPosition);
-                mTempPosition = -1;
                 showSnackbar(R.string.common_delete_success);
                 break;
         }
@@ -75,7 +74,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     @Override
     protected void onActionButtonClick() {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.history_clear_confirm, true);
+                R.string.history_clear_confirm, true, TYPE_ACTION_BUTTON);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }

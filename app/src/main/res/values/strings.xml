@@ -15,7 +15,9 @@
     <string name="main_last_read_fail">读取最后阅读失败</string>
     <string name="main_notice">作者声明</string>
     <string name="main_notice_content">由于应用不够完善，遇到一些不正常的问题属于正常现象！\n使用过程中有什么建议或者遇到什么问题，欢迎邮件反馈！\n电子邮箱：cimoc_app@163.com\n如果问题比较严重，我会尽量在第二时间解决！\n最后，请不要在公开场合传播本应用，谢谢合作！</string>
-
+    <string name="main_update_log">更新日志</string>
+    <string name="main_update_log_content">v1.4.3.1\n- 修复更新标签出错\n- 修复动漫之家数据抓取不完整\n- 修复清除历史记录失效</string>
+    
     <string name="search_menu_source">图源</string>
     <string name="search_keyword_empty">关键字为空</string>
     <string name="search_keyword_input">请输入关键字</string>
@@ -53,6 +55,7 @@
     <string name="comic_tag_select">标签选择</string>
 
     <string name="favorite_check_update">检查更新</string>
+    <string name="favorite_check_update_fail">检查更新失败</string>
     <string name="favorite_check_update_confirm">是否检查更新</string>
     <string name="favorite_check_update_doing">正在检查更新</string>
     <string name="favorite_check_update_done">检查更新完成</string>
@@ -138,7 +141,7 @@
     <string name="backup_restore_success">恢复成功</string>
     <string name="backup_restore_fail">恢复失败</string>
 
-    <string name="about_version">version: 1.4.3</string>
+    <string name="about_version">version: 1.4.3.1</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

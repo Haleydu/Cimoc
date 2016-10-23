@@ -24,7 +24,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
@@ -42,6 +41,9 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener,
         MessageDialogFragment.MessageDialogListener {
+
+    private static final int TYPE_NOTICE = 0;
+    private static final int TYPE_UPDATE_LOG = 1;
 
     private static final int FRAGMENT_NUM = 4;
 
@@ -79,7 +81,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     protected void initData() {
         mPresenter.loadLast();
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, TYPE_NOTICE);
+            fragment.show(getFragmentManager(), null);
+        } else if (mPreference.getInt(PreferenceManager.PREF_VERSION, 0) != CimocApplication.VERSION) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_update_log, R.string.main_update_log_content, false, TYPE_UPDATE_LOG);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -233,7 +238,18 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     public void onMessagePositiveClick(int type) {
-        mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
+        switch (type) {
+            case TYPE_NOTICE:
+                mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
+                if (mPreference.getInt(PreferenceManager.PREF_VERSION, 0) != CimocApplication.VERSION) {
+                    MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_update_log, R.string.main_update_log_content, false, TYPE_UPDATE_LOG);
+                    fragment.show(getFragmentManager(), null);
+                }
+                break;
+            case TYPE_UPDATE_LOG:
+                mPreference.putInt(PreferenceManager.PREF_VERSION, CimocApplication.VERSION);
+                break;
+        }
     }
 
     @Override

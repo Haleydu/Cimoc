@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.rx.RxObject;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -159,14 +160,16 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Comic> check(final List<Comic> list) {
-        return Observable.create(new Observable.OnSubscribe<Comic>() {
+    public static Observable<RxObject> check(final List<Comic> list) {
+        return Observable.create(new Observable.OnSubscribe<RxObject>() {
             @Override
-            public void call(Subscriber<? super Comic> subscriber) {
+            public void call(Subscriber<? super RxObject> subscriber) {
                 OkHttpClient client = new OkHttpClient.Builder()
                         .connectTimeout(500, TimeUnit.MILLISECONDS)
                         .readTimeout(1000, TimeUnit.MILLISECONDS)
                         .build();
+                int size = list.size();
+                int count = 0;
                 for (Comic comic : list) {
                     int source = comic.getSource();
                     if (source < 100) {
@@ -177,14 +180,14 @@ public class Manga {
                             if (comic.getUpdate() != null && !comic.getUpdate().equals(update)) {
                                 comic.setUpdate(update);
                                 comic.setHighlight(true);
-                                subscriber.onNext(comic);
+                                subscriber.onNext(new RxObject(comic, ++count, size));
                                 continue;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
-                    subscriber.onNext(null);
+                    subscriber.onNext(new RxObject(null, ++count, size));
                 }
                 subscriber.onCompleted();
             }

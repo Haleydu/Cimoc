@@ -107,7 +107,6 @@ public class TagComicActivity extends BackActivity implements TagComicView,
         long cid = mGridAdapter.getItem(mTempPosition).getId();
         mPresenter.delete(tid, cid);
         mGridAdapter.remove(mTempPosition);
-        mTempPosition = -1;
         showSnackbar(R.string.common_delete_success);
     }
 
@@ -207,7 +206,7 @@ public class TagComicActivity extends BackActivity implements TagComicView,
 
     @Override
     protected String getDefaultTitle() {
-        return getString(R.string.tag_comic);
+        return getIntent().getStringExtra(EXTRA_TITLE);
     }
 
     @Override

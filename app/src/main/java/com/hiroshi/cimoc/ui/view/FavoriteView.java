@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
@@ -16,14 +15,20 @@ public interface FavoriteView extends GridView {
 
     void OnComicUnFavorite(long id);
 
-    void onComicUpdate(Comic comic, int progress, int max);
+    void onComicCheckSuccess(MiniComic comic, int progress, int max);
 
-    void onCheckComplete();
+    void onComicCheckFail();
+
+    void onComicCheckComplete();
 
     void onComicRead(MiniComic comic);
 
     void onComicFilterSuccess(List<MiniComic> list);
 
     void onComicFilterFail();
+
+    void onComicInsert(MiniComic comic);
+
+    void onComicDelete(MiniComic comic);
 
 }

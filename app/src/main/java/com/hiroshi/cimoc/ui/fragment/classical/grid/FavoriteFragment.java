@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
@@ -121,19 +120,38 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onComicUpdate(Comic comic, int progress, int max) {
+    public void onComicCheckSuccess(MiniComic comic, int progress, int max) {
         if (comic != null) {
-            mGridAdapter.update(new MiniComic(comic), false);
+            mGridAdapter.update(comic, false);
         }
         mBuilder.setProgress(max, progress, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
     }
 
     @Override
-    public void onCheckComplete() {
+    public void onComicCheckFail() {
+        NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_fail, false);
+        NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+        mBuilder = null;
+    }
+
+    @Override
+    public void onComicCheckComplete() {
         NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_done, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
         mBuilder = null;
+    }
+
+    @Override
+    public void onComicInsert(MiniComic comic) {
+        if (!mGridAdapter.contains(comic)) {
+            mGridAdapter.addAfterHighlight(comic);
+        }
+    }
+
+    @Override
+    public void onComicDelete(MiniComic comic) {
+        mGridAdapter.remove(comic);
     }
 
     @Override
