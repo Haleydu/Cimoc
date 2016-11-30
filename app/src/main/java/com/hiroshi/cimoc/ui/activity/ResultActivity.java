@@ -83,7 +83,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     public void onItemClick(View view, int position) {
         Comic comic = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(this, comic.getSource(), comic.getCid());
         startActivity(intent);
     }
 

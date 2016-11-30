@@ -36,10 +36,9 @@ public class HHSSEE extends MangaParser {
         return new NodeIterator(body.list("#list > div.cComicList > li > a")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("href");
-                cid = cid.substring(7, cid.length() - 5);
+                String cid = node.hrefWithSubString(7, -6);
                 String title = node.text();
-                String cover = node.attr("img", "src");
+                String cover = node.src("img");
                 return new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, null, null);
             }
         };
@@ -54,13 +53,13 @@ public class HHSSEE extends MangaParser {
     @Override
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String title = body.text("#about_kit > ul > li:eq(0) > h1").trim();
-        String cover = body.attr("#about_style > img", "src");
-        String[] args = body.text("#about_kit > ul > li:eq(4)", 3).split("\\D");
+        String title = body.text("#about_kit > ul > li:eq(0) > h1");
+        String cover = body.src("#about_style > img");
+        String[] args = body.textWithSubstring("#about_kit > ul > li:eq(4)", 3).split("\\D");
         String update = StringUtils.format("%4d-%02d-%02d",
                 Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-        String author = body.text("#about_kit > ul > li:eq(1)", 3);
-        String intro = body.text("#about_kit > ul > li:eq(7)", 3);
+        String author = body.textWithSubstring("#about_kit > ul > li:eq(1)", 3);
+        String intro = body.textWithSubstring("#about_kit > ul > li:eq(7)", 3);
         boolean status = body.text("#about_kit > ul > li:eq(2)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
@@ -100,11 +99,10 @@ public class HHSSEE extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#list > div.cTopComicList > div.cComicItem")) {
-            String cid = node.attr("div.cListSlt > a", "href");
-            cid = cid.substring(7, cid.length() - 5);
+            String cid = node.hrefWithSubString("div.cListSlt > a", 7, -6);
             String title = node.text("a > span.cComicTitle");
-            String cover = node.attr("div.cListSlt > a > img", "src");
-            String[] args = node.text("span.cComicRating", 5).split("\\D");
+            String cover = node.src("div.cListSlt > a > img");
+            String[] args = node.textWithSubstring("span.cComicRating", 5).split("\\D");
             String update = StringUtils.format("%4d-%02d-%02d",
                     Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
             String author = node.text("span.cComicAuthor");
@@ -154,7 +152,7 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        String[] args = new Node(html).text("span.cComicRating", 5).split("\\D");
+        String[] args = new Node(html).textWithSubstring("span.cComicRating", 5).split("\\D");
         return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
     }
 

@@ -32,11 +32,11 @@ public class NHentai extends MangaParser {
         return new NodeIterator(body.list("#content > div.index-container > div > a")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("href", "/", 2);
+                String cid = node.hrefWithSplit(1);
                 String title = node.text("div.caption");
                 String author = StringUtils.match("\\[(.*?)\\]", title, 1);
                 title = title.replaceFirst("\\[.*?\\]\\s*", "");
-                String cover = "https:".concat(node.attr("img", "src"));
+                String cover = "https:".concat(node.src("img"));
                 return new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author);
             }
         };
@@ -54,7 +54,7 @@ public class NHentai extends MangaParser {
         String title = body.text("#info > h1");
         String intro = body.text("#info > h2");
         String author = body.text("#tags > div > span > a[href^=/artist/]");
-        String cover = "https:".concat(body.attr("#cover > a > img", "src"));
+        String cover = "https:".concat(body.src("#cover > a > img"));
         comic.setInfo(title, cover, null, intro, author, true);
 
         return null;
@@ -78,11 +78,11 @@ public class NHentai extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#content > div.index-container > div > a")) {
-            String cid = node.attr("href", "/", 2);
+            String cid = node.hrefWithSplit(1);
             String title = node.text("div.caption");
             String author = StringUtils.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s*", "");
-            String cover = "https:".concat(node.attr("img", "src"));
+            String cover = "https:".concat(node.src("img"));
             list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author));
         }
         return list;

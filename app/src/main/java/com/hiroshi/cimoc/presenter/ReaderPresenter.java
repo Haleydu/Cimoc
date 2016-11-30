@@ -2,10 +2,9 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.global.SharedComic;
 import com.hiroshi.cimoc.core.Storage;
-import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -30,24 +29,19 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private final static int LOAD_NEXT = 3;
 
     private PreloadAdapter mPreloadAdapter;
-    private ComicManager mComicManager;
-    private Comic mComic;
+    private SharedComic mSharedComic;
 
-    private boolean isShowNext;
-    private boolean isShowPrev;
-    private int count;
-
-    private int status;
+    private boolean isShowNext = true;
+    private boolean isShowPrev = true;
+    private int count = 0;
+    private int status = LOAD_INIT;
 
     public ReaderPresenter() {
-        mComicManager = ComicManager.getInstance();
-        this.isShowNext = true;
-        this.isShowPrev = true;
-        this.count = 0;
+        mSharedComic = SharedComic.getInstance();
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getFirstUrl())
+        mCompositeSubscription.add(Manga.load(mSharedComic.source(), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -66,16 +60,14 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }));
     }
 
-    public void loadInit(long id, Chapter[] array) {
-        status = LOAD_INIT;
-        mComic = mComicManager.load(id);
+    public void loadInit(Chapter[] array) {
         for (int i = 0; i != array.length; ++i) {
-            if (array[i].getPath().equals(mComic.getLast())) {
+            if (array[i].getPath().equals(mSharedComic.last())) {
                 this.mPreloadAdapter = new PreloadAdapter(array, i);
                 Chapter chapter = array[i];
-                images(chapter.isDownload() ?
-                        Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
-                        Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath()));
+                images(chapter.isComplete() ?
+                        Download.images(mSharedComic.source(), mSharedComic.title(), chapter.getTitle()) :
+                        Manga.images(mSharedComic.source(), mSharedComic.cid(), chapter.getPath()));
             }
         }
     }
@@ -85,9 +77,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             Chapter chapter = mPreloadAdapter.getNextChapter();
             if (chapter != null) {
                 status = LOAD_NEXT;
-                images(chapter.isDownload() ?
-                        Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
-                        Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath()));
+                images(chapter.isComplete() ?
+                        Download.images(mSharedComic.source(), mSharedComic.title(), chapter.getTitle()) :
+                        Manga.images(mSharedComic.source(), mSharedComic.cid(), chapter.getPath()));
                 mBaseView.onNextLoading();
             } else {
                 isShowNext = false;
@@ -101,9 +93,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             Chapter chapter = mPreloadAdapter.getPrevChapter();
             if (chapter != null) {
                 status = LOAD_PREV;
-                images(chapter.isDownload() ?
-                        Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
-                        Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath()));
+                images(chapter.isComplete() ?
+                        Download.images(mSharedComic.source(), mSharedComic.title(), chapter.getTitle()) :
+                        Manga.images(mSharedComic.source(), mSharedComic.cid(), chapter.getPath()));
                 mBaseView.onPrevLoading();
             } else {
                 isShowPrev = false;
@@ -116,10 +108,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         Chapter chapter = mPreloadAdapter.nextChapter();
         if (chapter != null) {
             mBaseView.onChapterChange(chapter);
-            mComic.setLast(chapter.getPath());
-            mComic.setPage(1);
-            mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            mSharedComic.get().setLast(chapter.getPath());
+            mSharedComic.get().setPage(1);
+            mSharedComic.update();
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE));
         }
     }
 
@@ -127,10 +119,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         Chapter chapter = mPreloadAdapter.prevChapter();
         if (chapter != null) {
             mBaseView.onChapterChange(chapter);
-            mComic.setLast(chapter.getPath());
-            mComic.setPage(chapter.getCount());
-            mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            mSharedComic.get().setLast(chapter.getPath());
+            mSharedComic.get().setPage(chapter.getCount());
+            mSharedComic.update();
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE));
         }
     }
 
@@ -152,9 +144,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void updateComic(int page) {
         if (status != LOAD_INIT) {
-            mComic.setPage(page);
-            mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, mComic.getLast(), page));
+            mSharedComic.get().setPage(page);
+            mSharedComic.update();
         }
     }
 
@@ -170,7 +161,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                                 chapter = mPreloadAdapter.moveNext();
                                 chapter.setCount(list.size());
                                 mBaseView.onChapterChange(chapter);
-                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource());
+                                mBaseView.onInitLoadSuccess(list, mSharedComic.page(), mSharedComic.source());
                                 break;
                             case LOAD_PREV:
                                 chapter = mPreloadAdapter.movePrev();

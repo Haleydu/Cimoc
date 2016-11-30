@@ -81,7 +81,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 for (MiniComic comic : list) {
                     mComicArray.put(comic.getId(), comic);
                 }
-                if (mTagId != -1) {
+                if (mTagId == -1) {
                     mBaseView.OnComicRestore(list);
                 }
             }
@@ -89,7 +89,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                if ((int) rxEvent.getData(1) == ComicFragment.TYPE_FAVORITE) {
+                if ((boolean) rxEvent.getData(1)) {
                     MiniComic comic = (MiniComic) rxEvent.getData();
                     mComicArray.put(comic.getId(), comic);
                     mBaseView.onComicRead(comic);

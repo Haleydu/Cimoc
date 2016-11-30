@@ -49,7 +49,7 @@ public class MH57 extends MangaParser {
         return new NodeIterator(body.list("#data_list > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("a:eq(0)", "href", "/", 1);
+                String cid = node.hrefWithSplit("a:eq(0)", 0);
                 String title = node.text("a:eq(0) > h3");
                 String cover = node.attr("a:eq(0) > div.thumb > img", "data-src");
                 String update = node.text("dl:eq(4) > dd");
@@ -69,7 +69,7 @@ public class MH57 extends MangaParser {
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
-        String cover = body.attr("div.book-detail > div.cont-list > div.thumb > img", "src");
+        String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(7) > dd");
         String author = body.text("div.book-detail > div.cont-list > dl:eq(3) > dd");
         String intro = body.text("#bookIntro");
@@ -85,7 +85,7 @@ public class MH57 extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("#chapterList > ul > li > a")) {
             String title = node.text();
-            String path = node.attr("href", "/|\\.", 2);
+            String path = node.hrefWithSplit(1);
             list.add(new Chapter(title, path));
         }
         return list;
@@ -105,7 +105,7 @@ public class MH57 extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#data_list > li")) {
-            String cid = node.attr("a:eq(1)", "href", "/", 1);
+            String cid = node.hrefWithSplit("a:eq(1)", 0);
             String title = node.text("a:eq(1) > h3");
             String cover = node.attr("a:eq(1) > div.thumb > img", "data-src");
             String update = node.text("dl:eq(6) > dd");

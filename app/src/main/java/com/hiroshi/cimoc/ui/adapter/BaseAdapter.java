@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.hiroshi.cimoc.global.FastClick;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -123,7 +125,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mClickListener != null) {
+                if (mClickListener != null && FastClick.isClickValid()) {
                     mClickListener.onItemClick(v, holder.getAdapterPosition());
                 }
             }

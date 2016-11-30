@@ -35,10 +35,10 @@ public class HHAAZZ extends MangaParser {
         return new NodeIterator(body.list("ul.se-list > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("a.pic", "href", "/", 4);
+                String cid = node.hrefWithSplit("a.pic", 1);
                 String title = node.text("a.pic > div > h3");
-                String cover = node.attr("a.pic > img", "src");
-                String update = node.text("a.pic > div > p:eq(4) > span", 0, 10);
+                String cover = node.src("a.pic > img");
+                String update = node.textWithSubstring("a.pic > div > p:eq(4) > span", 0, 10);
                 String author = node.text("a.pic > div > p:eq(1)");
                 // boolean status = node.text("a.tool > span.h").contains("完结");
                 return new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author);
@@ -56,9 +56,9 @@ public class HHAAZZ extends MangaParser {
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main > div > div.pic > div.con > h3");
-        String cover = body.attr("div.main > div > div.pic > img", "src");
-        String update = body.text("div.main > div > div.pic > div.con > p:eq(5)", 5);
-        String author = body.text("div.main > div > div.pic > div.con > p:eq(1)", 3);
+        String cover = body.src("div.main > div > div.pic > img");
+        String update = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(5)", 5);
+        String author = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(1)", 3);
         String intro = body.text("#detail_block > div > p");
         boolean status = body.text("div.main > div > div.pic > div.con > p:eq(4)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
@@ -72,7 +72,7 @@ public class HHAAZZ extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("#sort_div_p > a")) {
             String title = node.attr("title");
-            String path = node.attr("href").substring(17);
+            String path = node.hrefWithSubString(17);
             list.add(new Chapter(title, path));
         }
         return list;
@@ -89,10 +89,10 @@ public class HHAAZZ extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("li > a.pic")) {
-            String cid = node.attr("href", "/", 4);
+            String cid = node.hrefWithSplit(3);
             String title = node.text("div.con > h3");
-            String cover = node.attr("img", "src");
-            String update = node.text("div.con > p > span", 0, 10);
+            String cover = node.src("img");
+            String update = node.textWithSubstring("div.con > p > span", 0, 10);
             String author = node.text("div.con > p:eq(1)");
             list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
         }
@@ -161,7 +161,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("div.main > div > div.pic > div:eq(1) > p:eq(5)", 5);
+        return new Node(html).textWithSubstring("div.main > div > div.pic > div.con > p:eq(5)", 5);
     }
 
 }

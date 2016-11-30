@@ -1,8 +1,11 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.JsonIterator;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -33,7 +36,7 @@ public class Webtoon extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://m.webtoons.com/search";
+            String url = "http://m.webtoons.com/zh-hans/search";
             RequestBody body = new FormBody.Builder().add("keyword", keyword).add("searchType", "ALL").build();
             return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.webtoons.com").build();
         }
@@ -42,28 +45,17 @@ public class Webtoon extends MangaParser {
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        try {
-            JSONObject object = new JSONObject(html);
-            return new JsonIterator(object.getJSONObject("webtoonResult").getJSONArray("titleList")) {
-                @Override
-                protected Comic parse(JSONObject object) {
-                    try {
-                        String cid = object.getString("titleNo");
-                        String title = object.getString("title");
-                        String cover = "http://mwebtoon.phinf.naver.net/".concat(object.getString("thumbnailMobile"));
-                        long time = object.getLong("lastEpisodeRegisterYmdt");
-                        String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
-                        String author = object.getString("pictureAuthorName");
-                        return new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, update, author);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-        } catch (JSONException e) {
-            return null;
-        }
+        Node body = new Node(html);
+        return new NodeIterator(body.list("#ct > div._searchResultArea > ul._searchResultList > li > a")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.hrefWithSplit(-1);
+                String title = node.text("div.row > div.info > p.subj > span");
+                String cover = node.src("div.row > div.pic > img");
+                String author = node.text("div.row > div.info > p.author");
+                return new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, author);
+            }
+        };
     }
 
     @Override
@@ -76,8 +68,8 @@ public class Webtoon extends MangaParser {
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
-        String cover = body.attr("#_episodeList > li > a > div.row > div.pic > img", "src");
-        String[] args = body.text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
+        String cover = body.src("#_episodeList > li > a > div.row > div.pic > img");
+        String[] args = body.text("#_episodeList > li > a > div.row > div.info > p.date").split("\\D");
         String update = StringUtils.format("%4d-%02d-%02d",
                 Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         String author = body.text("#ct > div.detail_info > a._btnInfo > p.author");
@@ -94,7 +86,7 @@ public class Webtoon extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("#_episodeList > li > a")) {
             String title = node.text("div.row > div.info > p.sub_title > span");
-            String path = node.attr("href").substring(30);
+            String path = node.hrefWithSubString(30);
             list.add(new Chapter(title, path));
         }
         return list;
@@ -114,9 +106,9 @@ public class Webtoon extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#ct > ul > li > a")) {
-            String cid = node.attr("href", "=", 1);
+            String cid = node.hrefWithSplit(-1);
             String title = node.text("div.info > p.subj > span");
-            String cover = node.attr("div.pic", "style", "\\(|\\)", 1);
+            String cover = node.attrWithSplit("div.pic", "style", "\\(|\\)", 1);
             list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
         }
         return list;
@@ -154,7 +146,7 @@ public class Webtoon extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        String[] args = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
+        String[] args = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date").split("\\D");
         return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
     }
 

@@ -78,11 +78,11 @@ public class DM5 extends MangaParser {
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#mhinfo > div.inbt > h1.new_h2");
-        String cover = body.attr("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img", "src");
-        String update = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
+        String cover = body.src("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img");
+        String update = body.textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
         String author = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(2) > a");
         String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p").replace("[+展开]", "").replace("[-折叠]", "");
-        boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
+        boolean status = body.textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5).contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
         return StringUtils.match("var DM5_COMIC_MID=(\\d+?);", html, 1);
@@ -100,7 +100,7 @@ public class DM5 extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("ul.nr6 > li > a[title]")) {
             String title = node.text();
-            String path = node.attr("href", "/", 1);
+            String path = node.hrefWithSplit(0);
             set.add(new Chapter(title, path));
         }
         return new LinkedList<>(set);
@@ -197,7 +197,7 @@ public class DM5 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
+        return new Node(html).textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
     }
 
 }

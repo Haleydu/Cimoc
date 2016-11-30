@@ -22,12 +22,25 @@ public class StringUtils {
         return false;
     }
 
-    public static String getSplit(String str, String regex, int position) {
+    public static String split(String str, String regex, int position) {
+        if (str == null) {
+            return null;
+        }
         String[] array = str.split(regex);
         if (position < 0) {
             position = array.length + position;
         }
-        return position < 0 && position >= array.length ? null : array[position];
+        return position < 0 || position >= array.length ? null : array[position];
+    }
+
+    public static String substring(String str, int start, int end) {
+        if (str == null) {
+            return null;
+        }
+        if (end < 0) {
+            end = str.length() + 1 + end;
+        }
+        return str.substring(start, end);
     }
 
     public static String format(String format, Object... args) {

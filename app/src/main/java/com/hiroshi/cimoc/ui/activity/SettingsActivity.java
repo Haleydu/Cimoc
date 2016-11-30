@@ -1,10 +1,8 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
@@ -35,8 +33,6 @@ import butterknife.OnClick;
 
 public class SettingsActivity extends BackActivity implements SettingsView, EditorDialogFragment.EditorDialogListener,
         SliderDialogFragment.SliderDialogListener, ChoiceDialogFragment.ChoiceDialogListener {
-
-    private static final int REQUEST_MOVE_FILE = 0;
 
     private static final int TYPE_OTHER_LAUNCH = 0;
     private static final int TYPE_READER_MODE = 1;
@@ -80,20 +76,6 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
         mPresenter.detachView();
         mPresenter = null;
         super.onDestroy();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_MOVE_FILE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPresenter.moveFiles(mTempPath);
-                } else {
-                    onFileMoveFail();
-                }
-                break;
-        }
     }
 
     @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
@@ -187,8 +169,10 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
             stopService(new Intent(this, DownloadService.class));
             showProgressDialog();
             mTempPath = text.trim();
-            if (PermissionUtils.requestPermission(this, REQUEST_MOVE_FILE)) {
+            if (PermissionUtils.hasStoragePermission(this)) {
                 mPresenter.moveFiles(mTempPath);
+            } else {
+                onFileMoveFail();
             }
         }
     }

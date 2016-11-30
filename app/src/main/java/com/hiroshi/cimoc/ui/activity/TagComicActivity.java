@@ -89,7 +89,7 @@ public class TagComicActivity extends BackActivity implements TagComicView,
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(this, comic.getId());
         startActivity(intent);
     }
 

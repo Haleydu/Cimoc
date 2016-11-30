@@ -233,7 +233,7 @@ public class DownloadService extends Service {
         }
 
         private boolean writeToFile(InputStream byteStream, int count, String url) {
-            String suffix = StringUtils.getSplit(url, "\\.", -1);
+            String suffix = StringUtils.split(url, "\\.", -1);
             if (suffix == null) {
                 suffix = "jpg";
             } else {

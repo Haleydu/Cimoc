@@ -43,7 +43,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
     }
 

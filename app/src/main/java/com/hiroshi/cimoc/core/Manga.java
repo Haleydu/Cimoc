@@ -56,8 +56,8 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Chapter>> info(final int source, final Comic comic) {
-        final Parser parser = SourceManager.getParser(source);
+    public static Observable<List<Chapter>> info(final Comic comic) {
+        final Parser parser = SourceManager.getParser(comic.getSource());
         return Observable.create(new Observable.OnSubscribe<List<Chapter>>() {
             @Override
             public void call(Subscriber<? super List<Chapter>> subscriber) {

@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
+import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
@@ -98,7 +99,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
 
     @OnClick(R.id.task_launch_btn) void onLaunchClick() {
         Comic comic = mPresenter.getComic();
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(this, comic.getId());
         startActivity(intent);
     }
 
@@ -135,7 +136,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                                         mTaskAdapter.setLast(last);
                                         long id = mPresenter.updateLast(last);
                                         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, mode, list);
+                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, mode, list);
                                         startActivity(readerIntent);
                                         break;
                                     }

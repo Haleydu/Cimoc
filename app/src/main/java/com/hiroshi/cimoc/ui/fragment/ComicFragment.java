@@ -31,10 +31,6 @@ import butterknife.BindView;
 
 public class ComicFragment extends BaseFragment implements ComicView, ChoiceDialogFragment.ChoiceDialogListener {
 
-    public static final int TYPE_HISTORY = 1;
-    public static final int TYPE_FAVORITE = 2;
-    public static final int TYPE_DOWNLOAD = 3;
-
     @BindView(R.id.comic_tab_layout) TabLayout mTabLayout;
     @BindView(R.id.comic_view_pager) ViewPager mViewPager;
 

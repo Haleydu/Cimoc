@@ -75,6 +75,7 @@ public class PreferenceManager {
     public static final String PREF_OTHER_LAUNCH = "pref_other_launch";
 
     public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
+    public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

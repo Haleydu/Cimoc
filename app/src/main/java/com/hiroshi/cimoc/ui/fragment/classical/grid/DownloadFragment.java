@@ -161,11 +161,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    public void onComicRead(MiniComic comic) {
-        mGridAdapter.update(comic, false);
-    }
-
-    @Override
     public void onDownloadDeleteSuccess() {
         hideProgressDialog();
         mGridAdapter.remove(mTempPosition);

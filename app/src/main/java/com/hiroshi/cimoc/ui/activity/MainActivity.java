@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -32,6 +35,7 @@ import com.hiroshi.cimoc.ui.fragment.classical.SourceFragment;
 import com.hiroshi.cimoc.ui.fragment.classical.TagFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +48,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private static final int TYPE_NOTICE = 0;
     private static final int TYPE_UPDATE_LOG = 1;
+    private static final int TYPE_PERMISSION = 2;
 
     private static final int FRAGMENT_NUM = 4;
 
@@ -80,12 +85,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
-        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, TYPE_NOTICE);
-            fragment.show(getFragmentManager(), null);
-        } else if (mPreference.getInt(PreferenceManager.PREF_VERSION, 0) != CimocApplication.VERSION) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_update_log, R.string.main_update_log_content, false, TYPE_UPDATE_LOG);
-            fragment.show(getFragmentManager(), null);
+        if (!showAuthorNotice() && !showUpdateLog()) {
+            showPermission();
         }
     }
 
@@ -115,7 +116,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             @Override
             public void onClick(View v) {
                 if (mLastSource != -1 && mLastCid != null) {
-                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
+                    Intent intent = DetailActivity.createIntent(MainActivity.this, mLastSource, mLastCid);
                     startActivity(intent);
                 }
             }
@@ -241,13 +242,29 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         switch (type) {
             case TYPE_NOTICE:
                 mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
-                if (mPreference.getInt(PreferenceManager.PREF_VERSION, 0) != CimocApplication.VERSION) {
-                    MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_update_log, R.string.main_update_log_content, false, TYPE_UPDATE_LOG);
-                    fragment.show(getFragmentManager(), null);
-                }
                 break;
             case TYPE_UPDATE_LOG:
                 mPreference.putInt(PreferenceManager.PREF_VERSION, CimocApplication.VERSION);
+                break;
+            case TYPE_PERMISSION:
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                break;
+        }
+        if (!showAuthorNotice() && !showUpdateLog()) {
+            showPermission();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showSnackbar(R.string.main_permission_success);
+                } else {
+                    showSnackbar(R.string.main_permission_fail);
+                }
                 break;
         }
     }
@@ -286,6 +303,31 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));
         if (mToolbar != null) {
             mToolbar.setBackgroundColor(ContextCompat.getColor(this, primary));
+        }
+    }
+
+    private boolean showAuthorNotice() {
+        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, TYPE_NOTICE);
+            fragment.show(getFragmentManager(), null);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean showUpdateLog() {
+        if (mPreference.getInt(PreferenceManager.PREF_VERSION, 0) != CimocApplication.VERSION) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_update_log, R.string.main_update_log_content, false, TYPE_UPDATE_LOG);
+            fragment.show(getFragmentManager(), null);
+            return true;
+        }
+        return false;
+    }
+
+    private void showPermission() {
+        if (!PermissionUtils.hasStoragePermission(this)) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission, R.string.main_permission_content, false, TYPE_PERMISSION);
+            fragment.show(getFragmentManager(), null);
         }
     }
 

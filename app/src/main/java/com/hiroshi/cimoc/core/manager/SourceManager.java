@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.HHAAZZ;
@@ -35,6 +36,7 @@ public class SourceManager {
     public static final int SOURCE_WEBTOON = 6;
     public static final int SOURCE_HHSSEE = 7;
     public static final int SOURCE_57MH = 8;
+    public static final int SOURCE_CHUIYAO = 9;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -97,6 +99,8 @@ public class SourceManager {
                 return "汗汗漫画";
             case SOURCE_57MH:
                 return "57漫画";
+            case SOURCE_CHUIYAO:
+                return "吹妖漫画";
 /*            case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
@@ -131,6 +135,8 @@ public class SourceManager {
                 return new Source(null, "汗汗漫画", SOURCE_HHSSEE, false);
             case "57MH":
                 return new Source(null, "57漫画", SOURCE_57MH, false);
+            case "Chuiyao":
+                return new Source(null, "吹妖漫画", SOURCE_CHUIYAO, false);
 /*            case "EHentai":
                 return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
             case "ExHentai":
@@ -177,6 +183,9 @@ public class SourceManager {
                     break;
                 case SOURCE_57MH:
                     parser = new MH57();
+                    break;
+                case SOURCE_CHUIYAO:
+                    parser = new Chuiyao();
                     break;
 /*                case SOURCE_EHENTAI:
                     parser = new EHentai();

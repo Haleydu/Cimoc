@@ -33,14 +33,6 @@ public interface DetailView extends BaseView {
 
     void onTagUpdateFail();
 
-    void onTaskAddSuccess(ArrayList<Task> list);
-
-    void onTaskAddFail();
-
-    void onUpdateIndexSuccess();
-
-    void onUpdateIndexFail();
-
     void onParseError();
 
     void onNetworkError();

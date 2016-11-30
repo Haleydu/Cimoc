@@ -8,7 +8,6 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.rx.ToAnotherList;
-import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
 import java.util.ArrayList;
@@ -58,14 +57,6 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onDownloadStop();
-            }
-        });
-        addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                if ((int) rxEvent.getData(1) == ComicFragment.TYPE_DOWNLOAD) {
-                    mBaseView.onComicRead((MiniComic) rxEvent.getData());
-                }
             }
         });
         addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {

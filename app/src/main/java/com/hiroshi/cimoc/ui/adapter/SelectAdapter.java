@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Selectable;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -20,7 +19,7 @@ import butterknife.BindView;
  */
 public class SelectAdapter extends BaseAdapter<Selectable> {
 
-    class SelectHolder extends BaseAdapter.BaseViewHolder {
+    static class SelectHolder extends BaseAdapter.BaseViewHolder {
         @BindView(R.id.item_select_title) TextView chapterTitle;
         @BindView(R.id.item_select_checkbox) CheckBox chapterChoice;
 
@@ -52,31 +51,6 @@ public class SelectAdapter extends BaseAdapter<Selectable> {
         viewHolder.chapterTitle.setText(selectable.getTitle());
         viewHolder.chapterChoice.setEnabled(!selectable.isDisable());
         viewHolder.chapterChoice.setChecked(selectable.isChecked());
-    }
-
-    public List<Integer> getCheckedList() {
-        List<Integer> list = new LinkedList<>();
-        int size = mDataSet.size();
-        for (int i = 0; i != size; ++i) {
-            if (mDataSet.get(i).isChecked() && !mDataSet.get(i).isDisable()) {
-                list.add(i);
-            }
-        }
-        return list;
-    }
-
-    public void checkAll() {
-        for (Selectable selectable : mDataSet) {
-            selectable.setChecked(true);
-        }
-    }
-
-    public void refreshChecked() {
-        for (Selectable selectable : mDataSet) {
-            if (selectable.isChecked() && !selectable.isDisable()) {
-                selectable.setDisable(true);
-            }
-        }
     }
 
 }

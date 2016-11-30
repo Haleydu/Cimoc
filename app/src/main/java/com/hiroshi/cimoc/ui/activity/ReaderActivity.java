@@ -148,8 +148,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         for (int i = 0; i != array.length; ++i) {
             chapter[i] = (Chapter) array[i];
         }
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.loadInit(id, chapter);
+        mPresenter.loadInit(chapter);
     }
 
     @Override
@@ -408,7 +407,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         String[] urls = mReaderAdapter.getItem(position).getUrl();
         try {
             for (String url : urls) {
-                String suffix = StringUtils.getSplit(url, "\\.", -1);
+                String suffix = StringUtils.split(url, "\\.", -1);
                 if (suffix == null) {
                     suffix = "jpg";
                 } else {
@@ -492,13 +491,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     }
 
-    private static final String EXTRA_ID = "a";
-    private static final String EXTRA_CHAPTER = "b";
-    private static final String EXTRA_MODE = "c";
+    private static final String EXTRA_CHAPTER = "a";
+    private static final String EXTRA_MODE = "b";
 
-    public static Intent createIntent(Context context, long id, int mode, List<Chapter> list) {
+    public static Intent createIntent(Context context, int mode, List<Chapter> list) {
         Intent intent = getIntent(context, mode);
-        intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
         intent.putExtra(EXTRA_MODE, mode);
         return intent;

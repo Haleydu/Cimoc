@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -24,11 +22,6 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
     private static final int TYPE_TAG_FILE = 1;
     private static final int TYPE_TAG = 2;
 
-    private static final int REQUEST_LOAD_FAVORITE = 0;
-    private static final int REQUEST_LOAD_TAG = 1;
-    private static final int REQUEST_SAVE_FAVORITE = 2;
-    private static final int REQUEST_SAVE_TAG = 3;
-
     @BindView(R.id.backup_layout) View mLayoutView;
 
     private BackupPresenter mPresenter;
@@ -48,64 +41,37 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
 
     @OnClick(R.id.backup_save_favorite_btn) void onSaveFavoriteClick() {
         showProgressDialog();
-        if (PermissionUtils.requestPermission(this, REQUEST_SAVE_FAVORITE)) {
+        if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.saveFavorite();
+        } else {
+            onFileLoadFail();
         }
     }
 
     @OnClick(R.id.backup_save_tag_btn) void onSaveTagClick() {
         showProgressDialog();
-        if (PermissionUtils.requestPermission(this, REQUEST_SAVE_TAG)) {
+        if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadTag();
+        } else {
+            onFileLoadFail();
         }
     }
 
     @OnClick(R.id.backup_restore_favorite_btn) void onRestoreFavoriteClick() {
         showProgressDialog();
-        if (PermissionUtils.requestPermission(this, REQUEST_LOAD_FAVORITE)) {
+        if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadFavoriteFile();
+        } else {
+            onFileLoadFail();
         }
     }
 
     @OnClick(R.id.backup_restore_tag_btn) void onRestoreTagClick() {
         showProgressDialog();
-        if (PermissionUtils.requestPermission(this, REQUEST_LOAD_TAG)) {
+        if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadTagFile();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case REQUEST_LOAD_FAVORITE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPresenter.loadFavoriteFile();
-                } else {
-                    onFileLoadFail();
-                }
-                break;
-            case REQUEST_LOAD_TAG:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPresenter.loadTagFile();
-                } else {
-                    onFileLoadFail();
-                }
-                break;
-            case REQUEST_SAVE_FAVORITE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPresenter.saveFavorite();
-                } else {
-                    onBackupSaveFail();
-                }
-                break;
-            case REQUEST_SAVE_TAG:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mPresenter.loadTag();
-                } else {
-                    onBackupSaveFail();
-                }
-                break;
+        } else {
+            onFileLoadFail();
         }
     }
 

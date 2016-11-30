@@ -84,8 +84,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
             comic.setHighlight(false);
             mGridAdapter.update(comic, false);
         }
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(),
-                comic.getSource(), comic.getCid(), ComicFragment.TYPE_FAVORITE);
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
     }
 

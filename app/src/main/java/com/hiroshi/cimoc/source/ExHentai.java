@@ -32,15 +32,14 @@ public class ExHentai extends MangaParser {
         return new NodeIterator(body.list("table.itg > tbody > tr[class^=gtr]")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
-                cid = cid.substring(23, cid.length() - 1);
+                String cid = node.hrefWithSubString("td:eq(2) > div > div:eq(2) > a", 23, -2);
                 String title = node.text("td:eq(2) > div > div:eq(2) > a");
-                String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
+                String cover = node.src("td:eq(2) > div > div:eq(0) > img");
                 if (cover == null) {
-                    String temp = node.text("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
+                    String temp = node.textWithSubstring("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
                     cover = "https://exhentai.org/".concat(temp);
                 }
-                String update = node.text("td:eq(1)", 0, 10);
+                String update = node.textWithSubstring("td:eq(1)", 0, 10);
                 String author = StringUtils.match("\\[(.*?)\\]", title, 1);
                 title = title.replaceFirst("\\[.*?\\]\\s*", "");
                 return new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author);
@@ -57,7 +56,7 @@ public class ExHentai extends MangaParser {
     @Override
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String update = body.text("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
+        String update = body.textWithSubstring("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
         String title = body.text("#gn");
         String intro = body.text("#gj");
         String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
@@ -71,7 +70,7 @@ public class ExHentai extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        String length = body.text("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
+        String length = body.textWithSplit("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
         int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
         for (int i = 0; i != size; ++i) {
             list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
@@ -90,15 +89,14 @@ public class ExHentai extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("table.itg > tbody > tr[class^=gtr]")) {
-            String cid = node.attr("td:eq(2) > div > div:eq(2) > a", "href");
-            cid = cid.substring(23, cid.length() - 1);
+            String cid = node.hrefWithSubString("td:eq(2) > div > div:eq(2) > a", 23, -2);
             String title = node.text("td:eq(2) > div > div:eq(2) > a");
-            String cover = node.attr("td:eq(2) > div > div:eq(0) > img", "src");
+            String cover = node.src("td:eq(2) > div > div:eq(0) > img");
             if (cover == null) {
-                String temp = node.text("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
+                String temp = node.textWithSubstring("td:eq(2) > div > div:eq(0)", 19).split("~", 2)[0];
                 cover = "https://exhentai.org/".concat(temp);
             }
-            String update = node.text("td:eq(1)", 0, 10);
+            String update = node.textWithSubstring("td:eq(1)", 0, 10);
             String author = StringUtils.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s*", "");
             list.add(new Comic(SourceManager.SOURCE_EXHENTAI, cid, title, cover, update, author));

@@ -31,5 +31,4 @@ public class AboutPresenter extends BasePresenter<AboutView> {
                 }));
     }
 
-
 }

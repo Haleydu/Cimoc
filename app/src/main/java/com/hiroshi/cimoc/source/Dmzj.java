@@ -75,12 +75,12 @@ public class Dmzj extends MangaParser {
     @Override
     public String parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String intro = body.text("p.txtDesc", 3);
+        String intro = body.textWithSubstring("p.txtDesc", 3);
         String title = body.attr("#Cover > img", "title");
-        String cover = body.attr("#Cover > img", "src");
+        String cover = body.src("#Cover > img");
         String author = body.text("div.Introduct_Sub > div.sub_r > p:eq(0) > a");
-        boolean status = "已完结".equals(body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
-        String update = body.text("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
+        String update = body.textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
+        boolean status = body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);
 
         return null;
@@ -173,7 +173,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("div.Introduct_Sub > .sub_r > p:eq(3) > .date", 0, 10);
+        return new Node(html).textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
     }
 
 }

@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.core;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
+import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.utils.FileUtils;
 
@@ -22,8 +23,11 @@ import rx.schedulers.Schedulers;
  */
 public class Download {
 
-    public static Observable<Void> updateComicIndex(final List<Chapter> list, final int source, final String cid,
-                                                    final String title, final String cover) {
+    public static Observable<Void> updateComicIndex(final List<Chapter> list, Comic comic) {
+        final int source = comic.getSource();
+        final String cid = comic.getCid();
+        final String title = comic.getTitle();
+        final String cover = comic.getCover();
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
