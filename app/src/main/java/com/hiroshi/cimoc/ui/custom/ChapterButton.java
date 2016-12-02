@@ -44,7 +44,7 @@ public class ChapterButton extends TextView {
         accentColor = typedArray.getColor(R.styleable.ChapterButton_selected_color, Color.BLACK);
         typedArray.recycle();
 
-        normalColor = download ? accentColor : 0x8A000000;
+        normalColor = 0x8A000000;
 
         setClickable(true);
         download = false;
@@ -78,7 +78,7 @@ public class ChapterButton extends TextView {
     public void setDownload(boolean download) {
         if (this.download != download) {
             this.download = download;
-            normalColor = download ? accentColor : normalColor;
+            normalColor = download ? accentColor : 0x8A000000;
             initColorDrawableState();
             initDrawableState();
         }

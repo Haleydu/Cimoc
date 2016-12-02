@@ -16,11 +16,6 @@ import rx.Observable;
 
 public class TagManager {
 
-    public static final int TAG_ALL = 100;
-    public static final int TAG_CONTINUE = 101;
-    public static final int TAG_END = 102;
-    public static final int TAG_NORMAL = 103;
-
     private static TagManager mTagManager;
 
     private TagDao mTagDao;
@@ -39,7 +34,7 @@ public class TagManager {
         mRefDao.getSession().runInTx(runnable);
     }
 
-    public Observable<List<Tag>> list() {
+    public Observable<List<Tag>> listInRx() {
         return mTagDao.queryBuilder()
                 .rx()
                 .list();
@@ -52,10 +47,9 @@ public class TagManager {
                 .list();
     }
 
-    public Observable<List<TagRef>> listByComic(long cid) {
+    public List<TagRef> listByComic(long cid) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Cid.eq(cid))
-                .rx()
                 .list();
     }
 

@@ -69,7 +69,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     public void loadTag() {
-        mCompositeSubscription.add(mTagManager.list()
+        mCompositeSubscription.add(mTagManager.listInRx()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Tag>>() {
                     @Override
@@ -90,7 +90,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     public void saveFavorite() {
-        mCompositeSubscription.add(mComicManager.listFavorite()
+        mCompositeSubscription.add(mComicManager.listFavoriteInRx()
                 .flatMap(new Func1<List<Comic>, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(List<Comic> list) {
@@ -163,8 +163,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                                     Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
                                     if (temp == null) {
                                         comic.setFavorite(favorite);
-                                        long id = mComicManager.insert(comic);
-                                        comic.setId(id);
+                                        mComicManager.insert(comic);
                                         result.add(new MiniComic(comic));
                                     } else if (temp.getFavorite() == null) {
                                         temp.setFavorite(favorite);
@@ -220,8 +219,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                                     if (temp == null) {
                                         temp = comic;
                                         comic.setFavorite(favorite);
-                                        long cid = mComicManager.insert(comic);
-                                        comic.setId(cid);
+                                        mComicManager.insert(comic);
                                     } else if (temp.getFavorite() == null) {
                                         temp.setFavorite(favorite);
                                         mComicManager.update(temp);

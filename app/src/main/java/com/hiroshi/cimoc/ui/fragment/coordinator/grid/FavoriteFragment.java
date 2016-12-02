@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.classical.grid;
+package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -10,12 +10,13 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.List;
+
+import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/7/1.
@@ -68,8 +69,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         }
     }
 
-    @Override
-    protected void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.favorite_check_update_confirm, true);
         fragment.setTargetFragment(this, 0);
@@ -84,7 +84,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
             comic.setHighlight(false);
             mGridAdapter.update(comic, false);
         }
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId());
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null, true);
         startActivity(intent);
     }
 
@@ -109,16 +109,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onComicFilterSuccess(List<MiniComic> list) {
-        mGridAdapter.setData(list);
-    }
-
-    @Override
-    public void onComicFilterFail() {
-        showSnackbar(R.string.comic_filter_fail);
-    }
-
-    @Override
     public void onComicCheckSuccess(MiniComic comic, int progress, int max) {
         if (comic != null) {
             mGridAdapter.update(comic, false);
@@ -139,18 +129,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_done, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
         mBuilder = null;
-    }
-
-    @Override
-    public void onComicInsert(MiniComic comic) {
-        if (!mGridAdapter.contains(comic)) {
-            mGridAdapter.addAfterHighlight(comic);
-        }
-    }
-
-    @Override
-    public void onComicDelete(MiniComic comic) {
-        mGridAdapter.remove(comic);
     }
 
     @Override

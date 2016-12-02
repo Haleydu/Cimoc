@@ -16,17 +16,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
-import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -36,7 +33,7 @@ import butterknife.OnClick;
  */
 
 public class SearchFragment extends BaseFragment implements SearchView,
-        TextView.OnEditorActionListener, SelectDialogFragment.SelectDialogListener {
+        TextView.OnEditorActionListener, MultiDialogFragment.MultiDialogListener {
 
     @BindView(R.id.search_frame_layout) View mFrameLayout;
     @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
@@ -45,7 +42,6 @@ public class SearchFragment extends BaseFragment implements SearchView,
 
     private SearchPresenter mPresenter;
     private List<Source> mSourceList;
-    private Set<Source> mFilterSet;
 
     @Override
     protected void initPresenter() {
@@ -108,11 +104,15 @@ public class SearchFragment extends BaseFragment implements SearchView,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.search_menu_source:
-                ArrayList<Selectable> list = new ArrayList<>();
-                for (Source source : mSourceList) {
-                    list.add(new Selectable(false, mFilterSet.contains(source), source.getTitle()));
+                int size = mSourceList.size();
+                String[] arr1 = new String[size];
+                boolean[] arr2 = new boolean[size];
+                for (int i = 0; i < size; ++i) {
+                    arr1[i] = mSourceList.get(i).getTitle();
+                    arr2[i] = mSourceList.get(i).getCheck();
                 }
-                SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.search_source_select);
+                MultiDialogFragment fragment =
+                        MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, -1);
                 fragment.setTargetFragment(this, 0);
                 fragment.show(getFragmentManager(), null);
                 break;
@@ -121,18 +121,12 @@ public class SearchFragment extends BaseFragment implements SearchView,
     }
 
     @Override
-    public void onSelectPositiveClick(int type, List<Selectable> list) {
-        for (int i = 0; i != list.size(); ++i) {
-            if (list.get(i).isChecked()) {
-                mFilterSet.add(mSourceList.get(i));
-            } else {
-                mFilterSet.remove(mSourceList.get(i));
-            }
+    public void onMultiPositiveClick(int type, boolean[] check) {
+        int size = mSourceList.size();
+        for (int i = 0; i < size; ++i) {
+            mSourceList.get(i).setCheck(check[i]);
         }
     }
-
-    @Override
-    public void onSelectNeutralClick(int type, List<Selectable> list) {}
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -150,7 +144,7 @@ public class SearchFragment extends BaseFragment implements SearchView,
         } else {
             ArrayList<Integer> list = new ArrayList<>();
             for (Source source : mSourceList) {
-                if (mFilterSet.contains(source)) {
+                if (source.getCheck()) {
                     list.add(source.getType());
                 }
             }
@@ -164,20 +158,14 @@ public class SearchFragment extends BaseFragment implements SearchView,
 
     @Override
     public void onSourceLoadSuccess(List<Source> list) {
-        mSourceList = list;
-        mFilterSet = new HashSet<>();
-        for (Source source : list) {
-            if (source.getType() < 100) {
-                mFilterSet.add(source);
-            }
-        }
+        mSourceList = new ArrayList<>(list);
         hideProgressBar();
     }
 
     @Override
     public void onSourceLoadFail() {
-        showSnackbar(R.string.search_source_load_fail);
         hideProgressBar();
+        showSnackbar(R.string.search_source_load_fail);
     }
 
     @Override

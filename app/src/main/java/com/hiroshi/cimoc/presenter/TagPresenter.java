@@ -23,18 +23,8 @@ public class TagPresenter extends BasePresenter<TagView> {
         mTagManager = TagManager.getInstance();
     }
 
-    @Override
-    protected void initSubscription() {
-        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
-            }
-        });
-    }
-
     public void load() {
-        mCompositeSubscription.add(mTagManager.list()
+        mCompositeSubscription.add(mTagManager.listInRx()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Tag>>() {
                     @Override
@@ -75,7 +65,6 @@ public class TagPresenter extends BasePresenter<TagView> {
                         mBaseView.onTagDeleteFail();
                     }
                 }));
-
     }
 
     public void update(Tag tag) {

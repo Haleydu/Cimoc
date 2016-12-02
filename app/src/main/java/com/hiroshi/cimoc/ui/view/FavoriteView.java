@@ -23,12 +23,4 @@ public interface FavoriteView extends GridView {
 
     void onComicRead(MiniComic comic);
 
-    void onComicFilterSuccess(List<MiniComic> list);
-
-    void onComicFilterFail();
-
-    void onComicInsert(MiniComic comic);
-
-    void onComicDelete(MiniComic comic);
-
 }

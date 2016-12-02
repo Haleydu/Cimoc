@@ -63,7 +63,7 @@ public class Download {
             temp.put("path", chapter.getPath());
             array.put(temp);
         }
-        object.put("list", array);
+        object.put("listInRx", array);
         return object.toString();
     }
 
@@ -86,37 +86,26 @@ public class Download {
         }
     }
 
-    public static Observable<List<String>> getComicIndex(final int source, final String comic) {
-        return Observable.create(new Observable.OnSubscribe<List<String>>() {
-            @Override
-            public void call(Subscriber<? super List<String>> subscriber) {
-                String dir = buildPath(source, comic);
-                char[] magic = FileUtils.readCharFromFile(dir, "index.cdif", 5);
-                if (!Arrays.equals(magic, "cimoc".toCharArray())) {
-                    subscriber.onError(new Exception());
-                } else {
-                    String jsonString = FileUtils.readSingleLineFromFile(dir, "index.cdif");
-                    if (jsonString != null) {
-                        try {
-                            List<String> list = readPathFromJson(jsonString.substring(5));
-                            subscriber.onNext(list);
-                            subscriber.onCompleted();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            subscriber.onError(new Exception());
-                        }
-                    } else {
-                        subscriber.onError(new Exception());
-                    }
+    public static List<String> getComicIndex(final int source, final String comic) {
+        String dir = buildPath(source, comic);
+        char[] magic = FileUtils.readCharFromFile(dir, "index.cdif", 5);
+        if (Arrays.equals(magic, "cimoc".toCharArray())) {
+            String jsonString = FileUtils.readSingleLineFromFile(dir, "index.cdif");
+            if (jsonString != null) {
+                try {
+                    return readPathFromJson(jsonString.substring(5));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }).observeOn(Schedulers.io());
+        }
+        return null;
     }
 
     private static List<String> readPathFromJson(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         // We use "c" as the key in old version
-        JSONArray array = jsonObject.has("list") ? jsonObject.getJSONArray("list") : jsonObject.getJSONArray("c");
+        JSONArray array = jsonObject.has("listInRx") ? jsonObject.getJSONArray("listInRx") : jsonObject.getJSONArray("c");
         int size = array.length();
         List<String> list = new ArrayList<>(size);
         for (int i = 0; i != size; ++i) {

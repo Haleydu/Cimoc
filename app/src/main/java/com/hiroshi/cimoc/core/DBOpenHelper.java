@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.core;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.ComicDao;
@@ -16,7 +15,6 @@ import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.greenrobot.greendao.database.Database;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,41 +55,16 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 TagDao.createTable(db, false);
                 TagRefDao.createTable(db, false);
                 initSource(db);
-                renameDownload();
-        }
-    }
-
-    private void renameDownload() {
-        try {
-            File[] sourceDirs =
-                    FileUtils.listFiles(FileUtils.getPath(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc", "download"));
-            for (File sourceDir : sourceDirs) {
-                if (sourceDir.isDirectory()) {
-                    for (File comicDir : FileUtils.listFiles(sourceDir)) {
-                        if (comicDir.isDirectory()) {
-                            String filter = FileUtils.filterFilename(comicDir.getName());
-                            if (!filter.equals(comicDir.getName())) {
-                                String newPath = FileUtils.getPath(sourceDir.getAbsolutePath(), filter);
-                                comicDir.renameTo(new File(newPath));
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     private void initSource(Database db) {
-        String[] title = { "看漫画", "动漫之家", "手机汗汗", "CC图库",
-                "有妖气", "动漫屋", "Webtoon", "汗汗漫画", "57漫画"};
         int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ,
                 SourceManager.SOURCE_CCTUKU, SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5,
-                SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE, SourceManager.SOURCE_57MH};
-        List<Source> list = new ArrayList<>(title.length);
-        for (int i = 0; i != title.length; ++i) {
-            list.add(new Source(null, title[i], type[i], true));
+                SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE, SourceManager.SOURCE_57MH, SourceManager.SOURCE_CHUIYAO};
+        List<Source> list = new ArrayList<>(type.length);
+        for (int i = 0; i != type.length; ++i) {
+            list.add(new Source(null, SourceManager.getTitle(type[i]), type[i], true));
         }
         new DaoMaster(db).newSession().getSourceDao().insertInTx(list);
     }

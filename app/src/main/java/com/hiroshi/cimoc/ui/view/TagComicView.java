@@ -10,24 +10,18 @@ import java.util.List;
 
 public interface TagComicView extends BaseView {
 
-    void onTagComicLoadSuccess(List<MiniComic> list);
-
-    void onTagComicLoadFail();
-
     void onComicLoadSuccess(List<MiniComic> list);
 
     void onComicLoadFail();
 
-    void onComicInsertSuccess();
+    void onComicInsertSuccess(List<MiniComic> list);
 
     void onComicInsertFail();
 
     void onComicUnFavorite(long id);
 
-    void onComicFavorite(MiniComic comic);
+    void onTagComicInsert(MiniComic comic);
 
-    void onTagUpdateInsert(MiniComic comic);
-
-    void onTagUpdateDelete(MiniComic comic);
+    void onTagComicDelete(MiniComic comic);
 
 }

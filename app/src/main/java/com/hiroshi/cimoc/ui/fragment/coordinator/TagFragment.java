@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.classical;
+package com.hiroshi.cimoc.ui.fragment.coordinator;
 
 import android.content.Intent;
 import android.support.annotation.ColorRes;
@@ -21,11 +21,13 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.OnClick;
+
 /**
  * Created by Hiroshi on 2016/10/10.
  */
 
-public class TagFragment extends ClassicalFragment implements TagView, EditorDialogFragment.EditorDialogListener,
+public class TagFragment extends CoordinatorFragment implements TagView, EditorDialogFragment.EditorDialogListener,
         MessageDialogFragment.MessageDialogListener {
 
     private TagPresenter mPresenter;
@@ -39,10 +41,19 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
     }
 
     @Override
-    protected void initView() {
+    protected BaseAdapter initAdapter() {
         mTagAdapter = new TagAdapter(getActivity(), new ArrayList<Tag>());
-        mTagAdapter.setOnItemLongClickListener(this);
-        super.initView();
+        return mTagAdapter;
+    }
+
+    @Override
+    protected RecyclerView.LayoutManager initLayoutManager() {
+        return new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+    }
+
+    @Override
+    protected void initActionButton() {
+        mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
     }
 
     @Override
@@ -78,8 +89,7 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
         mPresenter.delete(mTagAdapter.getItem(mTempPosition));
     }
 
-    @Override
-    protected void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
@@ -125,21 +135,6 @@ public class TagFragment extends ClassicalFragment implements TagView, EditorDia
         mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
         mTagAdapter.setColor(ContextCompat.getColor(getActivity(), primary));
         mTagAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected int getImageRes() {
-        return R.drawable.ic_add_white_24dp;
-    }
-
-    @Override
-    protected BaseAdapter getAdapter() {
-        return mTagAdapter;
-    }
-
-    @Override
-    protected RecyclerView.LayoutManager getLayoutManager() {
-        return new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
     }
 
 }

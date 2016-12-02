@@ -15,8 +15,6 @@
     <string name="main_last_read_fail">读取最后阅读失败</string>
     <string name="main_notice">作者声明</string>
     <string name="main_notice_content">由于应用不够完善，遇到一些不正常的问题属于正常现象！\n使用过程中有什么建议或者遇到什么问题，欢迎邮件反馈！\n电子邮箱：cimoc_app@163.com\n如果问题比较严重，我会尽量在第二时间解决！\n最后，请不要在公开场合传播本应用，谢谢合作！</string>
-    <string name="main_update_log">更新日志</string>
-    <string name="main_update_log_content">v1.4.4\n</string>
     <string name="main_permission">权限请求</string>
     <string name="main_permission_content">下载、备份还原与保存图片功能需要访问SD卡的权限！\n请在之后的弹出框中确定授予权限！</string>
     <string name="main_permission_success">授权成功</string>
@@ -38,26 +36,28 @@
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
     <string name="detail_tag">标签</string>
-    <string name="detail_tag_load_fail">读取标签失败</string>
-    <string name="detail_tag_update_success">更新标签成功</string>
-    <string name="detail_tag_update_fail">更新标签失败</string>
     <string name="detail_tag_favorite">请先收藏漫画</string>
     <string name="detail_download">下载</string>
     <string name="detail_download_load_fail">读取下载列表失败</string>
-    <string name="detail_download_all">下载全部</string>
-    <string name="detail_download_queue_success">已加入下载队列</string>
-    <string name="detail_download_queue_fail">加入下载队列失败</string>
-    <string name="detail_select_chapter">选择章节</string>
-    <string name="detail_select_tag">选择标签</string>
 
-    <string name="chapter_list">章节列表</string>
+    <string name="tag_editor">标签编辑</string>
+    <string name="tag_editor_load_empty">没有找到标签</string>
+    <string name="tag_editor_load_fail">读取标签失败</string>
+    <string name="tag_editor_update_success">更新标签成功</string>
+    <string name="tag_editor_update_fail">更新标签失败</string>
+    <string name="tag_editor_update_invalid">标签未改变</string>
+
+    <string name="chapter">章节列表</string>
+    <string name="chapter_all">全选</string>
+    <string name="chapter_download_empty">未选择章节</string>
+    <string name="chapter_download_queue_success">已加入下载队列</string>
+    <string name="chapter_download_queue_fail">加入下载队列失败</string>
 
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
-    <string name="comic_filter_fail">过滤失败</string>
-    <string name="comic_load_filter_fail">读取标签失败</string>
+    <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_tag_select">标签选择</string>
 
     <string name="favorite_check_update">检查更新</string>
@@ -148,7 +148,7 @@
     <string name="backup_restore_success">恢复成功</string>
     <string name="backup_restore_fail">恢复失败</string>
 
-    <string name="about_version">version: 1.4.3.2</string>
+    <string name="about_version">version: 1.4.4.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -165,15 +165,13 @@
     <string name="about_update_doing">正在检查更新</string>
     <string name="about_update_fail">检查更新失败</string>
     <string name="about_resource_fail">打开网页失败</string>
+    <string name="about_update_log">更新日志</string>
+    <string name="about_update_log_content">v1.4.4\n</string>
 
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>
     <string name="dialog_doing">正在执行中</string>
-
-    <string name="source_delete_confirm">是否删除该图源\n相关的漫画不会被删除</string>
-    <string name="source_add">添加图源</string>
-    <string name="source_add_exist">图源已存在</string>
 
     <string name="tag_add">添加标签</string>
     <string name="tag_add_empty">标签名称不能为空</string>
@@ -201,10 +199,8 @@
     <string name="task_error">下载错误</string>
     <string name="task_list">任务列表</string>
     <string name="task_load_task_fail">读取任务失败</string>
-    <string name="task_load_index_fail">找不到索引文件</string>
     <string name="task_delete_multi">批量删除</string>
     <string name="task_delete_all">删除所有</string>
-    <string name="task_delete_confirm">是否删除下载内容</string>
 
     <string name="event_select">事件选择</string>
     <string name="event_null">无</string>

@@ -22,14 +22,18 @@ public class TaskManager {
         mTaskDao = CimocApplication.getDaoSession().getTaskDao();
     }
 
-    public Observable<List<Task>> list(long key) {
+    public List<Task> list(long key) {
+        return mTaskDao.queryBuilder().where(Properties.Key.eq(key)).list();
+    }
+
+    public Observable<List<Task>> listInRx(long key) {
         return mTaskDao.queryBuilder()
                 .where(Properties.Key.eq(key))
                 .rx()
                 .list();
     }
 
-    public Observable<List<Task>> list() {
+    public Observable<List<Task>> listInRx() {
         return mTaskDao.queryBuilder()
                 .rx()
                 .list();
@@ -49,6 +53,10 @@ public class TaskManager {
 
     public void deleteInTx(Iterable<Task> entities) {
         mTaskDao.deleteInTx(entities);
+    }
+
+    public void deleteByKeyInTx(Iterable<Long> keys) {
+        mTaskDao.deleteByKeyInTx(keys);
     }
 
     public static TaskManager getInstance() {

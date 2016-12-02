@@ -32,6 +32,14 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.ChapterActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.TagEditorActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.TaskActivity"
             android:screenOrientation="portrait"/>
 

@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.classical.grid;
+package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -15,6 +15,8 @@ import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
 import java.util.ArrayList;
+
+import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/9/1.
@@ -53,8 +55,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
         super.onDestroyView();
     }
 
-    @Override
-    protected void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.download_action_confirm, true, TYPE_PAUSE);
         fragment.setTargetFragment(this, 0);

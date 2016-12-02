@@ -125,7 +125,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mClickListener != null && FastClick.isClickValid()) {
+                if (mClickListener != null && isClickValid()) {
                     mClickListener.onItemClick(v, holder.getAdapterPosition());
                 }
             }
@@ -140,6 +140,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
                 return true;
             }
         });
+    }
+
+    protected boolean isClickValid() {
+        return FastClick.isClickValid();
     }
 
     static class BaseViewHolder extends RecyclerView.ViewHolder {

@@ -59,12 +59,6 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 mBaseView.onDownloadStop();
             }
         });
-        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
-            }
-        });
     }
 
     public void deleteComic(final long id) {
@@ -99,7 +93,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     }
 
     public void loadComic() {
-        mCompositeSubscription.add(mComicManager.listDownload()
+        mCompositeSubscription.add(mComicManager.listDownloadInRx()
                 .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
                     @Override
                     public MiniComic call(Comic comic) {
@@ -121,7 +115,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     }
 
     public void loadTask() {
-        mCompositeSubscription.add(mTaskManager.list()
+        mCompositeSubscription.add(mTaskManager.listInRx()
                 .flatMap(new Func1<List<Task>, Observable<Task>>() {
                     @Override
                     public Observable<Task> call(List<Task> list) {

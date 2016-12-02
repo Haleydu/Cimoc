@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
-import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
@@ -19,15 +17,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.BindView;
-
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
-
-    @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.result_layout) LinearLayout mLinearLayout;
+public class ResultActivity extends CoordinatorActivity implements ResultView {
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -62,6 +55,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
             }
         });
         mRecyclerView.setAdapter(mResultAdapter);
+        mLayoutView.removeView(mActionButton);
     }
 
     @Override
@@ -83,7 +77,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     public void onItemClick(View view, int position) {
         Comic comic = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid(), false);
         startActivity(intent);
     }
 
@@ -115,16 +109,6 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public void onSearchError() {
         hideProgressBar();
         showSnackbar(R.string.result_error);
-    }
-
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.activtiy_result;
-    }
-
-    @Override
-    protected View getLayoutView() {
-        return mLinearLayout;
     }
 
     @Override

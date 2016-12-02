@@ -1,9 +1,6 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.JsonIterator;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
@@ -17,11 +14,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.FormBody;
 import okhttp3.Request;
