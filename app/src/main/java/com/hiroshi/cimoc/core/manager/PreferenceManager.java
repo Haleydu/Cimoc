@@ -83,6 +83,10 @@ public class PreferenceManager {
         mSharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
+    public String getString(String key) {
+        return getString(key, null);
+    }
+
     public String getString(String key, String defValue) {
         return mSharedPreferences.getString(key, defValue);
     }

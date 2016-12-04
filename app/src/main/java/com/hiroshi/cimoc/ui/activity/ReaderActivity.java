@@ -19,6 +19,7 @@ import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
@@ -404,20 +405,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         String[] urls = mReaderAdapter.getItem(position).getUrl();
         try {
             for (String url : urls) {
-                String suffix = StringUtils.split(url, "\\.", -1);
-                if (suffix == null) {
-                    suffix = "jpg";
-                } else {
-                    suffix = suffix.split("\\?")[0];
-                }
                 if (url.startsWith("file")) {
                     InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
-                    mPresenter.savePicture(inputStream, suffix);
+                    mPresenter.savePicture(getContentResolver(), Storage.getRootDocumentFile(this), inputStream, url);
                     break;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {
-                        mPresenter.savePicture(resource.openStream(), suffix);
+                        mPresenter.savePicture(getContentResolver(), Storage.getRootDocumentFile(this), resource.openStream(), url);
                         break;
                     }
                 }

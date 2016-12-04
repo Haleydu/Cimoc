@@ -7,62 +7,52 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.ui.view.DialogView;
 
 /**
  * Created by Hiroshi on 2016/10/16.
  */
 
-public class ChoiceDialogFragment extends DialogFragment {
+public class ChoiceDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private int choice;
+    private String[] mItems;
+    private int mChoice;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        choice = getArguments().getInt(EXTRA_CHOICE);
-        final String[] item = getArguments().getStringArray(EXTRA_ITEM);
-        builder.setTitle(getArguments().getInt(EXTRA_TITLE))
-                .setSingleChoiceItems(item, choice,
+        mItems = getArguments().getStringArray(DialogView.EXTRA_DIALOG_ITEMS);
+        mChoice = getArguments().getInt(DialogView.EXTRA_DIALOG_CHOICE_ITEMS);
+        builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
+                .setSingleChoiceItems(mItems, mChoice,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                choice = which;
+                                mChoice = which;
                             }
                         })
-                .setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (item != null) {
-                            String value = choice == -1 ? null : item[choice];
-                            if (getTargetFragment() != null) {
-                                ((ChoiceDialogListener) getTargetFragment())
-                                        .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, value);
-                            } else {
-                                ((ChoiceDialogListener) getActivity())
-                                        .onChoicePositiveClick(getArguments().getInt(EXTRA_TYPE), choice, value);
-                            }
-                        }
-                    }
-                });
+                .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 
-    public interface ChoiceDialogListener {
-        void onChoicePositiveClick(int type, int choice, String value);
+    @Override
+    public void onClick(DialogInterface dialogInterface, int which) {
+        String value = mChoice == -1 ? null : mItems[mChoice];
+        int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogView.EXTRA_DIALOG_RESULT_INDEX, mChoice);
+        bundle.putString(DialogView.EXTRA_DIALOG_RESULT_VALUE, value);
+        DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        target.onDialogResult(requestCode, bundle);
     }
 
-    private static final String EXTRA_TITLE = "a";
-    private static final String EXTRA_ITEM = "b";
-    private static final String EXTRA_CHOICE = "c";
-    private static final String EXTRA_TYPE = "d";
-
-    public static ChoiceDialogFragment newInstance(int title, String[] item, int choice, int type) {
+    public static ChoiceDialogFragment newInstance(int title, String[] item, int choice, int requestCode) {
         ChoiceDialogFragment fragment = new ChoiceDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TITLE, title);
-        bundle.putStringArray(EXTRA_ITEM, item);
-        bundle.putInt(EXTRA_CHOICE, choice);
-        bundle.putInt(EXTRA_TYPE, type);
+        bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
+        bundle.putStringArray(DialogView.EXTRA_DIALOG_ITEMS, item);
+        bundle.putInt(DialogView.EXTRA_DIALOG_CHOICE_ITEMS, choice);
+        bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
     }

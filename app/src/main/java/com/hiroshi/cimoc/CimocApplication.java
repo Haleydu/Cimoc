@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.os.Environment;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.RecyclerView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -26,8 +28,10 @@ public class CimocApplication extends Application {
     // 1.04.04.000
     public static final int VERSION = 10404000;
 
+    private static String mStorageUri;
     private static DaoSession daoSession;
     private static OkHttpClient httpClient;
+    private static ContentResolver mContentResolver;
 
     private PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
@@ -40,9 +44,20 @@ public class CimocApplication extends Application {
         httpClient = new OkHttpClient();
         daoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
         mPreferenceManager = new PreferenceManager(getApplicationContext());
+        mStorageUri = mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE);
         Storage.STORAGE_DIR = FileUtils.getPath(mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE,
                 Environment.getExternalStorageDirectory().getAbsolutePath()), "Cimoc");
+        //String uri = "content://com.android.externalstorage.documents/tree/primary%3ACimoc";
+        mContentResolver = getContentResolver();
         Fresco.initialize(this);
+    }
+
+    public static String getStorageUri() {
+        return mStorageUri;
+    }
+
+    public static ContentResolver getResolver() {
+        return mContentResolver;
     }
 
     public static DaoSession getDaoSession() {

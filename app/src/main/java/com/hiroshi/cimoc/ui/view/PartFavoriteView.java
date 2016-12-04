@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public interface TagComicView extends BaseView {
+public interface PartFavoriteView extends BaseView, DialogView {
 
     void onComicLoadSuccess(List<MiniComic> list);
 
@@ -18,10 +18,8 @@ public interface TagComicView extends BaseView {
 
     void onComicInsertFail();
 
-    void onComicUnFavorite(long id);
+    void onComicAdd(MiniComic comic);
 
-    void onTagComicInsert(MiniComic comic);
-
-    void onTagComicDelete(MiniComic comic);
+    void onComicRemove(long id);
 
 }

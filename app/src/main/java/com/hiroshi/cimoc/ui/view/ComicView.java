@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public interface ComicView extends BaseView, ThemeView {
+public interface ComicView extends BaseView, ThemeView, DialogView {
 
     void onTagLoadSuccess(List<Tag> list);
 

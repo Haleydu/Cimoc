@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -23,6 +24,8 @@ import butterknife.OnClick;
  */
 public class FavoriteFragment extends GridFragment implements FavoriteView {
 
+    private static final int DIALOG_REQUEST_UPDATE = 0;
+
     private FavoritePresenter mPresenter;
     private Notification.Builder mBuilder;
     private NotificationManager mManager;
@@ -36,14 +39,13 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     protected void initView() {
         super.initView();
-        mManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        mManager = NotificationUtils.getManager(getActivity());
         mGridAdapter.setSymbol(true);
-        mGridAdapter.setOnItemLongClickListener(null);
     }
 
     @Override
     protected void initData() {
-        mPresenter.loadComic();
+        mPresenter.load();
     }
 
     @Override
@@ -58,20 +60,24 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onMessagePositiveClick(int type) {
-        if (mBuilder == null) {
-            mPresenter.checkUpdate();
-            mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
-                    R.string.favorite_check_update_doing, true, 0, 0, true);
-            NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-        } else {
-            showSnackbar(R.string.favorite_check_update_doing);
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_UPDATE:
+                if (mBuilder == null) {
+                    mPresenter.checkUpdate();
+                    mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
+                            R.string.favorite_check_update_doing, true, 0, 0, true);
+                    NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+                } else {
+                    showSnackbar(R.string.favorite_check_update_doing);
+                }
+                break;
         }
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.favorite_check_update_confirm, true);
+                R.string.favorite_check_update_confirm, true, null, DIALOG_REQUEST_UPDATE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -79,13 +85,17 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
+        cancelHighlight(comic);
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null, true);
+        startActivity(intent);
+    }
+
+    private void cancelHighlight(MiniComic comic) {
         if (comic.isHighlight()) {
             comic.setFavorite(System.currentTimeMillis());
             comic.setHighlight(false);
             mGridAdapter.update(comic, false);
         }
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null, true);
-        startActivity(intent);
     }
 
     @Override

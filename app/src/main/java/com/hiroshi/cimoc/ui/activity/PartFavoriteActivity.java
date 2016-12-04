@@ -2,17 +2,18 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.presenter.TagComicPresenter;
+import com.hiroshi.cimoc.presenter.PartFavoritePresenter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
-import com.hiroshi.cimoc.ui.view.TagComicView;
+import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,16 +24,17 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class TagComicActivity extends CoordinatorActivity implements TagComicView,
-        MultiDialogFragment.MultiDialogListener, MessageDialogFragment.MessageDialogListener {
+public class PartFavoriteActivity extends CoordinatorActivity implements PartFavoriteView {
 
-    private TagComicPresenter mPresenter;
+    private static final int DIALOG_REQUEST_DELETE = 0;
+    private static final int DIALOG_REQUEST_ADD = 1;
+
+    private PartFavoritePresenter mPresenter;
     private GridAdapter mGridAdapter;
-    private int mTempPosition = -1;
 
     @Override
     protected void initPresenter() {
-        mPresenter = new TagComicPresenter();
+        mPresenter = new PartFavoritePresenter();
         mPresenter.attachView(this);
     }
 
@@ -54,7 +56,7 @@ public class TagComicActivity extends CoordinatorActivity implements TagComicVie
     protected void initData() {
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
         String title = getIntent().getStringExtra(EXTRA_TITLE);
-        mPresenter.loadTagComic(id, title);
+        mPresenter.load(id, title);
     }
 
     @Override
@@ -86,25 +88,30 @@ public class TagComicActivity extends CoordinatorActivity implements TagComicVie
 
     @Override
     public void onItemLongClick(View view, int position) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_DIALOG_BUNDLE_INT, position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.tag_comic_delete_confirm, true);
-        mTempPosition = position;
+                R.string.tag_comic_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
         fragment.show(getFragmentManager(), null);
     }
 
     @Override
-    public void onMessagePositiveClick(int type) {
-        long tid = getIntent().getLongExtra(EXTRA_ID, -1);
-        long cid = mGridAdapter.getItem(mTempPosition).getId();
-        mPresenter.delete(tid, cid);
-        mGridAdapter.remove(mTempPosition);
-        showSnackbar(R.string.common_delete_success);
-    }
-
-    @Override
-    public void onMultiPositiveClick(int type, boolean[] check) {
-        showProgressDialog();
-        mPresenter.insert(check);
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_DELETE:
+                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_INT);
+                long tid = getIntent().getLongExtra(EXTRA_ID, -1);
+                long cid = mGridAdapter.getItem(pos).getId();
+                mPresenter.delete(tid, cid);
+                mGridAdapter.remove(pos);
+                showSnackbar(R.string.common_delete_success);
+                break;
+            case DIALOG_REQUEST_ADD:
+                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
+                showProgressDialog();
+                mPresenter.insert(check);
+                break;
+        }
     }
 
     @Override
@@ -134,17 +141,12 @@ public class TagComicActivity extends CoordinatorActivity implements TagComicVie
     }
 
     @Override
-    public void onComicUnFavorite(long id) {
+    public void onComicRemove(long id) {
         mGridAdapter.removeItemById(id);
     }
 
     @Override
-    public void onTagComicDelete(MiniComic comic) {
-        mGridAdapter.remove(comic);
-    }
-
-    @Override
-    public void onTagComicInsert(MiniComic comic) {
+    public void onComicAdd(MiniComic comic) {
         mGridAdapter.add(0, comic);
     }
 
@@ -153,11 +155,16 @@ public class TagComicActivity extends CoordinatorActivity implements TagComicVie
         return getIntent().getStringExtra(EXTRA_TITLE);
     }
 
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_part_favorite;
+    }
+
     private static final String EXTRA_ID = "a";
     private static final String EXTRA_TITLE = "b";
 
     public static Intent createIntent(Context context, long id, String title) {
-        Intent intent = new Intent(context, TagComicActivity.class);
+        Intent intent = new Intent(context, PartFavoriteActivity.class);
         intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_TITLE, title);
         return intent;

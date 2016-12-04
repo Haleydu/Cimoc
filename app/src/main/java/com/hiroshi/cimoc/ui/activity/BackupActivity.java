@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.os.Bundle;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -16,11 +17,11 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/19.
  */
 
-public class BackupActivity extends BackActivity implements BackupView, ChoiceDialogFragment.ChoiceDialogListener {
+public class BackupActivity extends BackActivity implements BackupView {
 
-    private static final int TYPE_FAVORITE_FILE = 0;
-    private static final int TYPE_TAG_FILE = 1;
-    private static final int TYPE_TAG = 2;
+    private static final int DIALOG_REQUEST_RESTORE_FAVORITE = 0;
+    private static final int DIALOG_REQUEST_RESTORE_TAG = 1;
+    private static final int DIALOG_REQUEST_SAVE_TAG = 2;
 
     @BindView(R.id.backup_layout) View mLayoutView;
 
@@ -76,18 +77,23 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
     }
 
     @Override
-    public void onChoicePositiveClick(int type, int choice, String value) {
-        switch (type) {
-            case TYPE_FAVORITE_FILE:
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        int choice;
+        String value;
+        switch (requestCode) {
+            case DIALOG_REQUEST_RESTORE_FAVORITE:
                 showProgressDialog();
+                value = bundle.getString(EXTRA_DIALOG_RESULT_VALUE);
                 mPresenter.restoreFavorite(value);
                 break;
-            case TYPE_TAG_FILE:
+            case DIALOG_REQUEST_RESTORE_TAG:
                 showProgressDialog();
+                value = bundle.getString(EXTRA_DIALOG_RESULT_VALUE);
                 mPresenter.restoreTag(value);
                 break;
-            case TYPE_TAG:
+            case DIALOG_REQUEST_SAVE_TAG:
                 showProgressDialog();
+                choice = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
                 mPresenter.saveTag(choice);
                 break;
         }
@@ -96,7 +102,7 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
     @Override
     public void onTagLoadSuccess(String[] tag) {
         if (tag.length != 0) {
-            showChoiceDialog(R.string.backup_save_tag, tag, TYPE_TAG);
+            showChoiceDialog(R.string.backup_save_tag, tag, DIALOG_REQUEST_SAVE_TAG);
         } else {
             showSnackbar(R.string.backup_save_tag_not_found);
             hideProgressDialog();
@@ -105,12 +111,12 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
 
     @Override
     public void onFavoriteFileLoadSuccess(String[] file) {
-        showChoiceDialog(R.string.backup_restore_favorite, file, TYPE_FAVORITE_FILE);
+        showChoiceDialog(R.string.backup_restore_favorite, file, DIALOG_REQUEST_RESTORE_FAVORITE);
     }
 
     @Override
     public void onTagFileLoadSuccess(String[] file) {
-        showChoiceDialog(R.string.backup_restore_tag, file, TYPE_TAG_FILE);
+        showChoiceDialog(R.string.backup_restore_tag, file, DIALOG_REQUEST_RESTORE_TAG);
     }
 
     private void showChoiceDialog(int title, String[] item, int type) {
@@ -121,38 +127,38 @@ public class BackupActivity extends BackActivity implements BackupView, ChoiceDi
 
     @Override
     public void onTagLoadFail() {
-        showSnackbar(R.string.backup_save_tag_load_fail);
         hideProgressDialog();
+        showSnackbar(R.string.backup_save_tag_load_fail);
     }
 
     @Override
     public void onFileLoadFail() {
-        showSnackbar(R.string.backup_restore_not_found);
         hideProgressDialog();
+        showSnackbar(R.string.backup_restore_not_found);
     }
 
     @Override
     public void onBackupRestoreSuccess() {
-        showSnackbar(R.string.backup_restore_success);
         hideProgressDialog();
+        showSnackbar(R.string.backup_restore_success);
     }
 
     @Override
     public void onBackupRestoreFail() {
-        showSnackbar(R.string.backup_restore_fail);
         hideProgressDialog();
+        showSnackbar(R.string.backup_restore_fail);
     }
 
     @Override
     public void onBackupSaveSuccess(int size) {
-        showSnackbar(StringUtils.format(getString(R.string.backup_save_success), size));
         hideProgressDialog();
+        showSnackbar(StringUtils.format(getString(R.string.backup_save_success), size));
     }
 
     @Override
     public void onBackupSaveFail() {
-        showSnackbar(R.string.backup_save_fail);
         hideProgressDialog();
+        showSnackbar(R.string.backup_save_fail);
     }
 
     @Override

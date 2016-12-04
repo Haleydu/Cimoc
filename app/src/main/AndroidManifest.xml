@@ -60,7 +60,7 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.TagComicActivity"
+            android:name=".ui.activity.PartFavoriteActivity"
             android:screenOrientation="portrait"/>
 
         <activity

@@ -1,8 +1,12 @@
 package com.hiroshi.cimoc.core;
 
+import android.content.ContentResolver;
+import android.support.v4.provider.DocumentFile;
+
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.rx.RxObject;
+import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -23,7 +27,7 @@ import rx.schedulers.Schedulers;
  */
 public class Backup {
 
-    private static final String FOLDER_NAME = "backup";
+    private static final String BACKUP = "backup";
 
     // before 1.4.3
     private static final String SUFFIX_CIMOC = "cimoc";
@@ -68,7 +72,7 @@ public class Backup {
         return Observable.create(new Observable.OnSubscribe<String[]>() {
             @Override
             public void call(Subscriber<? super String[]> subscriber) {
-                String[] files = FileUtils.listFilesNameHaveSuffix(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), suffix);
+                String[] files = FileUtils.listFilesNameHaveSuffix(FileUtils.getPath(Storage.STORAGE_DIR, BACKUP), suffix);
                 if (files != null) {
                     Arrays.sort(files);
                     if (files.length == 0) {
@@ -84,48 +88,51 @@ public class Backup {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Integer> saveFavorite(final List<Comic> list) {
+    public static Observable<Integer> saveFavorite(final ContentResolver resolver, final DocumentFile root, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
                 try {
-                    JSONObject result = new JSONObject();
-                    result.put(JSON_KEY_VERSION, 1);
-                    result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
-                    String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CFBF);
-                    String path = FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME);
-                    if (FileUtils.writeStringToFile(path, filename, result.toString())) {
+                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+                    if (dir != null) {
+                        JSONObject result = new JSONObject();
+                        result.put(JSON_KEY_VERSION, 1);
+                        result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
+                        String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CFBF);
+                        DocumentFile file = dir.createFile("", filename);
+                        DocumentUtils.writeStringToFile(resolver, file, result.toString());
                         subscriber.onNext(list.size());
                         subscriber.onCompleted();
-                    } else {
-                        subscriber.onError(new Exception());
                     }
                 } catch (Exception e) {
-                    subscriber.onError(e);
+                    e.printStackTrace();
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Integer> saveTag(final Tag tag, final List<Comic> list) {
+    public static Observable<Integer> saveTag(final ContentResolver resolver, final DocumentFile root, final Tag tag, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
                 try {
-                    JSONObject result = new JSONObject();
-                    result.put(JSON_KEY_VERSION, 1);
-                    result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
-                    result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
-                    String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
-                    if (FileUtils.writeStringToFile(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), filename, result.toString())) {
+                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+                    if (dir != null) {
+                        JSONObject result = new JSONObject();
+                        result.put(JSON_KEY_VERSION, 1);
+                        result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
+                        result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
+                        String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
+                        DocumentFile file = dir.createFile("", filename);
+                        DocumentUtils.writeStringToFile(resolver, file, result.toString());
                         subscriber.onNext(list.size());
                         subscriber.onCompleted();
-                    } else {
-                        subscriber.onError(new Exception());
                     }
                 } catch (Exception e) {
-                    subscriber.onError(e);
+                    e.printStackTrace();
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
@@ -158,7 +165,7 @@ public class Backup {
             @Override
             public void call(Subscriber<? super RxObject> subscriber) {
                 try {
-                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), filename);
+                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, BACKUP), filename);
                     JSONObject object = new JSONObject(json);
                     List<Comic> list = loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF);
                     subscriber.onNext(new RxObject(object.getJSONObject(JSON_KEY_TAG_OBJECT).getString(JSON_KEY_TAG_TITLE), list));
@@ -175,7 +182,7 @@ public class Backup {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
                 try {
-                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, FOLDER_NAME), filename);
+                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, BACKUP), filename);
                     List<Comic> list = new LinkedList<>();
                     if (filename.endsWith(SUFFIX_CIMOC)) {
                         list.addAll(loadComicArray(new JSONArray(json), SUFFIX_CIMOC));

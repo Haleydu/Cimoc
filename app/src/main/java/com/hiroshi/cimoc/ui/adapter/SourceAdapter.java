@@ -95,13 +95,4 @@ public class SourceAdapter extends BaseAdapter<Source> {
         void onItemCheckedListener(boolean isChecked, int position);
     }
 
-    public boolean contain(int type) {
-        for (Source source : mDataSet) {
-            if (source.getType() == type) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }

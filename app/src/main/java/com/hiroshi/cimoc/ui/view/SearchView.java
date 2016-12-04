@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public interface SearchView extends BaseView, ThemeView {
+public interface SearchView extends BaseView, ThemeView, DialogView {
 
     void onSourceLoadSuccess(List<Source> list);
 

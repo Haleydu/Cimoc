@@ -54,13 +54,13 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     public void loadDetail(int source, String cid) {
         mComic = mComicManager.loadOrCreate(source, cid);
-        updateHighlight();
+        cancelHighlight();
         loadDetail();
     }
 
     public void loadDetail(long id) {
         mComic = mComicManager.load(id);
-        updateHighlight();
+        cancelHighlight();
         loadDetail();
     }
 
@@ -105,7 +105,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }));
     }
 
-    private void updateHighlight() {
+    private void cancelHighlight() {
         if (mComic.getHighlight()) {
             mComic.setHighlight(false);
             mComic.setFavorite(System.currentTimeMillis());
@@ -170,7 +170,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         long id = mComic.getId();
         mComic.setFavorite(null);
         mTagManager.deleteByComic(id);
-        mComicManager.delete(mComic);
+        mComicManager.updateOrDelete(mComic);
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UNFAVORITE, id));
         mBaseView.onUnfavoriteSuccess();
     }

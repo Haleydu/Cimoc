@@ -67,15 +67,16 @@ public class TagManager {
                 .unique();
     }
 
-    public long insert(Tag tag) {
-        return mTagDao.insert(tag);
+    public void insert(Tag tag) {
+        long id = mTagDao.insert(tag);
+        tag.setId(id);
     }
 
     public long insert(TagRef ref) {
         return mRefDao.insert(ref);
     }
 
-    public void insert(Iterable<TagRef> entities) {
+    public void insertInTx(Iterable<TagRef> entities) {
         mRefDao.insertInTx(entities);
     }
 

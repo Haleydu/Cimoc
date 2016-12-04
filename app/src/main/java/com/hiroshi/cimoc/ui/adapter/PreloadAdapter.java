@@ -48,9 +48,5 @@ public class PreloadAdapter {
     public Chapter moveNext() {
         return array[next--];
     }
-
-    public boolean isLoad() {
-        return prev != next + 1;
-    }
     
 }

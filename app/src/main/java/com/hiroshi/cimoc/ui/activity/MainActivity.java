@@ -44,11 +44,10 @@ import butterknife.ButterKnife;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener,
-        MessageDialogFragment.MessageDialogListener {
+public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int TYPE_NOTICE = 0;
-    private static final int TYPE_PERMISSION = 1;
+    private static final int DIALOG_REQUEST_NOTICE = 0;
+    private static final int DIALOG_REQUEST_PERMISSION = 1;
 
     private static final int FRAGMENT_NUM = 4;
 
@@ -238,13 +237,13 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onMessagePositiveClick(int type) {
-        switch (type) {
-            case TYPE_NOTICE:
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_NOTICE:
                 mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
                 showPermission();
                 break;
-            case TYPE_PERMISSION:
+            case DIALOG_REQUEST_PERMISSION:
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
                 break;
         }
@@ -307,7 +306,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private boolean showAuthorNotice() {
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, TYPE_NOTICE);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, null, DIALOG_REQUEST_NOTICE);
             fragment.show(getFragmentManager(), null);
             return true;
         }
@@ -316,7 +315,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private void showPermission() {
         if (!PermissionUtils.hasStoragePermission(this)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission, R.string.main_permission_content, false, TYPE_PERMISSION);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission, R.string.main_permission_content, false, null, DIALOG_REQUEST_PERMISSION);
             fragment.show(getFragmentManager(), null);
         }
     }

@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
@@ -35,7 +36,9 @@ import rx.functions.Func1;
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public class TaskActivity extends CoordinatorActivity implements TaskView, MultiDialogFragment.MultiDialogListener {
+public class TaskActivity extends CoordinatorActivity implements TaskView {
+
+    private static final int DIALOG_REQUEST_DELETE = 0;
 
     private TaskAdapter mTaskAdapter;
     private TaskPresenter mPresenter;
@@ -162,7 +165,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView, Multi
                     arr1[i] = mTaskAdapter.getItem(i).getTitle();
                     arr2[i] = false;
                 }
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete_multi, arr1, arr2, -1);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete_multi, arr1, arr2, DIALOG_REQUEST_DELETE);
                 fragment.show(getFragmentManager(), null);
                 break;
         }
@@ -170,23 +173,28 @@ public class TaskActivity extends CoordinatorActivity implements TaskView, Multi
     }
 
     @Override
-    public void onMultiPositiveClick(int type, boolean[] check) {
-        showProgressDialog();
-        int size = mTaskAdapter.getItemCount();
-        List<Task> result = new ArrayList<>();
-        for (int i = 0; i < size; ++i) {
-            if (check[i]) {
-                result.add(mTaskAdapter.getItem(i));
-            }
-        }
-        if (!result.isEmpty()) {
-            showProgressDialog();
-            for (Task task : result) {
-                mBinder.getService().removeDownload(task.getId());
-            }
-            mPresenter.deleteTask(result, mTaskAdapter.getItemCount() == result.size());
-        } else {
-            showSnackbar("未选择任务");
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_DELETE:
+                showProgressDialog();
+                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
+                int size = mTaskAdapter.getItemCount();
+                List<Task> result = new ArrayList<>();
+                for (int i = 0; i < size; ++i) {
+                    if (check[i]) {
+                        result.add(mTaskAdapter.getItem(i));
+                    }
+                }
+                if (!result.isEmpty()) {
+                    showProgressDialog();
+                    for (Task task : result) {
+                        mBinder.getService().removeDownload(task.getId());
+                    }
+                    mPresenter.deleteTask(result, mTaskAdapter.getItemCount() == result.size());
+                } else {
+                    showSnackbar("未选择任务");
+                }
+                break;
         }
     }
 

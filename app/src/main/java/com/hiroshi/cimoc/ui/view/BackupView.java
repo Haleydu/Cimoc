@@ -4,7 +4,7 @@ package com.hiroshi.cimoc.ui.view;
  * Created by Hiroshi on 2016/10/19.
  */
 
-public interface BackupView extends BaseView {
+public interface BackupView extends BaseView, DialogView {
 
     void onBackupSaveSuccess(int size);
 

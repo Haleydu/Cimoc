@@ -1,9 +1,14 @@
 package com.hiroshi.cimoc.core;
 
+import android.content.ContentResolver;
+import android.support.v4.provider.DocumentFile;
+
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.json.JSONArray;
@@ -23,24 +28,35 @@ import rx.schedulers.Schedulers;
  */
 public class Download {
 
-    public static Observable<Void> updateComicIndex(final List<Chapter> list, Comic comic) {
-        final int source = comic.getSource();
-        final String cid = comic.getCid();
-        final String title = comic.getTitle();
-        final String cover = comic.getCover();
+    private static final String DOWNLOAD = "download";
+    private static final String COMIC_INDEX = "index.cdif";
+    private static final String NO_MEDIA = ".nomedia";
+
+    private static void createNoMedia(DocumentFile root) {
+        DocumentFile home = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
+        DocumentUtils.createFile(home, "", NO_MEDIA);
+    }
+
+    private static DocumentFile createComicIndex(DocumentFile root, Comic comic) {
+        DocumentFile source = DocumentUtils.getOrCreateSubDirectory(root, String.valueOf(comic.getSource()));
+        DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(source, comic.getCid());
+        if (dir != null) {
+            return dir.createFile("", COMIC_INDEX);
+        }
+        return null;
+    }
+
+    public static Observable<Void> updateComicIndex(final ContentResolver resolver, final DocumentFile root, final List<Chapter> list, final Comic comic) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
                 try {
-                    FileUtils.createFile(FileUtils.getPath(Storage.STORAGE_DIR, "download"), ".nomedia");
-                    String jsonString = writeComicToJson(list, source, cid, title, cover);
-                    String dir = buildPath(source, title);
-                    if (FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString))) {
-                        subscriber.onNext(null);
-                        subscriber.onCompleted();
-                    } else {
-                        subscriber.onError(new Exception());
-                    }
+                    createNoMedia(root);
+                    String jsonString = getJsonFromComic(list, comic);
+                    DocumentFile file = createComicIndex(root, comic);
+                    DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
+                    subscriber.onNext(null);
+                    subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(new Exception());
                 }
@@ -48,14 +64,14 @@ public class Download {
         }).observeOn(Schedulers.io());
     }
 
-    private static String writeComicToJson(List<Chapter> list, int source, String cid, String title, String cover) throws JSONException {
+    private static String getJsonFromComic(List<Chapter> list, Comic comic) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("version", "1");
         object.put("type", "comic");
-        object.put("source", source);
-        object.put("cid", cid);
-        object.put("title", title);
-        object.put("cover", cover);
+        object.put("source", comic.getSource());
+        object.put("cid", comic.getCid());
+        object.put("title", comic.getTitle());
+        object.put("cover", comic.getCover());
         JSONArray array = new JSONArray();
         for (Chapter chapter : list) {
             JSONObject temp = new JSONObject();
@@ -63,27 +79,34 @@ public class Download {
             temp.put("path", chapter.getPath());
             array.put(temp);
         }
-        object.put("listInRx", array);
+        object.put("list", array);
         return object.toString();
     }
 
-    private static String writeChapterToJson(String title, String path) throws JSONException {
+    public static DocumentFile updateChapterIndex(ContentResolver resolver, DocumentFile root, Task task) {
+        try {
+            String jsonString = getJsonFromChapter(task.getTitle(), task.getPath());
+            DocumentFile dir1 = DocumentUtils.getOrCreateSubDirectory(root, String.valueOf(task.getSource()));
+            DocumentFile dir2 = DocumentUtils.getOrCreateSubDirectory(dir1, task.getCid());
+            DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getPath());
+            if (dir3 != null) {
+                DocumentFile file = dir3.createFile("", COMIC_INDEX);
+                DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
+                return dir3;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String getJsonFromChapter(String title, String path) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("version", "1");
         object.put("type", "chapter");
         object.put("title", title);
         object.put("path", path);
         return object.toString();
-    }
-
-    public static boolean updateChapterIndex(int source, String comic, String title, String path) {
-        try {
-            String jsonString = writeChapterToJson(title, path);
-            String dir = buildPath(source, comic, title);
-            return FileUtils.writeStringToFile(dir, "index.cdif", "cimoc".concat(jsonString));
-        } catch (JSONException e) {
-            return false;
-        }
     }
 
     public static List<String> getComicIndex(final int source, final String comic) {
@@ -105,7 +128,7 @@ public class Download {
     private static List<String> readPathFromJson(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         // We use "c" as the key in old version
-        JSONArray array = jsonObject.has("listInRx") ? jsonObject.getJSONArray("listInRx") : jsonObject.getJSONArray("c");
+        JSONArray array = jsonObject.has("list") ? jsonObject.getJSONArray("list") : jsonObject.getJSONArray("c");
         int size = array.length();
         List<String> list = new ArrayList<>(size);
         for (int i = 0; i != size; ++i) {

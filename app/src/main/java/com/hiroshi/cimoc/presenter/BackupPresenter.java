@@ -207,8 +207,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                                 if (tag == null) {
                                     insert = true;
                                     tag = new Tag(null, title);
-                                    long tid = mTagManager.insert(tag);
-                                    tag.setId(tid);
+                                    mTagManager.insert(tag);
                                 }
 
                                 List<Comic> list = (List<Comic>) object.getData(1);
@@ -242,10 +241,6 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 .subscribe(new Action1<RxObject>() {
                     @Override
                     public void call(RxObject object) {
-                        Object tag = object.getData();
-                        if (tag != null) {
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_INSERT, tag));
-                        }
                         List<Comic> list = (List<Comic>) object.getData(1);
                         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, list));
                         mBaseView.onBackupRestoreSuccess();

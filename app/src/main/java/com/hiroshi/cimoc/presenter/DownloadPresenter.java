@@ -81,12 +81,11 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void v) {
-                        mBaseView.onDownloadDeleteSuccess();
+                        mBaseView.onDownloadDeleteSuccess(id);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onDownloadDeleteFail();
                     }
                 }));

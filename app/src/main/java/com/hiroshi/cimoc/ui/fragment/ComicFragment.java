@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -12,7 +13,7 @@ import android.view.MenuItem;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.ComicPresenter;
-import com.hiroshi.cimoc.ui.activity.TagComicActivity;
+import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
 import com.hiroshi.cimoc.ui.adapter.TabPagerAdapter;
 import com.hiroshi.cimoc.ui.fragment.coordinator.grid.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.coordinator.grid.FavoriteFragment;
@@ -31,7 +32,9 @@ import butterknife.BindView;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class ComicFragment extends BaseFragment implements ComicView, ItemDialogFragment.ItemDialogListener{
+public class ComicFragment extends BaseFragment implements ComicView {
+
+    private static final int DIALOG_REQUEST_FILTER = 0;
 
     @BindView(R.id.comic_tab_layout) TabLayout mTabLayout;
     @BindView(R.id.comic_view_pager) ViewPager mViewPager;
@@ -87,9 +90,13 @@ public class ComicFragment extends BaseFragment implements ComicView, ItemDialog
     }
 
     @Override
-    public void onItemPositiveClick(int type, int index) {
-        Intent intent = TagComicActivity.createIntent(getActivity(), mTagList.get(index).getId(), mTagList.get(index).getTitle());
-        startActivity(intent);
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_FILTER:
+                int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                Intent intent = PartFavoriteActivity.createIntent(getActivity(), mTagList.get(index).getId(), mTagList.get(index).getTitle());
+                startActivity(intent);
+        }
     }
 
     @Override
@@ -106,20 +113,20 @@ public class ComicFragment extends BaseFragment implements ComicView, ItemDialog
         for (int i = 0; i < size; ++i) {
             item[i] = list.get(i).getTitle();
         }
-        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.comic_tag_select, item,  -1);
+        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.comic_tag_select, item,  DIALOG_REQUEST_FILTER);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 
     @Override
     public void onTagLoadFail() {
+        hideProgressDialog();
         showSnackbar(R.string.comic_load_tag_fail);
     }
 
     @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
         mTabLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
-
         for (int i = 0; i < 3; ++i) {
             ((ThemeView) mTabAdapter.getItem(i)).onThemeChange(primary, accent);
         }

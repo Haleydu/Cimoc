@@ -55,10 +55,6 @@ public class TaskManager {
         mTaskDao.deleteInTx(entities);
     }
 
-    public void deleteByKeyInTx(Iterable<Long> keys) {
-        mTaskDao.deleteByKeyInTx(keys);
-    }
-
     public static TaskManager getInstance() {
         if (mTaskManager == null) {
             mTaskManager = new TaskManager();

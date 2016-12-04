@@ -20,14 +20,14 @@ public class Update {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                String url = "http://pan.baidu.com/share/listInRx?uk=223062232&shareid=2388458898&dir=/update";
+                String url = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/update";
                 OkHttpClient client = CimocApplication.getHttpClient();
                 Request request = new Request.Builder().url(url).build();
                 try {
                     Response response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String json = response.body().string();
-                        JSONObject object = new JSONObject(json).getJSONArray("listInRx").getJSONObject(0);
+                        JSONObject object = new JSONObject(json).getJSONArray("list").getJSONObject(0);
                         String version = object.getString("server_filename");
                         subscriber.onNext(version);
                     } else {

@@ -8,13 +8,13 @@ import java.util.List;
  * Created by Hiroshi on 2016/10/10.
  */
 
-public interface TagView extends BaseView, ThemeView {
+public interface TagView extends BaseView, ThemeView, DialogView {
 
     void onTagLoadSuccess(List<Tag> list);
 
     void onTagLoadFail();
 
-    void onTagDeleteSuccess();
+    void onTagDeleteSuccess(Tag tag);
 
     void onTagDeleteFail();
 

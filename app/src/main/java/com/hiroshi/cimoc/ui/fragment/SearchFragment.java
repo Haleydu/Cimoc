@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.fragment;
 
+import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
@@ -32,8 +33,9 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class SearchFragment extends BaseFragment implements SearchView,
-        TextView.OnEditorActionListener, MultiDialogFragment.MultiDialogListener {
+public class SearchFragment extends BaseFragment implements SearchView, TextView.OnEditorActionListener {
+
+    private final static int DIALOG_REQUEST_SOURCE = 0;
 
     @BindView(R.id.search_frame_layout) View mFrameLayout;
     @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
@@ -121,10 +123,15 @@ public class SearchFragment extends BaseFragment implements SearchView,
     }
 
     @Override
-    public void onMultiPositiveClick(int type, boolean[] check) {
-        int size = mSourceList.size();
-        for (int i = 0; i < size; ++i) {
-            mSourceList.get(i).setCheck(check[i]);
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_SOURCE:
+                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
+                int size = mSourceList.size();
+                for (int i = 0; i < size; ++i) {
+                    mSourceList.get(i).setCheck(check[i]);
+                }
+                break;
         }
     }
 

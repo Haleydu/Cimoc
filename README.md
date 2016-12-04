@@ -22,7 +22,7 @@ Online manga reader based on Android
 - [57漫画](http://m.57mh.com)
 
 # 可添加图源
-- IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5、Webtoon、HHSSEE、57MH
+- IKanman、DMZJ、HHAAZZ、CCTuku、U17、DM5、Webtoon、HHSSEE、57MH、Chuiyao
 
 # 感谢以下的开源项目及作者
 - [Android Open Source Project](http://source.android.com/)

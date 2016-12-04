@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment.config;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 
@@ -10,6 +11,7 @@ import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
+import com.hiroshi.cimoc.ui.view.DialogView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -18,11 +20,11 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/13.
  */
 
-public class PageConfigFragment extends BaseFragment implements SliderDialogFragment.SliderDialogListener,
-        ChoiceDialogFragment.ChoiceDialogListener {
+public class PageConfigFragment extends BaseFragment implements DialogView {
 
-    private static final int TYPE_ORIENTATION = 0;
-    private static final int TYPE_TURN = 1;
+    private static final int DIALOG_REQUEST_ORIENTATION = 0;
+    private static final int DIALOG_REQUEST_TURN = 1;
+    private static final int DIALOG_REQUEST_OFFSET = 2;
 
     @BindView(R.id.settings_reader_load_prev_checkbox) CheckBox mReaderLoadPrevBox;
     @BindView(R.id.settings_reader_load_next_checkbox) CheckBox mReaderLoadNextBox;
@@ -50,14 +52,14 @@ public class PageConfigFragment extends BaseFragment implements SliderDialogFrag
 
     @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_orientation,
-                getResources().getStringArray(R.array.reader_orientation_items), mReaderOrientationChoice, TYPE_ORIENTATION);
+                getResources().getStringArray(R.array.reader_orientation_items), mReaderOrientationChoice, DIALOG_REQUEST_ORIENTATION);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_turn,
-                getResources().getStringArray(R.array.reader_turn_items), mReaderTurnChoice, TYPE_TURN);
+                getResources().getStringArray(R.array.reader_turn_items), mReaderTurnChoice, DIALOG_REQUEST_TURN);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -81,29 +83,30 @@ public class PageConfigFragment extends BaseFragment implements SliderDialogFrag
     }
 
     @Override
-    public void onChoicePositiveClick(int type, int choice, String value) {
-        switch (type) {
-            case TYPE_ORIENTATION:
-                mPreference.putInt(PreferenceManager.PREF_READER_PAGE_ORIENTATION, choice);
-                mReaderOrientationChoice = choice;
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        int index;
+        switch (requestCode) {
+            case DIALOG_REQUEST_ORIENTATION:
+                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                mPreference.putInt(PreferenceManager.PREF_READER_STREAM_ORIENTATION, index);
+                mReaderOrientationChoice = index;
                 break;
-            case TYPE_TURN:
-                mPreference.putInt(PreferenceManager.PREF_READER_PAGE_TURN, choice);
-                mReaderTurnChoice = choice;
+            case DIALOG_REQUEST_TURN:
+                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                mPreference.putInt(PreferenceManager.PREF_READER_STREAM_TURN, index);
+                mReaderTurnChoice = index;
                 break;
+            case DIALOG_REQUEST_OFFSET:
+                int value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
+                mPreference.putInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, value);
+                mReaderTriggerValue = value;
         }
     }
 
     @OnClick(R.id.settings_reader_trigger_btn) void onTriggerBtnClick() {
-        SliderDialogFragment fragment = SliderDialogFragment.newInstance(R.string.settings_reader_trigger, 5, 60, mReaderTriggerValue);
+        SliderDialogFragment fragment = SliderDialogFragment.newInstance(R.string.settings_reader_trigger, 5, 60, mReaderTriggerValue, DIALOG_REQUEST_OFFSET);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
-    public void onSliderPositiveClick(int value) {
-        mPreference.putInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, value);
-        mReaderTriggerValue = value;
     }
 
     @Override

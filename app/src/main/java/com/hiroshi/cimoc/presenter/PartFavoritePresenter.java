@@ -9,7 +9,7 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.rx.RxEvent;
-import com.hiroshi.cimoc.ui.view.TagComicView;
+import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,14 +27,14 @@ import rx.functions.Func1;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class TagComicPresenter extends BasePresenter<TagComicView> {
+public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
 
     private ComicManager mComicManager;
     private TagManager mTagManager;
     private Tag mTag;
     private LongSparseArray<MiniComic> mComicArray;
 
-    public TagComicPresenter() {
+    public PartFavoritePresenter() {
         mComicManager = ComicManager.getInstance();
         mTagManager = TagManager.getInstance();
     }
@@ -45,32 +45,29 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
         addSubscription(RxEvent.EVENT_COMIC_UNFAVORITE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onComicUnFavorite((long) rxEvent.getData());
-            }
-        });
-        addSubscription(RxEvent.EVENT_COMIC_FAVORITE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mComicArray.remove(((MiniComic) rxEvent.getData()).getId());
+                mBaseView.onComicRemove((long) rxEvent.getData());
             }
         });
         addSubscription(RxEvent.EVENT_TAG_UPDATE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                // Todo
-                MiniComic comic = (MiniComic) rxEvent.getData();
-                if (mComicArray.get(comic.getId()) != null) {
-                    mComicArray.remove(comic.getId());
-                    mBaseView.onTagComicInsert(comic);
-                } else {
-                    mComicArray.put(comic.getId(), comic);
-                    mBaseView.onTagComicDelete(comic);
+                long id = (long) rxEvent.getData();
+                List<Long> dList = (List<Long>) rxEvent.getData(1);
+                List<Long> iList = (List<Long>) rxEvent.getData(2);
+                if (dList.contains(mTag.getId())) {
+                    MiniComic comic = new MiniComic(mComicManager.load(id));
+                    mComicArray.put(id, comic);
+                    mBaseView.onComicRemove(id);
+                } else if (iList.contains(mTag.getId())) {
+                    MiniComic comic = mComicArray.get(id);
+                    mComicArray.remove(id);
+                    mBaseView.onComicAdd(comic);
                 }
             }
         });
     }
 
-    public void loadTagComic(long id, String title) {
+    public void load(long id, String title) {
         mTag = new Tag(id, title);
         mCompositeSubscription.add(mTagManager.listByTag(id)
                 .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
@@ -124,10 +121,6 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
         return list;
     }
 
-    public void insert(long id) {
-        mTagManager.insert(new TagRef(null, mTag.getId(), id));
-    }
-
     public void insert(boolean[] check) {
         int size = mComicArray.size();
         List<TagRef> rList = new ArrayList<>();
@@ -140,7 +133,7 @@ public class TagComicPresenter extends BasePresenter<TagComicView> {
                 mComicArray.remove(comic.getId());
             }
         }
-        mTagManager.insert(rList);
+        mTagManager.insertInTx(rList);
         mBaseView.onComicInsertSuccess(cList);
     }
 

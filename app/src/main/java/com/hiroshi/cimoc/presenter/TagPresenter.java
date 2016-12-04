@@ -40,9 +40,7 @@ public class TagPresenter extends BasePresenter<TagView> {
     }
 
     public void insert(Tag tag) {
-        long id = mTagManager.insert(tag);
-        tag.setId(id);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_INSERT, tag));
+        mTagManager.insert(tag);
     }
 
     public void delete(final Tag tag) {
@@ -51,13 +49,13 @@ public class TagPresenter extends BasePresenter<TagView> {
             public void run() {
                 mTagManager.deleteByTag(tag.getId());
                 mTagManager.delete(tag);
-                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_DELETE, tag));
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        mBaseView.onTagDeleteSuccess();
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_DELETE, tag));
+                        mBaseView.onTagDeleteSuccess(tag);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -65,10 +63,6 @@ public class TagPresenter extends BasePresenter<TagView> {
                         mBaseView.onTagDeleteFail();
                     }
                 }));
-    }
-
-    public void update(Tag tag) {
-        mTagManager.update(tag);
     }
 
 }

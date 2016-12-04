@@ -35,6 +35,7 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
     @Override
     protected BaseAdapter initAdapter() {
         mSourceAdapter = new SourceAdapter(getActivity(), new ArrayList<Source>());
+        mSourceAdapter.setOnItemCheckedListener(this);
         return mSourceAdapter;
     }
 

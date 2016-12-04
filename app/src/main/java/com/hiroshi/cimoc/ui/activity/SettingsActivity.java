@@ -1,7 +1,11 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatCheckBox;
@@ -15,7 +19,6 @@ import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
-import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.PermissionUtils;
@@ -31,12 +34,12 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/9/21.
  */
 
-public class SettingsActivity extends BackActivity implements SettingsView, EditorDialogFragment.EditorDialogListener,
-        SliderDialogFragment.SliderDialogListener, ChoiceDialogFragment.ChoiceDialogListener {
+public class SettingsActivity extends BackActivity implements SettingsView {
 
-    private static final int TYPE_OTHER_LAUNCH = 0;
-    private static final int TYPE_READER_MODE = 1;
-    private static final int TYPE_OTHER_THEME = 2;
+    private static final int DIALOG_REQUEST_OTHER_LAUNCH = 0;
+    private static final int DIALOG_REQUEST_READER_MODE = 1;
+    private static final int DIALOG_REQUEST_OTHER_THEME = 2;
+    private static final int DIALOG_REQUEST_DOWNLOAD_CONN = 3;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
     List<TextView> mTitleList;
@@ -103,44 +106,53 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
 
     @OnClick(R.id.settings_reader_mode_btn) void onReaderModeClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_mode,
-                getResources().getStringArray(R.array.reader_mode_items), mReaderModeChoice, TYPE_READER_MODE);
+                getResources().getStringArray(R.array.reader_mode_items), mReaderModeChoice, DIALOG_REQUEST_READER_MODE);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_other_launch_btn) void onOtherLaunchClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_launch,
-                getResources().getStringArray(R.array.home_items), mLaunchChoice, TYPE_OTHER_LAUNCH);
+                getResources().getStringArray(R.array.home_items), mLaunchChoice, DIALOG_REQUEST_OTHER_LAUNCH);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_other_theme_btn) void onOtherThemeBtnClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_theme,
-                getResources().getStringArray(R.array.theme_items), mThemeChoice, TYPE_OTHER_THEME);
+                getResources().getStringArray(R.array.theme_items), mThemeChoice, DIALOG_REQUEST_OTHER_THEME);
         fragment.show(getFragmentManager(), null);
     }
 
     @Override
-    public void onChoicePositiveClick(int type, int choice, String value) {
-        switch (type) {
-            case TYPE_OTHER_LAUNCH:
-                mPreference.putInt(PreferenceManager.PREF_OTHER_LAUNCH, choice);
-                mLaunchChoice = choice;
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        int index;
+        switch (requestCode) {
+            case DIALOG_REQUEST_READER_MODE:
+                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                mPreference.putInt(PreferenceManager.PREF_READER_MODE, index);
+                mReaderModeChoice = index;
                 break;
-            case TYPE_READER_MODE:
-                mPreference.putInt(PreferenceManager.PREF_READER_MODE, choice);
-                mReaderModeChoice = choice;
+            case DIALOG_REQUEST_OTHER_LAUNCH:
+                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                mPreference.putInt(PreferenceManager.PREF_OTHER_LAUNCH, index);
+                mLaunchChoice = index;
                 break;
-            case TYPE_OTHER_THEME:
-                if (mThemeChoice != choice) {
-                    mPreference.putInt(PreferenceManager.PREF_OTHER_THEME, choice);
-                    mThemeChoice = choice;
-                    int theme = ThemeUtils.getThemeById(choice);
+            case DIALOG_REQUEST_OTHER_THEME:
+                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                if (mThemeChoice != index) {
+                    mPreference.putInt(PreferenceManager.PREF_OTHER_THEME, index);
+                    mThemeChoice = index;
+                    int theme = ThemeUtils.getThemeById(index);
                     setTheme(theme);
                     int primary = ThemeUtils.getResourceId(this, R.attr.colorPrimary);
                     int accent = ThemeUtils.getResourceId(this, R.attr.colorAccent);
                     changeTheme(primary, accent);
                     mPresenter.changeTheme(theme, primary, accent);
                 }
+                break;
+            case DIALOG_REQUEST_DOWNLOAD_CONN:
+                int value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
+                mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, value);
+                mConnectionValue = value;
                 break;
         }
     }
@@ -159,11 +171,29 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
     }
 
     @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {
-        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.settings_other_storage, mStoragePath);
-        fragment.show(getFragmentManager(), null);
+       /* EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.settings_other_storage, mStoragePath);
+        fragment.show(getFragmentManager(), null);  */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, 0);
+        }
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_OK) return;
+        switch (requestCode) {
+            case 0:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Uri uri = data.getData();
+                    final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                    mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, uri.toString());
+                }
+        }
+    }
+
     public void onEditorPositiveClick(String text) {
         if (text != null) {
             stopService(new Intent(this, DownloadService.class));
@@ -179,14 +209,8 @@ public class SettingsActivity extends BackActivity implements SettingsView, Edit
 
     @OnClick(R.id.settings_download_connection_btn) void onDownloadConnectionClick() {
         SliderDialogFragment fragment =
-                SliderDialogFragment.newInstance(R.string.settings_download_connection, 0, 10, mConnectionValue);
+                SliderDialogFragment.newInstance(R.string.settings_download_connection, 0, 10, mConnectionValue, DIALOG_REQUEST_DOWNLOAD_CONN);
         fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
-    public void onSliderPositiveClick(int value) {
-        mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, value);
-        mConnectionValue = value;
     }
 
     @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {

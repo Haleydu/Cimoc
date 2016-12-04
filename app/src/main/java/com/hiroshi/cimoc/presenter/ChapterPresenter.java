@@ -1,5 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.content.ContentResolver;
+import android.support.v4.provider.DocumentFile;
+
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
@@ -39,8 +42,13 @@ public class ChapterPresenter extends BasePresenter<ChapterView> {
         mComic = mComicManager.load(id);
     }
 
-    public void addTask(List<Chapter> cList, final List<Chapter> dList) {
-        mCompositeSubscription.add(Download.updateComicIndex(cList, mComic)
+    /**
+     * 添加任务到数据库
+     * @param cList 所有章节列表，用于写索引文件
+     * @param dList 下载章节列表
+     */
+    public void addTask(ContentResolver resolver, DocumentFile root, List<Chapter> cList, final List<Chapter> dList) {
+        mCompositeSubscription.add(Download.updateComicIndex(resolver, root, cList, mComic)
                 .flatMap(new Func1<Void, Observable<ArrayList<Task>>>() {
                     @Override
                     public Observable<ArrayList<Task>> call(Void v) {
@@ -52,10 +60,11 @@ public class ChapterPresenter extends BasePresenter<ChapterView> {
                                 mComicManager.updateOrInsert(mComic);
                                 ArrayList<Task> result = new ArrayList<>();
                                 for (Chapter chapter : dList) {
-                                    Task task = new Task(null, key, chapter.getPath(), chapter.getTitle(), 0, 0);
+                                    Task task = new Task(null, key, chapter.getPath(), chapter.getTitle(), 0, 0, null);
                                     long id = mTaskManager.insert(task);
                                     task.setId(id);
-                                    task.setInfo(mComic.getSource(), mComic.getCid(), mComic.getTitle());
+                                    task.setSource(mComic.getSource());
+                                    task.setCid(mComic.getCid());
                                     task.setState(Task.STATE_WAIT);
                                     result.add(task);
                                 }

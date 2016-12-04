@@ -1,8 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TagManager;
-import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
@@ -30,17 +28,15 @@ import rx.schedulers.Schedulers;
 public class TagEditorPresenter extends BasePresenter<TagEditorView> {
 
     private TagManager mTagManager;
-    private ComicManager mComicManager;
-    private MiniComic mMiniComic;
+    private long mComicId;
     private Set<Long> mTagSet;
 
     public TagEditorPresenter() {
         mTagManager = TagManager.getInstance();
-        mComicManager = ComicManager.getInstance();
     }
 
     public void load(long id) {
-        mMiniComic = new MiniComic(mComicManager.load(id));
+        mComicId = id;
         mCompositeSubscription.add(mTagManager.listInRx()
                 .map(new Func1<List<Tag>, List<Pair<Tag, Boolean>>>() {
                     @Override
@@ -69,7 +65,7 @@ public class TagEditorPresenter extends BasePresenter<TagEditorView> {
 
     private void initTagSet() {
         mTagSet = new HashSet<>();
-        for (TagRef ref : mTagManager.listByComic(mMiniComic.getId())) {
+        for (TagRef ref : mTagManager.listByComic(mComicId)) {
             mTagSet.add(ref.getTid());
         }
     }
@@ -79,10 +75,10 @@ public class TagEditorPresenter extends BasePresenter<TagEditorView> {
             @Override
             public void run() {
                 for (Long id : dList) {
-                    mTagManager.delete(id, mMiniComic.getId());
+                    mTagManager.delete(id, mComicId);
                 }
                 for (Long id : iList) {
-                    mTagManager.insert(new TagRef(null, id, mMiniComic.getId()));
+                    mTagManager.insert(new TagRef(null, id, mComicId));
                 }
             }
         });
@@ -102,7 +98,7 @@ public class TagEditorPresenter extends BasePresenter<TagEditorView> {
                 if (!dList.isEmpty() || !iList.isEmpty()) {
                     updateInTx(dList, iList);
                     updateTagSet(dList, iList);
-                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, mMiniComic));
+                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_UPDATE, mComicId, dList, iList));
                     subscriber.onNext(true);
                 } else {
                     subscriber.onNext(false);

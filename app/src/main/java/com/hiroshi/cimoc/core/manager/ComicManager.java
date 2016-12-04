@@ -5,7 +5,6 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -105,6 +104,15 @@ public class ComicManager {
 
     public void update(Comic comic) {
         mComicDao.update(comic);
+    }
+
+    public void updateOrDelete(Comic comic) {
+        if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
+            mComicDao.delete(comic);
+            comic.setId(null);
+        } else {
+            update(comic);
+        }
     }
 
     public void delete(Comic comic) {

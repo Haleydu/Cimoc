@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.ui.view.DialogView;
 
 /**
  * Created by Hiroshi on 2016/12/2.
@@ -14,18 +15,18 @@ import com.hiroshi.cimoc.R;
 
 public class MultiDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private boolean[] check;
+    private boolean[] mCheck;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String[] item = getArguments().getStringArray(EXTRA_ITEM);
-        check = getArguments().getBooleanArray(EXTRA_CHECK);
-        builder.setTitle(getArguments().getInt(EXTRA_TITLE))
-                .setMultiChoiceItems(item, check, new DialogInterface.OnMultiChoiceClickListener() {
+        String[] item = getArguments().getStringArray(DialogView.EXTRA_DIALOG_ITEMS);
+        mCheck = getArguments().getBooleanArray(DialogView.EXTRA_DIALOG_CHOICE_ITEMS);
+        builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
+                .setMultiChoiceItems(item, mCheck, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int index, boolean value) {
-                        check[index] = value;
+                        mCheck[index] = value;
                     }
                 })
                 .setPositiveButton(R.string.dialog_positive, this);
@@ -34,29 +35,20 @@ public class MultiDialogFragment extends DialogFragment implements DialogInterfa
 
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
-        if (getTargetFragment() != null) {
-            ((MultiDialogListener) getTargetFragment()).onMultiPositiveClick(getArguments().getInt(EXTRA_TYPE), check);
-        } else {
-            ((MultiDialogListener) getActivity()).onMultiPositiveClick(getArguments().getInt(EXTRA_TYPE), check);
-        }
+        int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
+        Bundle bundle = new Bundle();
+        bundle.putBooleanArray(DialogView.EXTRA_DIALOG_RESULT_VALUE, mCheck);
+        DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        target.onDialogResult(requestCode, bundle);
     }
 
-    public interface MultiDialogListener {
-        void onMultiPositiveClick(int type, boolean[] check);
-    }
-
-    private static final String EXTRA_TITLE = "a";
-    private static final String EXTRA_ITEM = "b";
-    private static final String EXTRA_CHECK = "c";
-    private static final String EXTRA_TYPE = "d";
-
-    public static MultiDialogFragment newInstance(int title, String[] item, boolean[] check, int type) {
+    public static MultiDialogFragment newInstance(int title, String[] item, boolean[] check, int requestCode) {
         MultiDialogFragment fragment = new MultiDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TITLE, title);
-        bundle.putStringArray(EXTRA_ITEM, item);
-        bundle.putBooleanArray(EXTRA_CHECK, check);
-        bundle.putInt(EXTRA_TYPE, type);
+        bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
+        bundle.putStringArray(DialogView.EXTRA_DIALOG_ITEMS, item);
+        bundle.putBooleanArray(DialogView.EXTRA_DIALOG_CHOICE_ITEMS, check);
+        bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
     }

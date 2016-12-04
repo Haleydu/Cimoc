@@ -7,55 +7,45 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.ui.view.DialogView;
 
 /**
  * Created by Hiroshi on 2016/10/12.
  */
 
-public class MessageDialogFragment extends DialogFragment {
+public class MessageDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getInt(EXTRA_TITLE))
-                .setMessage(getArguments().getInt(EXTRA_CONTENT))
+        builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
+                .setMessage(getArguments().getInt(DialogView.EXTRA_DIALOG_CONTENT))
                 .setCancelable(true)
-                .setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (getTargetFragment() != null) {
-                            ((MessageDialogListener) getTargetFragment()).onMessagePositiveClick(getArguments().getInt(EXTRA_TYPE));
-                        } else {
-                            ((MessageDialogListener) getActivity()).onMessagePositiveClick(getArguments().getInt(EXTRA_TYPE));
-                        }
-                    }
-                });
-        if (getArguments().getBoolean(EXTRA_NEGATIVE, false)) {
+                .setPositiveButton(R.string.dialog_positive, this);
+        if (getArguments().getBoolean(DialogView.EXTRA_DIALOG_NEGATIVE, false)) {
             builder.setNegativeButton(R.string.dialog_negative, null);
         }
         return builder.create();
     }
 
-    public interface MessageDialogListener {
-        void onMessagePositiveClick(int type);
+    @Override
+    public void onClick(DialogInterface dialogInterface, int which) {
+        int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
+        Bundle extra = getArguments().getBundle(DialogView.EXTRA_DIALOG_BUNDLE);
+        Bundle bundle = new Bundle();
+        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
+        DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        target.onDialogResult(requestCode, bundle);
     }
 
-    private static final String EXTRA_TITLE = "a";
-    private static final String EXTRA_CONTENT = "b";
-    private static final String EXTRA_NEGATIVE = "c";
-    private static final String EXTRA_TYPE = "d";
-
-    public static MessageDialogFragment newInstance(int title, int content, boolean negative) {
-        return newInstance(title, content, negative, -1);
-    }
-
-    public static MessageDialogFragment newInstance(int title, int content, boolean negative, int type) {
+    public static MessageDialogFragment newInstance(int title, int content, boolean negative, Bundle extra, int requestCode) {
         MessageDialogFragment fragment = new MessageDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TITLE, title);
-        bundle.putInt(EXTRA_CONTENT, content);
-        bundle.putBoolean(EXTRA_NEGATIVE, negative);
-        bundle.putInt(EXTRA_TYPE, type);
+        bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
+        bundle.putInt(DialogView.EXTRA_DIALOG_CONTENT, content);
+        bundle.putBoolean(DialogView.EXTRA_DIALOG_NEGATIVE, negative);
+        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
+        bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
     }

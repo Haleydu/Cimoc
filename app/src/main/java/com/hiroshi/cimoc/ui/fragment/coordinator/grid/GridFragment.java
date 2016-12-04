@@ -22,7 +22,7 @@ import java.util.List;
  * Created by Hiroshi on 2016/9/22.
  */
 
-public abstract class GridFragment extends CoordinatorFragment implements GridView, MessageDialogFragment.MessageDialogListener {
+public abstract class GridFragment extends CoordinatorFragment implements GridView {
 
     protected GridAdapter mGridAdapter;
 

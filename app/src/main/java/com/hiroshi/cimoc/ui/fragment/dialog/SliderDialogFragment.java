@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.ui.view.DialogView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -17,48 +18,41 @@ import butterknife.ButterKnife;
  * Created by Hiroshi on 2016/10/16.
  */
 
-public class SliderDialogFragment extends DialogFragment {
+public class SliderDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+
+    private DiscreteSeekBar mSeekBar;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_slider, null);
-        final DiscreteSeekBar seekBar = ButterKnife.findById(view, R.id.dialog_slider_bar);
-        seekBar.setMin(getArguments().getInt(EXTRA_MIN));
-        seekBar.setMax(getArguments().getInt(EXTRA_MAX));
-        seekBar.setProgress(getArguments().getInt(EXTRA_MAX));
-        seekBar.setProgress(getArguments().getInt(EXTRA_PROGRESS));
+        int[] item = getArguments().getIntArray(DialogView.EXTRA_DIALOG_ITEMS);
+        mSeekBar = ButterKnife.findById(view, R.id.dialog_slider_bar);
+        mSeekBar.setMin(item[0]);
+        mSeekBar.setMax(item[1]);
+        mSeekBar.setProgress(item[1]);
+        mSeekBar.setProgress(item[2]);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getInt(EXTRA_TITLE))
+        builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
                 .setView(view)
-                .setPositiveButton(R.string.dialog_positive, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (getTargetFragment() != null) {
-                            ((SliderDialogListener) getTargetFragment()).onSliderPositiveClick(seekBar.getProgress());
-                        } else {
-                            ((SliderDialogListener) getActivity()).onSliderPositiveClick(seekBar.getProgress());
-                        }
-                    }
-                });
+                .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 
-    public interface SliderDialogListener {
-        void onSliderPositiveClick(int value);
+    @Override
+    public void onClick(DialogInterface dialogInterface, int which) {
+        int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogView.EXTRA_DIALOG_RESULT_VALUE, mSeekBar.getProgress());
+        DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        target.onDialogResult(requestCode, bundle);
     }
 
-    private static final String EXTRA_TITLE = "a";
-    private static final String EXTRA_MIN = "b";
-    private static final String EXTRA_MAX = "c";
-    private static final String EXTRA_PROGRESS = "d";
-
-    public static SliderDialogFragment newInstance(int title, int min, int max, int progress) {
+    public static SliderDialogFragment newInstance(int title, int min, int max, int progress, int requestCode) {
         SliderDialogFragment fragment = new SliderDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TITLE, title);
-        bundle.putInt(EXTRA_MIN, min);
-        bundle.putInt(EXTRA_MAX, max);
-        bundle.putInt(EXTRA_PROGRESS, progress);
+        bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
+        bundle.putIntArray(DialogView.EXTRA_DIALOG_ITEMS, new int[]{ min, max, progress });
+        bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
     }

@@ -1,8 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -13,6 +12,7 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.DownloadView;
+import com.hiroshi.cimoc.utils.ServiceUtils;
 
 import java.util.ArrayList;
 
@@ -23,11 +23,10 @@ import butterknife.OnClick;
  */
 public class DownloadFragment extends GridFragment implements DownloadView {
 
-    private static final int TYPE_PAUSE = 1;
-    private static final int TYPE_DELETE = 2;
+    private static final int DIALOG_REQUEST_PAUSE = 0;
+    private static final int DIALOG_REQUEST_DELETE = 1;
 
     private DownloadPresenter mPresenter;
-    private int mTempPosition = -1;
 
     private boolean start = false;
 
@@ -39,11 +38,8 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     protected void initData() {
-        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo info : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (info.service.getClassName().equals(DownloadService.class.getName())) {
-                onDownloadStart();
-            }
+        if (ServiceUtils.isServiceRunning(getActivity(), DownloadService.class)) {
+            onDownloadStart();
         }
         mPresenter.loadComic();
     }
@@ -57,17 +53,17 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.download_action_confirm, true, TYPE_PAUSE);
+                R.string.download_action_confirm, true, null, DIALOG_REQUEST_PAUSE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 
     @Override
-    public void onMessagePositiveClick(int type) {
-        switch (type) {
-            case TYPE_PAUSE:
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_PAUSE:
                 if (start) {
-                    getActivity().stopService(new Intent(getActivity(), DownloadService.class));
+                    ServiceUtils.stopService(getActivity(), DownloadService.class);
                     onDownloadStop();
                     showSnackbar(R.string.download_stop_success);
                 } else {
@@ -75,12 +71,13 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                     mPresenter.loadTask();
                 }
                 break;
-            case TYPE_DELETE:
+            case DIALOG_REQUEST_DELETE:
+                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_INT);
                 if (start) {
                     showSnackbar(R.string.download_ask_stop);
                 } else {
                     showProgressDialog();
-                    mPresenter.deleteComic(mGridAdapter.getItem(mTempPosition).getId());
+                    mPresenter.deleteComic(mGridAdapter.getItem(pos).getId());
                 }
                 break;
         }
@@ -95,9 +92,10 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     public void onItemLongClick(View view, int position) {
-        mTempPosition = position;
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_DIALOG_BUNDLE_INT, position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.download_delete_confirm, true, TYPE_DELETE);
+                R.string.download_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -162,9 +160,9 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    public void onDownloadDeleteSuccess() {
+    public void onDownloadDeleteSuccess(long id) {
         hideProgressDialog();
-        mGridAdapter.remove(mTempPosition);
+        mGridAdapter.removeItemById(id);
         showSnackbar(R.string.common_delete_success);
     }
 

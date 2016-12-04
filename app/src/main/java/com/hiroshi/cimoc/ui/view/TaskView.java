@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public interface TaskView extends BaseView {
+public interface TaskView extends BaseView, DialogView {
 
     void onTaskLoadSuccess(List<Task> list);
 
