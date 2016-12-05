@@ -15,7 +15,6 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
@@ -70,7 +69,7 @@ public class DownloadService extends Service {
         client = new OkHttpClient();
         manager = TaskManager.getInstance();
         resolver = getContentResolver();
-        root = Storage.getRootDocumentFile(this);
+        root = CimocApplication.getDocumentFile();
     }
 
     @Override
@@ -178,7 +177,7 @@ public class DownloadService extends Service {
             int size = list.size();
 
             if (size != 0) {
-                DocumentFile dir = Download.updateChapterIndex(resolver, root, task);
+                DocumentFile dir = Download.updateChapterIndex(task);
                 if (dir != null) {
                     task.setMax(size);
                     task.setState(Task.STATE_DOING);
@@ -216,9 +215,9 @@ public class DownloadService extends Service {
             try {
                 response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
-                    String mimeType = response.header("Content-Type", "image/jpeg");
+                    //String mimeType = response.header("Content-Type", "image/jpeg");
                     String displayName = buildFileName(num, url);
-                    DocumentFile file = parent.createFile(mimeType, displayName);
+                    DocumentFile file = parent.createFile("", displayName);
                     DocumentUtils.writeBinaryToFile(resolver, file, response.body().byteStream());
                     return true;
                 }

@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.model.TagRefDao;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
 
@@ -24,6 +25,10 @@ public class TagManager {
     private TagManager() {
         mTagDao = CimocApplication.getDaoSession().getTagDao();
         mRefDao = CimocApplication.getDaoSession().getTagRefDao();
+    }
+
+    public <T> T callInTx(Callable<T> callable) {
+        return mTagDao.getSession().callInTxNoException(callable);
     }
 
     public Observable<Void> runInRx(Runnable runnable) {
@@ -74,6 +79,10 @@ public class TagManager {
 
     public long insert(TagRef ref) {
         return mRefDao.insert(ref);
+    }
+
+    public void insert(Iterable<TagRef> entities) {
+        mRefDao.insertInTx(entities);
     }
 
     public void insertInTx(Iterable<TagRef> entities) {

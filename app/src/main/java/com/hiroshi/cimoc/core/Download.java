@@ -1,15 +1,16 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
+import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.utils.DocumentUtils;
-import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,18 +39,21 @@ public class Download {
     }
 
     private static DocumentFile createComicIndex(DocumentFile root, Comic comic) {
-        DocumentFile source = DocumentUtils.getOrCreateSubDirectory(root, String.valueOf(comic.getSource()));
+        DocumentFile home = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
+        DocumentFile source = DocumentUtils.getOrCreateSubDirectory(home, String.valueOf(comic.getSource()));
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(source, comic.getCid());
         if (dir != null) {
-            return dir.createFile("", COMIC_INDEX);
+            return DocumentUtils.createFile(dir, "", COMIC_INDEX);
         }
         return null;
     }
 
-    public static Observable<Void> updateComicIndex(final ContentResolver resolver, final DocumentFile root, final List<Chapter> list, final Comic comic) {
+    public static Observable<Void> updateComicIndex(final List<Chapter> list, final Comic comic) {
         return Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
+                ContentResolver resolver = CimocApplication.getResolver();
+                DocumentFile root = CimocApplication.getDocumentFile();
                 try {
                     createNoMedia(root);
                     String jsonString = getJsonFromComic(list, comic);
@@ -58,7 +62,7 @@ public class Download {
                     subscriber.onNext(null);
                     subscriber.onCompleted();
                 } catch (Exception e) {
-                    subscriber.onError(new Exception());
+                    subscriber.onError(e);
                 }
             }
         }).observeOn(Schedulers.io());
@@ -83,16 +87,19 @@ public class Download {
         return object.toString();
     }
 
-    public static DocumentFile updateChapterIndex(ContentResolver resolver, DocumentFile root, Task task) {
+    public static DocumentFile updateChapterIndex(Task task) {
+        ContentResolver resolver = CimocApplication.getResolver();
+        DocumentFile root = CimocApplication.getDocumentFile();
         try {
             String jsonString = getJsonFromChapter(task.getTitle(), task.getPath());
-            DocumentFile dir1 = DocumentUtils.getOrCreateSubDirectory(root, String.valueOf(task.getSource()));
-            DocumentFile dir2 = DocumentUtils.getOrCreateSubDirectory(dir1, task.getCid());
-            DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getPath());
-            if (dir3 != null) {
-                DocumentFile file = dir3.createFile("", COMIC_INDEX);
+            DocumentFile dir1 = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
+            DocumentFile dir2 = DocumentUtils.getOrCreateSubDirectory(dir1, String.valueOf(task.getSource()));
+            DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getCid());
+            DocumentFile dir4 = DocumentUtils.getOrCreateSubDirectory(dir3, task.getPath());
+            if (dir4 != null) {
+                DocumentFile file = dir4.createFile("", COMIC_INDEX);
                 DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
-                return dir3;
+                return dir4;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,16 +116,39 @@ public class Download {
         return object.toString();
     }
 
-    public static List<String> getComicIndex(final int source, final String comic) {
-        String dir = buildPath(source, comic);
-        char[] magic = FileUtils.readCharFromFile(dir, "index.cdif", 5);
-        if (Arrays.equals(magic, "cimoc".toCharArray())) {
-            String jsonString = FileUtils.readSingleLineFromFile(dir, "index.cdif");
-            if (jsonString != null) {
-                try {
-                    return readPathFromJson(jsonString.substring(5));
-                } catch (Exception e) {
-                    e.printStackTrace();
+    /**
+     * 1.4.4 以前位于 存储目录/download/图源名称/漫画名称
+     * 1.4.4 以后位于 存储目录/download/图源ID/漫画ID
+     * @param root 存储目录
+     * @param comic
+     * @return
+     */
+    private static DocumentFile getComicDir(DocumentFile root, Comic comic) {
+        DocumentFile dir1 = root.findFile(DOWNLOAD);
+        DocumentFile dir2 = dir1.findFile(String.valueOf(comic.getSource()));
+        DocumentFile result = dir2.findFile(comic.getCid());
+        if (result == null) {
+            dir2 = dir1.findFile(SourceManager.getTitle(comic.getSource()));
+            result = dir2.findFile(comic.getTitle());
+        }
+        return result;
+    }
+
+    public static List<String> getComicIndex(Comic comic) {
+        ContentResolver resolver = CimocApplication.getResolver();
+        DocumentFile root = CimocApplication.getDocumentFile();
+        DocumentFile dir = getComicDir(root, comic);
+        DocumentFile file = dir.findFile(COMIC_INDEX);
+        if (file != null) {
+            char[] magic = DocumentUtils.readCharFromFile(resolver, file, 5);
+            if (Arrays.equals(magic, "cimoc".toCharArray())) {
+                String jsonString = DocumentUtils.readLineFromFile(resolver, file);
+                if (jsonString != null) {
+                    try {
+                        return readPathFromJson(jsonString.substring(5));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -138,46 +168,55 @@ public class Download {
         return list;
     }
 
-    public static Observable<List<ImageUrl>> images(final int source, final String comic, final String title) {
+    private static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter) {
+        DocumentFile dir1 = root.findFile(DOWNLOAD);
+        DocumentFile dir2 = dir1.findFile(String.valueOf(comic.getSource()));
+        DocumentFile dir3 = dir2.findFile(comic.getCid());
+        DocumentFile result = dir3.findFile(chapter.getPath());
+        if (result == null) {
+            dir2 = dir1.findFile(SourceManager.getTitle(comic.getSource()));
+            dir3 = dir2.findFile(comic.getTitle());
+            result = dir3.findFile(chapter.getTitle());
+        }
+        return result;
+    }
+
+    public static Observable<List<ImageUrl>> images(final Comic comic, final Chapter chapter) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                String dir = buildPath(source, comic, title);
-                String[] filenames = FileUtils.listFilesNameNoSuffix(dir, "cdif");
-                if (filenames.length == 0) {
-                    subscriber.onError(new Exception());
-                } else {
-                    List<ImageUrl> list = new ArrayList<>(filenames.length);
-                    for (int i = 0; i < filenames.length; ++i) {
-                        list.add(new ImageUrl(i + 1, "file://".concat(FileUtils.getPath(dir, filenames[i])), false));
+                DocumentFile root = CimocApplication.getDocumentFile();
+                DocumentFile dir = getChapterDir(root, comic, chapter);
+                Uri[] uris = DocumentUtils.listUrisWithoutSuffix(dir, ".cdif");
+                if (uris.length != 0) {
+                    List<ImageUrl> list = new ArrayList<>(uris.length);
+                    for (int i = 0; i < uris.length; ++i) {
+                        list.add(new ImageUrl(i + 1, uris[i].toString(), false));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
 
-    public static void delete(int source, String comic, List<String> list) {
-        for (String title : list) {
-            String dir = buildPath(source, comic, title);
-            FileUtils.deleteDir(dir);
+    public static void delete(Comic comic, List<Chapter> list) {
+        DocumentFile root = CimocApplication.getDocumentFile();
+        for (Chapter chapter : list) {
+            DocumentFile dir = getChapterDir(root, comic, chapter);
+            if (dir != null) {
+                DocumentUtils.deleteDir(dir);
+            }
         }
     }
 
-    public static void delete(int source, String comic) {
-        String dir = buildPath(source, comic);
-        FileUtils.deleteDir(dir);
-    }
-
-    public static String buildPath(int source, String comic) {
-        return FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source),
-                FileUtils.filterFilename(comic));
-    }
-
-    public static String buildPath(int source, String comic, String chapter) {
-        return FileUtils.getPath(Storage.STORAGE_DIR, "download", SourceManager.getTitle(source),
-                FileUtils.filterFilename(comic), FileUtils.filterFilename(chapter));
+    public static void delete(Comic comic) {
+        DocumentFile root = CimocApplication.getDocumentFile();
+        DocumentFile dir = getComicDir(root, comic);
+        if (dir != null) {
+            DocumentUtils.deleteDir(dir);
+        }
     }
 
 }

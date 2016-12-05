@@ -57,7 +57,7 @@ public class Chuiyao extends MangaParser {
         String title = body.text("div.main-bar > h1");
         String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-        String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title");
+        String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title"); // Todo
         String intro = body.text("#bookIntro");
         boolean status = body.text("div.book-detail > div.cont-list > div.thumb > i").contains("完结");
         comic.setInfo(title, cover, update, intro, author, status);

@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 
 public class EditorDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    private EditText mEditText;
+    protected EditText mEditText;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -44,12 +44,16 @@ public class EditorDialogFragment extends DialogFragment implements DialogInterf
 
     public static EditorDialogFragment newInstance(int title, String content, int requestCode) {
         EditorDialogFragment fragment = new EditorDialogFragment();
+        fragment.setArguments(createBundle(title, content, requestCode));
+        return fragment;
+    }
+
+    protected static Bundle createBundle(int title, String content, int requestCode) {
         Bundle bundle = new Bundle();
         bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
         bundle.putString(DialogView.EXTRA_DIALOG_CONTENT, content);
         bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
-        fragment.setArguments(bundle);
-        return fragment;
+        return bundle;
     }
 
 }

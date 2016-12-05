@@ -12,7 +12,6 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.coordinator.CoordinatorFragment;
-import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.GridView;
 
 import java.util.LinkedList;

@@ -2,21 +2,22 @@ package com.hiroshi.cimoc;
 
 import android.app.Application;
 import android.content.ContentResolver;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.RecyclerView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.DBOpenHelper;
-import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
-import com.hiroshi.cimoc.utils.FileUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
+
+import java.io.File;
 
 import okhttp3.OkHttpClient;
 
@@ -28,9 +29,9 @@ public class CimocApplication extends Application {
     // 1.04.04.000
     public static final int VERSION = 10404000;
 
-    private static String mStorageUri;
-    private static DaoSession daoSession;
-    private static OkHttpClient httpClient;
+    private static DaoSession mDaoSession;
+    private static OkHttpClient mHttpClient;
+    private static DocumentFile mDocumentFile;
     private static ContentResolver mContentResolver;
 
     private PreferenceManager mPreferenceManager;
@@ -41,19 +42,31 @@ public class CimocApplication extends Application {
     public void onCreate() {
         super.onCreate();
         DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
-        httpClient = new OkHttpClient();
-        daoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
+        mHttpClient = new OkHttpClient();
+        mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
         mPreferenceManager = new PreferenceManager(getApplicationContext());
-        mStorageUri = mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE);
-        Storage.STORAGE_DIR = FileUtils.getPath(mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE,
-                Environment.getExternalStorageDirectory().getAbsolutePath()), "Cimoc");
-        //String uri = "content://com.android.externalstorage.documents/tree/primary%3ACimoc";
         mContentResolver = getContentResolver();
+        initRootDocumentFile();
         Fresco.initialize(this);
     }
 
-    public static String getStorageUri() {
-        return mStorageUri;
+    public void initRootDocumentFile() {
+        String uri = mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE);
+        if (uri == null) {
+            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc");
+            if (file.exists() || file.mkdirs()) {
+                mDocumentFile = DocumentFile.fromFile(file);
+            }
+            mDocumentFile = DocumentFile.fromFile(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
+        } else if (uri.startsWith("content")) {
+            mDocumentFile = DocumentFile.fromTreeUri(this, Uri.parse(uri));
+        } else {
+            mDocumentFile = DocumentFile.fromFile(new File(Uri.parse(uri).getPath()));
+        }
+    }
+
+    public static DocumentFile getDocumentFile() {
+        return mDocumentFile;
     }
 
     public static ContentResolver getResolver() {
@@ -61,11 +74,11 @@ public class CimocApplication extends Application {
     }
 
     public static DaoSession getDaoSession() {
-        return daoSession;
+        return mDaoSession;
     }
 
     public static OkHttpClient getHttpClient() {
-        return httpClient;
+        return mHttpClient;
     }
 
     public PreferenceManager getPreferenceManager() {

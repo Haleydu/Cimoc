@@ -28,7 +28,6 @@ public class Task implements Parcelable {
     @NotNull private String title;
     @NotNull private int progress;
     @NotNull private int max;
-    private String uri;
 
     @Transient private int source;
     @Transient private String cid;
@@ -46,16 +45,15 @@ public class Task implements Parcelable {
         this.state = source.readInt();
     }
 
-    @Generated(hash = 1827750566)
+    @Generated(hash = 1668809946)
     public Task(Long id, long key, @NotNull String path, @NotNull String title, int progress,
-            int max, String uri) {
+            int max) {
         this.id = id;
         this.key = key;
         this.path = path;
         this.title = title;
         this.progress = progress;
         this.max = max;
-        this.uri = uri;
     }
 
     @Generated(hash = 733837707)
@@ -118,14 +116,6 @@ public class Task implements Parcelable {
 
     public void setMax(int max) {
         this.max = max;
-    }
-
-    public String getUri() {
-        return this.uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
     }
 
     public int getState() {

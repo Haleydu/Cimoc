@@ -23,7 +23,7 @@ public interface TaskView extends BaseView, DialogView {
 
     void onTaskError(long id);
 
-    void onTaskDeleteSuccess();
+    void onTaskDeleteSuccess(List<Task> list);
 
     void onTaskDeleteFail();
 

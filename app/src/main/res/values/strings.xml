@@ -124,6 +124,7 @@
     <string name="settings_other_theme_summary">选择默认主题颜色</string>
     <string name="settings_other_storage">存储路径</string>
     <string name="settings_other_storage_summary">自定义存储路径</string>
+    <string name="settings_other_storage_edit_neutral">选择路径</string>
     <string name="settings_other_storage_move_success">更改成功</string>
     <string name="settings_other_storage_move_fail">写入文件失败</string>
     <string name="settings_other_cache">清除缓存</string>

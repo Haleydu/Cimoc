@@ -64,24 +64,29 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         loadDetail();
     }
 
+    private void updateChapterList(List<Chapter> list) {
+        Map<String, Task> map = new HashMap<>();
+        for (Task task : mTaskManager.list(mComic.getId())) {
+            map.put(task.getPath(), task);
+        }
+        if (!map.isEmpty()) {
+            for (Chapter chapter : list) {
+                Task task = map.get(chapter.getPath());
+                if (task != null) {
+                    chapter.setDownload(true);
+                    chapter.setComplete(task.isFinish());
+                }
+            }
+        }
+    }
+
     private void loadDetail() {
         mCompositeSubscription.add(Manga.info(mComic)
                 .doOnNext(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
                         if (mComic.getId() != null) {
-                            Map<String, Boolean> map = new HashMap<>();
-                            for (Task task : mTaskManager.list(mComic.getId())) {
-                                map.put(task.getPath(), task.isFinish());
-                            }
-                            if (!map.isEmpty()) {
-                                for (Chapter chapter : list) {
-                                    if (map.containsKey(chapter.getPath())) {
-                                        chapter.setDownload(true);
-                                        chapter.setComplete(map.get(chapter.getPath()));
-                                    }
-                                }
-                            }
+                            updateChapterList(list);
                         }
                     }
                 })

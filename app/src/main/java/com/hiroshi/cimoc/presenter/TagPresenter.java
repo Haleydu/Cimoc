@@ -23,6 +23,16 @@ public class TagPresenter extends BasePresenter<TagView> {
         mTagManager = TagManager.getInstance();
     }
 
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.EVENT_TAG_RESTORE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                // Todo
+            }
+        });
+    }
+
     public void load() {
         mCompositeSubscription.add(mTagManager.listInRx()
                 .observeOn(AndroidSchedulers.mainThread())

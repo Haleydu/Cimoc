@@ -3,11 +3,11 @@ package com.hiroshi.cimoc.core;
 import android.content.ContentResolver;
 import android.support.v4.provider.DocumentFile;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
-import com.hiroshi.cimoc.rx.RxObject;
 import com.hiroshi.cimoc.utils.DocumentUtils;
-import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
@@ -72,29 +72,30 @@ public class Backup {
         return Observable.create(new Observable.OnSubscribe<String[]>() {
             @Override
             public void call(Subscriber<? super String[]> subscriber) {
-                String[] files = FileUtils.listFilesNameHaveSuffix(FileUtils.getPath(Storage.STORAGE_DIR, BACKUP), suffix);
-                if (files != null) {
-                    Arrays.sort(files);
-                    if (files.length == 0) {
-                        subscriber.onError(new Exception());
-                    } else {
+                DocumentFile root = CimocApplication.getDocumentFile();
+                DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+                if (dir != null) {
+                    String[] files = DocumentUtils.listFilesWithSuffix(dir, suffix);
+                    if (files.length != 0) {
+                        Arrays.sort(files);
                         subscriber.onNext(files);
                         subscriber.onCompleted();
                     }
-                } else {
-                    subscriber.onError(new Exception());
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Integer> saveFavorite(final ContentResolver resolver, final DocumentFile root, final List<Comic> list) {
+    public static Observable<Integer> saveFavorite(final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
-                try {
-                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
-                    if (dir != null) {
+                ContentResolver resolver = CimocApplication.getResolver();
+                DocumentFile root = CimocApplication.getDocumentFile();
+                DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+                if (dir != null) {
+                    try {
                         JSONObject result = new JSONObject();
                         result.put(JSON_KEY_VERSION, 1);
                         result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
@@ -103,22 +104,24 @@ public class Backup {
                         DocumentUtils.writeStringToFile(resolver, file, result.toString());
                         subscriber.onNext(list.size());
                         subscriber.onCompleted();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
                 subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Integer> saveTag(final ContentResolver resolver, final DocumentFile root, final Tag tag, final List<Comic> list) {
+    public static Observable<Integer> saveTag(final Tag tag, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
-                try {
-                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
-                    if (dir != null) {
+                ContentResolver resolver = CimocApplication.getResolver();
+                DocumentFile root = CimocApplication.getDocumentFile();
+                DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+                if (dir != null) {
+                    try {
                         JSONObject result = new JSONObject();
                         result.put(JSON_KEY_VERSION, 1);
                         result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
@@ -128,9 +131,9 @@ public class Backup {
                         DocumentUtils.writeStringToFile(resolver, file, result.toString());
                         subscriber.onNext(list.size());
                         subscriber.onCompleted();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
                 subscriber.onError(new Exception());
             }
@@ -160,17 +163,28 @@ public class Backup {
         return array;
     }
 
-    public static Observable<RxObject> restoreTag(final String filename) {
-        return Observable.create(new Observable.OnSubscribe<RxObject>() {
+    private static String readBackupFile(ContentResolver resolver, DocumentFile root, String filename) {
+        DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+        if (dir != null) {
+            DocumentFile file = dir.findFile(filename);
+            return DocumentUtils.readLineFromFile(resolver, file);
+        }
+        return null;
+    }
+
+    public static Observable<Pair<String, List<Comic>>> restoreTag(final String filename) {
+        return Observable.create(new Observable.OnSubscribe<Pair<String, List<Comic>>>() {
             @Override
-            public void call(Subscriber<? super RxObject> subscriber) {
+            public void call(Subscriber<? super Pair<String, List<Comic>>> subscriber) {
+                ContentResolver resolver = CimocApplication.getResolver();
+                DocumentFile root = CimocApplication.getDocumentFile();
+                String jsonString = readBackupFile(resolver, root, filename);
                 try {
-                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, BACKUP), filename);
-                    JSONObject object = new JSONObject(json);
+                    JSONObject object = new JSONObject(jsonString);
                     List<Comic> list = loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF);
-                    subscriber.onNext(new RxObject(object.getJSONObject(JSON_KEY_TAG_OBJECT).getString(JSON_KEY_TAG_TITLE), list));
+                    subscriber.onNext(Pair.create(object.getJSONObject(JSON_KEY_TAG_OBJECT).getString(JSON_KEY_TAG_TITLE), list));
                     subscriber.onCompleted();
-                } catch (Exception e) {
+                } catch (JSONException e) {
                     subscriber.onError(e);
                 }
             }
@@ -181,18 +195,20 @@ public class Backup {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
+                ContentResolver resolver = CimocApplication.getResolver();
+                DocumentFile root = CimocApplication.getDocumentFile();
+                List<Comic> list = new LinkedList<>();
+                String jsonString = readBackupFile(resolver, root, filename);
                 try {
-                    String json = FileUtils.readSingleLineFromFile(FileUtils.getPath(Storage.STORAGE_DIR, BACKUP), filename);
-                    List<Comic> list = new LinkedList<>();
                     if (filename.endsWith(SUFFIX_CIMOC)) {
-                        list.addAll(loadComicArray(new JSONArray(json), SUFFIX_CIMOC));
+                        list.addAll(loadComicArray(new JSONArray(jsonString), SUFFIX_CIMOC));
                     } else if (filename.endsWith(SUFFIX_CFBF)) {
-                        JSONObject object = new JSONObject(json);
+                        JSONObject object = new JSONObject(jsonString);
                         list.addAll(loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CFBF));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();
-                } catch (Exception e) {
+                } catch (JSONException e) {
                     subscriber.onError(e);
                 }
             }

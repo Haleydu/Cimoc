@@ -5,11 +5,11 @@ import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
-import com.hiroshi.cimoc.rx.RxObject;
 import com.hiroshi.cimoc.ui.view.BackupView;
 
 import java.util.LinkedList;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -112,6 +113,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     public void saveTag(int index) {
+        // Todo
         final Tag tag = mTagList.get(index);
         mCompositeSubscription.add(mTagManager.listByTag(tag.getId())
                 .flatMap(new Func1<List<TagRef>, Observable<List<Comic>>>() {
@@ -149,30 +151,21 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 }));
     }
 
-    public void restoreFavorite(final String filename) {
+    public void restoreFavorite(String filename) {
         mCompositeSubscription.add(Backup.restoreFavorite(filename)
                 .flatMap(new Func1<List<Comic>, Observable<List<MiniComic>>>() {
                     @Override
                     public Observable<List<MiniComic>> call(final List<Comic> list) {
-                        return mComicManager.callInRx(new Callable<List<MiniComic>>() {
+                        return Observable.create(new Observable.OnSubscribe<List<MiniComic>>() {
                             @Override
-                            public List<MiniComic> call() throws Exception {
-                                long favorite = System.currentTimeMillis() + list.size() * 10;
+                            public void call(Subscriber<? super List<MiniComic>> subscriber) {
+                                updateComicList(list);
                                 List<MiniComic> result = new LinkedList<>();
                                 for (Comic comic : list) {
-                                    Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
-                                    if (temp == null) {
-                                        comic.setFavorite(favorite);
-                                        mComicManager.insert(comic);
-                                        result.add(new MiniComic(comic));
-                                    } else if (temp.getFavorite() == null) {
-                                        temp.setFavorite(favorite);
-                                        mComicManager.update(temp);
-                                        result.add(new MiniComic(temp));
-                                    }
-                                    favorite -= 20;
+                                    result.add(new MiniComic(comic));
                                 }
-                                return result;
+                                subscriber.onNext(result);
+                                subscriber.onCompleted();
                             }
                         });
                     }
@@ -192,57 +185,35 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 }));
     }
 
-    @SuppressWarnings("unchecked")
-    public void restoreTag(final String filename) {
+    public void restoreTag(String filename) {
         mCompositeSubscription.add(Backup.restoreTag(filename)
-                .flatMap(new Func1<RxObject, Observable<RxObject>>() {
+                .flatMap(new Func1<Pair<String, List<Comic>>, Observable<Pair<Tag, List<MiniComic>>>>() {
                     @Override
-                    public Observable<RxObject> call(final RxObject object) {
-                        return mComicManager.callInRx(new Callable<RxObject>() {
+                    public Observable<Pair<Tag, List<MiniComic>>> call(final Pair<String, List<Comic>> pair) {
+                        return Observable.create(new Observable.OnSubscribe<Pair<Tag, List<MiniComic>>>() {
                             @Override
-                            public RxObject call() throws Exception {
-                                boolean insert = false;
-                                String title = (String) object.getData();
-                                Tag tag = mTagManager.load(title);
-                                if (tag == null) {
-                                    insert = true;
-                                    tag = new Tag(null, title);
-                                    mTagManager.insert(tag);
+                            public void call(Subscriber<? super Pair<Tag, List<MiniComic>>> subscriber) {
+                                Tag tag = loadOrInsertTag(pair.first);
+                                updateComicList(pair.second);
+                                List<MiniComic> cList = new LinkedList<>();
+                                List<TagRef> tList = new LinkedList<>();
+                                for (Comic comic : pair.second) {
+                                    cList.add(new MiniComic(comic));
+                                    tList.add(new TagRef(null, tag.getId(), comic.getId()));
                                 }
-
-                                List<Comic> list = (List<Comic>) object.getData(1);
-                                long favorite = System.currentTimeMillis() + list.size() * 10;
-                                List<MiniComic> result = new LinkedList<>();
-                                for (Comic comic : list) {
-                                    Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
-                                    if (temp == null) {
-                                        temp = comic;
-                                        comic.setFavorite(favorite);
-                                        mComicManager.insert(comic);
-                                    } else if (temp.getFavorite() == null) {
-                                        temp.setFavorite(favorite);
-                                        mComicManager.update(temp);
-                                        result.add(new MiniComic(temp));
-                                    }
-
-                                    TagRef ref = mTagManager.load(tag.getId(), temp.getId());
-                                    if (ref == null) {
-                                        mTagManager.insert(new TagRef(null, tag.getId(), temp.getId()));
-                                    }
-                                    favorite -= 20;
-                                }
-
-                                return new RxObject(insert ? tag : null, result);
+                                mTagManager.insert(tList);
+                                subscriber.onNext(Pair.create(tag, cList));
+                                subscriber.onCompleted();
                             }
                         });
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<RxObject>() {
+                .subscribe(new Action1<Pair<Tag, List<MiniComic>>>() {
                     @Override
-                    public void call(RxObject object) {
-                        List<Comic> list = (List<Comic>) object.getData(1);
-                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, list));
+                    public void call(Pair<Tag, List<MiniComic>> pair) {
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_RESTORE, pair.first));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, pair.second));
                         mBaseView.onBackupRestoreSuccess();
                     }
                 }, new Action1<Throwable>() {
@@ -251,6 +222,40 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                         mBaseView.onBackupRestoreFail();
                     }
                 }));
+    }
+
+    private Tag loadOrInsertTag(final String title) {
+        return mTagManager.callInTx(new Callable<Tag>() {
+            @Override
+            public Tag call() throws Exception {
+                Tag tag = mTagManager.load(title);
+                if (tag == null) {
+                    tag = new Tag(null, title);
+                    mTagManager.insert(tag);
+                }
+                return tag;
+            }
+        });
+    }
+
+    private void updateComicList(final List<Comic> list) {
+        mComicManager.runInTx(new Runnable() {
+            @Override
+            public void run() {
+                long favorite = System.currentTimeMillis() + list.size() * 10;
+                for (Comic comic : list) {
+                    Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
+                    if (temp == null) {
+                        comic.setFavorite(favorite);
+                        mComicManager.insert(comic);
+                    } else if (temp.getFavorite() == null) {
+                        temp.setFavorite(favorite);
+                        mComicManager.update(temp);
+                    }
+                    favorite -= 20;
+                }
+            }
+        });
     }
 
 }

@@ -72,7 +72,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     comic.setDownload(null);
                     mComicManager.update(comic);
                 }
-                Download.delete(comic.getSource(), comic.getTitle());
+                Download.delete(comic);
                 subscriber.onNext(null);
                 subscriber.onCompleted();
             }

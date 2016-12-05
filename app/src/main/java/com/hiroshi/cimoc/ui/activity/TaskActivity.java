@@ -56,7 +56,6 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         super.initView();
         mTaskAdapter = new TaskAdapter(this, new LinkedList<Task>());
         mTaskAdapter.setOnItemClickListener(this);
-        mTaskAdapter.setOnItemLongClickListener(this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -176,7 +175,6 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
-                showProgressDialog();
                 boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
                 int size = mTaskAdapter.getItemCount();
                 List<Task> result = new ArrayList<>();
@@ -199,8 +197,9 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
-    public void onTaskDeleteSuccess() {
+    public void onTaskDeleteSuccess(List<Task> list) {
         hideProgressDialog();
+        mTaskAdapter.removeAll(list);
         showSnackbar(R.string.common_delete_success);
     }
 

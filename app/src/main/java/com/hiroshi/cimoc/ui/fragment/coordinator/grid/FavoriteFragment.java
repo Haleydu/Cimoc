@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

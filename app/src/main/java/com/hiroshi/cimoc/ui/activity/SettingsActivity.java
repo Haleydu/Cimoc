@@ -8,11 +8,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
@@ -20,8 +22,9 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.StorageEditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.utils.PermissionUtils;
+import com.hiroshi.cimoc.utils.ServiceUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.List;
@@ -40,6 +43,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_READER_MODE = 1;
     private static final int DIALOG_REQUEST_OTHER_THEME = 2;
     private static final int DIALOG_REQUEST_DOWNLOAD_CONN = 3;
+    private static final int DIALOG_REQUEST_OTHER_STORAGE = 4;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
     List<TextView> mTitleList;
@@ -54,7 +58,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private int mReaderModeChoice;
     private int mConnectionValue;
     private String mStoragePath;
-    private String mTempPath;
+    private String mTempStorage;
 
     @Override
     protected void initPresenter() {
@@ -123,6 +127,26 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case DIALOG_REQUEST_OTHER_STORAGE:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        // Todo release permission ?
+                        Uri uri = data.getData();
+                        int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        getContentResolver().takePersistableUriPermission(uri, flags);
+                        showProgressDialog();
+                        mPresenter.moveFiles(DocumentFile.fromTreeUri(this, uri));
+                        mTempStorage = uri.toString();
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         int index;
         switch (requestCode) {
@@ -171,39 +195,12 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {
-       /* EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.settings_other_storage, mStoragePath);
-        fragment.show(getFragmentManager(), null);  */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, 0);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != Activity.RESULT_OK) return;
-        switch (requestCode) {
-            case 0:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Uri uri = data.getData();
-                    final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                    mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, uri.toString());
-                }
-        }
-    }
-
-    public void onEditorPositiveClick(String text) {
-        if (text != null) {
-            stopService(new Intent(this, DownloadService.class));
-            showProgressDialog();
-            mTempPath = text.trim();
-            if (PermissionUtils.hasStoragePermission(this)) {
-                mPresenter.moveFiles(mTempPath);
-            } else {
-                onFileMoveFail();
-            }
+        if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
+            showSnackbar(R.string.download_ask_stop);
+        } else {
+            StorageEditorDialogFragment fragment = StorageEditorDialogFragment.newInstance(R.string.settings_other_storage,
+                    mStoragePath, DIALOG_REQUEST_OTHER_STORAGE);
+            fragment.show(getFragmentManager(), null);
         }
     }
 
@@ -222,8 +219,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onFileMoveSuccess() {
-        mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempPath);
-        mStoragePath = mTempPath;
+        mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempStorage);
+        mStoragePath = mTempStorage;
+        ((CimocApplication) getApplication()).initRootDocumentFile();
         showSnackbar(R.string.settings_other_storage_move_success);
         hideProgressDialog();
     }

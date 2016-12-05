@@ -1,8 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.content.ContentResolver;
-import android.support.v4.provider.DocumentFile;
-
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.Storage;
@@ -104,7 +101,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
-        return chapter.isComplete() ? Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
+        return chapter.isComplete() ? Download.images(mComic, chapter) :
                 Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath());
     }
 
@@ -130,8 +127,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE));
     }
 
-    public void savePicture(ContentResolver resolver, DocumentFile root, InputStream inputStream, String url) {
-        mCompositeSubscription.add(Storage.savePicture(resolver, root, inputStream, url)
+    public void savePicture(InputStream inputStream, String url) {
+        mCompositeSubscription.add(Storage.savePicture(inputStream, url)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override

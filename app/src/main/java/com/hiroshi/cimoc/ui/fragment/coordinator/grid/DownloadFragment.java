@@ -120,7 +120,8 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             for (Task task : list) {
                 MiniComic comic = mGridAdapter.getItemById(task.getKey());
                 if (comic != null) {
-                    task.setInfo(comic.getSource(), comic.getCid(), comic.getTitle());
+                    task.setSource(comic.getSource());
+                    task.setCid(comic.getCid());
                 }
                 task.setState(Task.STATE_WAIT);
             }
