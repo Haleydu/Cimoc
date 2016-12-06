@@ -77,6 +77,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     @Override
     protected void initData() {
+        mSourceList = new ArrayList<>();
         mPresenter.load();
     }
 
@@ -106,18 +107,20 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.search_menu_source:
-                int size = mSourceList.size();
-                String[] arr1 = new String[size];
-                boolean[] arr2 = new boolean[size];
-                for (int i = 0; i < size; ++i) {
-                    arr1[i] = mSourceList.get(i).getTitle();
-                    arr2[i] = mSourceList.get(i).getCheck();
+                if (!mSourceList.isEmpty()) {
+                    int size = mSourceList.size();
+                    String[] arr1 = new String[size];
+                    boolean[] arr2 = new boolean[size];
+                    for (int i = 0; i < size; ++i) {
+                        arr1[i] = mSourceList.get(i).getTitle();
+                        arr2[i] = mSourceList.get(i).getCheck();
+                    }
+                    MultiDialogFragment fragment =
+                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
+                    fragment.setTargetFragment(this, 0);
+                    fragment.show(getFragmentManager(), null);
+                    break;
                 }
-                MultiDialogFragment fragment =
-                        MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, -1);
-                fragment.setTargetFragment(this, 0);
-                fragment.show(getFragmentManager(), null);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -165,8 +168,8 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     @Override
     public void onSourceLoadSuccess(List<Source> list) {
-        mSourceList = new ArrayList<>(list);
         hideProgressBar();
+        mSourceList.addAll(list);
     }
 
     @Override

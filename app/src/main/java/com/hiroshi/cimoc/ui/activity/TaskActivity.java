@@ -68,7 +68,8 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     protected void initData() {
         long key = getIntent().getLongExtra(EXTRA_KEY, -1);
-        mPresenter.load(key);
+        boolean asc = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
+        mPresenter.load(key, asc);
     }
 
     @Override
@@ -96,8 +97,8 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
-    public void onChapterChange(String last) {
-        mTaskAdapter.setLast(mPresenter.getComic().getLast());
+    public void onLastChange(String path) {
+        mTaskAdapter.setLast(path);
     }
 
     @Override

@@ -38,7 +38,8 @@
     <string name="detail_tag">标签</string>
     <string name="detail_tag_favorite">请先收藏漫画</string>
     <string name="detail_download">下载</string>
-    <string name="detail_download_load_fail">读取下载列表失败</string>
+    <string name="detail_download_queue_success">已加入下载队列</string>
+    <string name="detail_download_queue_fail">加入下载队列失败</string>
 
     <string name="tag_editor">标签编辑</string>
     <string name="tag_editor_load_empty">没有找到标签</string>
@@ -49,15 +50,15 @@
 
     <string name="chapter">章节列表</string>
     <string name="chapter_all">全选</string>
+    <string name="chapter_download_perm_fail">获取权限失败</string>
     <string name="chapter_download_empty">未选择章节</string>
-    <string name="chapter_download_queue_success">已加入下载队列</string>
-    <string name="chapter_download_queue_fail">加入下载队列失败</string>
 
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
+    <string name="comic_load_tag_empty">没有找到标签</string>
     <string name="comic_tag_select">标签选择</string>
 
     <string name="favorite_check_update">检查更新</string>
@@ -202,6 +203,9 @@
     <string name="task_load_task_fail">读取任务失败</string>
     <string name="task_delete_multi">批量删除</string>
     <string name="task_delete_all">删除所有</string>
+
+    <string name="dir_picker">目录选择</string>
+    <string name="dir_picker_parent">&lt; 返回上层目录 &gt;</string>
 
     <string name="event_select">事件选择</string>
     <string name="event_null">无</string>

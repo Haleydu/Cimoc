@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.AppCompatCheckBox;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.ServiceUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
+import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,6 +52,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) AppCompatCheckBox mHideBox;
+    @BindView(R.id.settings_download_order_checkbox) AppCompatCheckBox mOrderBox;
 
     private SettingsPresenter mPresenter;
 
@@ -76,6 +79,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mConnectionValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
+        mOrderBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false));
     }
 
     @Override
@@ -85,7 +89,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         super.onDestroy();
     }
 
-    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn})
+    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_download_order_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_bright_btn:
@@ -93,6 +97,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_reader_hide_btn:
                 checkedAndSave(mHideBox, PreferenceManager.PREF_READER_HIDE_INFO);
+                break;
+            case R.id.settings_download_order_btn:
+                checkedAndSave(mOrderBox, PreferenceManager.PREF_DOWNLOAD_ORDER);
                 break;
         }
     }
@@ -128,18 +135,24 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case DIALOG_REQUEST_OTHER_STORAGE:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         // Todo release permission ?
+                        showProgressDialog();
                         Uri uri = data.getData();
                         int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         getContentResolver().takePersistableUriPermission(uri, flags);
-                        showProgressDialog();
-                        mPresenter.moveFiles(DocumentFile.fromTreeUri(this, uri));
                         mTempStorage = uri.toString();
+                        mPresenter.moveFiles(DocumentFile.fromTreeUri(this, uri));
+                    } else {
+                        showProgressDialog();
+                        String path = data.getStringExtra(DirPickerActivity.EXTRA_PICKER_PATH);
+                        DocumentFile file = DocumentFile.fromFile(new File(path));
+                        mTempStorage = file.getUri().toString();
+                        mPresenter.moveFiles(file);
                     }
                     break;
             }
@@ -192,6 +205,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mBrightBox.setSupportButtonTintList(stateList);
         mHideBox.setSupportButtonTintList(stateList);
+        mOrderBox.setSupportButtonTintList(stateList);
     }
 
     @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {
@@ -219,17 +233,17 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onFileMoveSuccess() {
+        hideProgressDialog();
         mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempStorage);
         mStoragePath = mTempStorage;
         ((CimocApplication) getApplication()).initRootDocumentFile();
         showSnackbar(R.string.settings_other_storage_move_success);
-        hideProgressDialog();
     }
 
     @Override
     public void onFileMoveFail() {
-        showSnackbar(R.string.settings_other_storage_move_fail);
         hideProgressDialog();
+        showSnackbar(R.string.settings_other_storage_move_fail);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,11 +11,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Pair;
-import com.hiroshi.cimoc.model.Task;
-import com.hiroshi.cimoc.presenter.ChapterPresenter;
-import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
-import com.hiroshi.cimoc.ui.view.ChapterView;
 import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import java.util.ArrayList;
@@ -26,16 +23,9 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/11/14.
  */
 
-public class ChapterActivity extends CoordinatorActivity implements ChapterView {
+public class ChapterActivity extends CoordinatorActivity {
 
-    private ChapterPresenter mPresenter;
     private ChapterAdapter mChapterAdapter;
-
-    @Override
-    protected void initPresenter() {
-        mPresenter = new ChapterPresenter();
-        mPresenter.attachView(this);
-    }
 
     @Override
     protected void initView() {
@@ -50,12 +40,6 @@ public class ChapterActivity extends CoordinatorActivity implements ChapterView 
         hideProgressBar();
     }
 
-    @Override
-    protected void initData() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.load(id);
-    }
-
     private List<Pair<Chapter, Boolean>> getAdapterList() {
         List<Chapter> list = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTER);
         List<Pair<Chapter, Boolean>> result = new ArrayList<>(list.size());
@@ -63,13 +47,6 @@ public class ChapterActivity extends CoordinatorActivity implements ChapterView 
             result.add(Pair.create(list.get(i), list.get(i).isDownload()));
         }
         return result;
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
     }
 
     @Override
@@ -103,43 +80,23 @@ public class ChapterActivity extends CoordinatorActivity implements ChapterView 
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        List<Chapter> cList = new ArrayList<>();
-        List<Chapter> dList = new ArrayList<>();
+        ArrayList<Chapter> list = new ArrayList<>();
         for (Pair<Chapter, Boolean> pair : mChapterAdapter.getDateSet()) {
-            cList.add(pair.first);
             if (!pair.first.isDownload() && pair.second) {
-                dList.add(pair.first);
+                list.add(pair.first);
             }
         }
 
-        if (dList.isEmpty()) {
+        if (list.isEmpty()) {
             showSnackbar(R.string.chapter_download_empty);
         } else if (PermissionUtils.hasStoragePermission(this)) {
-            showProgressDialog();
-            mPresenter.addTask(cList, dList);
+            Intent intent = new Intent();
+            intent.putParcelableArrayListExtra(EXTRA_CHAPTER, list);
+            setResult(Activity.RESULT_OK, intent);
+            finish();
         } else {
-            onTaskAddFail();
+            showSnackbar(R.string.chapter_download_perm_fail);
         }
-    }
-
-    @Override
-    public void onTaskAddSuccess(ArrayList<Task> list) {
-        Intent intent = DownloadService.createIntent(this, list);
-        startService(intent);
-        for (Pair<Chapter, Boolean> pair : mChapterAdapter.getDateSet()) {
-            if (pair.second && !pair.first.isDownload()) {
-                pair.first.setDownload(true);
-            }
-        }
-        mChapterAdapter.notifyDataSetChanged();
-        showSnackbar(R.string.chapter_download_queue_success);
-        hideProgressDialog();
-    }
-
-    @Override
-    public void onTaskAddFail() {
-        hideProgressDialog();
-        showSnackbar(R.string.chapter_download_queue_fail);
     }
 
     @Override
@@ -147,12 +104,10 @@ public class ChapterActivity extends CoordinatorActivity implements ChapterView 
         return getString(R.string.chapter);
     }
 
-    private static String EXTRA_ID = "a";
-    private static String EXTRA_CHAPTER = "b";
+    public static final String EXTRA_CHAPTER = "cimoc.intent.extra.EXTRA_CHAPTER";
 
-    public static Intent createIntent(Context context, long id, ArrayList<Chapter> list) {
+    public static Intent createIntent(Context context, ArrayList<Chapter> list) {
         Intent intent = new Intent(context, ChapterActivity.class);
-        intent.putExtra(EXTRA_ID, id);
         intent.putExtra(EXTRA_CHAPTER, list);
         return intent;
     }

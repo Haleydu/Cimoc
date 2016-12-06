@@ -13,7 +13,7 @@ public interface TaskView extends BaseView, DialogView {
 
     void onTaskLoadFail();
 
-    void onChapterChange(String last);
+    void onLastChange(String path);
 
     void onTaskAdd(List<Task> list);
 

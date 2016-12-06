@@ -36,6 +36,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         mComicManager = ComicManager.getInstance();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.EVENT_TASK_STATE_CHANGE, new Action1<RxEvent>() {
@@ -72,20 +73,9 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         addSubscription(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                String last = (String) rxEvent.getData();
-                int page = (int) rxEvent.getData(1);
-                mComic.setHistory(System.currentTimeMillis());
-                mComic.setLast(last);
-                mComic.setPage(page);
-                mComicManager.update(mComic);
-                mBaseView.onChapterChange(last);
-            }
-        });
-        addSubscription(RxEvent.EVENT_COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mComic.setPage((Integer) rxEvent.getData());
-                mComicManager.update(mComic);
+                String path = (String) rxEvent.getData();
+                mComic.setLast(path);
+                mBaseView.onLastChange(path);
             }
         });
     }
@@ -103,7 +93,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         }
     }
 
-    public void load(long id) {
+    public void load(long id, final boolean asc) {
         mComic = mComicManager.load(id);
         mCompositeSubscription.add(mTaskManager.listInRx(id)
                 .doOnNext(new Action1<List<Task>>() {
@@ -115,7 +105,11 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                             Collections.sort(list, new Comparator<Task>() {
                                 @Override
                                 public int compare(Task lhs, Task rhs) {
-                                    return sList.indexOf(lhs.getPath()) - sList.indexOf(rhs.getPath());
+                                    if (asc) {
+                                        return sList.indexOf(rhs.getPath()) - sList.indexOf(lhs.getPath());
+                                    } else {
+                                        return sList.indexOf(lhs.getPath()) - sList.indexOf(rhs.getPath());
+                                    }
                                 }
                             });
                         }
@@ -130,6 +124,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        throwable.printStackTrace();
                         mBaseView.onTaskLoadFail();
                     }
                 }));

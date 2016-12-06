@@ -39,8 +39,9 @@ public class TaskManager {
                 .list();
     }
 
-    public long insert(Task task) {
-        return mTaskDao.insert(task);
+    public void insert(Task task) {
+        long id = mTaskDao.insert(task);
+        task.setId(id);
     }
 
     public void update(Task task) {

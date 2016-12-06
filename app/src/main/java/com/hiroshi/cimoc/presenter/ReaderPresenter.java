@@ -124,7 +124,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         mComic.setLast(chapter.getPath());
         mComic.setPage(isNext ? 1 : chapter.getCount());
         mComicManager.update(mComic);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath()));
     }
 
     public void savePicture(InputStream inputStream, String url) {

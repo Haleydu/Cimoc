@@ -8,7 +8,7 @@ build/
 
 # Intellij
 *.iml
-.idea
+.idea/
 
 # Local configuration file (sdk path, etc)
 local.properties

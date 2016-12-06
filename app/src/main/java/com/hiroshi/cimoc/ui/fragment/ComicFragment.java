@@ -96,6 +96,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
                 Intent intent = PartFavoriteActivity.createIntent(getActivity(), mTagList.get(index).getId(), mTagList.get(index).getTitle());
                 startActivity(intent);
+                break;
         }
     }
 
@@ -108,14 +109,18 @@ public class ComicFragment extends BaseFragment implements ComicView {
     public void onTagLoadSuccess(List<Tag> list) {
         hideProgressDialog();
         mTagList = list;
-        int size = list.size();
-        String[] item = new String[size];
-        for (int i = 0; i < size; ++i) {
-            item[i] = list.get(i).getTitle();
+        if (!list.isEmpty()) {
+            int size = list.size();
+            String[] item = new String[size];
+            for (int i = 0; i < size; ++i) {
+                item[i] = list.get(i).getTitle();
+            }
+            ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.comic_tag_select, item,  DIALOG_REQUEST_FILTER);
+            fragment.setTargetFragment(this, 0);
+            fragment.show(getFragmentManager(), null);
+        } else {
+            showSnackbar(R.string.comic_load_tag_empty);
         }
-        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.comic_tag_select, item,  DIALOG_REQUEST_FILTER);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
     }
 
     @Override

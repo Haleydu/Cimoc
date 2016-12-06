@@ -2,7 +2,9 @@ package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,22 +16,14 @@ public interface DetailView extends BaseView {
 
     void onChapterLoadSuccess(List<Chapter> list);
 
-    void onChapterChange(String chapter);
-
-    void onDownloadLoadFail();
+    void onLastChange(String chapter);
 
     void onParseError();
 
     void onNetworkError();
 
-    void onTagOpenSuccess();
+    void onTaskAddSuccess(ArrayList<Task> list);
 
-    void onTagOpenFail();
-
-    void onLastOpenSuccess(String path);
-
-    void onFavoriteSuccess();
-
-    void onUnfavoriteSuccess();
+    void onTaskAddFail();
 
 }

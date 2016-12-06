@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
-import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TagView;
 
@@ -64,7 +63,6 @@ public class TagPresenter extends BasePresenter<TagView> {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_DELETE, tag));
                         mBaseView.onTagDeleteSuccess(tag);
                     }
                 }, new Action1<Throwable>() {

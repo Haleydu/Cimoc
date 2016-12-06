@@ -10,6 +10,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
+import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -255,6 +256,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         switch (requestCode) {
             case 0:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ((CimocApplication) getApplication()).initRootDocumentFile();
                     showSnackbar(R.string.main_permission_success);
                 } else {
                     showSnackbar(R.string.main_permission_fail);

@@ -48,24 +48,22 @@ public class Download {
         return null;
     }
 
-    public static Observable<Void> updateComicIndex(final List<Chapter> list, final Comic comic) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                ContentResolver resolver = CimocApplication.getResolver();
-                DocumentFile root = CimocApplication.getDocumentFile();
-                try {
-                    createNoMedia(root);
-                    String jsonString = getJsonFromComic(list, comic);
-                    DocumentFile file = createComicIndex(root, comic);
-                    DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
-                    subscriber.onNext(null);
-                    subscriber.onCompleted();
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
-            }
-        }).observeOn(Schedulers.io());
+    /**
+     * 写漫画索引，不关心是否成功，若没有索引文件，则不能排序章节及扫描恢复漫画，但不影响下载及观看
+     * @param list
+     * @param comic
+     */
+    public static void updateComicIndex(List<Chapter> list, Comic comic) {
+        ContentResolver resolver = CimocApplication.getResolver();
+        DocumentFile root = CimocApplication.getDocumentFile();
+        try {
+            createNoMedia(root);
+            String jsonString = getJsonFromComic(list, comic);
+            DocumentFile file = createComicIndex(root, comic);
+            DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static String getJsonFromComic(List<Chapter> list, Comic comic) throws JSONException {

@@ -56,8 +56,9 @@ public class CimocApplication extends Application {
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc");
             if (file.exists() || file.mkdirs()) {
                 mDocumentFile = DocumentFile.fromFile(file);
+            } else {
+                mDocumentFile = null;
             }
-            mDocumentFile = DocumentFile.fromFile(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
         } else if (uri.startsWith("content")) {
             mDocumentFile = DocumentFile.fromTreeUri(this, Uri.parse(uri));
         } else {
