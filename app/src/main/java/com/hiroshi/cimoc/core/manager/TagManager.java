@@ -17,6 +17,9 @@ import rx.Observable;
 
 public class TagManager {
 
+    public static final long TAG_CONTINUE = -11;
+    public static final long TAG_FINISH = -10;
+
     private static TagManager mTagManager;
 
     private TagDao mTagDao;

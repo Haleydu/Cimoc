@@ -48,9 +48,4 @@ public class DirAdapter extends BaseAdapter<String> {
         return null;
     }
 
-    @Override
-    protected boolean isClickValid() {
-        return true;
-    }
-
 }

@@ -178,6 +178,28 @@
                             android:textSize="14sp"
                             android:text="@string/settings_download_connection_summary"/>
                     </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/settings_download_thread_btn"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:background="?android:attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/settings_download_thread"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:textSize="14sp"
+                            android:text="@string/settings_download_thread_summary"/>
+                    </LinearLayout>
                     <RelativeLayout
                         android:id="@+id/settings_download_order_btn"
                         android:layout_width="match_parent"

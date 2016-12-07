@@ -5,6 +5,7 @@ import android.util.Base64;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
 
 import javax.crypto.Cipher;
@@ -26,7 +27,7 @@ public class DecryptionUtils {
         return new String(result, "UTF-8");
     }
 
-    public static String base64Decrypt(String cipherString) throws Exception {
+    public static String base64Decrypt(String cipherString) throws UnsupportedEncodingException {
         byte[] cipherBytes = Base64.decode(cipherString, Base64.DEFAULT);
         return new String(cipherBytes, "UTF-8");
     }

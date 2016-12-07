@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment.dialog;
 
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -27,8 +28,12 @@ public class StorageEditorDialogFragment extends EditorDialogFragment {
             public void onClick(DialogInterface dialogInterface, int which) {
                 int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                    getActivity().startActivityForResult(intent, requestCode);
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        getActivity().startActivityForResult(intent, requestCode);
+                    } catch (ActivityNotFoundException e) {
+                        ((DialogView) getActivity()).onDialogResult(requestCode, null);
+                    }
                 } else {
                     Intent intent = new Intent(getActivity(), DirPickerActivity.class);
                     getActivity().startActivityForResult(intent, requestCode);

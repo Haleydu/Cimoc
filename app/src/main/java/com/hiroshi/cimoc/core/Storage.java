@@ -76,7 +76,7 @@ public class Storage {
                     if (dir != null) {
                         DocumentFile file = dir.createFile("", buildFileName(url));
                         DocumentUtils.writeBinaryToFile(resolver, file, stream);
-                        subscriber.onNext(file.getUri().getPath()); // Todo 需要改
+                        subscriber.onNext(file.getUri().toString());
                         subscriber.onCompleted();
                     }
                 } catch (IOException e) {

@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.AppCompatCheckBox;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -46,6 +45,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_OTHER_THEME = 2;
     private static final int DIALOG_REQUEST_DOWNLOAD_CONN = 3;
     private static final int DIALOG_REQUEST_OTHER_STORAGE = 4;
+    private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 5;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
     List<TextView> mTitleList;
@@ -60,6 +60,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private int mThemeChoice;
     private int mReaderModeChoice;
     private int mConnectionValue;
+    private int mThreadValue;
     private String mStoragePath;
     private String mTempStorage;
 
@@ -77,6 +78,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
         mStoragePath = mPreference.getString(PreferenceManager.PREF_OTHER_STORAGE, Environment.getExternalStorageDirectory().getAbsolutePath());
         mConnectionValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
+        mThreadValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
         mOrderBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false));
@@ -162,6 +164,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         int index;
+        int value;
         switch (requestCode) {
             case DIALOG_REQUEST_READER_MODE:
                 index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
@@ -187,9 +190,17 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 }
                 break;
             case DIALOG_REQUEST_DOWNLOAD_CONN:
-                int value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
+                value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
                 mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, value);
                 mConnectionValue = value;
+                break;
+            case DIALOG_REQUEST_OTHER_STORAGE:
+                showSnackbar(R.string.settings_other_storage_not_found);
+                break;
+            case DIALOG_REQUEST_DOWNLOAD_THREAD:
+                value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
+                mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_THREAD, value);
+                mThreadValue = value;
                 break;
         }
     }
@@ -221,6 +232,12 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @OnClick(R.id.settings_download_connection_btn) void onDownloadConnectionClick() {
         SliderDialogFragment fragment =
                 SliderDialogFragment.newInstance(R.string.settings_download_connection, 0, 10, mConnectionValue, DIALOG_REQUEST_DOWNLOAD_CONN);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @OnClick(R.id.settings_download_thread_btn) void onDownloadThreadClick() {
+        SliderDialogFragment fragment =
+                SliderDialogFragment.newInstance(R.string.settings_download_thread, 1, 10, mThreadValue, DIALOG_REQUEST_DOWNLOAD_THREAD);
         fragment.show(getFragmentManager(), null);
     }
 

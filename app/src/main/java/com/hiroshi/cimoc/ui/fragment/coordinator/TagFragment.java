@@ -80,7 +80,7 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     @Override
     public void onItemLongClick(View view, int position) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_DIALOG_BUNDLE_INT, position);
+        bundle.putInt(EXTRA_DIALOG_BUNDLE_ARG_1, position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.tag_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
@@ -91,7 +91,7 @@ public class TagFragment extends CoordinatorFragment implements TagView {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
                 showProgressDialog();
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_INT);
+                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                 mPresenter.delete(mTagAdapter.getItem(pos));
                 break;
             case DIALOG_REQUEST_EDITOR:

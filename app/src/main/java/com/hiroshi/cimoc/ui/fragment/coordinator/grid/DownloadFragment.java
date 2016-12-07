@@ -72,7 +72,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                 }
                 break;
             case DIALOG_REQUEST_DELETE:
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_INT);
+                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                 if (start) {
                     showSnackbar(R.string.download_ask_stop);
                 } else {
@@ -93,7 +93,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     @Override
     public void onItemLongClick(View view, int position) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_DIALOG_BUNDLE_INT, position);
+        bundle.putInt(EXTRA_DIALOG_BUNDLE_ARG_1, position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.download_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);

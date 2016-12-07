@@ -50,6 +50,12 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(mGridAdapter.getItemDecoration());
         mRecyclerView.setAdapter(mGridAdapter);
+        if (getIntent().getLongExtra(EXTRA_ID, -1) < 0) {
+            mLayoutView.removeView(mActionButton);
+            mActionButton = null;
+        } else {
+            mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
+        }
     }
 
     @Override
@@ -75,7 +81,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
             arr1[i] = list.get(i).getTitle();
             arr2[i] = false;
         }
-        MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, -1);
+        MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, DIALOG_REQUEST_ADD);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -89,7 +95,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     @Override
     public void onItemLongClick(View view, int position) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_DIALOG_BUNDLE_INT, position);
+        bundle.putInt(EXTRA_DIALOG_BUNDLE_ARG_1, position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.tag_comic_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
         fragment.show(getFragmentManager(), null);
@@ -99,7 +105,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_INT);
+                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                 long tid = getIntent().getLongExtra(EXTRA_ID, -1);
                 long cid = mGridAdapter.getItem(pos).getId();
                 mPresenter.delete(tid, cid);
@@ -124,8 +130,9 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     public void onComicLoadSuccess(List<MiniComic> list) {
         hideProgressBar();
         mGridAdapter.addAll(list);
-        mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
-        mActionButton.show();
+        if (mActionButton != null) {
+            mActionButton.show();
+        }
     }
 
     @Override

@@ -59,7 +59,7 @@ public class SourceManager {
                 .list();
     }
 
-    public Observable<List<Source>> listEnable() {
+    public Observable<List<Source>> listEnableInRx() {
         return mSourceDao.queryBuilder()
                 .where(Properties.Enable.eq(true))
                 .orderAsc(Properties.Type)
@@ -67,12 +67,15 @@ public class SourceManager {
                 .list();
     }
 
-    public long insert(Source source) {
-        return mSourceDao.insert(source);
+    public List<Source> listEnable() {
+        return mSourceDao.queryBuilder()
+                .where(Properties.Enable.eq(true))
+                .orderAsc(Properties.Type)
+                .list();
     }
 
-    public void deleteByKey(long key) {
-        mSourceDao.deleteByKey(key);
+    public long insert(Source source) {
+        return mSourceDao.insert(source);
     }
 
     public void update(Source source) {

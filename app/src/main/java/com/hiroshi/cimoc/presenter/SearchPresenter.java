@@ -39,7 +39,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void load() {
-        mCompositeSubscription.add(mSourceManager.listEnable()
+        mCompositeSubscription.add(mSourceManager.listEnableInRx()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Source>>() {
                     @Override

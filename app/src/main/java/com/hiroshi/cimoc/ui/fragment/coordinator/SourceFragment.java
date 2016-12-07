@@ -89,7 +89,6 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
 
     @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
-        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
         mSourceAdapter.setColor(ContextCompat.getColor(getActivity(), accent));
         mSourceAdapter.notifyDataSetChanged();
     }

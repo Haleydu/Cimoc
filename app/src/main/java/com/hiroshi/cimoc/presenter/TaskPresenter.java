@@ -50,6 +50,9 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     case Task.STATE_ERROR:
                         mBaseView.onTaskError(id);
                         break;
+                    case Task.STATE_PAUSE:
+                        mBaseView.onTaskPause(id);
+                        break;
                 }
             }
         });

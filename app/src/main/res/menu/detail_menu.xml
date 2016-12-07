@@ -10,4 +10,10 @@
         android:title="@string/detail_download"
         android:icon="@drawable/ic_file_download_white_24dp"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/detail_search_title"
+        android:title="@string/detail_search_title"
+        app:showAsAction="never"/>
+    <item android:id="@+id/detail_search_author"
+        android:title="@string/detail_search_author"
+        app:showAsAction="never"/>
 </menu>

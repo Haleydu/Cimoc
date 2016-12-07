@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -88,6 +89,22 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.detail_tag_favorite);
+                    }
+                    break;
+                case R.id.detail_search_title:
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null);
+                        startActivity(intent);
+                    } else {
+                        showSnackbar(R.string.detail_search_empty);
+                    }
+                    break;
+                case R.id.detail_search_author:
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null);
+                        startActivity(intent);
+                    } else {
+                        showSnackbar(R.string.detail_search_empty);
                     }
                     break;
             }

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.ComicPresenter;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
@@ -24,6 +25,7 @@ import com.hiroshi.cimoc.ui.view.ComicView;
 import com.hiroshi.cimoc.ui.view.ThemeView;
 import com.hiroshi.cimoc.utils.HintUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -66,6 +68,11 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
+    protected void initData() {
+        mTagList = new ArrayList<>();
+    }
+
+    @Override
     public void onDestroyView() {
         mPresenter.detachView();
         mPresenter = null;
@@ -83,6 +90,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
         switch (item.getItemId()) {
             case R.id.comic_filter:
                 showProgressDialog();
+                mTagList.clear();
                 mPresenter.load();
                 break;
         }
@@ -108,19 +116,17 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onTagLoadSuccess(List<Tag> list) {
         hideProgressDialog();
-        mTagList = list;
-        if (!list.isEmpty()) {
-            int size = list.size();
-            String[] item = new String[size];
-            for (int i = 0; i < size; ++i) {
-                item[i] = list.get(i).getTitle();
-            }
-            ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.comic_tag_select, item,  DIALOG_REQUEST_FILTER);
-            fragment.setTargetFragment(this, 0);
-            fragment.show(getFragmentManager(), null);
-        } else {
-            showSnackbar(R.string.comic_load_tag_empty);
+        mTagList.add(new Tag(TagManager.TAG_FINISH, getString(R.string.comic_filter_finish)));
+        mTagList.add(new Tag(TagManager.TAG_CONTINUE, getString(R.string.comic_filter_continue)));
+        mTagList.addAll(list);
+        int size = mTagList.size();
+        String[] item = new String[size];
+        for (int i = 0; i < size; ++i) {
+            item[i] = mTagList.get(i).getTitle();
         }
+        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.comic_tag_select, item, DIALOG_REQUEST_FILTER);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
     }
 
     @Override

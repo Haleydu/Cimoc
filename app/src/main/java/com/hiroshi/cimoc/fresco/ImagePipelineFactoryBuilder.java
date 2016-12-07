@@ -21,6 +21,7 @@ public class ImagePipelineFactoryBuilder {
         ImagePipelineConfig config =
                 OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client, getHeaders(source))
                         .setBitmapsConfig(Bitmap.Config.RGB_565)
+                        .setDownsampleEnabled(true)
                         .build();
         return new ImagePipelineFactory(config);
     }

@@ -3,9 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Environment;
-import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;

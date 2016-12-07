@@ -52,7 +52,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     @Override
     public void onItemLongClick(View view, int position) {
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_DIALOG_BUNDLE_INT, position);
+        bundle.putInt(EXTRA_DIALOG_BUNDLE_ARG_1, position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.history_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
@@ -63,7 +63,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_INT);
+                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                 mPresenter.delete(mGridAdapter.getItem(pos));
                 mGridAdapter.remove(pos);
                 showSnackbar(R.string.common_delete_success);

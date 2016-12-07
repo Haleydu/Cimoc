@@ -1,9 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observer;
@@ -21,6 +24,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private static final int SEARCH_EMPTY = 2;
     private static final int SEARCH_ERROR = 3;
 
+    private SourceManager mSourceManager;
     private List<Integer> list;
     private int[] page;
     private int[] state;
@@ -30,10 +34,21 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private int errorNum = 0;
 
     public ResultPresenter(List<Integer> list, String keyword) {
+        mSourceManager = SourceManager.getInstance();
         this.keyword = keyword;
         this.list = list;
-        this.page = new int[list.size()];
-        this.state = new int[list.size()];
+        if (list == null) {
+            loadSource();
+        }
+        this.page = new int[this.list.size()];
+        this.state = new int[this.list.size()];
+    }
+
+    private void loadSource() {
+        list = new ArrayList<>();
+        for (Source source : mSourceManager.listEnable()) {
+            list.add(source.getType());
+        }
     }
 
     private void recent() {
@@ -59,6 +74,10 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     }
 
     private void search() {
+        if (list.isEmpty()) {
+            mBaseView.onSearchError();
+            return;
+        }
         for (int i = 0; i != list.size(); ++i) {
             final int pos = i;
             if (state[pos] == SEARCH_NULL) {

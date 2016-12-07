@@ -54,6 +54,22 @@ public class ComicManager {
                 .list();
     }
 
+    public Observable<List<Comic>> listFinishInRx() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Favorite.isNotNull(), Properties.Finish.eq(true))
+                .orderDesc(Properties.Highlight, Properties.Favorite)
+                .rx()
+                .list();
+    }
+
+    public Observable<List<Comic>> listContiueInRx() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Favorite.isNotNull(), Properties.Finish.notEq(true))
+                .orderDesc(Properties.Highlight, Properties.Favorite)
+                .rx()
+                .list();
+    }
+
     public Observable<List<Comic>> listHistoryInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.History.isNotNull())

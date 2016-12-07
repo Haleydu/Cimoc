@@ -7,6 +7,7 @@ import android.support.v4.provider.DocumentFile;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -139,7 +140,7 @@ public class DocumentUtils {
                 }
                 output.flush();
             } else {
-                throw new IOException();
+                throw new FileNotFoundException();
             }
         } finally {
             closeStream(output, input);

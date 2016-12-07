@@ -16,31 +16,25 @@ import com.hiroshi.cimoc.ui.view.DialogView;
 public class ChoiceDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     private String[] mItems;
-    private int mChoice;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         mItems = getArguments().getStringArray(DialogView.EXTRA_DIALOG_ITEMS);
-        mChoice = getArguments().getInt(DialogView.EXTRA_DIALOG_CHOICE_ITEMS);
+        int choice = getArguments().getInt(DialogView.EXTRA_DIALOG_CHOICE_ITEMS);
         builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
-                .setSingleChoiceItems(mItems, mChoice,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mChoice = which;
-                            }
-                        })
+                .setSingleChoiceItems(mItems, choice, null)
                 .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
-        String value = mChoice == -1 ? null : mItems[mChoice];
+        int index = ((AlertDialog) dialogInterface).getListView().getCheckedItemPosition();
+        String value = index == -1 ? null : mItems[index];
         int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
         Bundle bundle = new Bundle();
-        bundle.putInt(DialogView.EXTRA_DIALOG_RESULT_INDEX, mChoice);
+        bundle.putInt(DialogView.EXTRA_DIALOG_RESULT_INDEX, index);
         bundle.putString(DialogView.EXTRA_DIALOG_RESULT_VALUE, value);
         DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);

@@ -10,7 +10,7 @@ public class FastClick {
 
     public static boolean isClickValid() {
         long cur = System.currentTimeMillis();
-        boolean valid = cur - last > 600;
+        boolean valid = cur - last > 400;
         if (valid) {
             last = cur;
         }

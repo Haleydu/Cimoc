@@ -21,6 +21,8 @@ public interface TaskView extends BaseView, DialogView {
 
     void onTaskProcess(long id, int progress, int max);
 
+    void onTaskPause(long id);
+
     void onTaskError(long id);
 
     void onTaskDeleteSuccess(List<Task> list);

@@ -148,8 +148,6 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
             case Task.STATE_WAIT:
             case Task.STATE_PARSE:
                 mBinder.getService().removeDownload(task.getId());
-                task.setState(Task.STATE_PAUSE);
-                mTaskAdapter.notifyItemChanged(task);
                 break;
         }
     }
@@ -250,9 +248,18 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         if (position != -1) {
             Task task = mTaskAdapter.getItem(position);
             if (task.getState() != Task.STATE_PAUSE) {
-                mTaskAdapter.getItem(position).setState(Task.STATE_ERROR);
+                task.setState(Task.STATE_ERROR);
                 notifyItemChanged(position);
             }
+        }
+    }
+
+    @Override
+    public void onTaskPause(long id) {
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            mTaskAdapter.getItem(position).setState(Task.STATE_PAUSE);
+            notifyItemChanged(position);
         }
     }
 
@@ -260,8 +267,11 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     public void onTaskParse(long id) {
         int position = mTaskAdapter.getPositionById(id);
         if (position != -1) {
-            mTaskAdapter.getItem(position).setState(Task.STATE_PARSE);
-            notifyItemChanged(position);
+            Task task = mTaskAdapter.getItem(position);
+            if (task.getState() != Task.STATE_PAUSE) {
+                task.setState(Task.STATE_PARSE);
+                notifyItemChanged(position);
+            }
         }
     }
 
@@ -272,8 +282,10 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
             Task task = mTaskAdapter.getItem(position);
             task.setMax(max);
             task.setProgress(progress);
-            int state = max == progress ? Task.STATE_FINISH : Task.STATE_DOING;
-            task.setState(state);
+            if (task.getState() != Task.STATE_PAUSE) {
+                int state = max == progress ? Task.STATE_FINISH : Task.STATE_DOING;
+                task.setState(state);
+            }
             notifyItemChanged(position);
         }
     }

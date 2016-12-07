@@ -40,6 +40,9 @@
     <string name="detail_download">下载</string>
     <string name="detail_download_queue_success">已加入下载队列</string>
     <string name="detail_download_queue_fail">加入下载队列失败</string>
+    <string name="detail_search_title">搜索标题</string>
+    <string name="detail_search_author">搜索作者</string>
+    <string name="detail_search_empty">关键字为空</string>
 
     <string name="tag_editor">标签编辑</string>
     <string name="tag_editor_load_empty">没有找到标签</string>
@@ -58,7 +61,8 @@
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
-    <string name="comic_load_tag_empty">没有找到标签</string>
+    <string name="comic_filter_continue">连载</string>
+    <string name="comic_filter_finish">完结</string>
     <string name="comic_tag_select">标签选择</string>
 
     <string name="favorite_check_update">检查更新</string>
@@ -118,6 +122,8 @@
     <string name="settings_download_connection_summary">单页下载错误时最大自动重试次数</string>
     <string name="settings_download_order">正序显示下载章节</string>
     <string name="settings_download_order_summary">默认逆序显示</string>
+    <string name="settings_download_thread">多任务下载数量</string>
+    <string name="settings_download_thread_summary">最大同时下载任务数量</string>
     <string name="settings_other">应用设置</string>
     <string name="settings_other_launch">启动页</string>
     <string name="settings_other_launch_summary">选择默认启动页</string>
@@ -125,6 +131,7 @@
     <string name="settings_other_theme_summary">选择默认主题颜色</string>
     <string name="settings_other_storage">存储路径</string>
     <string name="settings_other_storage_summary">自定义存储路径</string>
+    <string name="settings_other_storage_not_found">打开 DocumentUI 失败</string>
     <string name="settings_other_storage_edit_neutral">选择路径</string>
     <string name="settings_other_storage_move_success">更改成功</string>
     <string name="settings_other_storage_move_fail">写入文件失败</string>
