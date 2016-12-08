@@ -73,17 +73,15 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String intro = body.textWithSubstring("p.txtDesc", 3);
         String title = body.attr("#Cover > img", "title");
         String cover = body.src("#Cover > img");
         String author = body.text("div.Introduct_Sub > div.sub_r > p:eq(0) > a");
         String update = body.textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
-        boolean status = body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)").contains("完结");
+        boolean status = isFinish(body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override

@@ -53,17 +53,15 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main > div > div.pic > div.con > h3");
         String cover = body.src("div.main > div > div.pic > img");
         String update = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(5)", 5);
         String author = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(1)", 3);
         String intro = body.text("#detail_block > div > p");
-        boolean status = body.text("div.main > div > div.pic > div.con > p:eq(4)").contains("完结");
+        boolean status = isFinish(body.text("div.main > div > div.pic > div.con > p:eq(4)"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override
@@ -100,7 +98,7 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public Request getBeforeImagesRequest() {
+    public Request getImageServerRequest() {
         if (server != null) {
             return null;
         }
@@ -108,7 +106,7 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public void beforeImages(String html) {
+    public void parseImageServer(String html) {
         if (html != null) {
             String str = StringUtils.match("sDS = \"(.*?)\";", html, 1);
             if (str != null) {

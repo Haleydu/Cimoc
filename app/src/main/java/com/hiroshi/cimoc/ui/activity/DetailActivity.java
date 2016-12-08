@@ -80,8 +80,10 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
         if (!isProgressBarShown()) {
             switch (item.getItemId()) {
                 case R.id.detail_download:
-                    intent = ChapterActivity.createIntent(this, new ArrayList<>(mDetailAdapter.getDateSet()));
-                    startActivityForResult(intent, REQUEST_CODE_DOWNLOAD);
+                    if (!mDetailAdapter.getDateSet().isEmpty()) {
+                        intent = ChapterActivity.createIntent(this, new ArrayList<>(mDetailAdapter.getDateSet()));
+                        startActivityForResult(intent, REQUEST_CODE_DOWNLOAD);
+                    }
                     break;
                 case R.id.detail_tag:
                     if (mPresenter.getComic().getFavorite() != null) {

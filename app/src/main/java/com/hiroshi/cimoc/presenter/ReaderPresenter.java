@@ -43,7 +43,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getFirstUrl())
+        mCompositeSubscription.add(Manga.loadLazyUrl(mComic.getSource(), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -102,7 +102,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
         return chapter.isComplete() ? Download.images(mComic, chapter) :
-                Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath());
+                Manga.getChapterImage(mComic.getSource(), mComic.getCid(), chapter.getPath());
     }
 
     public void toNextChapter() {

@@ -10,7 +10,7 @@ public abstract class MangaParser implements Parser {
     protected String[] server;
 
     @Override
-    public Request getChapterRequest(String cid) {
+    public Request getChapterRequest(String html, String cid) {
         return null;
     }
 
@@ -35,12 +35,12 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public Request getBeforeImagesRequest() {
+    public Request getImageServerRequest() {
         return null;
     }
 
     @Override
-    public void beforeImages(String html) {}
+    public void parseImageServer(String html) {}
 
     protected String[] buildUrl(String path) {
         if (server != null) {
@@ -51,6 +51,10 @@ public abstract class MangaParser implements Parser {
             return url;
         }
         return null;
+    }
+
+    protected boolean isFinish(String text) {
+        return text != null && text.contains("完结");
     }
 
 }

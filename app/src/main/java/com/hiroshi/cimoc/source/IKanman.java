@@ -45,7 +45,6 @@ public class IKanman extends MangaParser {
                 String cover = node.attr("div > img", "data-src");
                 String update = node.text("dl:eq(5) > dd");
                 String author = node.text("dl:eq(2) > dd");
-                // boolean status = "完结".equals(node.text("div > i"));
                 return new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author);
             }
         };
@@ -58,21 +57,19 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
         String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title");
         String intro = body.text("#bookIntro");
-        boolean status = body.text("div.book-detail > div.cont-list > div.thumb > i").contains("完结");
+        boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return comic.getCid();
     }
 
     @Override
-    public Request getChapterRequest(String cid) {
+    public Request getChapterRequest(String html, String cid) {
         String url = "http://m.ikanman.com/support/chapters.aspx?id=".concat(cid);
         return new Request.Builder().url(url).build();
     }

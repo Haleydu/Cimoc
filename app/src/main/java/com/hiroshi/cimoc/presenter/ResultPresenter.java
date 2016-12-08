@@ -54,7 +54,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private void recent() {
         if (state[0] == SEARCH_NULL) {
             state[0] = SEARCH_DOING;
-            mCompositeSubscription.add(Manga.recent(list.get(0), ++page[0])
+            mCompositeSubscription.add(Manga.getRecentComic(list.get(0), ++page[0])
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<Comic>>() {
                         @Override
@@ -82,7 +82,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
             final int pos = i;
             if (state[pos] == SEARCH_NULL) {
                 state[pos] = SEARCH_DOING;
-                mCompositeSubscription.add(Manga.search(list.get(i), keyword, ++page[pos])
+                mCompositeSubscription.add(Manga.getSearchResult(list.get(i), keyword, ++page[pos])
                         .filter(new Func1<Comic, Boolean>() {
                             @Override
                             public Boolean call(Comic comic) {

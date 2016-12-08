@@ -45,8 +45,6 @@ public class U17 extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.textWithSubstring("div:eq(1) > h3 > span.fr", 7);
                 String author = node.text("div:eq(1) > h3 > a[title]");
-                // String[] array = node.text("div:eq(1) > p.cf > i.fl").split("/");
-                // boolean status = "已完结".equals(array[array.length - 1].trim());
                 return new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author);
             }
         };
@@ -59,17 +57,15 @@ public class U17 extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.comic_info > div.left > h1.fl");
         String cover = body.src("#cover > a > img");
         String author = body.text("div.comic_info > div.right > div.author_info > div.info > a.name");
         String intro = body.text("div.comic_info > div.left > div.info > #words");
-        boolean status = body.text("div.comic_info > div.left > div.info > div.top > div.line1 > span:eq(2)").contains("完结");
+        boolean status = isFinish(body.text("div.comic_info > div.left > div.info > div.top > div.line1 > span:eq(2)"));
         String update = body.textWithSubstring("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override

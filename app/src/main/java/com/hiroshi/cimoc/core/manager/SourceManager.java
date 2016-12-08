@@ -118,42 +118,6 @@ public class SourceManager {
         return "null";
     }
 
-    public static Source getSource(String key) {
-        switch (key) {
-            case "IKanman":
-                return new Source(null, "看漫画", SOURCE_IKANMAN, false);
-            case "DMZJ":
-                return new Source(null, "动漫之家", SOURCE_DMZJ, false);
-            case "HHAAZZ":
-                return new Source(null, "手机汗汗", SOURCE_HHAAZZ, false);
-            case "CCTuku":
-                return new Source(null, "CC图库", SOURCE_CCTUKU, false);
-            case "U17":
-                return new Source(null, "有妖气", SOURCE_U17, false);
-            case "DM5":
-                return new Source(null, "动漫屋", SOURCE_DM5, false);
-            case "Webtoon":
-                return new Source(null, "Webtoon", SOURCE_WEBTOON, false);
-            case "HHSSEE":
-                return new Source(null, "汗汗漫画", SOURCE_HHSSEE, false);
-            case "57MH":
-                return new Source(null, "57漫画", SOURCE_57MH, false);
-            case "Chuiyao":
-                return new Source(null, "吹妖漫画", SOURCE_CHUIYAO, false);
-/*            case "EHentai":
-                return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
-            case "ExHentai":
-                return new Source(null, "ExHentai", SOURCE_EXHENTAI, false);
-            case "NHentai":
-                return new Source(null, "NHentai", SOURCE_NHENTAI, false);
-            case "Wnacg":
-                return new Source(null, "绅士漫画", SOURCE_WNACG, false);
-            case "177Pic":
-                return new Source(null, "177漫画", SOURCE_177PIC, false); */
-        }
-        return null;
-    }
-
     private static SparseArray<Parser> sparseArray = new SparseArray<>();
 
     public static Parser getParser(int source) {

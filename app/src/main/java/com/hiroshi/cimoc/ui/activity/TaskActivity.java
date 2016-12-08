@@ -144,8 +144,12 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 Intent taskIntent = DownloadService.createIntent(this, task);
                 startService(taskIntent);
                 break;
-            case Task.STATE_DOING:
             case Task.STATE_WAIT:
+                task.setState(Task.STATE_PAUSE);
+                mTaskAdapter.notifyItemChanged(position);
+                mBinder.getService().removeDownload(task.getId());
+                break;
+            case Task.STATE_DOING:
             case Task.STATE_PARSE:
                 mBinder.getService().removeDownload(task.getId());
                 break;

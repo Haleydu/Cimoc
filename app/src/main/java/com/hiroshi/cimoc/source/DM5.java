@@ -75,22 +75,24 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#mhinfo > div.inbt > h1.new_h2");
         String cover = body.src("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img");
         String update = body.textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
         String author = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(2) > a");
-        String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p").replace("[+展开]", "").replace("[-折叠]", "");
-        boolean status = body.textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5).contains("完结");
+        String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p");
+        if (intro != null) {
+            intro = intro.replace("[+展开]", "").replace("[-折叠]", "");
+        }
+        boolean status = isFinish(body.textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return StringUtils.match("var DM5_COMIC_MID=(\\d+?);", html, 1);
     }
 
     @Override
-    public Request getChapterRequest(String mid) {
-        String url = StringUtils.format("http://www.dm5.com/template-%s-t2-s2", mid);
+    public Request getChapterRequest(String html, String cid) {
+        String id = StringUtils.match("var DM5_COMIC_MID=(\\d+?);", html, 1);
+        String url = StringUtils.format("http://www.dm5.com/template-%s-t2-s2", id);
         return new Request.Builder().url(url).build();
     }
 

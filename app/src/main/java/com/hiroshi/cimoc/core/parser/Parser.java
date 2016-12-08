@@ -19,15 +19,15 @@ public interface Parser {
 
     Request getInfoRequest(String cid);
 
-    String parseInfo(String html, Comic comic);
+    void parseInfo(String html, Comic comic);
 
-    Request getChapterRequest(String cid);
+    Request getChapterRequest(String html, String cid);
 
     List<Chapter> parseChapter(String html);
 
-    Request getBeforeImagesRequest();
+    Request getImageServerRequest();
 
-    void beforeImages(String html);
+    void parseImageServer(String html);
 
     Request getImagesRequest(String cid, String path);
 

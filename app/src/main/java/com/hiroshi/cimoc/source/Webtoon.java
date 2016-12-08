@@ -59,19 +59,19 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
         String cover = body.src("#_episodeList > li > a > div.row > div.pic > img");
-        String[] args = body.text("#_episodeList > li > a > div.row > div.info > p.date").split("\\D");
-        String update = StringUtils.format("%4d-%02d-%02d",
-                Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String update = body.text("#_episodeList > li > a > div.row > div.info > p.date");
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
         String author = body.text("#ct > div.detail_info > a._btnInfo > p.author");
         String intro = body.text("#_informationLayer > p.summary_area");
-        boolean status = body.text("#_informationLayer > div.info_update").contains("完结");
+        boolean status = isFinish(body.text("#_informationLayer > div.info_update"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override
@@ -140,8 +140,12 @@ public class Webtoon extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        String[] args = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date").split("\\D");
-        return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String update = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date");
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
+        return update;
     }
 
 }

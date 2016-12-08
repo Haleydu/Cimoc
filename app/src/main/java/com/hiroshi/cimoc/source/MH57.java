@@ -66,17 +66,15 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
         String update = body.text("div.book-detail > div.cont-list > dl:eq(7) > dd");
         String author = body.text("div.book-detail > div.cont-list > dl:eq(3) > dd");
         String intro = body.text("#bookIntro");
-        boolean status = "已完结".equals(body.text("div.book-detail > div.cont-list > div.thumb > i"));
+        boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override

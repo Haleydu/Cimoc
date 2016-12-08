@@ -23,6 +23,8 @@ public class PreferenceManager {
     public static final int HOME_SOURCE = 2;
     public static final int HOME_TAG = 3;
 
+    public static final String PREF_APP_VERSION = "pref_app_version";
+
     public static final String PREF_MAIN_NOTICE = "pref_main_notice";
 
     public static final String PREF_READER_MODE = "pref_reader_mode";

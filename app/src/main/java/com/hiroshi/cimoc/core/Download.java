@@ -122,12 +122,9 @@ public class Download {
      * @return
      */
     private static DocumentFile getComicDir(DocumentFile root, Comic comic) {
-        DocumentFile dir1 = root.findFile(DOWNLOAD);
-        DocumentFile dir2 = dir1.findFile(String.valueOf(comic.getSource()));
-        DocumentFile result = dir2.findFile(comic.getCid());
+        DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()), comic.getCid());
         if (result == null) {
-            dir2 = dir1.findFile(SourceManager.getTitle(comic.getSource()));
-            result = dir2.findFile(comic.getTitle());
+            result = DocumentUtils.findFile(root, DOWNLOAD, SourceManager.getTitle(comic.getSource()), comic.getTitle());
         }
         return result;
     }
@@ -167,14 +164,9 @@ public class Download {
     }
 
     private static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter) {
-        DocumentFile dir1 = root.findFile(DOWNLOAD);
-        DocumentFile dir2 = dir1.findFile(String.valueOf(comic.getSource()));
-        DocumentFile dir3 = dir2.findFile(comic.getCid());
-        DocumentFile result = dir3.findFile(chapter.getPath());
+        DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()), comic.getCid(), chapter.getPath());
         if (result == null) {
-            dir2 = dir1.findFile(SourceManager.getTitle(comic.getSource()));
-            dir3 = dir2.findFile(comic.getTitle());
-            result = dir3.findFile(chapter.getTitle());
+            result = DocumentUtils.findFile(root, DOWNLOAD, SourceManager.getTitle(comic.getSource()), comic.getTitle(), chapter.getTitle());
         }
         return result;
     }

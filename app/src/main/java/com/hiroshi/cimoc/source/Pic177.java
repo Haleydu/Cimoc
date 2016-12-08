@@ -53,7 +53,7 @@ public class  Pic177 extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#content > div.post > div.c-top2 > div.tit > h1");
         String author = StringUtils.match("(\\[中文\\])?\\[(.*?)\\]", title, 2);
@@ -63,8 +63,6 @@ public class  Pic177 extends MangaParser {
         String cover = body.src("#content > div.post > div.entry-content > p > img");
         String update = body.text("#content > div.post > div.c-top2 > div.datetime");
         comic.setInfo(title, cover, update, null, author, true);
-
-        return null;
     }
 
     @Override

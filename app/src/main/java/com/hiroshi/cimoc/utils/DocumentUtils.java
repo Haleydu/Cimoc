@@ -22,6 +22,18 @@ import java.util.List;
 
 public class DocumentUtils {
 
+    public static DocumentFile findFile(DocumentFile parent, String... filenames) {
+        if (parent != null) {
+            for (String filename : filenames) {
+                parent = parent.findFile(filename);
+                if (parent == null) {
+                    return null;
+                }
+            }
+        }
+        return parent;
+    }
+
     public static Uri[] listUrisWithoutSuffix(DocumentFile dir, String suffix) {
         List<Uri> list = new ArrayList<>();
         if (dir.isDirectory()) {

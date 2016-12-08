@@ -54,17 +54,15 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.textWithSubstring("div.title-banner > div.book-title > h1", 0, -3);
         String cover = body.src("div.book > div > div.row > div:eq(0) > a > img");
         String update = body.textWithSubstring("div.book > div > div.row > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
         String author = body.text("div.book > div > div.row > div:eq(1) > div > dl:eq(1) > dd > a");
         String intro = body.text("div.book-details > p:eq(1)");
-        boolean status = body.text("div.book > div > div.row > div:eq(0) > div").contains("完结");
+        boolean status = isFinish(body.text("div.book > div > div.row > div:eq(0) > div"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override

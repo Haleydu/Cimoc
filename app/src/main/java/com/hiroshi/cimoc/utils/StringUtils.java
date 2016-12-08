@@ -40,7 +40,10 @@ public class StringUtils {
         if (end < 0) {
             end = str.length() + 1 + end;
         }
-        return str.substring(start, end);
+        if (start >= 0 && start <= str.length()) {
+            return str.substring(start, end);
+        }
+        return null;
     }
 
     public static String format(String format, Object... args) {

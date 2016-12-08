@@ -79,7 +79,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     private void load() {
-        mCompositeSubscription.add(Manga.info(mComic)
+        mCompositeSubscription.add(Manga.getComicInfo(mComic)
                 .doOnNext(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {

@@ -10,14 +10,21 @@ import android.support.v7.widget.RecyclerView;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.DBOpenHelper;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
 import java.io.File;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 
@@ -45,9 +52,40 @@ public class CimocApplication extends Application {
         mHttpClient = new OkHttpClient();
         mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
         mPreferenceManager = new PreferenceManager(getApplicationContext());
+        update();
         mContentResolver = getContentResolver();
         initRootDocumentFile();
         Fresco.initialize(this);
+    }
+
+    public void update() {
+        int version = mPreferenceManager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
+        switch (version) {
+            case 0:
+                mDaoSession.getSourceDao().insert(new Source(null, "吹妖漫画", SourceManager.SOURCE_CHUIYAO, false));
+                mDaoSession.runInTx(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateTaskPath();
+                    }
+                });
+        }
+        mPreferenceManager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
+    }
+
+    private void updateTaskPath() {
+        // 更新汗汗漫画章节路径
+        List<Comic> list = mDaoSession.getComicDao().queryBuilder().where(ComicDao.Properties.Source.eq(7)).list();
+        TaskDao dao = mDaoSession.getTaskDao();
+        for (Comic comic : list) {
+            List<Task> tasks = dao.queryBuilder().where(TaskDao.Properties.Key.eq(comic.getId())).list();
+            for (Task task : tasks) {
+                String path = task.getPath();
+                String[] args = path.split(" ");
+                task.setPath(args[0].concat("-").concat(args[1]));
+                dao.update(task);
+            }
+        }
     }
 
     public void initRootDocumentFile() {
@@ -61,8 +99,10 @@ public class CimocApplication extends Application {
             }
         } else if (uri.startsWith("content")) {
             mDocumentFile = DocumentFile.fromTreeUri(this, Uri.parse(uri));
-        } else {
+        } else if (uri.startsWith("file")) {
             mDocumentFile = DocumentFile.fromFile(new File(Uri.parse(uri).getPath()));
+        } else {
+            mDocumentFile = DocumentFile.fromFile(new File(uri, "Cimoc"));
         }
     }
 

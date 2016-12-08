@@ -51,19 +51,19 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#about_kit > ul > li:eq(0) > h1");
         String cover = body.src("#about_style > img");
-        String[] args = body.textWithSubstring("#about_kit > ul > li:eq(4)", 3).split("\\D");
-        String update = StringUtils.format("%4d-%02d-%02d",
-                Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String update = body.textWithSubstring("#about_kit > ul > li:eq(4)", 3);
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
         String author = body.textWithSubstring("#about_kit > ul > li:eq(1)", 3);
         String intro = body.textWithSubstring("#about_kit > ul > li:eq(7)", 3);
-        boolean status = body.text("#about_kit > ul > li:eq(2)").contains("完结");
+        boolean status = isFinish(body.text("#about_kit > ul > li:eq(2)"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override
@@ -79,7 +79,8 @@ public class HHSSEE extends MangaParser {
                 title = temp;
             }
             String[] array = StringUtils.match("/page(\\d+).*s=(\\d+)", node.attr("href"), 1, 2);
-            String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
+            //String path = array != null ? array[0].concat(" ").concat(array[1]) : ""; 可能会出问题
+            String path = array != null ? array[0].concat("-").concat(array[1]) : "";
             list.add(new Chapter(title.trim(), path));
         }
         return list;
@@ -102,9 +103,11 @@ public class HHSSEE extends MangaParser {
             String cid = node.hrefWithSubString("div.cListSlt > a", 7, -6);
             String title = node.text("a > span.cComicTitle");
             String cover = node.src("div.cListSlt > a > img");
-            String[] args = node.textWithSubstring("span.cComicRating", 5).split("\\D");
-            String update = StringUtils.format("%4d-%02d-%02d",
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            String update = node.textWithSubstring("span.cComicRating", 5);
+            if (update != null) {
+                String[] args = update.split("\\D");
+                update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+            }
             String author = node.text("span.cComicAuthor");
             list.add(new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, update, author));
         }
@@ -113,7 +116,7 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String[] array = path.split(" ");
+        String[] array = path.split("-");
         String url = StringUtils.format("http://www.hhssee.com/page%s/1.html?s=%s", array[0], array[1]);
         return new Request.Builder().url(url).build();
     }
@@ -139,10 +142,14 @@ public class HHSSEE extends MangaParser {
     @Override
     public String parseLazy(String html, String url) {
         Node body = new Node(html);
-        String server = body.attr("#hdDomain", "value").split("\\|")[0];
-        String name = body.attr("#iBodyQ > img", "name");
-        String result = unsuan(name).substring(1);
-        return server.concat(result);
+        String server = body.attr("#hdDomain", "value");
+        if (server != null) {
+            server = server.split("\\|")[0];
+            String name = body.attr("#iBodyQ > img", "name");
+            String result = unsuan(name).substring(1);
+            return server.concat(result);
+        }
+        return null;
     }
 
     @Override
@@ -152,8 +159,12 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        String[] args = new Node(html).textWithSubstring("span.cComicRating", 5).split("\\D");
-        return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String update = new Node(html).textWithSubstring("#about_kit > ul > li:eq(4)", 3);
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
+        return update;
     }
 
     private String unsuan(String str) {

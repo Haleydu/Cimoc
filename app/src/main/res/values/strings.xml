@@ -124,6 +124,9 @@
     <string name="settings_download_order_summary">默认逆序显示</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_thread_summary">最大同时下载任务数量</string>
+    <string name="settings_download_scan">扫描已下载漫画</string>
+    <string name="settings_download_scan_summary">在存储目录扫描已下载漫画</string>
+    <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下，重要的是，不一定可以成功！\n此功能便于卸载软件或清除数据后，再次使用时恢复下载的漫画！</string>
     <string name="settings_other">应用设置</string>
     <string name="settings_other_launch">启动页</string>
     <string name="settings_other_launch_summary">选择默认启动页</string>
