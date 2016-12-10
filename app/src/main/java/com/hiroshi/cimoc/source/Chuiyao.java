@@ -7,11 +7,13 @@ import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -126,6 +128,44 @@ public class Chuiyao extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).text("div.book-detail > div.cont-list > dl:eq(2) > dd");
+    }
+
+    @Override
+    public List<Pair<String, String>> getCategoryList() {
+        List<Pair<String, String>> list = new ArrayList<>();
+        list.add(Pair.create("全 部", ""));
+        list.add(Pair.create("最近更新", "0"));
+        list.add(Pair.create("少年热血", "1"));
+        list.add(Pair.create("武侠格斗", "2"));
+        list.add(Pair.create("科幻魔幻", "3"));
+        list.add(Pair.create("竞技体育", "4"));
+        list.add(Pair.create("爆笑喜剧", "5"));
+        list.add(Pair.create("侦探推理", "6"));
+        list.add(Pair.create("恐怖灵异", "7"));
+        list.add(Pair.create("少女爱情", "8"));
+        list.add(Pair.create("恋爱生活", "9"));
+        return list;
+    }
+
+    @Override
+    public Request getCategoryRequest(String id, int page) {
+        String url = StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%d&catid=%s&ajax=1&order=1", page, id);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("li > a")) {
+            String cid = node.hrefWithSplit(1);
+            String title = node.text("h3");
+            String cover = node.attr("div > img", "data-src");
+            String update = node.text("dl:eq(5) > dd");
+            String author = node.text("dl:eq(2) > dd");
+            list.add(new Comic(SourceManager.SOURCE_CHUIYAO, cid, title, cover, update, author));
+        }
+        return list;
     }
 
 }

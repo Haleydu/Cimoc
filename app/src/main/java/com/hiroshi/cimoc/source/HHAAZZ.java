@@ -20,6 +20,23 @@ import okhttp3.Request;
  */
 public class HHAAZZ extends MangaParser {
 
+    public HHAAZZ() {
+        server = new String[] {
+                "http://x8.1112223333.com/dm01/",
+                "http://x8.1112223333.com/dm02/",
+                "http://x8.1112223333.com/dm03/",
+                "http://x8.1112223333.com/dm04/",
+                "http://x8.1112223333.com/dm05/",
+                "http://x8.1112223333.com/dm06/",
+                "http://x8.1112223333.com/dm07/",
+                "http://x8.1112223333.com/dm08/",
+                "http://x8.1112223333.com/dm09/",
+                "http://x8.1112223333.com/dm10/",
+                "http://x8.1112223333.com/dm11/",
+                "http://x8.1112223333.com/dm12/"
+        };
+    }
+
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
@@ -95,24 +112,6 @@ public class HHAAZZ extends MangaParser {
             list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
         }
         return list;
-    }
-
-    @Override
-    public Request getImageServerRequest() {
-        if (server != null) {
-            return null;
-        }
-        return new Request.Builder().url("http://hhaazz.com/js/ds.js").build();
-    }
-
-    @Override
-    public void parseImageServer(String html) {
-        if (html != null) {
-            String str = StringUtils.match("sDS = \"(.*?)\";", html, 1);
-            if (str != null) {
-                server = str.split("\\|");
-            }
-        }
     }
 
     @Override

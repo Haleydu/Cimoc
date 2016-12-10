@@ -37,6 +37,10 @@ public class Node {
         return list;
     }
 
+    public Element get() {
+        return element;
+    }
+
     public String text() {
         return element.text().trim();
     }

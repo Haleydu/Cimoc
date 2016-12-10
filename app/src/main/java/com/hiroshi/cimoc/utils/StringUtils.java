@@ -2,8 +2,6 @@ package com.hiroshi.cimoc.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +29,10 @@ public class StringUtils {
             position = array.length + position;
         }
         return position < 0 || position >= array.length ? null : array[position];
+    }
+
+    public static String substring(String str, int start) {
+        return substring(str, start, -1);
     }
 
     public static String substring(String str, int start, int end) {
@@ -63,7 +65,7 @@ public class StringUtils {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(input);
             if (matcher.find()) {
-                return matcher.group(group);
+                return matcher.group(group).trim();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,20 +88,6 @@ public class StringUtils {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static List<String> matchAll(String regex, String input, int group) {
-        LinkedList<String> list = new LinkedList<>();
-        try {
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(input);
-            while (matcher.find()) {
-                list.add(matcher.group(group));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
 }

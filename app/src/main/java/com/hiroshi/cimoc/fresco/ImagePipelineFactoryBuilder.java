@@ -48,6 +48,8 @@ public class ImagePipelineFactoryBuilder {
                 return Headers.of("Referer", "http://m.57mh.com");
             case SourceManager.SOURCE_CHUIYAO:
                 return Headers.of("Referer", "http://m.chuiyao.com");
+            case SourceManager.SOURCE_JMYDM:
+                return Headers.of("Referer", "http://www.iibq.com");
 /*            case SourceManager.SOURCE_EHENTAI:
                 return Headers.of("Referer", "http://g.e-hentai.org");
             case SourceManager.SOURCE_EXHENTAI:

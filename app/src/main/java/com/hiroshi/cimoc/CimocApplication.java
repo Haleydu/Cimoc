@@ -21,9 +21,11 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 
+import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -60,17 +62,30 @@ public class CimocApplication extends Application {
 
     public void update() {
         int version = mPreferenceManager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
-        switch (version) {
-            case 0:
-                mDaoSession.getSourceDao().insert(new Source(null, "吹妖漫画", SourceManager.SOURCE_CHUIYAO, false));
-                mDaoSession.runInTx(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateTaskPath();
-                    }
-                });
+        if (version != VERSION) {
+            switch (version) {
+                case 0:
+                    updateSource();
+                    mDaoSession.runInTx(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateTaskPath();
+                        }
+                    });
+            }
+            mPreferenceManager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
-        mPreferenceManager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
+    }
+
+    private void updateSource() {
+        int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ, SourceManager.SOURCE_CCTUKU,
+                SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5, SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE,
+                SourceManager.SOURCE_57MH, SourceManager.SOURCE_CHUIYAO, SourceManager.SOURCE_JMYDM};
+        List<Source> list = new ArrayList<>(type.length);
+        for (int i = 0; i != type.length; ++i) {
+            list.add(new Source(null, SourceManager.getTitle(type[i]), type[i], true));
+        }
+        mDaoSession.getSourceDao().insertOrReplaceInTx(list);
     }
 
     private void updateTaskPath() {

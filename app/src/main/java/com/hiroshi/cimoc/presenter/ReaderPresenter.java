@@ -146,7 +146,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     public void updateComic(int page) {
         if (status != LOAD_INIT) {
             mComic.setPage(page);
-            mComicManager.update(mComic);   // 不用更新父界面的数据，因为这父界面不关心页数
+            mComicManager.update(mComic);
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_PAGE_CHANGE, page));
         }
     }
 

@@ -50,6 +50,12 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 mBaseView.onLastChange(mComic.getLast());
             }
         });
+        addSubscription(RxEvent.EVENT_COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mComic.setPage((int) rxEvent.getData());
+            }
+        });
     }
 
     public void load(long id, int source, String cid) {

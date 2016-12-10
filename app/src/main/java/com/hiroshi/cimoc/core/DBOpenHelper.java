@@ -3,19 +3,14 @@ package com.hiroshi.cimoc.core;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
-import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.TagDao;
 import com.hiroshi.cimoc.model.TagRefDao;
 import com.hiroshi.cimoc.model.TaskDao;
 
 import org.greenrobot.greendao.database.Database;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Hiroshi on 2016/8/12.
@@ -33,7 +28,6 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     @Override
     public void onCreate(Database db) {
         super.onCreate(db);
-        initSource(db);
     }
 
     @Override
@@ -53,19 +47,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 SourceDao.createTable(db, false);
                 TagDao.createTable(db, false);
                 TagRefDao.createTable(db, false);
-                initSource(db);
         }
-    }
-
-    private void initSource(Database db) {
-        int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ,
-                SourceManager.SOURCE_CCTUKU, SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5,
-                SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE, SourceManager.SOURCE_57MH, SourceManager.SOURCE_CHUIYAO};
-        List<Source> list = new ArrayList<>(type.length);
-        for (int i = 0; i != type.length; ++i) {
-            list.add(new Source(null, SourceManager.getTitle(type[i]), type[i], true));
-        }
-        new DaoMaster(db).newSession().getSourceDao().insertInTx(list);
     }
 
     private void updateDownload(Database db) {

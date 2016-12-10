@@ -7,10 +7,12 @@ import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -140,4 +142,76 @@ public class CCTuku extends MangaParser {
         return new Node(html).textWithSubstring("div.book > div > div.row > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
     }
 
+    @Override
+    public List<Pair<String, String>> getCategoryList() {
+        List<Pair<String, String>> list = new ArrayList<>();
+        list.add(Pair.create("魔幻神话", "1"));
+        list.add(Pair.create("动作格斗", "2"));
+        list.add(Pair.create("少年热血", "5"));
+        list.add(Pair.create("少女爱情", "4"));
+        list.add(Pair.create("武侠漫画", "15"));
+        list.add(Pair.create("轻松搞笑", "7"));
+        list.add(Pair.create("校园青春", "20"));
+        list.add(Pair.create("体育竞技", "3"));
+        list.add(Pair.create("科幻未来", "11"));
+        list.add(Pair.create("悬疑探案", "10"));
+        list.add(Pair.create("拳皇漫画", "12"));
+        list.add(Pair.create("恐怖鬼怪", "9"));
+        list.add(Pair.create("惊险", "91"));
+        list.add(Pair.create("美女漫画", "19"));
+        list.add(Pair.create("励志冒险", "8"));
+        list.add(Pair.create("历史漫画", "22"));
+        list.add(Pair.create("百合漫画", "35"));
+        list.add(Pair.create("爆笑喜剧", "101"));
+        list.add(Pair.create("竞技体育", "99"));
+        list.add(Pair.create("其它漫画", "98"));
+        list.add(Pair.create("侦探推理", "97"));
+        list.add(Pair.create("科幻魔幻", "96"));
+        list.add(Pair.create("武侠格斗", "95"));
+        list.add(Pair.create("青年", "94"));
+        list.add(Pair.create("生活", "93"));
+        list.add(Pair.create("复仇", "92"));
+        list.add(Pair.create("治愈", "90"));
+        list.add(Pair.create("后宫", "89"));
+        list.add(Pair.create("战争", "88"));
+        list.add(Pair.create("虐心", "87"));
+        list.add(Pair.create("唯美", "86"));
+        list.add(Pair.create("都市", "85"));
+        list.add(Pair.create("恋爱", "84"));
+        list.add(Pair.create("穿越", "83"));
+        list.add(Pair.create("福利", "82"));
+        list.add(Pair.create("猎奇", "39"));
+        list.add(Pair.create("职场", "38"));
+        list.add(Pair.create("短篇漫画", "34"));
+        list.add(Pair.create("综合其它", "33"));
+        list.add(Pair.create("江湖漫", "32"));
+        list.add(Pair.create("厨艺美食", "31"));
+        list.add(Pair.create("四格漫画", "30"));
+        list.add(Pair.create("动漫游图集", "29"));
+        list.add(Pair.create("动漫杂志", "24"));
+        list.add(Pair.create("连环画", "23"));
+        list.add(Pair.create("轻小说", "21"));
+        list.add(Pair.create("同人漫画", "18"));
+        list.add(Pair.create("青年漫画", "17"));
+        list.add(Pair.create("游戏漫画", "14"));
+        list.add(Pair.create("街霸漫画", "13"));
+        list.add(Pair.create("萌", "6"));
+        list.add(Pair.create("机战", "43"));
+        list.add(Pair.create("节操", "42"));
+        list.add(Pair.create("伪娘", "41"));
+        list.add(Pair.create("后宫", "40"));
+        list.add(Pair.create("耽美BL", "16"));
+        return list;
+    }
+
+    @Override
+    public Request getCategoryRequest(String id, int page) {
+        String url = StringUtils.format("http://m.tuku.cc/list/comic_%s_%d.htm", id, page);
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html) {
+        return null;
+    }
 }

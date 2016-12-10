@@ -1,5 +1,10 @@
 package com.hiroshi.cimoc.core.parser;
 
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Pair;
+
+import java.util.List;
+
 import okhttp3.Request;
 
 /**
@@ -35,12 +40,14 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public Request getImageServerRequest() {
+    public Request getCategoryRequest(String id, int page) {
         return null;
     }
 
     @Override
-    public void parseImageServer(String html) {}
+    public List<Comic> parseCategory(String html) {
+        return null;
+    }
 
     protected String[] buildUrl(String path) {
         if (server != null) {

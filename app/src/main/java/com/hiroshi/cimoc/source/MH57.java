@@ -1,18 +1,21 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -147,6 +150,145 @@ public class MH57 extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).text("div.book-detail > div.cont-list > dl:eq(7) > dd");
+    }
+
+    @Override
+    public Request getCategoryRequest(String id, int page) {
+        return null;
+    }
+
+    static class Category extends MangaCategory {
+
+        @Override
+        public boolean isComposite() {
+            return true;
+        }
+
+        @Override
+        public String composite(String... args) {
+            return null;
+        }
+
+        @Override
+        public List<Pair<String, String>> getClassification() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("热血", "1"));
+            list.add(Pair.create("武侠", "2"));
+            list.add(Pair.create("搞笑", "3"));
+            list.add(Pair.create("耽美", "4"));
+            list.add(Pair.create("爱情", "5"));
+            list.add(Pair.create("科幻", "6"));
+            list.add(Pair.create("魔法", "7"));
+            list.add(Pair.create("神魔", "8"));
+            list.add(Pair.create("竞技", "9"));
+            list.add(Pair.create("格斗", "10"));
+            list.add(Pair.create("机战", "11"));
+            list.add(Pair.create("体育", "12"));
+            list.add(Pair.create("运动", "13"));
+            list.add(Pair.create("校园", "14"));
+            list.add(Pair.create("励志", "15"));
+            list.add(Pair.create("历史", "16"));
+            list.add(Pair.create("伪娘", "17"));
+            list.add(Pair.create("百合", "18"));
+            list.add(Pair.create("后宫", "19"));
+            list.add(Pair.create("治愈", "20"));
+            list.add(Pair.create("美食", "21"));
+            list.add(Pair.create("推理", "22"));
+            list.add(Pair.create("悬疑", "23"));
+            list.add(Pair.create("恐怖", "24"));
+            list.add(Pair.create("职场", "25"));
+            list.add(Pair.create("BL", "26"));
+            list.add(Pair.create("剧情", "27"));
+            list.add(Pair.create("生活", "28"));
+            list.add(Pair.create("幻想", "29"));
+            list.add(Pair.create("战争", "30"));
+            list.add(Pair.create("仙侠", "33"));
+            list.add(Pair.create("性转换", "40"));
+            list.add(Pair.create("冒险", "41"));
+            list.add(Pair.create("其他", "32"));
+            return list;
+        }
+
+        @Override
+        public boolean hasArea() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getArea() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("日本", "日本"));
+            list.add(Pair.create("港台", "港台"));
+            list.add(Pair.create("欧美", "欧美"));
+            list.add(Pair.create("韩国", "韩国"));
+            list.add(Pair.create("国产", "国产"));
+            list.add(Pair.create("其它", "其它"));
+            return list;
+        }
+
+        @Override
+        public boolean hasReader() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getReader() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("少女", "shaonv"));
+            list.add(Pair.create("少年", "shaonian"));
+            list.add(Pair.create("青年", "qingnian"));
+            list.add(Pair.create("儿童", "ertong"));
+            list.add(Pair.create("通用", "tongyong"));
+            return list;
+        }
+
+        @Override
+        public boolean hasYear() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getYear() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("2016", "2016"));
+            list.add(Pair.create("2015", "2015"));
+            list.add(Pair.create("2014", "2014"));
+            list.add(Pair.create("2013", "2013"));
+            list.add(Pair.create("2012", "2012"));
+            list.add(Pair.create("2011", "2011"));
+            list.add(Pair.create("2010", "2010"));
+            list.add(Pair.create("2009", "2009"));
+            list.add(Pair.create("2008", "2008"));
+            list.add(Pair.create("2007", "2007"));
+            list.add(Pair.create("2006", "2006"));
+            list.add(Pair.create("2005", "2005"));
+            list.add(Pair.create("2004", "2004"));
+            list.add(Pair.create("2003", "2003"));
+            list.add(Pair.create("2002", "2002"));
+            list.add(Pair.create("2001", "2001"));
+            list.add(Pair.create("2000", "2000"));
+            list.add(Pair.create("1990", "1990"));
+            return list;
+        }
+
+        @Override
+        public boolean hasProgress() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getProgress() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("连载", "1"));
+            list.add(Pair.create("完结", "2"));
+            return list;
+        }
+
     }
 
 }

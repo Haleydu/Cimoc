@@ -151,7 +151,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
     @Override
     public void onTitleClick() {
         String path = mPresenter.getComic().getLast();
-        if (path != null) {
+        if (path == null) {
             path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
         }
         startReader(path);

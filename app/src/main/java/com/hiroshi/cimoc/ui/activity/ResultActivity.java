@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends CoordinatorActivity implements ResultView {
+public class ResultActivity extends RecyclerActivity implements ResultView {
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -55,7 +55,6 @@ public class ResultActivity extends CoordinatorActivity implements ResultView {
             }
         });
         mRecyclerView.setAdapter(mResultAdapter);
-        mLayoutView.removeView(mActionButton);
     }
 
     @Override
@@ -115,6 +114,10 @@ public class ResultActivity extends CoordinatorActivity implements ResultView {
     protected String getDefaultTitle() {
         return getIntent().getStringExtra(EXTRA_KEYWORD) == null ? getString(R.string.result_recent) : getString(R.string.result);
     }
+
+    public static final int LAUNCH_TYPE_SEARCH = 0;
+    public static final int LAUNCH_TYPE_RECENT = 1;
+    public static final int LAUNCH_TYPE_CATEGORY = 2;
 
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";

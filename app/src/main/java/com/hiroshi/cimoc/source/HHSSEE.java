@@ -70,7 +70,7 @@ public class HHSSEE extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        String name = body.text("#about_kit > ul > li:eq(0) > h1").trim();
+        String name = body.text("#about_kit > ul > li:eq(0) > h1");
         for (Node node : body.list("#permalink > div.cVolList > ul.cVolUl > li > a")) {
             String title = node.text();
             title = title.replaceFirst(name, "");
@@ -79,7 +79,7 @@ public class HHSSEE extends MangaParser {
                 title = temp;
             }
             String[] array = StringUtils.match("/page(\\d+).*s=(\\d+)", node.attr("href"), 1, 2);
-            //String path = array != null ? array[0].concat(" ").concat(array[1]) : ""; 可能会出问题
+            //String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
             String path = array != null ? array[0].concat("-").concat(array[1]) : "";
             list.add(new Chapter(title.trim(), path));
         }

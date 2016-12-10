@@ -65,6 +65,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
+                            throwable.printStackTrace();
                             if (page[0] == 1) {
                                 mBaseView.onRecentLoadFail();
                             }
