@@ -13,6 +13,7 @@ import okhttp3.Request;
 public abstract class MangaParser implements Parser {
 
     protected String[] server;
+    protected Category category;
 
     @Override
     public Request getChapterRequest(String html, String cid) {
@@ -30,6 +31,16 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
+    public Request getRecentRequest(int page) {
+        return null;
+    }
+
+    @Override
+    public List<Comic> parseRecent(String html, int page) {
+        return null;
+    }
+
+    @Override
     public Request getCheckRequest(String cid) {
         return null;
     }
@@ -40,7 +51,12 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public Request getCategoryRequest(String id, int page) {
+    public Category getCategory() {
+        return category;
+    }
+
+    @Override
+    public Request getCategoryRequest(String format, int page) {
         return null;
     }
 

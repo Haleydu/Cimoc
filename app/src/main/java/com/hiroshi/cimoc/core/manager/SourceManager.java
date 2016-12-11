@@ -122,10 +122,10 @@ public class SourceManager {
         return "null";
     }
 
-    private static SparseArray<Parser> sparseArray = new SparseArray<>();
+    private static SparseArray<Parser> mParserArray = new SparseArray<>();
 
     public static Parser getParser(int source) {
-        Parser parser = sparseArray.get(source);
+        Parser parser = mParserArray.get(source);
         if (parser == null) {
             switch (source) {
                 case SOURCE_IKANMAN:
@@ -177,7 +177,7 @@ public class SourceManager {
                     parser = new Pic177();
                     break;  */
             }
-            sparseArray.put(source, parser);
+            mParserArray.put(source, parser);
         }
         return parser;
     }

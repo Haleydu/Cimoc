@@ -10,6 +10,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.SourcePresenter;
+import com.hiroshi.cimoc.ui.activity.CategoryActivity;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
@@ -64,7 +65,7 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
 
     @Override
     public void onItemClick(View view, int position) {
-        Intent intent = ResultActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getType());
+        Intent intent = CategoryActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getType());
         startActivity(intent);
     }
 

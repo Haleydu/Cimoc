@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.core.parser;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 
 import java.util.List;
 
@@ -42,7 +41,9 @@ public interface Parser {
 
     String parseCheck(String html);
 
-    Request getCategoryRequest(String id, int page);
+    Category getCategory();
+
+    Request getCategoryRequest(String format, int page);
 
     List<Comic> parseCategory(String html);
 

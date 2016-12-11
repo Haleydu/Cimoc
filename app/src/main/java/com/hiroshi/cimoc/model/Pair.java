@@ -18,4 +18,9 @@ public class Pair<F, S> {
         return new Pair<>(first, second);
     }
 
+    @Override
+    public String toString() {
+        return first.toString();
+    }
+
 }

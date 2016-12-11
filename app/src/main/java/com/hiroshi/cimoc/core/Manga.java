@@ -108,14 +108,9 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
                 Parser parser = SourceManager.getParser(source);
-                Request request = parser.getImageServerRequest();
                 String html;
                 try {
-                    if (request != null) {
-                        html = getResponseBody(mClient, request);
-                        parser.parseImageServer(html);
-                    }
-                    request = parser.getImagesRequest(cid, path);
+                    Request request = parser.getImagesRequest(cid, path);
                     html = getResponseBody(mClient, request);
                     List<ImageUrl> list = parser.parseImages(html);
                     if (list.isEmpty()) {
@@ -134,19 +129,9 @@ public class Manga {
     public static List<ImageUrl> getImageUrls(OkHttpClient client, int source, String cid, String path) throws InterruptedIOException {
         List<ImageUrl> list = new ArrayList<>();
         Parser parser = SourceManager.getParser(source);
-        Request request = parser.getImageServerRequest();
         Response response = null;
         try {
-            if (request != null) {
-                response = client.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    parser.parseImageServer(response.body().string());
-                } else {
-                    throw new NetworkErrorException();
-                }
-                response.close();
-            }
-            request = parser.getImagesRequest(cid, path);
+            Request request  = parser.getImagesRequest(cid, path);
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 list.addAll(parser.parseImages(response.body().string()));

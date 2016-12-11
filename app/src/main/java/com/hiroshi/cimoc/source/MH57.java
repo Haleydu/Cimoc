@@ -165,12 +165,12 @@ public class MH57 extends MangaParser {
         }
 
         @Override
-        public String composite(String... args) {
+        public String getFormat(String... args) {
             return null;
         }
 
         @Override
-        public List<Pair<String, String>> getClassification() {
+        public List<Pair<String, String>> getSubject() {
             List<Pair<String, String>> list = new ArrayList<>();
             list.add(Pair.create("全部", ""));
             list.add(Pair.create("热血", "1"));

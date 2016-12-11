@@ -130,7 +130,6 @@ public class Chuiyao extends MangaParser {
         return new Node(html).text("div.book-detail > div.cont-list > dl:eq(2) > dd");
     }
 
-    @Override
     public List<Pair<String, String>> getCategoryList() {
         List<Pair<String, String>> list = new ArrayList<>();
         list.add(Pair.create("全 部", ""));

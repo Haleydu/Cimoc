@@ -30,6 +30,10 @@ import okhttp3.Request;
  */
 public class Dmzj extends MangaParser {
 
+    public Dmzj() {
+        category = new Dmzj.Category();
+    }
+
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
@@ -134,40 +138,6 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        String url = StringUtils.format("http://m.dmzj.com/latest/%d.json", (page - 1));
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        try {
-            JSONArray array = new JSONArray(html);
-            for (int i = 0; i != array.length(); ++i) {
-                try {
-                    JSONObject object = array.getJSONObject(i);
-                    if (object.optInt("hidden", 1) != 1) {
-                        String cid = object.getString("id");
-                        String title = object.getString("name");
-                        String cover = "http://images.dmzj.com/".concat(object.getString("cover"));
-                        long time = object.getLong("last_updatetime") * 1000;
-                        String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
-                        String author = object.optString("authors");
-                        // boolean status = object.getInt("status_tag_id") == 2310;
-                        list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    @Override
     public Request getCheckRequest(String cid) {
         return getInfoRequest(cid);
     }
@@ -178,17 +148,39 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String id, int page) {
-        String url = StringUtils.format("http://m.dmzj.com/classify/%s-0-0-0-0-%d.json", id, (page - 1));
+    public Request getCategoryRequest(String format, int page) {
+        String url = StringUtils.format(format, (page - 1));
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<Comic> parseCategory(String html) {
-        return null;
+        List<Comic> list = new LinkedList<>();
+        try {
+            JSONArray array = new JSONArray(html);
+            for (int i = 0; i != array.length(); ++i) {
+                try {
+                    JSONObject object = array.getJSONObject(i);
+                    if (object.optInt("hidden", 1) != 1) {
+                        String cid = object.getString("id");
+                        String title = object.getString("name");
+                        String cover = "http://images.dmzj.com/".concat(object.getString("cover"));
+                        Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
+                        String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+                        String author = object.optString("authors");
+                        list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
-    static class Category extends MangaCategory {
+    private static class Category extends MangaCategory {
 
         @Override
         public boolean isComposite() {
@@ -196,12 +188,13 @@ public class Dmzj extends MangaParser {
         }
 
         @Override
-        public String composite(String... args) {
-            return null;
+        public String getFormat(String... args) {
+            return StringUtils.format("http://m.dmzj.com/classify/%s-%s-%s-%s-%s-%%d.json",
+                    args[0], args[2], args[4], args[1], args[5]);
         }
 
         @Override
-        public List<Pair<String, String>> getClassification() {
+        public List<Pair<String, String>> getSubject() {
             List<Pair<String, String>> list = new ArrayList<>();
             list.add(Pair.create("全部", "0"));
             list.add(Pair.create("冒险", "1"));
@@ -275,6 +268,16 @@ public class Dmzj extends MangaParser {
             list.add(Pair.create("连载", "1"));
             list.add(Pair.create("完结", "2"));
             return list;
+        }
+
+        @Override
+        protected boolean hasYear() {
+            return false;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getYear() {
+            return null;
         }
 
         @Override

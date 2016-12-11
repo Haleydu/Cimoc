@@ -90,25 +90,6 @@ public class Jmydm extends MangaParser {
     }
 
     @Override
-    public Request getImageServerRequest() {
-        if (server != null) {
-            return null;
-        }
-        return new Request.Builder().url("http://www.iibq.com/script/ds.js").build();
-    }
-
-    @Override
-    public void parseImageServer(String html) {
-        if (html != null) {
-            String str = StringUtils.match("sDS = \"(.*?)\";", html, 1);
-            if (str != null) {
-                String[] args = str.split("\\||\\^");
-                server = new String[]{args[1], args[3]};
-            }
-        }
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("http://www.iibq.com/comic/%s/viewcomic%s", cid, path);
         return new Request.Builder().url(url).build();

@@ -142,7 +142,6 @@ public class CCTuku extends MangaParser {
         return new Node(html).textWithSubstring("div.book > div > div.row > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
     }
 
-    @Override
     public List<Pair<String, String>> getCategoryList() {
         List<Pair<String, String>> list = new ArrayList<>();
         list.add(Pair.create("魔幻神话", "1"));

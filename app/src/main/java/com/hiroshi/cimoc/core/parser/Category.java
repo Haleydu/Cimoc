@@ -1,7 +1,11 @@
 package com.hiroshi.cimoc.core.parser;
 
+import android.support.annotation.IntDef;
+
 import com.hiroshi.cimoc.model.Pair;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -10,32 +14,23 @@ import java.util.List;
 
 public interface Category {
 
+    int CATEGORY_SUBJECT = 0;
+    int CATEGORY_AREA = 1;
+    int CATEGORY_READER = 2;
+    int CATEGORY_PROGRESS = 3;
+    int CATEGORY_YEAR = 4;
+    int CATEGORY_ORDER = 5;
+
+    @IntDef({CATEGORY_SUBJECT, CATEGORY_AREA, CATEGORY_READER, CATEGORY_PROGRESS, CATEGORY_YEAR, CATEGORY_ORDER})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Attribute {}
+
     boolean isComposite();
 
-    String composite(String... args);
+    String getFormat(String... args);
 
-    boolean hasClassification();
+    boolean hasAttribute(@Attribute int attr);
 
-    List<Pair<String, String>> getClassification();
-
-    boolean hasArea();
-
-    List<Pair<String, String>> getArea();
-
-    boolean hasReader();
-
-    List<Pair<String, String>> getReader();
-
-    boolean hasProgress();
-
-    List<Pair<String, String>> getProgress();
-
-    boolean hasYear();
-
-    List<Pair<String, String>> getYear();
-
-    boolean hasOrder();
-
-    List<Pair<String, String>> getOrder();
+    List<Pair<String, String>> getAttrList(@Attribute int attr);
 
 }

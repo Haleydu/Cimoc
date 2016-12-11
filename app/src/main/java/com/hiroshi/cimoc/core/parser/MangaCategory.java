@@ -15,63 +15,83 @@ public abstract class MangaCategory implements Category {
         return false;
     }
 
-    @Override
-    public String composite(String... args) {
+    protected abstract List<Pair<String, String>> getSubject();
+
+    protected boolean hasArea() {
+        return false;
+    }
+
+    protected List<Pair<String, String>> getArea() {
+        return null;
+    }
+
+    protected boolean hasReader() {
+        return false;
+    }
+
+    protected List<Pair<String, String>> getReader() {
+        return null;
+    }
+
+    protected boolean hasProgress() {
+        return false;
+    }
+
+    protected List<Pair<String, String>> getProgress() {
+        return null;
+    }
+
+    protected boolean hasYear() {
+        return false;
+    }
+
+    protected List<Pair<String, String>> getYear() {
+        return null;
+    }
+
+    protected boolean hasOrder() {
+        return false;
+    }
+
+    protected List<Pair<String, String>> getOrder() {
         return null;
     }
 
     @Override
-    public boolean hasClassification() {
-        return true;
-    }
-
-    @Override
-    public boolean hasArea() {
+    public boolean hasAttribute(@Attribute int attr) {
+        switch (attr) {
+            case CATEGORY_SUBJECT:
+                return true;
+            case CATEGORY_AREA:
+                return hasArea();
+            case CATEGORY_READER:
+                return hasReader();
+            case CATEGORY_PROGRESS:
+                return hasProgress();
+            case CATEGORY_YEAR:
+                return hasYear();
+            case CATEGORY_ORDER:
+                return hasOrder();
+        }
         return false;
     }
 
     @Override
-    public List<Pair<String, String>> getArea() {
-        return null;
-    }
-
-    @Override
-    public boolean hasReader() {
-        return false;
-    }
-
-    @Override
-    public List<Pair<String, String>> getReader() {
-        return null;
-    }
-
-    @Override
-    public boolean hasProgress() {
-        return false;
-    }
-
-    @Override
-    public List<Pair<String, String>> getProgress() {
-        return null;
-    }
-
-    @Override
-    public boolean hasYear() {
-        return false;
-    }
-
-    @Override
-    public List<Pair<String, String>> getYear() {
-        return null;
-    }
-
-    @Override
-    public boolean hasOrder() {
-        return false;
-    }
-
-    @Override
-    public List<Pair<String, String>> getOrder() {
+    public List<Pair<String, String>> getAttrList(@Attribute int attr) {
+        switch (attr) {
+            case CATEGORY_SUBJECT:
+                return getSubject();
+            case CATEGORY_AREA:
+                return getArea();
+            case CATEGORY_READER:
+                return getReader();
+            case CATEGORY_PROGRESS:
+                return getProgress();
+            case CATEGORY_YEAR:
+                return getYear();
+            case CATEGORY_ORDER:
+                return getOrder();
+        }
         return null;
     }
 
