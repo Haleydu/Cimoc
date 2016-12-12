@@ -10,10 +10,12 @@
         android:layout_height="match_parent">
         <include layout="@layout/custom_toolbar"/>
         <LinearLayout
+            android:id="@+id/category_subject"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="6dp"
@@ -32,10 +34,12 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/category_area"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="6dp"
@@ -54,10 +58,12 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/category_reader"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="6dp"
@@ -76,10 +82,12 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/category_progress"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="6dp"
@@ -98,6 +106,7 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/category_year"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -121,10 +130,12 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/category_order"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:visibility="gone"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="6dp"

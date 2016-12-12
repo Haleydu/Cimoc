@@ -17,13 +17,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
 import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
+import com.hiroshi.cimoc.utils.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,7 +46,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
     @BindView(R.id.search_action_button) FloatingActionButton mActionButton;
 
     private SearchPresenter mPresenter;
-    private List<Source> mSourceList;
+    private List<Pair<Source, Boolean>> mSourceList;
 
     @Override
     protected void initPresenter() {
@@ -112,8 +115,8 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
                     String[] arr1 = new String[size];
                     boolean[] arr2 = new boolean[size];
                     for (int i = 0; i < size; ++i) {
-                        arr1[i] = mSourceList.get(i).getTitle();
-                        arr2[i] = mSourceList.get(i).getCheck();
+                        arr1[i] = mSourceList.get(i).first.getTitle();
+                        arr2[i] = mSourceList.get(i).second;
                     }
                     MultiDialogFragment fragment =
                             MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
@@ -130,9 +133,11 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
         switch (requestCode) {
             case DIALOG_REQUEST_SOURCE:
                 boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
-                int size = mSourceList.size();
-                for (int i = 0; i < size; ++i) {
-                    mSourceList.get(i).setCheck(check[i]);
+                if (check != null) {
+                    int size = mSourceList.size();
+                    for (int i = 0; i < size; ++i) {
+                        mSourceList.get(i).second = check[i];
+                    }
                 }
                 break;
         }
@@ -153,15 +158,16 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
             mInputLayout.setError(getString(R.string.search_keyword_empty));
         } else {
             ArrayList<Integer> list = new ArrayList<>();
-            for (Source source : mSourceList) {
-                if (source.getCheck()) {
-                    list.add(source.getType());
+            for (Pair<Source, Boolean> pair : mSourceList) {
+                if (pair.second) {
+                    list.add(pair.first.getType());
                 }
             }
             if (list.isEmpty()) {
                 showSnackbar(R.string.search_source_none);
             } else {
-                startActivity(ResultActivity.createIntent(getActivity(), keyword, list));
+                startActivity(ResultActivity.createIntent(getActivity(), keyword,
+                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_TYPE_SEARCH));
             }
         }
     }
@@ -169,7 +175,9 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
     @Override
     public void onSourceLoadSuccess(List<Source> list) {
         hideProgressBar();
-        mSourceList.addAll(list);
+        for (Source source : list) {
+            mSourceList.add(Pair.create(source, true));
+        }
     }
 
     @Override
@@ -180,13 +188,17 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     @Override
     public void onSourceEnable(Source source) {
-        mSourceList.remove(source);
-        mSourceList.add(source);
+        mSourceList.add(Pair.create(source, true));
     }
 
     @Override
     public void onSourceDisable(Source source) {
-        mSourceList.remove(source);
+        Iterator<Pair<Source, Boolean>> iterator = mSourceList.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().first.getId().equals(source.getId())) {
+                iterator.remove();
+            }
+        }
     }
 
     @Override

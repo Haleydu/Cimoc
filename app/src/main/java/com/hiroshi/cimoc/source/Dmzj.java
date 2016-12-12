@@ -154,7 +154,7 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html) {
+    public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new LinkedList<>();
         try {
             JSONArray array = new JSONArray(html);

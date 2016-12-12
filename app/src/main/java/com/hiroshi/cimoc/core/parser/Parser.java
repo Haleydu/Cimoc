@@ -45,6 +45,6 @@ public interface Parser {
 
     Request getCategoryRequest(String format, int page);
 
-    List<Comic> parseCategory(String html);
+    List<Comic> parseCategory(String html, int page);
 
 }

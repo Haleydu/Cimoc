@@ -41,4 +41,12 @@
         <item>切换阅读模式</item>
         <item>显示/隐藏进度条</item>
     </string-array>
+    <string-array name="category_items">
+        <item>题材</item>
+        <item>地区</item>
+        <item>读者</item>
+        <item>年份</item>
+        <item>进度</item>
+        <item>顺序</item>
+    </string-array>
 </resources>

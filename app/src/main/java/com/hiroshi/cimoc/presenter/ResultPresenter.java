@@ -1,133 +1,145 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/7/4.
  */
 public class ResultPresenter extends BasePresenter<ResultView> {
 
-    private static final int SEARCH_NULL = 0;
-    private static final int SEARCH_DOING = 1;
-    private static final int SEARCH_EMPTY = 2;
-    private static final int SEARCH_ERROR = 3;
+    private static final int STATE_NULL = 0;
+    private static final int STATE_DOING = 1;
+    private static final int STATE_DONE = 3;
+
+    private static class State {
+        int source;
+        int page;
+        int state;
+    }
 
     private SourceManager mSourceManager;
-    private List<Integer> list;
-    private int[] page;
-    private int[] state;
+    private State[] mStateArray;
+
     private String keyword;
+    private int error = 0;
 
-    private int emptyNum = 0;
-    private int errorNum = 0;
-
-    public ResultPresenter(List<Integer> list, String keyword) {
+    public ResultPresenter(int[] source, String keyword) {
         mSourceManager = SourceManager.getInstance();
         this.keyword = keyword;
-        this.list = list;
-        if (list == null) {
-            loadSource();
-        }
-        this.page = new int[this.list.size()];
-        this.state = new int[this.list.size()];
+        initStateArray(source);
     }
 
-    private void loadSource() {
-        list = new ArrayList<>();
-        for (Source source : mSourceManager.listEnable()) {
-            list.add(source.getType());
+    private void initStateArray(int[] source) {
+        if (source == null) {
+            source = loadSource();
+        }
+        mStateArray = new State[source.length];
+        for (int i = 0; i != mStateArray.length; ++i) {
+            mStateArray[i] = new State();
+            mStateArray[i].source = source[i];
+            mStateArray[i].page = 0;
+            mStateArray[i].state = STATE_NULL;
         }
     }
 
-    private void recent() {
-        if (state[0] == SEARCH_NULL) {
-            state[0] = SEARCH_DOING;
-            mCompositeSubscription.add(Manga.getRecentComic(list.get(0), ++page[0])
+    private int[] loadSource() {
+        List<Source> list = mSourceManager.listEnable();
+        int[] source = new int[list.size()];
+        for (int i = 0; i != source.length; ++i) {
+            source[i] = list.get(i).getType();
+        }
+        return source;
+    }
+
+    public void loadCategory() {
+        if (mStateArray[0].state == STATE_NULL) {
+            mStateArray[0].state = STATE_DOING;
+            mCompositeSubscription.add(Manga.getCategoryComic(mStateArray[0].source, keyword, ++mStateArray[0].page)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<Comic>>() {
                         @Override
                         public void call(List<Comic> list) {
-                            mBaseView.onRecentLoadSuccess(list);
-                            state[0] = SEARCH_NULL;
+                            mBaseView.onLoadSuccess(list);
+                            mStateArray[0].state = STATE_NULL;
                         }
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
                             throwable.printStackTrace();
-                            if (page[0] == 1) {
-                                mBaseView.onRecentLoadFail();
+                            if (mStateArray[0].page == 1) {
+                                mBaseView.onLoadFail();
                             }
                         }
                     }));
         }
     }
 
-    private void search() {
-        if (list.isEmpty()) {
-            mBaseView.onSearchError();
-            return;
-        }
-        for (int i = 0; i != list.size(); ++i) {
-            final int pos = i;
-            if (state[pos] == SEARCH_NULL) {
-                state[pos] = SEARCH_DOING;
-                mCompositeSubscription.add(Manga.getSearchResult(list.get(i), keyword, ++page[pos])
-                        .filter(new Func1<Comic, Boolean>() {
-                            @Override
-                            public Boolean call(Comic comic) {
-                                return comic != null;
+    public void loadRecent() {
+        if (mStateArray[0].state == STATE_NULL) {
+            mStateArray[0].state = STATE_DOING;
+            mCompositeSubscription.add(Manga.getRecentComic(mStateArray[0].source, ++mStateArray[0].page)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<List<Comic>>() {
+                        @Override
+                        public void call(List<Comic> list) {
+                            mBaseView.onLoadSuccess(list);
+                            mStateArray[0].state = STATE_NULL;
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            if (mStateArray[0].page == 1) {
+                                mBaseView.onLoadFail();
                             }
-                        })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Observer<Comic>() {
-                            @Override
-                            public void onCompleted() {
-                                state[pos] = SEARCH_NULL;
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                if (page[pos] == 1) {
-                                    if (e instanceof Manga.EmptyResultException) {
-                                        state[pos] = SEARCH_EMPTY;
-                                        if (++emptyNum == state.length) {
-                                            mBaseView.onResultEmpty();
-                                        }
-                                    } else {
-                                        state[pos] = SEARCH_ERROR;
-                                        if (++errorNum == state.length) {
-                                            mBaseView.onSearchError();
-                                        }
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onNext(Comic comic) {
-                                mBaseView.onSearchSuccess(comic);
-                            }
-                        }));
-            }
+                        }
+                    }));
         }
     }
 
-    public void load() {
-        if (keyword == null) {
-            recent();
-        } else {
-            search();
+    public void loadSearch() {
+        if (mStateArray.length == 0) {
+            mBaseView.onSearchError();
+            return;
+        }
+        for (final State obj : mStateArray) {
+            if (obj.state == STATE_NULL) {
+                obj.state = STATE_DOING;
+                mCompositeSubscription.add(Manga.getSearchResult(obj.source, keyword, ++obj.page)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<Comic>() {
+                            @Override
+                            public void call(Comic comic) {
+                                mBaseView.onSearchSuccess(comic);
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                if (obj.page == 1) {
+                                    obj.state = STATE_DONE;
+                                    if (++error == mStateArray.length) {
+                                        mBaseView.onSearchError();
+                                    }
+                                }
+                            }
+                        }, new Action0() {
+                            @Override
+                            public void call() {
+                                obj.state = STATE_NULL;
+                            }
+                        }));
+            }
         }
     }
 

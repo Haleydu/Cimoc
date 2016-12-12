@@ -25,6 +25,9 @@ public class CategoryActivity extends BackActivity {
     @BindViews({R.id.category_spinner_subject, R.id.category_spinner_area, R.id.category_spinner_reader,
             R.id.category_spinner_year, R.id.category_spinner_progress, R.id.category_spinner_order})
     List<AppCompatSpinner> mSpinnerList;
+    @BindViews({R.id.category_subject, R.id.category_area, R.id.category_reader,
+            R.id.category_year, R.id.category_progress, R.id.category_order})
+    List<View> mCategoryView;
 
     private Category mCategory;
 
@@ -43,12 +46,11 @@ public class CategoryActivity extends BackActivity {
 
     private void initSpinner() {
         int[] type = new int[]{Category.CATEGORY_SUBJECT, Category.CATEGORY_AREA, Category.CATEGORY_READER,
-                Category.CATEGORY_PROGRESS, Category.CATEGORY_YEAR, Category.CATEGORY_ORDER};
+                Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};
         for (int i = 0; i != type.length; ++i) {
-            if (mCategory.hasAttribute(type[i])) {
-                AppCompatSpinner spinner = mSpinnerList.get(i);
-                spinner.setVisibility(View.VISIBLE);
-                spinner.setAdapter(new ArrayAdapter<>(this, R.layout.item_category, mCategory.getAttrList(type[i])));
+             if (mCategory.hasAttribute(type[i])) {
+                mCategoryView.get(i).setVisibility(View.VISIBLE);
+                mSpinnerList.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.item_category, mCategory.getAttrList(type[i])));
             }
         }
     }
@@ -58,7 +60,10 @@ public class CategoryActivity extends BackActivity {
         for (int i = 0; i != args.length; ++i) {
             args[i] = getSpinnerValue(mSpinnerList.get(i));
         }
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
         String format = mCategory.getFormat(args);
+        Intent intent = ResultActivity.createIntent(this, format, source, ResultActivity.LAUNCH_TYPE_CATEGORY);
+        startActivity(intent);
     }
 
     @SuppressWarnings("unchecked")

@@ -40,11 +40,14 @@ public class Manga {
                     String html = getResponseBody(mClient, request);
                     SearchIterator iterator = parser.getSearchIterator(html, page);
                     if (iterator == null || iterator.empty()) {
-                        throw new EmptyResultException();
+                        throw new Exception();
                     }
                     while (iterator.hasNext()) {
-                        subscriber.onNext(iterator.next());
-                        Thread.sleep(random.nextInt(200));
+                        Comic comic = iterator.next();
+                        if (comic != null) {
+                            subscriber.onNext(comic);
+                            Thread.sleep(random.nextInt(200));
+                        }
                     }
                     subscriber.onCompleted();
                 } catch (Exception e) {
@@ -81,6 +84,28 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
+    public static Observable<List<Comic>> getCategoryComic(final int source, final String format, final int page) {
+        return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
+            @Override
+            public void call(Subscriber<? super List<Comic>> subscriber) {
+                Parser parser = SourceManager.getParser(source);
+                Request request = parser.getCategoryRequest(format, page);
+                try {
+                    String html = getResponseBody(mClient, request);
+                    List<Comic> list = parser.parseCategory(html, page);
+                    if (!list.isEmpty()) {
+                        subscriber.onNext(list);
+                        subscriber.onCompleted();
+                    } else {
+                        throw new Exception();
+                    }
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
     public static Observable<List<Comic>> getRecentComic(final int source, final int page) {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
@@ -90,11 +115,11 @@ public class Manga {
                 try {
                     String html = getResponseBody(mClient, request);
                     List<Comic> list = parser.parseRecent(html, page);
-                    if (list.isEmpty()) {
-                        throw new EmptyResultException();
-                    } else {
+                    if (!list.isEmpty()) {
                         subscriber.onNext(list);
                         subscriber.onCompleted();
+                    } else {
+                        throw new Exception();
                     }
                 } catch (Exception e) {
                     subscriber.onError(e);
@@ -246,7 +271,5 @@ public class Manga {
     public static class ParseErrorException extends Exception {}
 
     public static class NetworkErrorException extends Exception {}
-
-    public static class EmptyResultException extends Exception {}
 
 }

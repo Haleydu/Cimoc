@@ -153,7 +153,7 @@ public class Chuiyao extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html) {
+    public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("li > a")) {

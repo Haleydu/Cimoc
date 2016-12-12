@@ -95,7 +95,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
                     break;
                 case R.id.detail_search_title:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null);
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null, ResultActivity.LAUNCH_TYPE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.detail_search_empty);
@@ -103,7 +103,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
                     break;
                 case R.id.detail_search_author:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null);
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_TYPE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.detail_search_empty);

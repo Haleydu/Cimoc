@@ -210,7 +210,8 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html) {
+    public List<Comic> parseCategory(String html, int page) {
         return null;
     }
+
 }
