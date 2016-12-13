@@ -80,7 +80,7 @@ public class CimocApplication extends Application {
     private void updateSource() {
         int[] type = { SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ, SourceManager.SOURCE_CCTUKU,
                 SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5, SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE,
-                SourceManager.SOURCE_57MH, SourceManager.SOURCE_CHUIYAO, SourceManager.SOURCE_JMYDM};
+                SourceManager.SOURCE_57MH, SourceManager.SOURCE_CHUIYAO};
         List<Source> list = new ArrayList<>(type.length);
         for (int i = 0; i != type.length; ++i) {
             list.add(new Source(null, SourceManager.getTitle(type[i]), type[i], true));

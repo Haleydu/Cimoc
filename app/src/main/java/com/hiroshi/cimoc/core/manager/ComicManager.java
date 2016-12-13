@@ -62,7 +62,7 @@ public class ComicManager {
                 .list();
     }
 
-    public Observable<List<Comic>> listContiueInRx() {
+    public Observable<List<Comic>> listContinueInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull(), Properties.Finish.notEq(true))
                 .orderDesc(Properties.Highlight, Properties.Favorite)

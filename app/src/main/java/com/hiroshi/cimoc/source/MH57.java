@@ -28,7 +28,11 @@ import okhttp3.Request;
 public class MH57 extends MangaParser {
 
     public MH57() {
-        server = new String[]{ "http://images.333dm.com", "http://cartoon.akshk.com" };
+        server = new String[]{
+                "http://images.333dm.com",
+                "http://cartoon.akshk.com"
+        };
+        category = new Category();
     }
 
     @Override
@@ -153,11 +157,35 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String id, int page) {
-        return null;
+    public Request getCategoryRequest(String format, int page) {
+        String url = StringUtils.format(format, page);
+        return new Request.Builder().url(url).build();
     }
 
-    static class Category extends MangaCategory {
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new ArrayList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#AspNetPager1 > span.current")) {
+            try {
+                if (Integer.parseInt(node.text()) < page) {
+                    return list;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Node node : body.list("#contList > li")) {
+            String cid = node.hrefWithSplit("a", 0);
+            String title = node.attr("a", "title");
+            String cover = node.attr("a > img", "data-src");
+            String update = node.textWithSubstring("span.updateon", 4, 14);
+            list.add(new Comic(SourceManager.SOURCE_57MH, cid, title, cover, update, null));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
 
         @Override
         public boolean isComposite() {
@@ -166,7 +194,8 @@ public class MH57 extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return null;
+            return StringUtils.format("http://www.57mh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
+                    args[1], args[0], args[3], args[4], args[5]);
         }
 
         @Override
@@ -229,23 +258,6 @@ public class MH57 extends MangaParser {
         }
 
         @Override
-        public boolean hasReader() {
-            return true;
-        }
-
-        @Override
-        public List<Pair<String, String>> getReader() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("少女", "shaonv"));
-            list.add(Pair.create("少年", "shaonian"));
-            list.add(Pair.create("青年", "qingnian"));
-            list.add(Pair.create("儿童", "ertong"));
-            list.add(Pair.create("通用", "tongyong"));
-            return list;
-        }
-
-        @Override
         public boolean hasYear() {
             return true;
         }
@@ -286,6 +298,21 @@ public class MH57 extends MangaParser {
             list.add(Pair.create("全部", ""));
             list.add(Pair.create("连载", "1"));
             list.add(Pair.create("完结", "2"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasOrder() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getOrder() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("发布", "id"));
+            list.add(Pair.create("更新", "addtime"));
+            list.add(Pair.create("人气", "hits"));
+            list.add(Pair.create("评分", "gold"));
             return list;
         }
 

@@ -18,8 +18,8 @@ import okhttp3.Request;
 /**
  * Created by Hiroshi on 2016/8/6.
  */
-public class ExHentai extends MangaParser {
-
+public class ExHentai/* extends MangaParser */{
+/*
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("https://exhentai.org?f_search=%s&page=%d", keyword, (page - 1));
@@ -128,5 +128,5 @@ public class ExHentai extends MangaParser {
     public String parseLazy(String html, String url) {
         return new Node(html).attr("#img", "src");
     }
-
+*/
 }

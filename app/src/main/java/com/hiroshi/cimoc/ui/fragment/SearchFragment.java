@@ -95,8 +95,6 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
     public void onHiddenChanged(boolean hidden) {
         if (hidden) {
             mActionButton.hide();
-        } else {
-            mActionButton.show();
         }
     }
 

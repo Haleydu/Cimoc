@@ -19,8 +19,8 @@ import okhttp3.Request;
  * Created by Hiroshi on 2016/10/5.
  */
 
-public class  Pic177 extends MangaParser {
-
+public class  Pic177/* extends MangaParser */{
+/*
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("http://www.177pic66.com/page/%d?s=%s", page, keyword);
@@ -116,5 +116,5 @@ public class  Pic177 extends MangaParser {
         }
         return list;
     }
-
+*/
 }

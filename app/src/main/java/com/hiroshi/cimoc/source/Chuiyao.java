@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
@@ -24,6 +25,10 @@ import okhttp3.Request;
  */
 
 public class Chuiyao extends MangaParser {
+
+    public Chuiyao() {
+        category = new Category();
+    }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -147,8 +152,8 @@ public class Chuiyao extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String id, int page) {
-        String url = StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%d&catid=%s&ajax=1&order=1", page, id);
+    public Request getCategoryRequest(String format, int page) {
+        String url = StringUtils.format(format, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -165,6 +170,46 @@ public class Chuiyao extends MangaParser {
             list.add(new Comic(SourceManager.SOURCE_CHUIYAO, cid, title, cover, update, author));
         }
         return list;
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public String getFormat(String... args) {
+            return StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s", args[0], args[5]);
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("最近更新", "0"));
+            list.add(Pair.create("少年热血", "1"));
+            list.add(Pair.create("武侠格斗", "2"));
+            list.add(Pair.create("科幻魔幻", "3"));
+            list.add(Pair.create("竞技体育", "4"));
+            list.add(Pair.create("爆笑喜剧", "5"));
+            list.add(Pair.create("侦探推理", "6"));
+            list.add(Pair.create("恐怖灵异", "7"));
+            list.add(Pair.create("少女爱情", "8"));
+            list.add(Pair.create("恋爱生活", "9"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasOrder() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getOrder() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("发布", "1"));
+            list.add(Pair.create("更新", "3"));
+            list.add(Pair.create("人气", "2"));
+            return list;
+        }
+
     }
 
 }

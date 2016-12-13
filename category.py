@@ -57,6 +57,33 @@ def mh57():
     return result
 
 
+def hhssee():
+    response = requests.get('http://www.hhssee.com/')
+    soup = bs4.BeautifulSoup(response.text, 'lxml')
+    result = [("全部", "")]
+    for node in soup.select('#iHBG > div.cHNav > div > span > a'):
+        result.append((node.get_text(), re.split('_|\\.', node.get('href'))[1]))
+    return result
+
+
+def dm5():
+    response = requests.get('http://www.dm5.com/manhua-latest/')
+    soup = bs4.BeautifulSoup(response.text, 'lxml')
+    result = [("全部", "")]
+    for node in soup.select('#index_left > div.inkk > div.syzm > span.new_span_bak > a'):
+        result.append((node.get_text(), node.get('href').split('-')[2][2:-1]))
+    return result
+
+
+def u17():
+    response = requests.get('http://www.u17.com/comic_list/th99_gr99_ca99_ss0_ob0_ac0_as0_wm0_co99_ct99_p1.html')
+    soup = bs4.BeautifulSoup(response.text, 'lxml')
+    result = [("全部", "th99")]
+    for node in soup.select('#select > div.fr > dl.subject > dd > a'):
+            result.append((node.get_text(), node.get('href').split('/')[-1].split('_')[0]))
+    return result
+
+
 def build(func):
     print('List<Pair<String, String>> list = new ArrayList<>();')
     for t in func():
@@ -65,4 +92,4 @@ def build(func):
 
 
 if __name__ == '__main__':
-    build(mh57)
+    build(u17)

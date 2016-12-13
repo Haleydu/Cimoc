@@ -56,6 +56,8 @@
     <string name="chapter_download_perm_fail">获取权限失败</string>
     <string name="chapter_download_empty">未选择章节</string>
 
+    <string name="category">分类</string>
+
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>

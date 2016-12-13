@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
@@ -33,6 +35,7 @@ public class IKanman extends MangaParser {
                 "http://idx0.hamreus.com:8080",
                 "http://ilt2.hamreus.com:8080"
         };
+        category = new Category();
     }
 
     @Override
@@ -162,27 +165,35 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String path, int page) {
-        String url = StringUtils.format("http://m.ikanman.com/list/%s/?page=%d&catid=0&ajax=1", path, page);
+    public Request getCategoryRequest(String format, int page) {
+        String url = StringUtils.format(format, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+        List<Comic> list = new ArrayList<>();
         Node body = new Node(html);
-        for (Node node : body.list("li > a")) {
-            String cid = node.hrefWithSplit(1);
-            String title = node.text("h3");
-            String cover = node.attr("div > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
-            String author = node.text("dl:eq(2) > dd");
-            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author));
+        for (Node node : body.list("#AspNetPager1 > span.current")) {
+            try {
+                if (Integer.parseInt(node.text()) < page) {
+                    return list;
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+        for (Node node : body.list("#contList > li")) {
+            String cid = node.hrefWithSplit("a", 1);
+            String title = node.attr("a", "title");
+            String cover = node.src("a > img");
+            String update = node.textWithSubstring("span.updateon", 4, 14);
+            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, null));
         }
         return list;
     }
 
-    public static class Category extends MangaCategory {
+    private static class Category extends MangaCategory {
 
         @Override
         public boolean isComposite() {
@@ -191,7 +202,10 @@ public class IKanman extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return null;
+            String path = args[1].concat(" ").concat(args[0]).concat(" ").concat(args[2])
+                    .concat(" ").concat(args[3]).concat(" ").concat(args[4]).trim();
+            path = path.replaceAll("\\s+", "_");
+            return StringUtils.format("http://www.ikanman.com/list/%s/%s_p%%d.html", path, args[5]);
         }
 
         @Override
@@ -308,6 +322,21 @@ public class IKanman extends MangaParser {
             list.add(Pair.create("全部", ""));
             list.add(Pair.create("连载", "lianzai"));
             list.add(Pair.create("完结", "wanjie"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasOrder() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getOrder() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("发布", "index"));
+            list.add(Pair.create("更新", "update"));
+            list.add(Pair.create("人气", "view"));
+            list.add(Pair.create("评分", "rate"));
             return list;
         }
 

@@ -33,8 +33,10 @@ public class CategoryActivity extends BackActivity {
 
     @Override
     protected void initView() {
-        //int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        int source = SourceManager.SOURCE_DMZJ;
+        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        if (mToolbar != null) {
+            mToolbar.setTitle(SourceManager.getTitle(source));
+        }
         mCategory = SourceManager.getParser(source).getCategory();
         initSpinner();
     }
@@ -72,6 +74,11 @@ public class CategoryActivity extends BackActivity {
             return null;
         }
         return ((Pair<String, String>) spinner.getSelectedItem()).second;
+    }
+
+    @Override
+    protected String getDefaultTitle() {
+        return getString(R.string.category);
     }
 
     @Override

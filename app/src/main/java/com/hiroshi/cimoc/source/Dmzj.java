@@ -31,7 +31,7 @@ import okhttp3.Request;
 public class Dmzj extends MangaParser {
 
     public Dmzj() {
-        category = new Dmzj.Category();
+        category = new Category();
     }
 
     @Override
@@ -268,16 +268,6 @@ public class Dmzj extends MangaParser {
             list.add(Pair.create("连载", "1"));
             list.add(Pair.create("完结", "2"));
             return list;
-        }
-
-        @Override
-        protected boolean hasYear() {
-            return false;
-        }
-
-        @Override
-        protected List<Pair<String, String>> getYear() {
-            return null;
         }
 
         @Override

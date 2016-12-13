@@ -18,8 +18,8 @@ import okhttp3.Request;
 /**
  * Created by Hiroshi on 2016/8/9.
  */
-public class Wnacg extends MangaParser {
-
+public class Wnacg/* extends MangaParser */{
+/*
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("https://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
@@ -122,5 +122,5 @@ public class Wnacg extends MangaParser {
     public String parseLazy(String html, String url) {
         return new Node(html).attr("#picarea", "src");
     }
-
+*/
 }

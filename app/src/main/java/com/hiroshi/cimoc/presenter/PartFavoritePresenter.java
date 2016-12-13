@@ -70,7 +70,7 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
 
     private Observable<List<MiniComic>> getObservable(long id) {
         if (id == TagManager.TAG_CONTINUE) {
-            return mComicManager.listContiueInRx()
+            return mComicManager.listContinueInRx()
                     .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
                         @Override
                         public MiniComic call(Comic comic) {

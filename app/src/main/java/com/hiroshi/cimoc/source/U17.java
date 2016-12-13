@@ -1,12 +1,14 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -16,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +30,10 @@ import okhttp3.Request;
  * Created by Hiroshi on 2016/8/8.
  */
 public class U17 extends MangaParser {
+
+    public U17() {
+        category = new Category();
+    }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -153,6 +160,78 @@ public class U17 extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).textWithSubstring("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public String getFormat(String... args) {
+            return StringUtils.format("http://www.u17.com/comic_list/%s_%s_ca99_%s_%s_ac0_as0_wm0_co99_ct99_p%%d.html",
+                    args[0], args[2], args[4], args[5]);
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", "th99"));
+            list.add(Pair.create("搞笑", "th1"));
+            list.add(Pair.create("魔幻", "th2"));
+            list.add(Pair.create("生活", "th3"));
+            list.add(Pair.create("恋爱", "th4"));
+            list.add(Pair.create("动作", "th5"));
+            list.add(Pair.create("科幻", "th6"));
+            list.add(Pair.create("战争", "th7"));
+            list.add(Pair.create("体育", "th8"));
+            list.add(Pair.create("推理", "th9"));
+            list.add(Pair.create("恐怖", "th11"));
+            list.add(Pair.create("同人", "th12"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasReader() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getReader() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", "gr99"));
+            list.add(Pair.create("少年", "gr1"));
+            list.add(Pair.create("少女", "gr2"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasProgress() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getProgress() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("连载", "ss0"));
+            list.add(Pair.create("完结", "ss1"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasOrder() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getOrder() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("人气", "ob9"));
+            list.add(Pair.create("更新", "ob0"));
+            list.add(Pair.create("章节", "ob1"));
+            list.add(Pair.create("评论", "ob3"));
+            list.add(Pair.create("发布", "ob2"));
+            list.add(Pair.create("收藏", "ob4"));
+            return list;
+        }
+
     }
 
 }

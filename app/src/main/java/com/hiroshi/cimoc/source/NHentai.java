@@ -18,8 +18,8 @@ import okhttp3.Request;
 /**
  * Created by Hiroshi on 2016/8/14.
  */
-public class NHentai extends MangaParser {
-
+public class NHentai/* extends MangaParser */{
+/*
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("https://nhentai.net/search/?q=%s&page=%d", keyword, page);
@@ -102,5 +102,5 @@ public class NHentai extends MangaParser {
         }
         return list;
     }
-
+*/
 }
