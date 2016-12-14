@@ -1,12 +1,14 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -14,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +29,10 @@ import okhttp3.RequestBody;
  */
 
 public class Webtoon extends MangaParser {
+
+    public Webtoon() {
+        category = new Category();
+    }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -87,28 +94,6 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        if (page == 1) {
-            String url = "http://m.webtoons.com/zh-hans/new";
-            return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
-        }
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#ct > ul > li > a")) {
-            String cid = node.hrefWithSplit(-1);
-            String title = node.text("div.info > p.subj > span");
-            String cover = node.attrWithSplit("div.pic", "style", "\\(|\\)", 1);
-            list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
-        }
-        return list;
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
         String url = "http://m.webtoons.com/zh-hans/".concat(path);
         return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
@@ -146,6 +131,43 @@ public class Webtoon extends MangaParser {
             update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         }
         return update;
+    }
+
+    @Override
+    public Request getCategoryRequest(String format, int page) {
+        if (page == 1) {
+            return super.getCategoryRequest(format, page);
+        }
+        return null;
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#ct > ul > li > a")) {
+            String cid = node.hrefWithSplit(-1);
+            String title = node.text("div.info > p.subj > span");
+            String cover = node.attrWithSplit("div.pic", "style", "\\(|\\)", 1);
+            list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public String getFormat(String... args) {
+            return "http://m.webtoons.com/zh-hans/new";
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("新作推荐", ""));
+            return list;
+        }
+
     }
 
 }

@@ -93,34 +93,6 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        if (page == 1) {
-            String url = "http://www.hhssee.com/top/newrating.aspx";
-            return new Request.Builder().url(url).build();
-        }
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new ArrayList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#list > div.cTopComicList > div.cComicItem")) {
-            String cid = node.hrefWithSubString("div.cListSlt > a", 7, -6);
-            String title = node.text("a > span.cComicTitle");
-            String cover = node.src("div.cListSlt > a > img");
-            String update = node.textWithSubstring("span.cComicRating", 5);
-            if (update != null) {
-                String[] args = update.split("\\D");
-                update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-            }
-            String author = node.text("span.cComicAuthor");
-            list.add(new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, update, author));
-        }
-        return list;
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
         String[] array = path.split("-");
         String url = StringUtils.format("http://www.hhssee.com/page%s/1.html?s=%s", array[0], array[1]);
@@ -191,12 +163,6 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String format, int page) {
-        String url = StringUtils.format(format, page);
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new ArrayList<>();
         Node body = new Node(html);
@@ -212,10 +178,13 @@ public class HHSSEE extends MangaParser {
     private static class Category extends MangaCategory {
         @Override
         public String getFormat(String... args) {
-            if ("".equals(args[0])) {
-                return StringUtils.format("http://www.hhssee.com/comic/%%d.html", args[0]);
+            if (!"".equals(args[CATEGORY_SUBJECT])) {
+                return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_SUBJECT]);
+            } else if (!"".equals(args[CATEGORY_AREA])) {
+                return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_AREA]);
+            } else {
+                return "http://www.hhssee.com/comic/%%d.html";
             }
-            return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[0]);
         }
 
         @Override
@@ -236,15 +205,28 @@ public class HHSSEE extends MangaParser {
             list.add(Pair.create("厨艺", "12"));
             list.add(Pair.create("伪娘", "13"));
             list.add(Pair.create("冒险", "15"));
-            list.add(Pair.create("国漫", "19"));
-            list.add(Pair.create("港漫", "20"));
             list.add(Pair.create("耽美", "21"));
             list.add(Pair.create("经典", "22"));
-            list.add(Pair.create("欧美", "23"));
-            list.add(Pair.create("日文", "24"));
             list.add(Pair.create("亲情", "25"));
             return list;
         }
+
+        @Override
+        protected boolean hasArea() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getArea() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("大陆", "19"));
+            list.add(Pair.create("香港", "20"));
+            list.add(Pair.create("欧美", "23"));
+            list.add(Pair.create("日文", "24"));
+            return list;
+        }
+
     }
 
 }

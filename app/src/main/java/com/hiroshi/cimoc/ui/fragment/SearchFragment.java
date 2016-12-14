@@ -5,14 +5,17 @@ import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,6 +27,7 @@ import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
 import com.hiroshi.cimoc.utils.CollectionUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,8 +46,10 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     @BindView(R.id.search_frame_layout) View mFrameLayout;
     @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
-    @BindView(R.id.search_keyword_input) EditText mEditText;
+    @BindView(R.id.search_keyword_input) AppCompatAutoCompleteTextView mEditText;
     @BindView(R.id.search_action_button) FloatingActionButton mActionButton;
+
+    private ArrayAdapter<String> mArrayAdapter;
 
     private SearchPresenter mPresenter;
     private List<Pair<Source, Boolean>> mSourceList;
@@ -73,15 +79,22 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+                String keyword = mEditText.getText().toString();
+                if (!StringUtils.isEmpty(keyword)) {
+                    mPresenter.loadAutoComplete(keyword);
+                }
+            }
         });
         mEditText.setOnEditorActionListener(this);
+        mArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_category);
+        mEditText.setAdapter(mArrayAdapter);
     }
 
     @Override
     protected void initData() {
         mSourceList = new ArrayList<>();
-        mPresenter.load();
+        mPresenter.loadSource();
     }
 
     @Override
@@ -152,7 +165,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     @OnClick(R.id.search_action_button) void onSearchButtonClick() {
         String keyword = mEditText.getText().toString();
-        if (keyword.isEmpty()) {
+        if (StringUtils.isEmpty(keyword)) {
             mInputLayout.setError(getString(R.string.search_keyword_empty));
         } else {
             ArrayList<Integer> list = new ArrayList<>();
@@ -168,6 +181,12 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
                         CollectionUtils.unbox(list), ResultActivity.LAUNCH_TYPE_SEARCH));
             }
         }
+    }
+
+    @Override
+    public void onAutoCompleteLoadSuccess(List<String> list) {
+        mArrayAdapter.clear();
+        mArrayAdapter.addAll(list);
     }
 
     @Override

@@ -18,4 +18,6 @@ public interface SearchView extends BaseView, ThemeView, DialogView {
 
     void onSourceDisable(Source source);
 
+    void onAutoCompleteLoadSuccess(List<String> list);
+
 }

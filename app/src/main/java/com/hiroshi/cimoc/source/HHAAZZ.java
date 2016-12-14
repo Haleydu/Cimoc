@@ -1,15 +1,18 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class HHAAZZ extends MangaParser {
                 "http://x8.1112223333.com/dm11/",
                 "http://x8.1112223333.com/dm12/"
         };
+        category = new Category();
     }
 
     @Override
@@ -94,27 +98,6 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        String url = StringUtils.format("http://hhaazz.com/dfcomiclist_%d.htm", page);
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("li > a.pic")) {
-            String cid = node.hrefWithSplit(3);
-            String title = node.text("div.con > h3");
-            String cover = node.src("img");
-            String update = node.textWithSubstring("div.con > p > span", 0, 10);
-            String author = node.text("div.con > p:eq(1)");
-            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
-        }
-        return list;
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
         String url = "http://hhaazz.com/".concat(path);
         return new Request.Builder().url(url).build();
@@ -159,6 +142,110 @@ public class HHAAZZ extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).textWithSubstring("div.main > div > div.pic > div.con > p:eq(5)", 5);
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("li.clearfix > a.pic")) {
+            String cid = node.hrefWithSplit(1);
+            String title = node.text("div.con > h3");
+            String cover = node.src("img");
+            String update = node.textWithSubstring("div.con > p > span", 0, 10);
+            String author = node.text("div.con > p:eq(1)");
+            list.add(new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public String getFormat(String... args) {
+            if (!"".equals(args[CATEGORY_SUBJECT])) {
+                return StringUtils.format("http://hhaazz.com/lists/%s/%%d", args[CATEGORY_SUBJECT]);
+            } else if (!"".equals(args[CATEGORY_AREA])) {
+                return StringUtils.format("http://hhaazz.com/lists/%s/%%d", args[CATEGORY_AREA]);
+            } else if (!"".equals(args[CATEGORY_READER])) {
+                return StringUtils.format("http://hhaazz.com/duzhequn/%s/%%d", args[CATEGORY_PROGRESS]);
+            } else if (!"".equals(args[CATEGORY_PROGRESS])) {
+                return StringUtils.format("http://hhaazz.com/lianwan/%s/%%d", args[CATEGORY_PROGRESS]);
+            } else {
+                return "http://hhaazz.com/dfcomiclist_%d.htm";
+            }
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("萌系", "1"));
+            list.add(Pair.create("搞笑", "2"));
+            list.add(Pair.create("格斗", "3"));
+            list.add(Pair.create("科幻", "4"));
+            list.add(Pair.create("剧情", "5"));
+            list.add(Pair.create("侦探", "6"));
+            list.add(Pair.create("竞技", "7"));
+            list.add(Pair.create("魔法", "8"));
+            list.add(Pair.create("神鬼", "9"));
+            list.add(Pair.create("校园", "10"));
+            list.add(Pair.create("惊栗", "11"));
+            list.add(Pair.create("厨艺", "12"));
+            list.add(Pair.create("伪娘", "13"));
+            list.add(Pair.create("图片", "14"));
+            list.add(Pair.create("冒险", "15"));
+            list.add(Pair.create("耽美", "21"));
+            list.add(Pair.create("经典", "22"));
+            list.add(Pair.create("亲情", "25"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasArea() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getArea() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("大陆", "19"));
+            list.add(Pair.create("香港", "20"));
+            list.add(Pair.create("欧美", "23"));
+            list.add(Pair.create("日文", "24"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasReader() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getReader() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("少年", "1"));
+            list.add(Pair.create("少女", "2"));
+            list.add(Pair.create("青年", "3"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasProgress() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getProgress() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("连载", "1"));
+            list.add(Pair.create("完结", "2"));
+            return list;
+        }
+
     }
 
 }

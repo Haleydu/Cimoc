@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
@@ -134,27 +132,6 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        String url = StringUtils.format("http://m.ikanman.com/update/?ajax=1&page=%d", page);
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("li > a")) {
-            String cid = node.hrefWithSplit(1);
-            String title = node.text("h3");
-            String cover = node.attr("div > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
-            String author = node.text("dl:eq(2) > dd");
-            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author));
-        }
-        return list;
-    }
-
-    @Override
     public Request getCheckRequest(String cid) {
         return getInfoRequest(cid);
     }
@@ -162,12 +139,6 @@ public class IKanman extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-    }
-
-    @Override
-    public Request getCategoryRequest(String format, int page) {
-        String url = StringUtils.format(format, page);
-        return new Request.Builder().url(url).build();
     }
 
     @Override

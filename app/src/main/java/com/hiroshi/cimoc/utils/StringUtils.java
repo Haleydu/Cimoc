@@ -31,6 +31,13 @@ public class StringUtils {
         return position < 0 || position >= array.length ? null : array[position];
     }
 
+    public static String replaceAll(String str, String regex, String replacement) {
+        if (str == null) {
+            return null;
+        }
+        return str.replaceAll(regex, replacement);
+    }
+
     public static String substring(String str, int start) {
         return substring(str, start, -1);
     }

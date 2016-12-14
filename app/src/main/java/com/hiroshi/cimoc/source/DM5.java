@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.JsonIterator;
 import com.hiroshi.cimoc.core.parser.MangaCategory;
@@ -80,7 +78,6 @@ public class DM5 extends MangaParser {
     @Override
     public Request getInfoRequest(String cid) {
         String url = "http://www.dm5.com/".concat(cid);
-        Log.e("-------------", url);
         return new Request.Builder().url(url).build();
     }
 
@@ -118,44 +115,6 @@ public class DM5 extends MangaParser {
             set.add(new Chapter(title, path));
         }
         return new LinkedList<>(set);
-    }
-
-    @Override
-    public Request getRecentRequest(int page) {
-        String url = "http://m.dm5.com/manhua-new/pagerdata.ashx";
-        RequestBody body = new FormBody.Builder()
-                .add("t", "2")
-                .add("pageindex", String.valueOf(page))
-                .build();
-        return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.dm5.com").build();
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        try {
-            JSONArray array = new JSONArray(html);
-            for (int i = 0; i != array.length(); ++i) {
-                try {
-                    JSONObject object = array.getJSONObject(i);
-                    String cid = object.getString("Url").split("/")[1];
-                    String title = object.getString("Title");
-                    String cover = object.getString("Pic");
-                    String update = object.getString("LastPartTime");
-                    JSONArray temp = object.optJSONArray("Author");
-                    String author = "";
-                    for (int j = 0; temp != null && j != temp.length(); ++j) {
-                        author = author.concat(temp.optString(j));
-                    }
-                    list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
     @Override
@@ -215,12 +174,6 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String format, int page) {
-        String url = StringUtils.format(format, page);
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new ArrayList<>();
         Node body = new Node(html);
@@ -240,6 +193,11 @@ public class DM5 extends MangaParser {
     }
 
     private static class Category extends MangaCategory {
+
+        @Override
+        public boolean isComposite() {
+            return true;
+        }
 
         @Override
         public String getFormat(String... args) {

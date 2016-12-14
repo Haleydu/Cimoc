@@ -3,7 +3,9 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.AppCompatSpinner;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.hiroshi.cimoc.R;
@@ -20,7 +22,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/12/11.
  */
 
-public class CategoryActivity extends BackActivity {
+public class CategoryActivity extends BackActivity implements AdapterView.OnItemSelectedListener {
 
     @BindViews({R.id.category_spinner_subject, R.id.category_spinner_area, R.id.category_spinner_reader,
             R.id.category_spinner_year, R.id.category_spinner_progress, R.id.category_spinner_order})
@@ -51,11 +53,28 @@ public class CategoryActivity extends BackActivity {
                 Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};
         for (int i = 0; i != type.length; ++i) {
              if (mCategory.hasAttribute(type[i])) {
-                mCategoryView.get(i).setVisibility(View.VISIBLE);
-                mSpinnerList.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.item_category, mCategory.getAttrList(type[i])));
+                 mCategoryView.get(i).setVisibility(View.VISIBLE);
+                 if (!mCategory.isComposite()) {
+                     mSpinnerList.get(i).setOnItemSelectedListener(this);
+                 }
+                 mSpinnerList.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.item_category, mCategory.getAttrList(type[i])));
             }
         }
     }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        for (AppCompatSpinner spinner : mSpinnerList) {
+            if (position == 0) {
+                spinner.setEnabled(true);
+            } else if (!parent.equals(spinner)) {
+                spinner.setEnabled(false);
+            }
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {}
 
     @OnClick(R.id.category_action_button) void onActionButtonClick() {
         String[] args = new String[mSpinnerList.size()];

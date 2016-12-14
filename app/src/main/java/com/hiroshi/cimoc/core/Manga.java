@@ -9,14 +9,18 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
 
+import org.json.JSONArray;
+
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
@@ -93,28 +97,6 @@ public class Manga {
                 try {
                     String html = getResponseBody(mClient, request);
                     List<Comic> list = parser.parseCategory(html, page);
-                    if (!list.isEmpty()) {
-                        subscriber.onNext(list);
-                        subscriber.onCompleted();
-                    } else {
-                        throw new Exception();
-                    }
-                } catch (Exception e) {
-                    subscriber.onError(e);
-                }
-            }
-        }).subscribeOn(Schedulers.io());
-    }
-
-    public static Observable<List<Comic>> getRecentComic(final int source, final int page) {
-        return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
-            @Override
-            public void call(Subscriber<? super List<Comic>> subscriber) {
-                Parser parser = SourceManager.getParser(source);
-                Request request = parser.getRecentRequest(page);
-                try {
-                    String html = getResponseBody(mClient, request);
-                    List<Comic> list = parser.parseRecent(html, page);
                     if (!list.isEmpty()) {
                         subscriber.onNext(list);
                         subscriber.onCompleted();
@@ -212,6 +194,34 @@ public class Manga {
                 }
                 subscriber.onNext(newUrl);
                 subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<List<String>> loadAutoComplete(final String keyword) {
+        return Observable.create(new Observable.OnSubscribe<List<String>>() {
+            @Override
+            public void call(Subscriber<? super List<String>> subscriber) {
+                RequestBody body = new FormBody.Builder()
+                        .add("key", keyword)
+                        .add("s", "1")
+                        .build();
+                Request request = new Request.Builder()
+                        .url("http://m.ikanman.com/support/word.ashx")
+                        .post(body)
+                        .build();
+                try {
+                    String jsonString = getResponseBody(mClient, request);
+                    JSONArray array = new JSONArray(jsonString);
+                    List<String> list = new ArrayList<>();
+                    for (int i = 0; i != array.length(); ++i) {
+                        list.add(array.getJSONObject(i).getString("t"));
+                    }
+                    subscriber.onNext(list);
+                    subscriber.onCompleted();
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
             }
         }).subscribeOn(Schedulers.io());
     }

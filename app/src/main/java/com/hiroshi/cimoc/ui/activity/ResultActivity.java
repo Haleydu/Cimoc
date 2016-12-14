@@ -13,7 +13,6 @@ import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,9 +80,6 @@ public class ResultActivity extends RecyclerActivity implements ResultView {
             case LAUNCH_TYPE_SEARCH:
                 mPresenter.loadSearch();
                 break;
-            case LAUNCH_TYPE_RECENT:
-                mPresenter.loadRecent();
-                break;
             case LAUNCH_TYPE_CATEGORY:
                 mPresenter.loadCategory();
                 break;
@@ -133,16 +129,10 @@ public class ResultActivity extends RecyclerActivity implements ResultView {
     public static final int LAUNCH_TYPE_SEARCH = 0;
 
     /**
-     * 图源最近列表，无需关键词
-     * Extra: 图源
-     */
-    public static final int LAUNCH_TYPE_RECENT = 1;
-
-    /**
      * 根据分类搜索，关键词字段存放 url 格式
      * Extra: 格式 图源
      */
-    public static final int LAUNCH_TYPE_CATEGORY = 2;
+    public static final int LAUNCH_TYPE_CATEGORY = 1;
 
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";

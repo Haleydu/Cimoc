@@ -97,30 +97,6 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        if (page == 1) {
-            String url = "http://m.57mh.com/latest";
-            return new Request.Builder().url(url).build();
-        }
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#data_list > li")) {
-            String cid = node.hrefWithSplit("a:eq(1)", 0);
-            String title = node.text("a:eq(1) > h3");
-            String cover = node.attr("a:eq(1) > div.thumb > img", "data-src");
-            String update = node.text("dl:eq(6) > dd");
-            String author = node.text("dl:eq(2) > a > dd");
-            list.add(new Comic(SourceManager.SOURCE_57MH, cid, title, cover, update, author));
-        }
-        return list;
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("http://m.57mh.com/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
@@ -154,12 +130,6 @@ public class MH57 extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).text("div.book-detail > div.cont-list > dl:eq(7) > dd");
-    }
-
-    @Override
-    public Request getCategoryRequest(String format, int page) {
-        String url = StringUtils.format(format, page);
-        return new Request.Builder().url(url).build();
     }
 
     @Override

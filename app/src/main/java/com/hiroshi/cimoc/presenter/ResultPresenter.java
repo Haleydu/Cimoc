@@ -86,28 +86,6 @@ public class ResultPresenter extends BasePresenter<ResultView> {
         }
     }
 
-    public void loadRecent() {
-        if (mStateArray[0].state == STATE_NULL) {
-            mStateArray[0].state = STATE_DOING;
-            mCompositeSubscription.add(Manga.getRecentComic(mStateArray[0].source, ++mStateArray[0].page)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<Comic>>() {
-                        @Override
-                        public void call(List<Comic> list) {
-                            mBaseView.onLoadSuccess(list);
-                            mStateArray[0].state = STATE_NULL;
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            if (mStateArray[0].page == 1) {
-                                mBaseView.onLoadFail();
-                            }
-                        }
-                    }));
-        }
-    }
-
     public void loadSearch() {
         if (mStateArray.length == 0) {
             mBaseView.onSearchError();

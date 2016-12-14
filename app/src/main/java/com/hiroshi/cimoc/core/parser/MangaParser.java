@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.core.parser;
 
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.List;
 
@@ -31,16 +32,6 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        return null;
-    }
-
-    @Override
     public Request getCheckRequest(String cid) {
         return null;
     }
@@ -57,7 +48,8 @@ public abstract class MangaParser implements Parser {
 
     @Override
     public Request getCategoryRequest(String format, int page) {
-        return null;
+        String url = StringUtils.format(format, page);
+        return new Request.Builder().url(url).build();
     }
 
     @Override

@@ -148,12 +148,6 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public Request getCategoryRequest(String format, int page) {
-        String url = StringUtils.format(format, (page - 1));
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new LinkedList<>();
         try {

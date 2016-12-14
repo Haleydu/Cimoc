@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
@@ -89,38 +91,6 @@ public class U17 extends MangaParser {
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        String url = StringUtils.format("http://m.u17.com/update/list/%d?page=0&pageSize=1000", (page - 1));
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        try {
-            JSONArray array = new JSONArray(html);
-            int size = array.length();
-            for (int i = 0; i != size; ++i) {
-                try {
-                    JSONObject object = array.getJSONObject(i);
-                    String cid = object.getString("comicId");
-                    String title = object.getString("name");
-                    String cover = object.getString("cover");
-                    long time = object.getLong("lastUpdateTime") * 1000;
-                    String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
-                    String author = object.optString("authorName");
-                    list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
         //String url = StringUtils.format("http://m.u17.com/image/list?comicId=%s&chapterId=%s", cid, path);
         String url = StringUtils.format("http://www.u17.com/chapter/%s.html", path);
@@ -162,7 +132,35 @@ public class U17 extends MangaParser {
         return new Node(html).textWithSubstring("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
     }
 
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new ArrayList<>();
+        Node body = new Node(html);
+        String total = StringUtils.replaceAll(body.text("#comiclist > div > div.pagelist > em"), "\\D+", "");
+        try {
+            if (Integer.parseInt(total) < page) {
+                return list;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Node node : body.list("#comiclist > div > div.comiclist > ul > li")) {
+            String cid = node.hrefWithSplit("div.info > h3 > strong > a", 1);
+            String title = node.attr("div.info > h3 > strong > a", "title");
+            String cover = node.src("div.cover > a > img");
+            String update = node.textWithSubstring("div.info > h3 > span.fr", 7);
+            String author = node.text("div.info > h3 > a[title]");
+            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author));
+        }
+        return list;
+    }
+
     private static class Category extends MangaCategory {
+
+        @Override
+        public boolean isComposite() {
+            return true;
+        }
 
         @Override
         public String getFormat(String... args) {
