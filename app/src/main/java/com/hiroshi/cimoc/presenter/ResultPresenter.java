@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;

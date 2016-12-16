@@ -5,21 +5,28 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import butterknife.BindView;
+
 /**
  * Created by Hiroshi on 2016/7/3.
  */
-public class ResultActivity extends RecyclerActivity implements ResultView {
+public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
+
+    @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.result_layout) FrameLayout mLayoutView;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -119,7 +126,17 @@ public class ResultActivity extends RecyclerActivity implements ResultView {
 
     @Override
     protected String getDefaultTitle() {
-        return getIntent().getStringExtra(EXTRA_KEYWORD) == null ? getString(R.string.result_recent) : getString(R.string.result);
+        return getString(R.string.result);
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_result;
+    }
+
+    @Override
+    protected View getLayoutView() {
+        return mLayoutView;
     }
 
     /**

@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.ComicPresenter;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
+import com.hiroshi.cimoc.ui.activity.SearchActivity;
 import com.hiroshi.cimoc.ui.adapter.TabPagerAdapter;
 import com.hiroshi.cimoc.ui.fragment.coordinator.grid.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.coordinator.grid.FavoriteFragment;
@@ -92,6 +93,10 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 showProgressDialog();
                 mTagList.clear();
                 mPresenter.load();
+                break;
+            case R.id.comic_search:
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);

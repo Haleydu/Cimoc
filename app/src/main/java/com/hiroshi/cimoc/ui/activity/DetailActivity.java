@@ -219,12 +219,6 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
     }
 
     @Override
-    public void onNetworkError() {
-        hideProgressBar();
-        showSnackbar(R.string.common_network_error);
-    }
-
-    @Override
     public void onParseError() {
         hideProgressBar();
         showSnackbar(R.string.common_parse_error);

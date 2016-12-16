@@ -98,7 +98,8 @@ public class HistoryFragment extends GridFragment implements HistoryView {
 
     @Override
     public void onItemUpdate(MiniComic comic) {
-        mGridAdapter.update(comic, true);
+        mGridAdapter.remove(comic);
+        mGridAdapter.add(0, comic);
     }
 
     @Override

@@ -84,27 +84,28 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        cancelHighlight(comic);
+        cancelHighlight(position, comic);
         Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null, true);
         startActivity(intent);
     }
 
-    private void cancelHighlight(MiniComic comic) {
+    private void cancelHighlight(int position, MiniComic comic) {
         if (comic.isHighlight()) {
             comic.setFavorite(System.currentTimeMillis());
             comic.setHighlight(false);
-            mGridAdapter.update(comic, false);
+            mGridAdapter.remove(position);
+            mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
         }
     }
 
     @Override
     public void OnComicFavorite(MiniComic comic) {
-        mGridAdapter.addAfterHighlight(comic);
+        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
     }
 
     @Override
     public void OnComicRestore(List<MiniComic> list) {
-        mGridAdapter.addAll(0, list);
+        mGridAdapter.addAll(mGridAdapter.findFirstNotHighlight(), list);
     }
 
     @Override
@@ -114,13 +115,15 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onComicRead(MiniComic comic) {
-        mGridAdapter.update(comic, false);
+        mGridAdapter.remove(comic);
+        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
     }
 
     @Override
     public void onComicCheckSuccess(MiniComic comic, int progress, int max) {
         if (comic != null) {
-            mGridAdapter.update(comic, false);
+            mGridAdapter.remove(comic);
+            mGridAdapter.add(0, comic);
         }
         mBuilder.setProgress(max, progress, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);

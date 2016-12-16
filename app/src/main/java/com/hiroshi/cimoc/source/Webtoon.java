@@ -136,14 +136,14 @@ public class Webtoon extends MangaParser {
     @Override
     public Request getCategoryRequest(String format, int page) {
         if (page == 1) {
-            return super.getCategoryRequest(format, page);
+            return new Request.Builder().url(format).addHeader("Referer", "http://m.webtoons.com").build();
         }
         return null;
     }
 
     @Override
     public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
+        List<Comic> list = new ArrayList<>();
         Node body = new Node(html);
         for (Node node : body.list("#ct > ul > li > a")) {
             String cid = node.hrefWithSplit(-1);

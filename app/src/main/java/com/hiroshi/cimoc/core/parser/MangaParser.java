@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.core.parser;
 
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.List;
@@ -55,6 +54,10 @@ public abstract class MangaParser implements Parser {
     @Override
     public List<Comic> parseCategory(String html, int page) {
         return null;
+    }
+
+    protected void buildServer(String str) {
+        server = str.split(" ");
     }
 
     protected String[] buildUrl(String path) {

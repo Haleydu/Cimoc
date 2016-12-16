@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.AppCompatSpinner;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -57,7 +56,7 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
                  if (!mCategory.isComposite()) {
                      mSpinnerList.get(i).setOnItemSelectedListener(this);
                  }
-                 mSpinnerList.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.item_category, mCategory.getAttrList(type[i])));
+                 mSpinnerList.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, mCategory.getAttrList(type[i])));
             }
         }
     }

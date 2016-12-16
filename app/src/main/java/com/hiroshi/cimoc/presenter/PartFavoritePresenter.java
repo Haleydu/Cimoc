@@ -144,13 +144,12 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
         return list;
     }
 
-    public void insert(boolean[] check) {
-        int size = mComicArray.size();
+    public void insert(List<Long> list) {
         List<TagRef> rList = new ArrayList<>();
         List<MiniComic> cList = new ArrayList<>();
-        for (int i = 0; i < size; ++i) {
-            if (check[i]) {
-                MiniComic comic = mComicArray.valueAt(i);
+        for (Long id : list) {
+            MiniComic comic = mComicArray.get(id);
+            if (comic != null) {
                 rList.add(new TagRef(null, mTag.getId(), comic.getId()));
                 cList.add(comic);
                 mComicArray.remove(comic.getId());

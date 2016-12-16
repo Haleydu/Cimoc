@@ -39,6 +39,10 @@ public class ComicManager {
         mComicDao.getSession().runInTx(runnable);
     }
 
+    public <T> T callInTx(Callable<T> callable) {
+        return mComicDao.getSession().callInTxNoException(callable);
+    }
+
     public List<Comic> listFavorite() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull())

@@ -1,20 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
-import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.StringUtils;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import okhttp3.Request;
-
 /**
  * Created by Hiroshi on 2016/7/26.
  */

@@ -30,7 +30,6 @@ public class BackupPresenter extends BasePresenter<BackupView> {
 
     private ComicManager mComicManager;
     private TagManager mTagManager;
-    private List<Tag> mTagList;
 
     public BackupPresenter() {
         mComicManager = ComicManager.getInstance();
@@ -75,12 +74,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 .subscribe(new Action1<List<Tag>>() {
                     @Override
                     public void call(List<Tag> list) {
-                        mTagList = list;
-                        String[] array = new String[list.size()];
-                        for (int i = 0; i != array.length; ++i) {
-                            array[i] = list.get(i).getTitle();
-                        }
-                        mBaseView.onTagLoadSuccess(array);
+                        mBaseView.onTagLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -112,10 +106,9 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 }));
     }
 
-    public void saveTag(int index) {
+    public void saveTag(final long id, final String title) {
         // Todo
-        final Tag tag = mTagList.get(index);
-        mCompositeSubscription.add(mTagManager.listByTag(tag.getId())
+        mCompositeSubscription.add(mTagManager.listByTag(id)
                 .flatMap(new Func1<List<TagRef>, Observable<List<Comic>>>() {
                     @Override
                     public Observable<List<Comic>> call(final List<TagRef> list) {
@@ -134,7 +127,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 .flatMap(new Func1<List<Comic>, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(List<Comic> list) {
-                        return Backup.saveTag(tag, list);
+                        return Backup.saveTag(new Tag(id, title), list);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -159,11 +152,7 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                         return Observable.create(new Observable.OnSubscribe<List<MiniComic>>() {
                             @Override
                             public void call(Subscriber<? super List<MiniComic>> subscriber) {
-                                updateComicList(list);
-                                List<MiniComic> result = new LinkedList<>();
-                                for (Comic comic : list) {
-                                    result.add(new MiniComic(comic));
-                                }
+                                List<MiniComic> result = updateComicList(list);
                                 subscriber.onNext(result);
                                 subscriber.onCompleted();
                             }
@@ -194,15 +183,9 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                             @Override
                             public void call(Subscriber<? super Pair<Tag, List<MiniComic>>> subscriber) {
                                 Tag tag = loadOrInsertTag(pair.first);
-                                updateComicList(pair.second);
-                                List<MiniComic> cList = new LinkedList<>();
-                                List<TagRef> tList = new LinkedList<>();
-                                for (Comic comic : pair.second) {
-                                    cList.add(new MiniComic(comic));
-                                    tList.add(new TagRef(null, tag.getId(), comic.getId()));
-                                }
-                                mTagManager.insert(tList);
-                                subscriber.onNext(Pair.create(tag, cList));
+                                List<MiniComic> list = updateComicList(pair.second);
+                                insertTagRef(tag, pair.second);
+                                subscriber.onNext(Pair.create(tag, list));
                                 subscriber.onCompleted();
                             }
                         });
@@ -225,35 +208,51 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     private Tag loadOrInsertTag(final String title) {
-        return mTagManager.callInTx(new Callable<Tag>() {
+        Tag tag = mTagManager.load(title);
+        if (tag == null) {
+            tag = new Tag(null, title);
+            mTagManager.insert(tag);
+        }
+        return tag;
+    }
+
+    private void insertTagRef(final Tag tag, final List<Comic> list) {
+        mTagManager.runInTx(new Runnable() {
             @Override
-            public Tag call() throws Exception {
-                Tag tag = mTagManager.load(title);
-                if (tag == null) {
-                    tag = new Tag(null, title);
-                    mTagManager.insert(tag);
+            public void run() {
+                for (Comic comic : list) {
+                    TagRef ref = mTagManager.load(tag.getId(), comic.getId());
+                    if (ref == null) {
+                        mTagManager.insert(new TagRef(null, tag.getId(), comic.getId()));
+                    }
                 }
-                return tag;
             }
         });
     }
 
-    private void updateComicList(final List<Comic> list) {
-        mComicManager.runInTx(new Runnable() {
+    private List<MiniComic> updateComicList(final List<Comic> list) {
+        return mComicManager.callInTx(new Callable<List<MiniComic>>() {
             @Override
-            public void run() {
+            public List<MiniComic> call() throws Exception {
+                List<MiniComic> result = new LinkedList<>();
                 long favorite = System.currentTimeMillis() + list.size() * 10;
                 for (Comic comic : list) {
                     Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
                     if (temp == null) {
                         comic.setFavorite(favorite);
                         mComicManager.insert(comic);
-                    } else if (temp.getFavorite() == null) {
-                        temp.setFavorite(favorite);
-                        mComicManager.update(temp);
+                        result.add(new MiniComic(comic));
+                    } else {
+                        if (temp.getFavorite() == null) {
+                            temp.setFavorite(favorite);
+                            mComicManager.update(temp);
+                            result.add(new MiniComic(temp));
+                        }
+                        comic.setId(temp.getId());
                     }
                     favorite -= 20;
                 }
+                return result;
             }
         });
     }

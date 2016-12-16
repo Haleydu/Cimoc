@@ -22,12 +22,13 @@ public class TagPresenter extends BasePresenter<TagView> {
         mTagManager = TagManager.getInstance();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.EVENT_TAG_RESTORE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                // Todo
+                mBaseView.onTagRestore((Tag) rxEvent.getData());
             }
         });
     }

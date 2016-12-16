@@ -41,7 +41,7 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mTagAdapter);
         mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.show();
+        mActionButton.setVisibility(View.VISIBLE);
     }
 
     @Override

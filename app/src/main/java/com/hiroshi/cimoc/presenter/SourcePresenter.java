@@ -40,8 +40,6 @@ public class SourcePresenter extends BasePresenter<SourceView> {
 
     public void update(Source source) {
         mSourceManager.update(source);
-        int type = source.getEnable() ? RxEvent.EVENT_SOURCE_ENABLE : RxEvent.EVENT_SOURCE_DISABLE;
-        RxBus.getInstance().post(new RxEvent(type, source));
     }
 
 }

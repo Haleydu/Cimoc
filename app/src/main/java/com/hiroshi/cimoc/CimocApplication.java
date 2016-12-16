@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.core.DBOpenHelper;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
@@ -21,7 +22,6 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 
-import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
 import java.io.File;
@@ -57,6 +57,7 @@ public class CimocApplication extends Application {
         update();
         mContentResolver = getContentResolver();
         initRootDocumentFile();
+        ImageServer.init(mPreferenceManager);
         Fresco.initialize(this);
     }
 

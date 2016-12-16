@@ -90,16 +90,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         };
     }
 
-    public void addAfterHighlight(MiniComic data) {
-        add(findFirstNotHighlight(), data);
-    }
-
-    public void update(MiniComic comic, boolean insert) {
-        if (remove(comic) || insert) {
-            add(findFirstNotHighlight(), comic);
-        }
-    }
-
     public void removeItemById(long id) {
         for (MiniComic comic : mDataSet) {
             if (id == comic.getId()) {
@@ -118,7 +108,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         return null;
     }
 
-    private int findFirstNotHighlight() {
+    public int findFirstNotHighlight() {
         int count = 0;
         if (symbol) {
             for (MiniComic comic : mDataSet) {

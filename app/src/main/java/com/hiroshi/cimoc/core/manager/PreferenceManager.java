@@ -18,10 +18,9 @@ public class PreferenceManager {
     public static final int READER_ORIENTATION_PORTRAIT = 0;
     public static final int READER_ORIENTATION_LANDSCAPE = 1;
 
-    public static final int HOME_SEARCH = 0;
-    public static final int HOME_COMIC = 1;
-    public static final int HOME_SOURCE = 2;
-    public static final int HOME_TAG = 3;
+    public static final int HOME_COMIC = 0;
+    public static final int HOME_SOURCE = 1;
+    public static final int HOME_TAG = 2;
 
     public static final String PREF_APP_VERSION = "pref_app_version";
 
@@ -77,6 +76,12 @@ public class PreferenceManager {
     public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
     public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
+
+    public static final String PREF_SEARCH_COMPLETE = "pref_search_complete";
+
+    public static final String PREF_SOURCE_SERVER_IKANMAN = "pref_source_server_ikanman";
+    public static final String PREF_SOURCE_SERVER_HHAAZZ = "pref_source_server_hhaazz";
+    public static final String PREF_SOURCE_SERVER_57MH = "pref_source_server_57mh";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

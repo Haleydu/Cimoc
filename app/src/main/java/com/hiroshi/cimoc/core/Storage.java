@@ -25,9 +25,9 @@ public class Storage {
     public static String BACKUP = "backup";
 
     private static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile dst, String name) {
-        DocumentFile backup = src.findFile(name);
-        if (backup != null && backup.isDirectory()) {
-            return DocumentUtils.copyDir(resolver, backup, dst);
+        DocumentFile file = src.findFile(name);
+        if (file != null && file.isDirectory()) {
+            return DocumentUtils.copyDir(resolver, file, dst);
         }
         return true;
     }
@@ -38,15 +38,17 @@ public class Storage {
             public void call(Subscriber<? super Integer> subscriber) {
                 DocumentFile src = CimocApplication.getDocumentFile();
                 ContentResolver resolver = CimocApplication.getResolver();
-                subscriber.onNext(1);
-                if (copyDir(resolver, src, dst, BACKUP)) {
-                    subscriber.onNext(2);
-                    if (copyDir(resolver, src, dst, DOWNLOAD)) {
-                        subscriber.onNext(3);
-                        if (copyDir(resolver, src, dst, PICTURE)) {
-                            subscriber.onNext(4);
-                            DocumentUtils.deleteDir(src);
-                            subscriber.onCompleted();
+                if (!src.getUri().equals(dst.getUri())) {
+                    subscriber.onNext(1);
+                    if (copyDir(resolver, src, dst, BACKUP)) {
+                        subscriber.onNext(2);
+                        if (copyDir(resolver, src, dst, DOWNLOAD)) {
+                            subscriber.onNext(3);
+                            if (copyDir(resolver, src, dst, PICTURE)) {
+                                subscriber.onNext(4);
+                                DocumentUtils.deleteDir(src);
+                                subscriber.onCompleted();
+                            }
                         }
                     }
                 }

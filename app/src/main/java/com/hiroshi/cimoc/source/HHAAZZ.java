@@ -5,6 +5,7 @@ import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
+import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -24,20 +25,7 @@ import okhttp3.Request;
 public class HHAAZZ extends MangaParser {
 
     public HHAAZZ() {
-        server = new String[] {
-                "http://x8.1112223333.com/dm01/",
-                "http://x8.1112223333.com/dm02/",
-                "http://x8.1112223333.com/dm03/",
-                "http://x8.1112223333.com/dm04/",
-                "http://x8.1112223333.com/dm05/",
-                "http://x8.1112223333.com/dm06/",
-                "http://x8.1112223333.com/dm07/",
-                "http://x8.1112223333.com/dm08/",
-                "http://x8.1112223333.com/dm09/",
-                "http://x8.1112223333.com/dm10/",
-                "http://x8.1112223333.com/dm11/",
-                "http://x8.1112223333.com/dm12/"
-        };
+        server =  ImageServer.get(SourceManager.SOURCE_HHAAZZ).split("\\s+");
         category = new Category();
     }
 

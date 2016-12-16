@@ -244,6 +244,7 @@ public class Manga {
                         try {
                             String update = parser.parseCheck(getResponseBody(client, request));
                             if (comic.getUpdate() != null && !comic.getUpdate().equals(update)) {
+                                comic.setFavorite(System.currentTimeMillis());
                                 comic.setUpdate(update);
                                 comic.setHighlight(true);
                                 subscriber.onNext(pair);
@@ -269,7 +270,7 @@ public class Manga {
                 return response.body().string();
             }
         } catch (Exception e) {
-            throw new NetworkErrorException();
+            e.printStackTrace();
         } finally {
             if (response != null) {
                 response.close();

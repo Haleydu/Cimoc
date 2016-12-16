@@ -104,13 +104,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onComicLoadSuccess(mComic);
-                        if (throwable instanceof Manga.NetworkErrorException) {
-                            mBaseView.onNetworkError();
-                        } else {
-                            mBaseView.onParseError();
-                        }
+                        mBaseView.onParseError();
                     }
                 }));
     }

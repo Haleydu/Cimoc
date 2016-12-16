@@ -51,3 +51,6 @@ Online manga reader based on Android
 <img src="./screenshot/04.png" width="30%" height="30%">
 <img src="./screenshot/05.png" width="30%" height="30%">
 <img src="./screenshot/06.png" width="30%" height="30%">
+<img src="./screenshot/07.png" width="30%" height="30%">
+<img src="./screenshot/08.png" width="30%" height="30%">
+<img src="./screenshot/09.png" width="30%" height="30%">

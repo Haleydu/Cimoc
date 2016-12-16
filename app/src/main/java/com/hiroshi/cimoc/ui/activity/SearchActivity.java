@@ -1,36 +1,31 @@
-package com.hiroshi.cimoc.ui.fragment;
+package com.hiroshi.cimoc.ui.activity;
 
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
-import com.hiroshi.cimoc.ui.activity.ResultActivity;
+import com.hiroshi.cimoc.ui.adapter.AutoCompleteAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
 import com.hiroshi.cimoc.utils.CollectionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,11 +35,10 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class SearchFragment extends BaseFragment implements SearchView, TextView.OnEditorActionListener {
+public class SearchActivity extends BackActivity implements SearchView, TextView.OnEditorActionListener {
 
     private final static int DIALOG_REQUEST_SOURCE = 0;
 
-    @BindView(R.id.search_frame_layout) View mFrameLayout;
     @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
     @BindView(R.id.search_keyword_input) AppCompatAutoCompleteTextView mEditText;
     @BindView(R.id.search_action_button) FloatingActionButton mActionButton;
@@ -53,6 +47,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     private SearchPresenter mPresenter;
     private List<Pair<Source, Boolean>> mSourceList;
+    private boolean mAutoComplete;
 
     @Override
     protected void initPresenter() {
@@ -62,7 +57,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
 
     @Override
     protected void initView() {
-        setHasOptionsMenu(true);
+        mAutoComplete = mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false);
         mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -80,15 +75,19 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override
             public void afterTextChanged(Editable s) {
-                String keyword = mEditText.getText().toString();
-                if (!StringUtils.isEmpty(keyword)) {
-                    mPresenter.loadAutoComplete(keyword);
+                if (mAutoComplete) {
+                    String keyword = mEditText.getText().toString();
+                    if (!StringUtils.isEmpty(keyword)) {
+                        mPresenter.loadAutoComplete(keyword);
+                    }
                 }
             }
         });
         mEditText.setOnEditorActionListener(this);
-        mArrayAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_category);
-        mEditText.setAdapter(mArrayAdapter);
+        if (mAutoComplete) {
+            mArrayAdapter = new AutoCompleteAdapter(this);
+            mEditText.setAdapter(mArrayAdapter);
+        }
     }
 
     @Override
@@ -98,23 +97,16 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
     }
 
     @Override
-    public void onDestroyView() {
+    protected void onDestroy() {
         mPresenter.detachView();
         mPresenter = null;
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (hidden) {
-            mActionButton.hide();
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.search_menu, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -130,8 +122,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
                         arr2[i] = mSourceList.get(i).second;
                     }
                     MultiDialogFragment fragment =
-                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
-                    fragment.setTargetFragment(this, 0);
+                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, null, DIALOG_REQUEST_SOURCE);
                     fragment.show(getFragmentManager(), null);
                     break;
                 }
@@ -177,7 +168,7 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
             if (list.isEmpty()) {
                 showSnackbar(R.string.search_source_none);
             } else {
-                startActivity(ResultActivity.createIntent(getActivity(), keyword,
+                startActivity(ResultActivity.createIntent(this, keyword,
                         CollectionUtils.unbox(list), ResultActivity.LAUNCH_TYPE_SEARCH));
             }
         }
@@ -204,30 +195,13 @@ public class SearchFragment extends BaseFragment implements SearchView, TextView
     }
 
     @Override
-    public void onSourceEnable(Source source) {
-        mSourceList.add(Pair.create(source, true));
-    }
-
-    @Override
-    public void onSourceDisable(Source source) {
-        Iterator<Pair<Source, Boolean>> iterator = mSourceList.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().first.getId().equals(source.getId())) {
-                iterator.remove();
-            }
-        }
-    }
-
-    @Override
-    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
-        mFrameLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
-        mInputLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
-        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
+    protected String getDefaultTitle() {
+        return getString(R.string.comic_search);
     }
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.fragment_search;
+        return R.layout.activity_search;
     }
 
 }

@@ -47,12 +47,13 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_OTHER_STORAGE = 4;
     private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 5;
 
-    @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title})
+    @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) AppCompatCheckBox mHideBox;
     @BindView(R.id.settings_download_order_checkbox) AppCompatCheckBox mOrderBox;
+    @BindView(R.id.settings_search_complete_checkbox) AppCompatCheckBox mCompleteBox;
 
     private SettingsPresenter mPresenter;
 
@@ -73,15 +74,18 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     protected void initView() {
         super.initView();
-        mLaunchChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
+        mLaunchChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
         mThemeChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_THEME, ThemeUtils.THEME_BLUE);
         mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-        mStoragePath = mPreference.getString(PreferenceManager.PREF_OTHER_STORAGE, Environment.getExternalStorageDirectory().getAbsolutePath());
+        if (CimocApplication.getDocumentFile() != null) {
+            mStoragePath = CimocApplication.getDocumentFile().getUri().toString();
+        }
         mConnectionValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
         mThreadValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
         mOrderBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false));
+        mCompleteBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false));
     }
 
     @Override
@@ -91,7 +95,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         super.onDestroy();
     }
 
-    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_download_order_btn})
+    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn,
+            R.id.settings_download_order_btn, R.id.settings_search_complete_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_bright_btn:
@@ -102,6 +107,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_download_order_btn:
                 checkedAndSave(mOrderBox, PreferenceManager.PREF_DOWNLOAD_ORDER);
+                break;
+            case R.id.settings_search_complete_btn:
+                checkedAndSave(mCompleteBox, PreferenceManager.PREF_SEARCH_COMPLETE);
                 break;
         }
     }
@@ -119,19 +127,19 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @OnClick(R.id.settings_reader_mode_btn) void onReaderModeClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_mode,
-                getResources().getStringArray(R.array.reader_mode_items), mReaderModeChoice, DIALOG_REQUEST_READER_MODE);
+                getResources().getStringArray(R.array.reader_mode_items), mReaderModeChoice, null, DIALOG_REQUEST_READER_MODE);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_other_launch_btn) void onOtherLaunchClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_launch,
-                getResources().getStringArray(R.array.home_items), mLaunchChoice, DIALOG_REQUEST_OTHER_LAUNCH);
+                getResources().getStringArray(R.array.home_items), mLaunchChoice, null, DIALOG_REQUEST_OTHER_LAUNCH);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_other_theme_btn) void onOtherThemeBtnClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_theme,
-                getResources().getStringArray(R.array.theme_items), mThemeChoice, DIALOG_REQUEST_OTHER_THEME);
+                getResources().getStringArray(R.array.theme_items), mThemeChoice, null, DIALOG_REQUEST_OTHER_THEME);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -217,6 +225,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mBrightBox.setSupportButtonTintList(stateList);
         mHideBox.setSupportButtonTintList(stateList);
         mOrderBox.setSupportButtonTintList(stateList);
+        mCompleteBox.setSupportButtonTintList(stateList);
     }
 
     @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {

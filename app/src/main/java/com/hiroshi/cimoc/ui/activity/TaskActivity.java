@@ -62,7 +62,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         mRecyclerView.addItemDecoration(mTaskAdapter.getItemDecoration());
         mRecyclerView.setAdapter(mTaskAdapter);
         mActionButton.setImageResource(R.drawable.ic_launch_white_24dp);
-        mActionButton.show();
+        mActionButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     arr1[i] = mTaskAdapter.getItem(i).getTitle();
                     arr2[i] = false;
                 }
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete_multi, arr1, arr2, DIALOG_REQUEST_DELETE);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete_multi, arr1, arr2, null, DIALOG_REQUEST_DELETE);
                 fragment.show(getFragmentManager(), null);
                 break;
         }

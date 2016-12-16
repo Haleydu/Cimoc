@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Cimoc</string>
 
-    <string name="drawer_search">搜索</string>
     <string name="drawer_comic">漫画</string>
     <string name="drawer_source">图源</string>
     <string name="drawer_tag">标签</string>
@@ -30,7 +29,6 @@
     <string name="result">搜索结果</string>
     <string name="result_empty">搜索结果为空</string>
     <string name="result_error">搜索错误</string>
-    <string name="result_recent">最近更新</string>
 
     <string name="detail">详情</string>
     <string name="detail_favorite">收藏成功</string>
@@ -62,6 +60,7 @@
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
+    <string name="comic_search">搜索</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_filter_continue">连载</string>
     <string name="comic_filter_finish">完结</string>
@@ -91,6 +90,8 @@
     <string name="reader_config_title">阅读配置</string>
     <string name="reader_config_page">翻页模式</string>
     <string name="reader_config_stream">卷纸模式</string>
+
+    <string name="source_server">图片服务器</string>
 
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
@@ -129,6 +130,9 @@
     <string name="settings_download_scan">扫描已下载漫画</string>
     <string name="settings_download_scan_summary">在存储目录扫描已下载漫画</string>
     <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下，重要的是，不一定可以成功！\n此功能便于卸载软件或清除数据后，再次使用时恢复下载的漫画！</string>
+    <string name="settings_search">搜索设置</string>
+    <string name="settings_search_complete">开启搜索提示</string>
+    <string name="settings_search_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
     <string name="settings_other_launch">启动页</string>
     <string name="settings_other_launch_summary">选择默认启动页</string>

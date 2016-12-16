@@ -36,7 +36,7 @@ public class DirPickerActivity extends CoordinatorActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mDirAdapter);
         mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.show();
+        mActionButton.setVisibility(View.VISIBLE);
     }
 
     @Override

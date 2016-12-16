@@ -37,14 +37,17 @@ public class EditorDialogFragment extends DialogFragment implements DialogInterf
     public void onClick(DialogInterface dialogInterface, int which) {
         int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
         Bundle bundle = new Bundle();
+        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, getArguments().getBundle(DialogView.EXTRA_DIALOG_BUNDLE));
         bundle.putString(DialogView.EXTRA_DIALOG_RESULT_VALUE, mEditText.getText().toString());
         DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
     }
 
-    public static EditorDialogFragment newInstance(int title, String content, int requestCode) {
+    public static EditorDialogFragment newInstance(int title, String content, Bundle extra, int requestCode) {
         EditorDialogFragment fragment = new EditorDialogFragment();
-        fragment.setArguments(createBundle(title, content, requestCode));
+        Bundle bundle = createBundle(title, content, requestCode);
+        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
+        fragment.setArguments(bundle);
         return fragment;
     }
 

@@ -18,4 +18,6 @@ public interface TagView extends BaseView, ThemeView, DialogView {
 
     void onTagDeleteFail();
 
+    void onTagRestore(Tag tag);
+
 }

@@ -6,12 +6,17 @@ import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.TagPresenter;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
+import com.hiroshi.cimoc.ui.activity.SearchActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TagAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
@@ -43,6 +48,12 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     }
 
     @Override
+    protected void initView() {
+        setHasOptionsMenu(true);
+        super.initView();
+    }
+
+    @Override
     protected BaseAdapter initAdapter() {
         mTagAdapter = new TagAdapter(getActivity(), new ArrayList<Tag>());
         return mTagAdapter;
@@ -68,6 +79,23 @@ public class TagFragment extends CoordinatorFragment implements TagView {
         mPresenter.detachView();
         mPresenter = null;
         super.onDestroyView();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.tag_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.comic_search:
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -107,9 +135,16 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add, null, DIALOG_REQUEST_EDITOR);
+        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add, null, null, DIALOG_REQUEST_EDITOR);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onTagRestore(Tag tag) {
+        if (!mTagAdapter.contains(tag)) {
+            mTagAdapter.add(tag);
+        }
     }
 
     @Override

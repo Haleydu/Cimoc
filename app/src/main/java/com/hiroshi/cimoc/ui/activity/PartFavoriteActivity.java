@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.util.Log;
 import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
@@ -15,6 +16,7 @@ import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,8 +55,6 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         if (getIntent().getLongExtra(EXTRA_ID, -1) < 0) {
             mLayoutView.removeView(mActionButton);
             mActionButton = null;
-        } else {
-            mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
         }
     }
 
@@ -77,11 +77,16 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         int size = list.size();
         String[] arr1 = new String[size];
         boolean[] arr2 = new boolean[size];
+        long[] arr3 = new long[size];
         for (int i = 0; i < size; ++i) {
-            arr1[i] = list.get(i).getTitle();
+            MiniComic comic = list.get(i);
+            arr1[i] = comic.getTitle();
             arr2[i] = false;
+            arr3[i] = comic.getId();
         }
-        MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, DIALOG_REQUEST_ADD);
+        Bundle bundle = new Bundle();
+        bundle.putLongArray(EXTRA_DIALOG_BUNDLE_ARG_1, arr3);
+        MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, bundle, DIALOG_REQUEST_ADD);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -113,9 +118,25 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
                 showSnackbar(R.string.common_delete_success);
                 break;
             case DIALOG_REQUEST_ADD:
-                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
                 showProgressDialog();
-                mPresenter.insert(check);
+                Bundle extra = bundle.getBundle(EXTRA_DIALOG_BUNDLE);
+                if (extra != null) {
+                    long[] id = extra.getLongArray(EXTRA_DIALOG_BUNDLE_ARG_1);
+                    boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
+                    if (id != null && check != null && id.length == check.length) {
+                        List<Long> list = new LinkedList<>();
+                        for (int i = 0; i != check.length; ++i) {
+                            if (check[i]) {
+                                list.add(id[i]);
+                            }
+                        }
+                        mPresenter.insert(list);
+                    } else {
+                        onComicInsertFail();
+                    }
+                } else {
+                    onComicInsertFail();
+                }
                 break;
         }
     }
@@ -131,7 +152,8 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         hideProgressBar();
         mGridAdapter.addAll(list);
         if (mActionButton != null) {
-            mActionButton.show();
+            mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
+            mActionButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -144,6 +166,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
 
     @Override
     public void onComicInsertFail() {
+        hideProgressDialog();
         showSnackbar(R.string.common_add_fail);
     }
 

@@ -30,7 +30,6 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
-import com.hiroshi.cimoc.ui.fragment.SearchFragment;
 import com.hiroshi.cimoc.ui.fragment.coordinator.SourceFragment;
 import com.hiroshi.cimoc.ui.fragment.coordinator.TagFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
@@ -49,7 +48,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private static final int DIALOG_REQUEST_NOTICE = 0;
     private static final int DIALOG_REQUEST_PERMISSION = 1;
 
-    private static final int FRAGMENT_NUM = 4;
+    private static final int FRAGMENT_NUM = 3;
 
     @BindView(R.id.main_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
@@ -123,12 +122,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initFragment() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
         switch (home) {
             default:
-            case PreferenceManager.HOME_SEARCH:
-                mCheckItem = R.id.drawer_search;
-                break;
             case PreferenceManager.HOME_COMIC:
                 mCheckItem = R.id.drawer_comic;
                 break;
@@ -149,9 +145,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mCurrentFragment = mFragmentArray.get(mCheckItem);
         if (mCurrentFragment == null) {
             switch (mCheckItem) {
-                case R.id.drawer_search:
-                    mCurrentFragment = new SearchFragment();
-                    break;
                 case R.id.drawer_comic:
                     mCurrentFragment = new ComicFragment();
                     break;
@@ -203,7 +196,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         int itemId = item.getItemId();
         if (itemId != mCheckItem) {
             switch (itemId) {
-                case R.id.drawer_search:
                 case R.id.drawer_comic:
                 case R.id.drawer_source:
                 case R.id.drawer_tag:
@@ -323,7 +315,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected String getDefaultTitle() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
+        if (home < 0 || home > 2) {
+            home = PreferenceManager.HOME_COMIC;
+        }
         return getResources().getStringArray(R.array.home_items)[home];
     }
 

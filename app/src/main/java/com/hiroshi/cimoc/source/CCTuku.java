@@ -152,7 +152,7 @@ public class CCTuku extends MangaParser {
             } else if (!"".equals(args[CATEGORY_PROGRESS])) {
                 return StringUtils.format("http://m.tuku.cc/%s/%%d", args[CATEGORY_PROGRESS]);
             } else {
-                return "http://m.tuku.cc/newest/%%d";
+                return "http://m.tuku.cc/newest/%d";
             }
         }
 

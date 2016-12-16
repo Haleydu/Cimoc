@@ -20,8 +20,6 @@ public interface DetailView extends BaseView {
 
     void onParseError();
 
-    void onNetworkError();
-
     void onTaskAddSuccess(ArrayList<Task> list);
 
     void onTaskAddFail();

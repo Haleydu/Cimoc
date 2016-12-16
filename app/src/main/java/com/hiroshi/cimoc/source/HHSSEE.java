@@ -183,7 +183,7 @@ public class HHSSEE extends MangaParser {
             } else if (!"".equals(args[CATEGORY_AREA])) {
                 return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_AREA]);
             } else {
-                return "http://www.hhssee.com/comic/%%d.html";
+                return "http://www.hhssee.com/comic/%d.html";
             }
         }
 

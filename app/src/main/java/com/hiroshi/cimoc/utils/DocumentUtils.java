@@ -197,7 +197,6 @@ public class DocumentUtils {
     }
 
     public static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
-        // Todo src parent 不能相等
         if (src.isDirectory()) {
             DocumentFile dir = getOrCreateSubDirectory(parent, src.getName());
             for (DocumentFile file : src.listFiles()) {

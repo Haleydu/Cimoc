@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.SearchView;
 
 import java.util.List;
@@ -21,22 +20,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     public SearchPresenter() {
         mSourceManager = SourceManager.getInstance();
-    }
-
-    @Override
-    protected void initSubscription() {
-        addSubscription(RxEvent.EVENT_SOURCE_ENABLE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onSourceEnable((Source) rxEvent.getData());
-            }
-        });
-        addSubscription(RxEvent.EVENT_SOURCE_DISABLE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onSourceDisable((Source) rxEvent.getData());
-            }
-        });
     }
 
     public void loadSource() {

@@ -6,8 +6,4 @@
         android:title="@string/comic_search"
         android:icon="@drawable/ic_search_white_24dp"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/comic_filter"
-        android:title="@string/comic_filter"
-        android:icon="@drawable/ic_filter_list_white_24dp"
-        app:showAsAction="ifRoom" />
 </menu>

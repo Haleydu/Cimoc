@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="vertical"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include layout="@layout/custom_toolbar"/>
-        <include layout="@layout/custom_progress_bar"/>
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/coordinator_recycler_view"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="6dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"/>
-    </LinearLayout>
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/coordinator_action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|end"
-        android:visibility="invisible"
-        app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
+            android:layout_height="match_parent">
+            <include layout="@layout/custom_toolbar"/>
+            <include layout="@layout/custom_progress_bar"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/coordinator_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="6dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/coordinator_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="bottom|end"
+            android:visibility="invisible"
+            app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
+    </android.support.design.widget.CoordinatorLayout>
     <include layout="@layout/custom_night_mask"/>
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

@@ -52,14 +52,14 @@ public class PageConfigFragment extends BaseFragment implements DialogView {
 
     @OnClick(R.id.settings_reader_orientation_btn) void onReaderOrientationClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_orientation,
-                getResources().getStringArray(R.array.reader_orientation_items), mReaderOrientationChoice, DIALOG_REQUEST_ORIENTATION);
+                getResources().getStringArray(R.array.reader_orientation_items), mReaderOrientationChoice, null, DIALOG_REQUEST_ORIENTATION);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_reader_turn_btn) void onReaderTurnClick() {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_turn,
-                getResources().getStringArray(R.array.reader_turn_items), mReaderTurnChoice, DIALOG_REQUEST_TURN);
+                getResources().getStringArray(R.array.reader_turn_items), mReaderTurnChoice, null, DIALOG_REQUEST_TURN);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }

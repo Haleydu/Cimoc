@@ -8,15 +8,11 @@ import java.util.List;
  * Created by Hiroshi on 2016/10/11.
  */
 
-public interface SearchView extends BaseView, ThemeView, DialogView {
+public interface SearchView extends BaseView, DialogView {
 
     void onSourceLoadSuccess(List<Source> list);
 
     void onSourceLoadFail();
-
-    void onSourceEnable(Source source);
-
-    void onSourceDisable(Source source);
 
     void onAutoCompleteLoadSuccess(List<String> list);
 

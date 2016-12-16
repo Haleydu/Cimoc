@@ -36,7 +36,7 @@ public class ChapterActivity extends CoordinatorActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mChapterAdapter);
         mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.show();
+        mActionButton.setVisibility(View.VISIBLE);
         hideProgressBar();
     }
 
