@@ -21,6 +21,7 @@ public class ImagePipelineFactoryBuilder {
         ImagePipelineConfig config =
                 OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client, getHeaders(source))
                         .setBitmapsConfig(Bitmap.Config.RGB_565)
+                        .setDownsampleEnabled(true)
                         .build();
         return new ImagePipelineFactory(config);
     }
@@ -45,6 +46,8 @@ public class ImagePipelineFactoryBuilder {
                 return Headers.of("Referer", "http://www.hhssee.com");
             case SourceManager.SOURCE_57MH:
                 return Headers.of("Referer", "http://m.57mh.com");
+            case SourceManager.SOURCE_CHUIYAO:
+                return Headers.of("Referer", "http://m.chuiyao.com");
 /*            case SourceManager.SOURCE_EHENTAI:
                 return Headers.of("Referer", "http://g.e-hentai.org");
             case SourceManager.SOURCE_EXHENTAI:

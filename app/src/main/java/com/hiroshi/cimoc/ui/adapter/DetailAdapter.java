@@ -142,7 +142,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             Chapter chapter = mDataSet.get(position - 1);
             ViewHolder viewHolder = (ViewHolder) holder;
             viewHolder.chapterButton.setText(chapter.getTitle());
-            viewHolder.chapterButton.setDownload(chapter.isDownload());
+            viewHolder.chapterButton.setDownload(chapter.isComplete());
             if (chapter.getPath().equals(last)) {
                 viewHolder.chapterButton.setSelected(true);
             } else if (viewHolder.chapterButton.isSelected()) {

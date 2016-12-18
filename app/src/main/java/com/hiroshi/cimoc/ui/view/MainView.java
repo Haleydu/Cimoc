@@ -7,7 +7,7 @@ import android.support.annotation.StyleRes;
  * Created by Hiroshi on 2016/9/21.
  */
 
-public interface MainView extends BaseView {
+public interface MainView extends BaseView, DialogView {
 
     void onLastLoadSuccess(int source, String cid, String title, String cover);
 

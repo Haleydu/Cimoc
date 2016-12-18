@@ -1,12 +1,14 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.JsonIterator;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
+import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -14,11 +16,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.FormBody;
 import okhttp3.Request;
@@ -30,10 +30,14 @@ import okhttp3.RequestBody;
 
 public class Webtoon extends MangaParser {
 
+    public Webtoon() {
+        category = new Category();
+    }
+
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://m.webtoons.com/search";
+            String url = "http://m.webtoons.com/zh-hans/search";
             RequestBody body = new FormBody.Builder().add("keyword", keyword).add("searchType", "ALL").build();
             return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.webtoons.com").build();
         }
@@ -42,28 +46,17 @@ public class Webtoon extends MangaParser {
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        try {
-            JSONObject object = new JSONObject(html);
-            return new JsonIterator(object.getJSONObject("webtoonResult").getJSONArray("titleList")) {
-                @Override
-                protected Comic parse(JSONObject object) {
-                    try {
-                        String cid = object.getString("titleNo");
-                        String title = object.getString("title");
-                        String cover = "http://mwebtoon.phinf.naver.net/".concat(object.getString("thumbnailMobile"));
-                        long time = object.getLong("lastEpisodeRegisterYmdt");
-                        String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
-                        String author = object.getString("pictureAuthorName");
-                        return new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, update, author);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-        } catch (JSONException e) {
-            return null;
-        }
+        Node body = new Node(html);
+        return new NodeIterator(body.list("#ct > div._searchResultArea > ul._searchResultList > li > a")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.hrefWithSplit(-1);
+                String title = node.text("div.row > div.info > p.subj > span");
+                String cover = node.src("div.row > div.pic > img");
+                String author = node.text("div.row > div.info > p.author");
+                return new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, author);
+            }
+        };
     }
 
     @Override
@@ -73,19 +66,19 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#ct > div.detail_info > a._btnInfo > p.subj");
-        String cover = body.attr("#_episodeList > li > a > div.row > div.pic > img", "src");
-        String[] args = body.text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
-        String update = StringUtils.format("%4d-%02d-%02d",
-                Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String cover = body.src("#_episodeList > li > a > div.row > div.pic > img");
+        String update = body.text("#_episodeList > li > a > div.row > div.info > p.date");
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
         String author = body.text("#ct > div.detail_info > a._btnInfo > p.author");
         String intro = body.text("#_informationLayer > p.summary_area");
-        boolean status = body.text("#_informationLayer > div.info_update").contains("完结");
+        boolean status = isFinish(body.text("#_informationLayer > div.info_update"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override
@@ -94,30 +87,8 @@ public class Webtoon extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("#_episodeList > li > a")) {
             String title = node.text("div.row > div.info > p.sub_title > span");
-            String path = node.attr("href").substring(30);
+            String path = node.hrefWithSubString(30);
             list.add(new Chapter(title, path));
-        }
-        return list;
-    }
-
-    @Override
-    public Request getRecentRequest(int page) {
-        if (page == 1) {
-            String url = "http://m.webtoons.com/zh-hans/new";
-            return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
-        }
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#ct > ul > li > a")) {
-            String cid = node.attr("href", "=", 1);
-            String title = node.text("div.info > p.subj > span");
-            String cover = node.attr("div.pic", "style", "\\(|\\)", 1);
-            list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
         }
         return list;
     }
@@ -154,8 +125,49 @@ public class Webtoon extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        String[] args = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date").trim().split("\\D");
-        return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String update = new Node(html).text("#_episodeList > li > a > div.row > div.info > p.date");
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
+        return update;
+    }
+
+    @Override
+    public Request getCategoryRequest(String format, int page) {
+        if (page == 1) {
+            return new Request.Builder().url(format).addHeader("Referer", "http://m.webtoons.com").build();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new ArrayList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#ct > ul > li > a")) {
+            String cid = node.hrefWithSplit(-1);
+            String title = node.text("div.info > p.subj > span");
+            String cover = node.attrWithSplit("div.pic", "style", "\\(|\\)", 1);
+            list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public String getFormat(String... args) {
+            return "http://m.webtoons.com/zh-hans/new";
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("新作推荐", ""));
+            return list;
+        }
+
     }
 
 }

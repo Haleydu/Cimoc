@@ -11,12 +11,10 @@ public interface ResultView extends BaseView {
 
     void onSearchError();
 
-    void onResultEmpty();
-
     void onSearchSuccess(Comic comic);
 
-    void onRecentLoadSuccess(List<Comic> list);
+    void onLoadSuccess(List<Comic> list);
 
-    void onRecentLoadFail();
+    void onLoadFail();
 
 }

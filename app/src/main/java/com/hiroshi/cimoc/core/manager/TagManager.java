@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.model.TagRefDao;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
 
@@ -16,10 +17,8 @@ import rx.Observable;
 
 public class TagManager {
 
-    public static final int TAG_ALL = 100;
-    public static final int TAG_CONTINUE = 101;
-    public static final int TAG_END = 102;
-    public static final int TAG_NORMAL = 103;
+    public static final long TAG_CONTINUE = -11;
+    public static final long TAG_FINISH = -10;
 
     private static TagManager mTagManager;
 
@@ -31,6 +30,10 @@ public class TagManager {
         mRefDao = CimocApplication.getDaoSession().getTagRefDao();
     }
 
+    public <T> T callInTx(Callable<T> callable) {
+        return mTagDao.getSession().callInTxNoException(callable);
+    }
+
     public Observable<Void> runInRx(Runnable runnable) {
         return mRefDao.getSession().rxTx().run(runnable);
     }
@@ -39,7 +42,7 @@ public class TagManager {
         mRefDao.getSession().runInTx(runnable);
     }
 
-    public Observable<List<Tag>> list() {
+    public Observable<List<Tag>> listInRx() {
         return mTagDao.queryBuilder()
                 .rx()
                 .list();
@@ -52,10 +55,9 @@ public class TagManager {
                 .list();
     }
 
-    public Observable<List<TagRef>> listByComic(long cid) {
+    public List<TagRef> listByComic(long cid) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Cid.eq(cid))
-                .rx()
                 .list();
     }
 
@@ -73,8 +75,9 @@ public class TagManager {
                 .unique();
     }
 
-    public long insert(Tag tag) {
-        return mTagDao.insert(tag);
+    public void insert(Tag tag) {
+        long id = mTagDao.insert(tag);
+        tag.setId(id);
     }
 
     public long insert(TagRef ref) {
@@ -82,6 +85,10 @@ public class TagManager {
     }
 
     public void insert(Iterable<TagRef> entities) {
+        mRefDao.insertInTx(entities);
+    }
+
+    public void insertInTx(Iterable<TagRef> entities) {
         mRefDao.insertInTx(entities);
     }
 

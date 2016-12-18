@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -24,15 +27,15 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
-import com.hiroshi.cimoc.ui.fragment.SearchFragment;
-import com.hiroshi.cimoc.ui.fragment.classical.SourceFragment;
-import com.hiroshi.cimoc.ui.fragment.classical.TagFragment;
+import com.hiroshi.cimoc.ui.fragment.coordinator.SourceFragment;
+import com.hiroshi.cimoc.ui.fragment.coordinator.TagFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
+import com.hiroshi.cimoc.ui.view.ThemeView;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,10 +43,12 @@ import butterknife.ButterKnife;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener,
-        MessageDialogFragment.MessageDialogListener {
+public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
-    private static final int FRAGMENT_NUM = 4;
+    private static final int DIALOG_REQUEST_NOTICE = 0;
+    private static final int DIALOG_REQUEST_PERMISSION = 1;
+
+    private static final int FRAGMENT_NUM = 3;
 
     @BindView(R.id.main_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
@@ -78,9 +83,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
-        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false);
-            fragment.show(getFragmentManager(), null);
+        if (!showAuthorNotice()) {
+            showPermission();
         }
     }
 
@@ -110,7 +114,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             @Override
             public void onClick(View v) {
                 if (mLastSource != -1 && mLastCid != null) {
-                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
+                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid, false);
                     startActivity(intent);
                 }
             }
@@ -118,12 +122,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initFragment() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
         switch (home) {
             default:
-            case PreferenceManager.HOME_SEARCH:
-                mCheckItem = R.id.drawer_search;
-                break;
             case PreferenceManager.HOME_COMIC:
                 mCheckItem = R.id.drawer_comic;
                 break;
@@ -144,9 +145,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mCurrentFragment = mFragmentArray.get(mCheckItem);
         if (mCurrentFragment == null) {
             switch (mCheckItem) {
-                case R.id.drawer_search:
-                    mCurrentFragment = new SearchFragment();
-                    break;
                 case R.id.drawer_comic:
                     mCurrentFragment = new ComicFragment();
                     break;
@@ -198,7 +196,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         int itemId = item.getItemId();
         if (itemId != mCheckItem) {
             switch (itemId) {
-                case R.id.drawer_search:
                 case R.id.drawer_comic:
                 case R.id.drawer_source:
                 case R.id.drawer_tag:
@@ -232,8 +229,31 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onMessagePositiveClick(int type) {
-        mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_NOTICE:
+                mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
+                showPermission();
+                break;
+            case DIALOG_REQUEST_PERMISSION:
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ((CimocApplication) getApplication()).initRootDocumentFile();
+                    showSnackbar(R.string.main_permission_success);
+                } else {
+                    showSnackbar(R.string.main_permission_fail);
+                }
+                break;
+        }
     }
 
     @Override
@@ -271,11 +291,34 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (mToolbar != null) {
             mToolbar.setBackgroundColor(ContextCompat.getColor(this, primary));
         }
+
+        for (int i = 0; i < mFragmentArray.size(); ++i) {
+            ((ThemeView) mFragmentArray.valueAt(i)).onThemeChange(primary, accent);
+        }
+    }
+
+    private boolean showAuthorNotice() {
+        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, null, DIALOG_REQUEST_NOTICE);
+            fragment.show(getFragmentManager(), null);
+            return true;
+        }
+        return false;
+    }
+
+    private void showPermission() {
+        if (!PermissionUtils.hasStoragePermission(this)) {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission, R.string.main_permission_content, false, null, DIALOG_REQUEST_PERMISSION);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @Override
     protected String getDefaultTitle() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_SEARCH);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
+        if (home < 0 || home > 2) {
+            home = PreferenceManager.HOME_COMIC;
+        }
         return getResources().getStringArray(R.array.home_items)[home];
     }
 

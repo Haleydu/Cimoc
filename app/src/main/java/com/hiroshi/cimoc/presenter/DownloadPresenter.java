@@ -7,7 +7,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxEvent;
-import com.hiroshi.cimoc.ui.fragment.ComicFragment;
+import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
 import java.util.ArrayList;
@@ -59,20 +59,6 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 mBaseView.onDownloadStop();
             }
         });
-        addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                if ((int) rxEvent.getData(1) == ComicFragment.TYPE_DOWNLOAD) {
-                    mBaseView.onComicRead((MiniComic) rxEvent.getData());
-                }
-            }
-        });
-        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
-            }
-        });
     }
 
     public void deleteComic(final long id) {
@@ -86,7 +72,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     comic.setDownload(null);
                     mComicManager.update(comic);
                 }
-                Download.delete(comic.getSource(), comic.getTitle());
+                Download.delete(comic);
                 subscriber.onNext(null);
                 subscriber.onCompleted();
             }
@@ -95,32 +81,24 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void v) {
-                        mBaseView.onDownloadDeleteSuccess();
+                        mBaseView.onDownloadDeleteSuccess(id);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onDownloadDeleteFail();
                     }
                 }));
     }
 
     public void loadComic() {
-        mCompositeSubscription.add(mComicManager.listDownload()
-                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
-                    @Override
-                    public Observable<Comic> call(List<Comic> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .map(new Func1<Comic, MiniComic>() {
+        mCompositeSubscription.add(mComicManager.listDownloadInRx()
+                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
-                })
-                .toList()
+                }))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
@@ -136,7 +114,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     }
 
     public void loadTask() {
-        mCompositeSubscription.add(mTaskManager.list()
+        mCompositeSubscription.add(mTaskManager.listInRx()
                 .flatMap(new Func1<List<Task>, Observable<Task>>() {
                     @Override
                     public Observable<Task> call(List<Task> list) {

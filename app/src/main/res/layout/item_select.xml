@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp"
+    android:paddingLeft="18dp"
+    android:paddingRight="18dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
-    <RelativeLayout
+    android:background="?android:attr/selectableItemBackground">
+    <CheckBox
+        android:id="@+id/item_select_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:clickable="false"
+        android:focusable="false"
+        android:background="@null"/>
+    <TextView
+        android:id="@+id/item_select_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <CheckBox
-            android:id="@+id/item_select_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:clickable="false"
-            android:focusable="false"
-            android:background="@null"/>
-        <TextView
-            android:id="@+id/item_select_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/item_select_checkbox"
-            android:layout_centerVertical="true"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"/>
-    </RelativeLayout>
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/item_select_checkbox"
+        android:layout_centerVertical="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="16sp"/>
+</RelativeLayout>

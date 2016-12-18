@@ -33,21 +33,17 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private ComicManager mComicManager;
     private Comic mComic;
 
-    private boolean isShowNext;
-    private boolean isShowPrev;
-    private int count;
-
-    private int status;
+    private boolean isShowNext = true;
+    private boolean isShowPrev = true;
+    private int count = 0;
+    private int status = LOAD_INIT;
 
     public ReaderPresenter() {
         mComicManager = ComicManager.getInstance();
-        this.isShowNext = true;
-        this.isShowPrev = true;
-        this.count = 0;
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.load(mComic.getSource(), imageUrl.getFirstUrl())
+        mCompositeSubscription.add(Manga.loadLazyUrl(mComic.getSource(), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -67,15 +63,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void loadInit(long id, Chapter[] array) {
-        status = LOAD_INIT;
         mComic = mComicManager.load(id);
         for (int i = 0; i != array.length; ++i) {
             if (array[i].getPath().equals(mComic.getLast())) {
                 this.mPreloadAdapter = new PreloadAdapter(array, i);
-                Chapter chapter = array[i];
-                images(chapter.isDownload() ?
-                        Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
-                        Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath()));
+                images(getObservable(array[i]));
             }
         }
     }
@@ -85,9 +77,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             Chapter chapter = mPreloadAdapter.getNextChapter();
             if (chapter != null) {
                 status = LOAD_NEXT;
-                images(chapter.isDownload() ?
-                        Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
-                        Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath()));
+                images(getObservable(chapter));
                 mBaseView.onNextLoading();
             } else {
                 isShowNext = false;
@@ -101,9 +91,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             Chapter chapter = mPreloadAdapter.getPrevChapter();
             if (chapter != null) {
                 status = LOAD_PREV;
-                images(chapter.isDownload() ?
-                        Download.images(mComic.getSource(), mComic.getTitle(), chapter.getTitle()) :
-                        Manga.images(mComic.getSource(), mComic.getCid(), chapter.getPath()));
+                images(getObservable(chapter));
                 mBaseView.onPrevLoading();
             } else {
                 isShowPrev = false;
@@ -112,30 +100,35 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         }
     }
 
+    private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
+        return chapter.isComplete() ? Download.images(mComic, chapter) :
+                Manga.getChapterImage(mComic.getSource(), mComic.getCid(), chapter.getPath());
+    }
+
     public void toNextChapter() {
         Chapter chapter = mPreloadAdapter.nextChapter();
         if (chapter != null) {
-            mBaseView.onChapterChange(chapter);
-            mComic.setLast(chapter.getPath());
-            mComic.setPage(1);
-            mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            updateChapter(chapter, true);
         }
     }
 
     public void toPrevChapter() {
         Chapter chapter = mPreloadAdapter.prevChapter();
         if (chapter != null) {
-            mBaseView.onChapterChange(chapter);
-            mComic.setLast(chapter.getPath());
-            mComic.setPage(chapter.getCount());
-            mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath(), chapter.getCount()));
+            updateChapter(chapter, false);
         }
     }
 
-    public void savePicture(InputStream inputStream, String suffix) {
-        mCompositeSubscription.add(Storage.savePicture(inputStream, suffix)
+    private void updateChapter(Chapter chapter, boolean isNext) {
+        mBaseView.onChapterChange(chapter);
+        mComic.setLast(chapter.getPath());
+        mComic.setPage(isNext ? 1 : chapter.getCount());
+        mComicManager.update(mComic);
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath()));
+    }
+
+    public void savePicture(InputStream inputStream, String url) {
+        mCompositeSubscription.add(Storage.savePicture(inputStream, url)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -154,7 +147,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         if (status != LOAD_INIT) {
             mComic.setPage(page);
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, mComic.getLast(), page));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_PAGE_CHANGE, page));
         }
     }
 
@@ -188,11 +181,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        if (throwable instanceof Manga.NetworkErrorException) {
-                            mBaseView.onNetworkError();
-                        } else {
-                            mBaseView.onParseError();
-                        }
+                        mBaseView.onParseError();
                         if (status != LOAD_INIT && ++count < 2) {
                             status = LOAD_NULL;
                         }

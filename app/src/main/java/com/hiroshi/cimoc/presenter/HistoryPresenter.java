@@ -4,6 +4,7 @@ import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.HistoryView;
 
 import java.util.List;
@@ -33,29 +34,16 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 mBaseView.onItemUpdate((MiniComic) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
-            }
-        });
     }
 
-    public void loadComic() {
-        mCompositeSubscription.add(mComicManager.listHistory()
-                .flatMap(new Func1<List<Comic>, Observable<Comic>>() {
-                    @Override
-                    public Observable<Comic> call(List<Comic> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .map(new Func1<Comic, MiniComic>() {
+    public void load() {
+        mCompositeSubscription.add(mComicManager.listHistoryInRx()
+                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
-                })
-                .toList()
+                }))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
@@ -72,16 +60,12 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     public void delete(MiniComic history) {
         Comic comic = mComicManager.load(history.getId());
-        if (comic.getFavorite() == null && comic.getDownload() == null) {
-            mComicManager.delete(comic);
-        } else {
-            comic.setHistory(null);
-            mComicManager.update(comic);
-        }
+        comic.setHistory(null);
+        mComicManager.updateOrDelete(comic);
     }
 
     public void clear() {
-        mCompositeSubscription.add(mComicManager.listHistory()
+        mCompositeSubscription.add(mComicManager.listHistoryInRx()
                 .flatMap(new Func1<List<Comic>, Observable<Void>>() {
                     @Override
                     public Observable<Void> call(final List<Comic> list) {

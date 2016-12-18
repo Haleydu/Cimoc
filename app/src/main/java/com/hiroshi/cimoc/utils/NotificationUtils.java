@@ -14,6 +14,10 @@ import com.hiroshi.cimoc.R;
  */
 public class NotificationUtils {
 
+    public static NotificationManager getManager(Context context) {
+        return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
     public static void notifyBuilder(int id, NotificationManager manager, Notification.Builder builder) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             manager.notify(id, builder.build());

@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
+import com.hiroshi.cimoc.ui.view.DialogView;
 import com.hiroshi.cimoc.utils.EventUtils;
 
 import java.util.List;
@@ -21,7 +23,7 @@ import butterknife.BindViews;
  * Created by Hiroshi on 2016/10/9.
  */
 
-public class EventSettingsActivity extends BaseActivity implements ChoiceDialogFragment.ChoiceDialogListener {
+public class EventSettingsActivity extends BaseActivity implements DialogView {
 
     @BindViews({ R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right })
     List<Button> mButtonList;
@@ -82,16 +84,17 @@ public class EventSettingsActivity extends BaseActivity implements ChoiceDialogF
 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
-                getResources().getStringArray(R.array.event_items), mChoiceArray[index], index);
+                getResources().getStringArray(R.array.event_items), mChoiceArray[index], null, index);
         fragment.show(getFragmentManager(), null);
     }
 
     @Override
-    public void onChoicePositiveClick(int type, int choice, String value) {
-        mChoiceArray[type] = choice;
-        mPreference.putInt(mKeyArray[type], choice);
-        if (type < 5) {
-            mButtonList.get(type).setText(EventUtils.getTitleId(choice));
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+        mChoiceArray[requestCode] = index;
+        mPreference.putInt(mKeyArray[requestCode], index);
+        if (requestCode < 5) {
+            mButtonList.get(requestCode).setText(EventUtils.getTitleId(index));
         }
     }
 

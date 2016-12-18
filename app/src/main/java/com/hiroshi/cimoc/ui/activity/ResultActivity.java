@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
@@ -15,7 +15,6 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
 import com.hiroshi.cimoc.ui.view.ResultView;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,17 +26,19 @@ import butterknife.BindView;
 public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
 
     @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.result_layout) LinearLayout mLinearLayout;
+    @BindView(R.id.result_layout) FrameLayout mLayoutView;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
     private ControllerBuilderProvider mProvider;
 
+    private int type;
+
     @Override
     protected void initPresenter() {
         String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        ArrayList<Integer> source = getIntent().getIntegerArrayListExtra(EXTRA_SOURCE);
+        int[] source = getIntent().getIntArrayExtra(EXTRA_SOURCE);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
     }
@@ -57,7 +58,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (mLayoutManager.findLastVisibleItemPosition() >= mResultAdapter.getItemCount() - 4 && dy > 0) {
-                    mPresenter.load();
+                    load();
                 }
             }
         });
@@ -66,7 +67,8 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     protected void initData() {
-        mPresenter.load();
+        type = getIntent().getIntExtra(EXTRA_TYPE, -1);
+        load();
     }
 
     @Override
@@ -80,10 +82,21 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         }
     }
 
+    private void load() {
+        switch (type) {
+            case LAUNCH_TYPE_SEARCH:
+                mPresenter.loadSearch();
+                break;
+            case LAUNCH_TYPE_CATEGORY:
+                mPresenter.loadCategory();
+                break;
+        }
+    }
+
     @Override
     public void onItemClick(View view, int position) {
         Comic comic = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid(), false);
         startActivity(intent);
     }
 
@@ -94,59 +107,63 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     }
 
     @Override
-    public void onRecentLoadSuccess(List<Comic> list) {
+    public void onLoadSuccess(List<Comic> list) {
         hideProgressBar();
         mResultAdapter.addAll(list);
     }
 
     @Override
-    public void onRecentLoadFail() {
+    public void onLoadFail() {
         hideProgressBar();
         showSnackbar(R.string.common_parse_error);
     }
 
     @Override
-    public void onResultEmpty() {
+    public void onSearchError() {
         hideProgressBar();
         showSnackbar(R.string.result_empty);
     }
 
     @Override
-    public void onSearchError() {
-        hideProgressBar();
-        showSnackbar(R.string.result_error);
+    protected String getDefaultTitle() {
+        return getString(R.string.result);
     }
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activtiy_result;
+        return R.layout.activity_result;
     }
 
     @Override
     protected View getLayoutView() {
-        return mLinearLayout;
+        return mLayoutView;
     }
 
-    @Override
-    protected String getDefaultTitle() {
-        return getIntent().getStringExtra(EXTRA_KEYWORD) == null ? getString(R.string.result_recent) : getString(R.string.result);
-    }
+    /**
+     * 根据用户输入的关键词搜索
+     * Extra: 关键词 图源列表
+     */
+    public static final int LAUNCH_TYPE_SEARCH = 0;
+
+    /**
+     * 根据分类搜索，关键词字段存放 url 格式
+     * Extra: 格式 图源
+     */
+    public static final int LAUNCH_TYPE_CATEGORY = 1;
 
     public static final String EXTRA_KEYWORD = "a";
     public static final String EXTRA_SOURCE = "b";
+    public static final String EXTRA_TYPE = "c";
 
-    public static Intent createIntent(Context context, int source) {
-        Intent intent = new Intent(context, ResultActivity.class);
-        ArrayList<Integer> list = new ArrayList<>(1);
-        list.add(source);
-        intent.putIntegerArrayListExtra(EXTRA_SOURCE, list);
-        return intent;
+    public static Intent createIntent(Context context, String keyword, int source, int type) {
+        return createIntent(context, keyword, new int[]{source}, type);
     }
 
-    public static Intent createIntent(Context context, String keyword, ArrayList<Integer> list) {
+    public static Intent createIntent(Context context, String keyword, int[] array, int type) {
         Intent intent = new Intent(context, ResultActivity.class);
+        intent.putExtra(EXTRA_TYPE, type);
+        intent.putExtra(EXTRA_SOURCE, array);
         intent.putExtra(EXTRA_KEYWORD, keyword);
-        intent.putIntegerArrayListExtra(EXTRA_SOURCE, list);
         return intent;
     }
 

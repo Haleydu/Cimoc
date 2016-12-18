@@ -2,11 +2,13 @@ package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.JsonIterator;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -15,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +31,10 @@ import okhttp3.RequestBody;
  * Created by Hiroshi on 2016/8/25.
  */
 public class DM5 extends MangaParser {
+
+    public DM5() {
+        category = new Category();
+    }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -75,22 +82,26 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#mhinfo > div.inbt > h1.new_h2");
-        String cover = body.attr("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img", "src");
-        String update = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
-        String author = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(2) > a");
-        String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p").replace("[+展开]", "").replace("[-折叠]", "");
-        boolean status = "已完结".equals(body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(6)", 5));
+        String cover = body.src("#mhinfo > div.innr9 > div.innr90 > div.innr91 > img");
+        String str = body.text("#mhinfo > div.innr9 > div.innr90 > div.innr92");
+        String[] args = StringUtils.match("漫画作者：(.*?) .* 漫画状态：(.*?) .* 更新时间：(.*?) ", str, 1, 2, 3);
+        String update = args == null ? null : args[2];
+        String author = args == null ? null : args[0];
+        String intro = body.text("#mhinfo > div.innr9 > div.mhjj > p");
+        if (intro != null) {
+            intro = intro.replace("[+展开]", "").replace("[-折叠]", "");
+        }
+        boolean status = isFinish(args == null ? null : args[1]);
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return StringUtils.match("var DM5_COMIC_MID=(\\d+?);", html, 1);
     }
 
     @Override
-    public Request getChapterRequest(String mid) {
-        String url = StringUtils.format("http://www.dm5.com/template-%s-t2-s2", mid);
+    public Request getChapterRequest(String html, String cid) {
+        String id = StringUtils.match("var DM5_COMIC_MID=(\\d+?);", html, 1);
+        String url = StringUtils.format("http://www.dm5.com/template-%s-t2-s2", id);
         return new Request.Builder().url(url).build();
     }
 
@@ -100,48 +111,10 @@ public class DM5 extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("ul.nr6 > li > a[title]")) {
             String title = node.text();
-            String path = node.attr("href", "/", 1);
+            String path = node.hrefWithSplit(0);
             set.add(new Chapter(title, path));
         }
         return new LinkedList<>(set);
-    }
-
-    @Override
-    public Request getRecentRequest(int page) {
-        String url = "http://m.dm5.com/manhua-new/pagerdata.ashx";
-        RequestBody body = new FormBody.Builder()
-                .add("t", "2")
-                .add("pageindex", String.valueOf(page))
-                .build();
-        return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.dm5.com").build();
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        try {
-            JSONArray array = new JSONArray(html);
-            for (int i = 0; i != array.length(); ++i) {
-                try {
-                    JSONObject object = array.getJSONObject(i);
-                    String cid = object.getString("Url").split("/")[1];
-                    String title = object.getString("Title");
-                    String cover = object.getString("Pic");
-                    String update = object.getString("LastPartTime");
-                    JSONArray temp = object.optJSONArray("Author");
-                    String author = "";
-                    for (int j = 0; temp != null && j != temp.length(); ++j) {
-                        author = author.concat(temp.optString(j));
-                    }
-                    list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
     @Override
@@ -197,7 +170,103 @@ public class DM5 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
+        return new Node(html).textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new ArrayList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#index_left > div.inkk > div.innr3 > li")) {
+            String cid = node.hrefWithSplit("a", 0);
+            String title = node.attr("a", "title");
+            String cover = node.src("a > img");
+            String[] args = StringUtils.match("漫画家：(.*?)\\[(.*?)：", node.text(), 1, 2);
+            String update = args == null ? null : args[1];
+            if (update != null) {
+                update = update.replaceAll("[年月日]", " ").trim().replaceAll(" ", "-");
+            }
+            String author = args == null ? null : args[0];
+            list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public boolean isComposite() {
+            return true;
+        }
+
+        @Override
+        public String getFormat(String... args) {
+            String path = args[0].concat(" ").concat(args[1]).concat(" ").concat(args[4])
+                    .concat(" ").concat(args[5]).trim();
+            path = path.replaceAll("\\s+", "-");
+            return StringUtils.format("http://www.dm5.com/manhua-list-%s-size40-p%%d", path);
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("少年热血", "cg39"));
+            list.add(Pair.create("少女爱情", "cg40"));
+            list.add(Pair.create("武侠格斗", "cg41"));
+            list.add(Pair.create("科幻魔幻", "cg42"));
+            list.add(Pair.create("竞技体育", "cg43"));
+            list.add(Pair.create("爆笑喜剧", "cg44"));
+            list.add(Pair.create("侦探推理", "cg45"));
+            list.add(Pair.create("其它漫画", "cg47"));
+            list.add(Pair.create("东方同人", "cg55"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasArea() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getArea() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("港台", "area35"));
+            list.add(Pair.create("日韩", "area36"));
+            list.add(Pair.create("内地", "area37"));
+            list.add(Pair.create("欧美", "area38"));
+            return list;
+        }
+
+        @Override
+        public boolean hasProgress() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getProgress() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("连载", "st1"));
+            list.add(Pair.create("完结", "st2"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasOrder() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getOrder() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("更新", "s2"));
+            list.add(Pair.create("人气", "s4"));
+            list.add(Pair.create("评论", "s6"));
+            return list;
+        }
+
     }
 
 }

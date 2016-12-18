@@ -8,7 +8,6 @@ import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
@@ -97,19 +96,16 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
-                draweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                        if (imageInfo == null) {
-                            return;
+                        if (imageInfo != null) {
+                            draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
                         }
-                        draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
                     }
                 });
                 break;
             case READER_STREAM:
-                draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onIntermediateImageSet(String id, ImageInfo imageInfo) {

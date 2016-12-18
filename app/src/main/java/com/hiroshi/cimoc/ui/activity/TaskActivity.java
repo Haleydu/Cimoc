@@ -4,9 +4,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,15 +15,12 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.Selectable;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
-import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
-import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
-import com.hiroshi.cimoc.ui.fragment.dialog.SelectDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
@@ -31,7 +28,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.functions.Action1;
@@ -40,18 +36,14 @@ import rx.functions.Func1;
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.OnItemClickListener,
-        BaseAdapter.OnItemLongClickListener, MessageDialogFragment.MessageDialogListener,
-        SelectDialogFragment.SelectDialogListener {
+public class TaskActivity extends CoordinatorActivity implements TaskView {
 
-    @BindView(R.id.task_layout) View mTaskLayout;
-    @BindView(R.id.task_recycler_view) RecyclerView mRecyclerView;
+    private static final int DIALOG_REQUEST_DELETE = 0;
 
     private TaskAdapter mTaskAdapter;
     private TaskPresenter mPresenter;
     private ServiceConnection mConnection;
     private DownloadServiceBinder mBinder;
-    private List<Task> mTempList;
 
     @Override
     protected void initPresenter() {
@@ -64,18 +56,20 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         super.initView();
         mTaskAdapter = new TaskAdapter(this, new LinkedList<Task>());
         mTaskAdapter.setOnItemClickListener(this);
-        mTaskAdapter.setOnItemLongClickListener(this);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(mTaskAdapter.getItemDecoration());
+        mRecyclerView.setAdapter(mTaskAdapter);
+        mActionButton.setImageResource(R.drawable.ic_launch_white_24dp);
+        mActionButton.setVisibility(View.VISIBLE);
     }
 
     @Override
     protected void initData() {
-        mTempList = new LinkedList<>();
         long key = getIntent().getLongExtra(EXTRA_KEY, -1);
-        mPresenter.load(key);
+        boolean asc = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
+        mPresenter.load(key, asc);
     }
 
     @Override
@@ -96,15 +90,15 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         return super.onCreateOptionsMenu(menu);
     }
 
-    @OnClick(R.id.task_launch_btn) void onLaunchClick() {
+    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         Comic comic = mPresenter.getComic();
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), comic.getSource(), comic.getCid());
+        Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null, false);
         startActivity(intent);
     }
 
     @Override
-    public void onChapterChange(String last) {
-        mTaskAdapter.setLast(mPresenter.getComic().getLast());
+    public void onLastChange(String path) {
+        mTaskAdapter.setLast(path);
     }
 
     @Override
@@ -123,7 +117,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                         .map(new Func1<Task, Chapter>() {
                             @Override
                             public Chapter call(Task task) {
-                                return new Chapter(task.getTitle(), task.getPath(), task.getMax(), true);
+                                return new Chapter(task.getTitle(), task.getPath(), task.getMax(), true, true);
                             }
                         })
                         .toList()
@@ -135,7 +129,7 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                                         mTaskAdapter.setLast(last);
                                         long id = mPresenter.updateLast(last);
                                         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, mode, list);
+                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, list, mode);
                                         startActivity(readerIntent);
                                         break;
                                     }
@@ -150,29 +144,30 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
                 Intent taskIntent = DownloadService.createIntent(this, task);
                 startService(taskIntent);
                 break;
-            case Task.STATE_DOING:
             case Task.STATE_WAIT:
+                task.setState(Task.STATE_PAUSE);
+                mTaskAdapter.notifyItemChanged(position);
+                mBinder.getService().removeDownload(task.getId());
+                break;
+            case Task.STATE_DOING:
             case Task.STATE_PARSE:
                 mBinder.getService().removeDownload(task.getId());
-                task.setState(Task.STATE_PAUSE);
-                mTaskAdapter.notifyItemChanged(task);
                 break;
         }
     }
-
-    /**
-     *  delete task
-     */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.task_delete_multi:
-                ArrayList<Selectable> list = new ArrayList<>(mTaskAdapter.getItemCount());
-                for (Task task : mTaskAdapter.getDateSet()) {
-                    list.add(new Selectable(false, false, task.getTitle()));
+                int size = mTaskAdapter.getItemCount();
+                String[] arr1 = new String[size];
+                boolean[] arr2 = new boolean[size];
+                for (int i = 0; i < size; ++i) {
+                    arr1[i] = mTaskAdapter.getItem(i).getTitle();
+                    arr2[i] = false;
                 }
-                SelectDialogFragment fragment = SelectDialogFragment.newInstance(list, R.string.task_delete_multi);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete_multi, arr1, arr2, null, DIALOG_REQUEST_DELETE);
                 fragment.show(getFragmentManager(), null);
                 break;
         }
@@ -180,87 +175,53 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    public void onSelectPositiveClick(int type, List<Selectable> list) {
-        for (int i = 0; i != list.size(); ++i) {
-            if (list.get(i).isChecked()) {
-                mTempList.add(mTaskAdapter.getItem(i));
-            }
-        }
-        deleteTask();
-    }
-
-    @Override
-    public void onSelectNeutralClick(int type, List<Selectable> list) {
-        mTempList = mTaskAdapter.getDateSet();
-        deleteTask();
-    }
-
-    @Override
-    public void onItemLongClick(View view, int position) {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.task_delete_confirm, true);
-        Task task = mTaskAdapter.getItem(position);
-        mTempList.add(task);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
-    public void onMessagePositiveClick(int type) {
-        deleteTask();
-    }
-
-    private void deleteTask() {
-        if (!mTempList.isEmpty()) {
-            showProgressDialog();
-            for (Task task : mTempList) {
-                mBinder.getService().removeDownload(task.getId());
-            }
-            mPresenter.deleteTask(mTempList, mTaskAdapter.getItemCount() == mTempList.size());
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_DELETE:
+                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
+                int size = mTaskAdapter.getItemCount();
+                List<Task> result = new ArrayList<>();
+                for (int i = 0; i < size; ++i) {
+                    if (check[i]) {
+                        result.add(mTaskAdapter.getItem(i));
+                    }
+                }
+                if (!result.isEmpty()) {
+                    showProgressDialog();
+                    for (Task task : result) {
+                        mBinder.getService().removeDownload(task.getId());
+                    }
+                    mPresenter.deleteTask(result, mTaskAdapter.getItemCount() == result.size());
+                } else {
+                    showSnackbar("未选择任务");
+                }
+                break;
         }
     }
 
     @Override
-    public void onTaskDeleteSuccess() {
-        mTaskAdapter.removeAll(mTempList);
-        mTempList.clear();
+    public void onTaskDeleteSuccess(List<Task> list) {
         hideProgressDialog();
+        mTaskAdapter.removeAll(list);
         showSnackbar(R.string.common_delete_success);
     }
 
     @Override
     public void onTaskDeleteFail() {
-        mTempList.clear();
         hideProgressDialog();
         showSnackbar(R.string.common_delete_fail);
     }
-
-    /**
-     *  init: load task -> sort task
-     */
 
     @Override
     public void onTaskLoadSuccess(final List<Task> list) {
         mTaskAdapter.setColorId(ThemeUtils.getResourceId(this, R.attr.colorAccent));
         mTaskAdapter.setLast(mPresenter.getComic().getLast());
         mTaskAdapter.addAll(list);
-        mPresenter.sortTask(list);
-    }
-
-    @Override
-    public void onTaskLoadFail() {
-        hideProgressBar();
-        showSnackbar(R.string.task_load_task_fail);
-    }
-
-    @Override
-    public void onSortSuccess(final List<Task> list) {
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mBinder = (DownloadServiceBinder) service;
                 mBinder.getService().initTask(mTaskAdapter.getDateSet());
-                mTaskAdapter.setData(list);
-                mRecyclerView.setAdapter(mTaskAdapter);
                 hideProgressBar();
             }
 
@@ -271,9 +232,9 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     }
 
     @Override
-    public void onLoadIndexFail() {
+    public void onTaskLoadFail() {
         hideProgressBar();
-        showSnackbar(R.string.task_load_index_fail);
+        showSnackbar(R.string.task_load_task_fail);
     }
 
     @Override
@@ -291,9 +252,18 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
         if (position != -1) {
             Task task = mTaskAdapter.getItem(position);
             if (task.getState() != Task.STATE_PAUSE) {
-                mTaskAdapter.getItem(position).setState(Task.STATE_ERROR);
+                task.setState(Task.STATE_ERROR);
                 notifyItemChanged(position);
             }
+        }
+    }
+
+    @Override
+    public void onTaskPause(long id) {
+        int position = mTaskAdapter.getPositionById(id);
+        if (position != -1) {
+            mTaskAdapter.getItem(position).setState(Task.STATE_PAUSE);
+            notifyItemChanged(position);
         }
     }
 
@@ -301,8 +271,11 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     public void onTaskParse(long id) {
         int position = mTaskAdapter.getPositionById(id);
         if (position != -1) {
-            mTaskAdapter.getItem(position).setState(Task.STATE_PARSE);
-            notifyItemChanged(position);
+            Task task = mTaskAdapter.getItem(position);
+            if (task.getState() != Task.STATE_PAUSE) {
+                task.setState(Task.STATE_PARSE);
+                notifyItemChanged(position);
+            }
         }
     }
 
@@ -313,8 +286,10 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
             Task task = mTaskAdapter.getItem(position);
             task.setMax(max);
             task.setProgress(progress);
-            int state = max == progress ? Task.STATE_FINISH : Task.STATE_DOING;
-            task.setState(state);
+            if (task.getState() != Task.STATE_PAUSE) {
+                int state = max == progress ? Task.STATE_FINISH : Task.STATE_DOING;
+                task.setState(state);
+            }
             notifyItemChanged(position);
         }
     }
@@ -328,16 +303,6 @@ public class TaskActivity extends BackActivity implements TaskView, BaseAdapter.
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.task_list);
-    }
-
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.activity_task;
-    }
-
-    @Override
-    protected View getLayoutView() {
-        return mTaskLayout;
     }
 
     public static final String EXTRA_KEY = "a";

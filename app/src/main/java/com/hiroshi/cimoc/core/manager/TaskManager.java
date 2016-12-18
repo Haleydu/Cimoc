@@ -22,21 +22,26 @@ public class TaskManager {
         mTaskDao = CimocApplication.getDaoSession().getTaskDao();
     }
 
-    public Observable<List<Task>> list(long key) {
+    public List<Task> list(long key) {
+        return mTaskDao.queryBuilder().where(Properties.Key.eq(key)).list();
+    }
+
+    public Observable<List<Task>> listInRx(long key) {
         return mTaskDao.queryBuilder()
                 .where(Properties.Key.eq(key))
                 .rx()
                 .list();
     }
 
-    public Observable<List<Task>> list() {
+    public Observable<List<Task>> listInRx() {
         return mTaskDao.queryBuilder()
                 .rx()
                 .list();
     }
 
-    public long insert(Task task) {
-        return mTaskDao.insert(task);
+    public void insert(Task task) {
+        long id = mTaskDao.insert(task);
+        task.setId(id);
     }
 
     public void update(Task task) {

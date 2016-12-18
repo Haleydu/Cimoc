@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.model;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Unique;
 
@@ -17,6 +18,7 @@ public class Source {
     @Unique private int type;
     @NotNull private boolean enable;
 
+    @Keep
     @Generated(hash = 1339691905)
     public Source(Long id, @NotNull String title, int type, boolean enable) {
         this.id = id;

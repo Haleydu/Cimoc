@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.hiroshi.cimoc.global.FastClick;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -72,6 +74,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         notifyDataSetChanged();
     }
 
+    public boolean contains(T data) {
+        return mDataSet.contains(data);
+    }
+
     public void clear() {
         mDataSet.clear();
         notifyDataSetChanged();
@@ -119,7 +125,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mClickListener != null) {
+                if (mClickListener != null && isClickValid()) {
                     mClickListener.onItemClick(v, holder.getAdapterPosition());
                 }
             }
@@ -134,6 +140,10 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
                 return true;
             }
         });
+    }
+
+    protected boolean isClickValid() {
+        return FastClick.isClickValid();
     }
 
     static class BaseViewHolder extends RecyclerView.ViewHolder {

@@ -65,7 +65,6 @@ public class Comic {
     @Generated(hash = 1347984162)
     public Comic() {
     }
-    
 
     @Override
     public boolean equals(Object o) {

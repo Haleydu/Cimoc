@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.HHAAZZ;
@@ -35,6 +36,7 @@ public class SourceManager {
     public static final int SOURCE_WEBTOON = 6;
     public static final int SOURCE_HHSSEE = 7;
     public static final int SOURCE_57MH = 8;
+    public static final int SOURCE_CHUIYAO = 9;
 
     public static final int SOURCE_EHENTAI = 100;
     public static final int SOURCE_EXHENTAI = 101;
@@ -57,7 +59,7 @@ public class SourceManager {
                 .list();
     }
 
-    public Observable<List<Source>> listEnable() {
+    public Observable<List<Source>> listEnableInRx() {
         return mSourceDao.queryBuilder()
                 .where(Properties.Enable.eq(true))
                 .orderAsc(Properties.Type)
@@ -65,12 +67,15 @@ public class SourceManager {
                 .list();
     }
 
-    public long insert(Source source) {
-        return mSourceDao.insert(source);
+    public List<Source> listEnable() {
+        return mSourceDao.queryBuilder()
+                .where(Properties.Enable.eq(true))
+                .orderAsc(Properties.Type)
+                .list();
     }
 
-    public void deleteByKey(long key) {
-        mSourceDao.deleteByKey(key);
+    public long insert(Source source) {
+        return mSourceDao.insert(source);
     }
 
     public void update(Source source) {
@@ -97,6 +102,8 @@ public class SourceManager {
                 return "汗汗漫画";
             case SOURCE_57MH:
                 return "57漫画";
+            case SOURCE_CHUIYAO:
+                return "吹妖漫画";
 /*            case SOURCE_EHENTAI:
                 return "E-Hentai";
             case SOURCE_EXHENTAI:
@@ -111,44 +118,10 @@ public class SourceManager {
         return "null";
     }
 
-    public static Source getSource(String key) {
-        switch (key) {
-            case "IKanman":
-                return new Source(null, "看漫画", SOURCE_IKANMAN, false);
-            case "DMZJ":
-                return new Source(null, "动漫之家", SOURCE_DMZJ, false);
-            case "HHAAZZ":
-                return new Source(null, "手机汗汗", SOURCE_HHAAZZ, false);
-            case "CCTuku":
-                return new Source(null, "CC图库", SOURCE_CCTUKU, false);
-            case "U17":
-                return new Source(null, "有妖气", SOURCE_U17, false);
-            case "DM5":
-                return new Source(null, "动漫屋", SOURCE_DM5, false);
-            case "Webtoon":
-                return new Source(null, "Webtoon", SOURCE_WEBTOON, false);
-            case "HHSSEE":
-                return new Source(null, "汗汗漫画", SOURCE_HHSSEE, false);
-            case "57MH":
-                return new Source(null, "57漫画", SOURCE_57MH, false);
-/*            case "EHentai":
-                return new Source(null, "E-Hentai", SOURCE_EHENTAI, false);
-            case "ExHentai":
-                return new Source(null, "ExHentai", SOURCE_EXHENTAI, false);
-            case "NHentai":
-                return new Source(null, "NHentai", SOURCE_NHENTAI, false);
-            case "Wnacg":
-                return new Source(null, "绅士漫画", SOURCE_WNACG, false);
-            case "177Pic":
-                return new Source(null, "177漫画", SOURCE_177PIC, false); */
-        }
-        return null;
-    }
-
-    private static SparseArray<Parser> sparseArray = new SparseArray<>();
+    private static SparseArray<Parser> mParserArray = new SparseArray<>();
 
     public static Parser getParser(int source) {
-        Parser parser = sparseArray.get(source);
+        Parser parser = mParserArray.get(source);
         if (parser == null) {
             switch (source) {
                 case SOURCE_IKANMAN:
@@ -178,6 +151,9 @@ public class SourceManager {
                 case SOURCE_57MH:
                     parser = new MH57();
                     break;
+                case SOURCE_CHUIYAO:
+                    parser = new Chuiyao();
+                    break;
 /*                case SOURCE_EHENTAI:
                     parser = new EHentai();
                     break;
@@ -194,7 +170,7 @@ public class SourceManager {
                     parser = new Pic177();
                     break;  */
             }
-            sparseArray.put(source, parser);
+            mParserArray.put(source, parser);
         }
         return parser;
     }

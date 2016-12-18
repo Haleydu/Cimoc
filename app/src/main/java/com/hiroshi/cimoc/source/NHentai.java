@@ -1,25 +1,10 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
-import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.StringUtils;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import okhttp3.Request;
-
 /**
  * Created by Hiroshi on 2016/8/14.
  */
-public class NHentai extends MangaParser {
-
+public class NHentai/* extends MangaParser */{
+/*
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("https://nhentai.net/search/?q=%s&page=%d", keyword, page);
@@ -32,11 +17,11 @@ public class NHentai extends MangaParser {
         return new NodeIterator(body.list("#content > div.index-container > div > a")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("href", "/", 2);
+                String cid = node.hrefWithSplit(1);
                 String title = node.text("div.caption");
                 String author = StringUtils.match("\\[(.*?)\\]", title, 1);
                 title = title.replaceFirst("\\[.*?\\]\\s*", "");
-                String cover = "https:".concat(node.attr("img", "src"));
+                String cover = "https:".concat(node.src("img"));
                 return new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author);
             }
         };
@@ -49,15 +34,13 @@ public class NHentai extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#info > h1");
         String intro = body.text("#info > h2");
         String author = body.text("#tags > div > span > a[href^=/artist/]");
-        String cover = "https:".concat(body.attr("#cover > a > img", "src"));
+        String cover = "https:".concat(body.src("#cover > a > img"));
         comic.setInfo(title, cover, null, intro, author, true);
-
-        return null;
     }
 
     @Override
@@ -78,11 +61,11 @@ public class NHentai extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#content > div.index-container > div > a")) {
-            String cid = node.attr("href", "/", 2);
+            String cid = node.hrefWithSplit(1);
             String title = node.text("div.caption");
             String author = StringUtils.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s*", "");
-            String cover = "https:".concat(node.attr("img", "src"));
+            String cover = "https:".concat(node.src("img"));
             list.add(new Comic(SourceManager.SOURCE_NHENTAI, cid, title, cover, null, author));
         }
         return list;
@@ -104,5 +87,5 @@ public class NHentai extends MangaParser {
         }
         return list;
     }
-
+*/
 }

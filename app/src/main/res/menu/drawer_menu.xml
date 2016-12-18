@@ -4,11 +4,6 @@
         android:id="@+id/drawer_group_fragment"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/drawer_search"
-            android:checkable="true"
-            android:icon="@drawable/ic_search_black_24dp"
-            android:title="@string/drawer_search"/>
-        <item
             android:id="@+id/drawer_comic"
             android:checkable="true"
             android:icon="@drawable/ic_import_contacts_black_24dp"

@@ -11,21 +11,23 @@ public class Chapter implements Parcelable {
     private String title;
     private String path;
     private int count;
+    private boolean complete;
     private boolean download;
 
-    public Chapter(String title, String path, int count, boolean download) {
+    public Chapter(String title, String path, int count, boolean complete, boolean download) {
         this.title = title;
         this.path = path;
         this.count = count;
+        this.complete = complete;
         this.download = download;
     }
 
     public Chapter(String title, String path) {
-        this(title, path, 0, false);
+        this(title, path, 0, false, false);
     }
 
     public Chapter(Parcel source) {
-        this(source.readString(), source.readString(), source.readInt(), source.readByte() == 1);
+        this(source.readString(), source.readString(), source.readInt(), source.readByte() == 1, source.readByte() == 1);
     }
 
     public String getTitle() {
@@ -42,6 +44,14 @@ public class Chapter implements Parcelable {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
     }
 
     public boolean isDownload() {
@@ -72,6 +82,7 @@ public class Chapter implements Parcelable {
         dest.writeString(title);
         dest.writeString(path);
         dest.writeInt(count);
+        dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeByte((byte) (download ? 1 : 0));
     }
 

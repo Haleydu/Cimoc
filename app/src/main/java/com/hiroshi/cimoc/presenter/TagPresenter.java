@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
-import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TagView;
 
@@ -23,18 +22,19 @@ public class TagPresenter extends BasePresenter<TagView> {
         mTagManager = TagManager.getInstance();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_TAG_RESTORE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onThemeChange((int) rxEvent.getData(1), (int) rxEvent.getData(2));
+                mBaseView.onTagRestore((Tag) rxEvent.getData());
             }
         });
     }
 
     public void load() {
-        mCompositeSubscription.add(mTagManager.list()
+        mCompositeSubscription.add(mTagManager.listInRx()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Tag>>() {
                     @Override
@@ -50,9 +50,7 @@ public class TagPresenter extends BasePresenter<TagView> {
     }
 
     public void insert(Tag tag) {
-        long id = mTagManager.insert(tag);
-        tag.setId(id);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_INSERT, tag));
+        mTagManager.insert(tag);
     }
 
     public void delete(final Tag tag) {
@@ -61,13 +59,12 @@ public class TagPresenter extends BasePresenter<TagView> {
             public void run() {
                 mTagManager.deleteByTag(tag.getId());
                 mTagManager.delete(tag);
-                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TAG_DELETE, tag));
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Void>() {
                     @Override
                     public void call(Void aVoid) {
-                        mBaseView.onTagDeleteSuccess();
+                        mBaseView.onTagDeleteSuccess(tag);
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -75,11 +72,6 @@ public class TagPresenter extends BasePresenter<TagView> {
                         mBaseView.onTagDeleteFail();
                     }
                 }));
-
-    }
-
-    public void update(Tag tag) {
-        mTagManager.update(tag);
     }
 
 }

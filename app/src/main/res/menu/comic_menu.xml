@@ -2,6 +2,10 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/comic_search"
+        android:title="@string/comic_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        app:showAsAction="ifRoom" />
     <item android:id="@+id/comic_filter"
         android:title="@string/comic_filter"
         android:icon="@drawable/ic_filter_list_white_24dp"

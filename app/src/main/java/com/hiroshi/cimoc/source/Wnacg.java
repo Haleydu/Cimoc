@@ -1,25 +1,10 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
-import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.StringUtils;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import okhttp3.Request;
-
 /**
  * Created by Hiroshi on 2016/8/9.
  */
-public class Wnacg extends MangaParser {
-
+public class Wnacg/* extends MangaParser */{
+/*
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("https://www.wnacg.com/albums-index-page-%d-sname-%s.html", page, keyword);
@@ -32,12 +17,12 @@ public class Wnacg extends MangaParser {
         return new NodeIterator(body.list("#bodywrap > div.grid > div > ul > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
+                String cid = node.hrefWithSplit("div.info > div.title > a", 3);
                 String title = node.text("div.info > div.title > a");
                 String author = StringUtils.match("\\[(.*?)\\]", title, 1);
                 title = title.replaceFirst("\\[.*?\\]\\s*", "");
                 String cover = node.attr("div.pic_box > a > img", "data-original");
-                String update = node.text("div.info > div.info_col").trim();
+                String update = node.text("div.info > div.info_col");
                 update = StringUtils.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
                 return new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, author);
             }
@@ -51,22 +36,20 @@ public class Wnacg extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#bodywrap > h2");
-        String intro = body.text("#bodywrap > div > div.uwconn > p", 3);
+        String intro = body.textWithSubstring("#bodywrap > div > div.uwconn > p", 3);
         String author = body.text("#bodywrap > div > div.uwuinfo > p");
         String cover = body.attr("#bodywrap > div > div.uwthumb > img", "data-original");
         comic.setInfo(title, cover, null, intro, author, true);
-
-        return null;
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        String length = body.text("#bodywrap > div > div.uwconn > label:eq(1)", 3, -2);
+        String length = body.textWithSubstring("#bodywrap > div > div.uwconn > label:eq(1)", 3, -2);
         int size = Integer.parseInt(length) % 12 == 0 ? Integer.parseInt(length) / 12 : Integer.parseInt(length) / 12 + 1;
         for (int i = 1; i <= size; ++i) {
             list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
@@ -85,12 +68,12 @@ public class Wnacg extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node node : body.list("#bodywrap > div.grid > div > ul > li")) {
-            String cid = node.attr("div.info > div.title > a", "href", "-|\\.", 3);
+            String cid = node.hrefWithSplit("div.info > div.title > a", 3);
             String title = node.text("div.info > div.title > a");
             String author = StringUtils.match("\\[(.*?)\\]", title, 1);
             title = title.replaceFirst("\\[.*?\\]\\s*", "");
             String cover = node.attr("div.pic_box > a > img", "data-original");
-            String update = node.text("div.info > div.info_col").trim();
+            String update = node.text("div.info > div.info_col");
             update = StringUtils.match("\\d{4}-\\d{2}-\\d{2}", update, 0);
             list.add(new Comic(SourceManager.SOURCE_WNACG, cid, title, cover, update, author));
         }
@@ -124,5 +107,5 @@ public class Wnacg extends MangaParser {
     public String parseLazy(String html, String url) {
         return new Node(html).attr("#picarea", "src");
     }
-
+*/
 }

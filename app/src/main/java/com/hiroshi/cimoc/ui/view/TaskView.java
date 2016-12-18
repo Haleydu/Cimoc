@@ -7,17 +7,13 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public interface TaskView extends BaseView {
+public interface TaskView extends BaseView, DialogView {
 
     void onTaskLoadSuccess(List<Task> list);
 
     void onTaskLoadFail();
 
-    void onSortSuccess(List<Task> list);
-
-    void onChapterChange(String last);
-
-    void onLoadIndexFail();
+    void onLastChange(String path);
 
     void onTaskAdd(List<Task> list);
 
@@ -25,9 +21,11 @@ public interface TaskView extends BaseView {
 
     void onTaskProcess(long id, int progress, int max);
 
+    void onTaskPause(long id);
+
     void onTaskError(long id);
 
-    void onTaskDeleteSuccess();
+    void onTaskDeleteSuccess(List<Task> list);
 
     void onTaskDeleteFail();
 

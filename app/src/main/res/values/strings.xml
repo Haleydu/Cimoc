@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Cimoc</string>
 
-    <string name="drawer_search">搜索</string>
     <string name="drawer_comic">漫画</string>
     <string name="drawer_source">图源</string>
     <string name="drawer_tag">标签</string>
@@ -15,7 +14,11 @@
     <string name="main_last_read_fail">读取最后阅读失败</string>
     <string name="main_notice">作者声明</string>
     <string name="main_notice_content">由于应用不够完善，遇到一些不正常的问题属于正常现象！\n使用过程中有什么建议或者遇到什么问题，欢迎邮件反馈！\n电子邮箱：cimoc_app@163.com\n如果问题比较严重，我会尽量在第二时间解决！\n最后，请不要在公开场合传播本应用，谢谢合作！</string>
-
+    <string name="main_permission">权限请求</string>
+    <string name="main_permission_content">下载、备份还原与保存图片功能需要访问SD卡的权限！\n请在之后的弹出框中确定授予权限！</string>
+    <string name="main_permission_success">授权成功</string>
+    <string name="main_permission_fail">授权失败</string>
+    
     <string name="search_menu_source">图源</string>
     <string name="search_keyword_empty">关键字为空</string>
     <string name="search_keyword_input">请输入关键字</string>
@@ -26,33 +29,45 @@
     <string name="result">搜索结果</string>
     <string name="result_empty">搜索结果为空</string>
     <string name="result_error">搜索错误</string>
-    <string name="result_recent">最近更新</string>
 
     <string name="detail">详情</string>
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
     <string name="detail_tag">标签</string>
-    <string name="detail_tag_load_fail">读取标签失败</string>
-    <string name="detail_tag_update_success">更新标签成功</string>
-    <string name="detail_tag_update_fail">更新标签失败</string>
     <string name="detail_tag_favorite">请先收藏漫画</string>
     <string name="detail_download">下载</string>
-    <string name="detail_download_load_fail">读取下载列表失败</string>
-    <string name="detail_download_all">下载全部</string>
     <string name="detail_download_queue_success">已加入下载队列</string>
     <string name="detail_download_queue_fail">加入下载队列失败</string>
-    <string name="detail_select_chapter">选择章节</string>
-    <string name="detail_select_tag">选择标签</string>
+    <string name="detail_search_title">搜索标题</string>
+    <string name="detail_search_author">搜索作者</string>
+    <string name="detail_search_empty">关键字为空</string>
+
+    <string name="tag_editor">标签编辑</string>
+    <string name="tag_editor_load_empty">没有找到标签</string>
+    <string name="tag_editor_load_fail">读取标签失败</string>
+    <string name="tag_editor_update_success">更新标签成功</string>
+    <string name="tag_editor_update_fail">更新标签失败</string>
+    <string name="tag_editor_update_invalid">标签未改变</string>
+
+    <string name="chapter">章节列表</string>
+    <string name="chapter_all">全选</string>
+    <string name="chapter_download_perm_fail">获取权限失败</string>
+    <string name="chapter_download_empty">未选择章节</string>
+
+    <string name="category">分类</string>
 
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
-    <string name="comic_filter_fail">过滤失败</string>
-    <string name="comic_load_filter_fail">读取标签失败</string>
+    <string name="comic_search">搜索</string>
+    <string name="comic_load_tag_fail">读取标签失败</string>
+    <string name="comic_filter_continue">连载</string>
+    <string name="comic_filter_finish">完结</string>
     <string name="comic_tag_select">标签选择</string>
 
     <string name="favorite_check_update">检查更新</string>
+    <string name="favorite_check_update_fail">检查更新失败</string>
     <string name="favorite_check_update_confirm">是否检查更新</string>
     <string name="favorite_check_update_doing">正在检查更新</string>
     <string name="favorite_check_update_done">检查更新完成</string>
@@ -75,6 +90,8 @@
     <string name="reader_config_title">阅读配置</string>
     <string name="reader_config_page">翻页模式</string>
     <string name="reader_config_stream">卷纸模式</string>
+
+    <string name="source_server">图片服务器</string>
 
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">阅读模式</string>
@@ -106,6 +123,16 @@
     <string name="settings_download">下载设置</string>
     <string name="settings_download_connection">自动重试次数</string>
     <string name="settings_download_connection_summary">单页下载错误时最大自动重试次数</string>
+    <string name="settings_download_order">正序显示下载章节</string>
+    <string name="settings_download_order_summary">默认逆序显示</string>
+    <string name="settings_download_thread">多任务下载数量</string>
+    <string name="settings_download_thread_summary">最大同时下载任务数量</string>
+    <string name="settings_download_scan">扫描已下载漫画</string>
+    <string name="settings_download_scan_summary">在存储目录扫描已下载漫画</string>
+    <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下，重要的是，不一定可以成功！\n此功能便于卸载软件或清除数据后，再次使用时恢复下载的漫画！</string>
+    <string name="settings_search">搜索设置</string>
+    <string name="settings_search_complete">开启搜索提示</string>
+    <string name="settings_search_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
     <string name="settings_other_launch">启动页</string>
     <string name="settings_other_launch_summary">选择默认启动页</string>
@@ -113,12 +140,13 @@
     <string name="settings_other_theme_summary">选择默认主题颜色</string>
     <string name="settings_other_storage">存储路径</string>
     <string name="settings_other_storage_summary">自定义存储路径</string>
+    <string name="settings_other_storage_not_found">打开 DocumentUI 失败</string>
+    <string name="settings_other_storage_edit_neutral">选择路径</string>
     <string name="settings_other_storage_move_success">更改成功</string>
     <string name="settings_other_storage_move_fail">写入文件失败</string>
     <string name="settings_other_cache">清除缓存</string>
     <string name="settings_other_cache_success">清除成功</string>
     <string name="settings_other_cache_fail">清除失败</string>
-
 
     <string name="backup_save">备份</string>
     <string name="backup_save_favorite">备份收藏</string>
@@ -138,7 +166,7 @@
     <string name="backup_restore_success">恢复成功</string>
     <string name="backup_restore_fail">恢复失败</string>
 
-    <string name="about_version">version: 1.4.3</string>
+    <string name="about_version">version: 1.4.4.0</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -155,15 +183,13 @@
     <string name="about_update_doing">正在检查更新</string>
     <string name="about_update_fail">检查更新失败</string>
     <string name="about_resource_fail">打开网页失败</string>
+    <string name="about_update_log">更新日志</string>
+    <string name="about_update_log_content">v1.4.4\n</string>
 
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>
     <string name="dialog_doing">正在执行中</string>
-
-    <string name="source_delete_confirm">是否删除该图源\n相关的漫画不会被删除</string>
-    <string name="source_add">添加图源</string>
-    <string name="source_add_exist">图源已存在</string>
 
     <string name="tag_add">添加标签</string>
     <string name="tag_add_empty">标签名称不能为空</string>
@@ -191,10 +217,11 @@
     <string name="task_error">下载错误</string>
     <string name="task_list">任务列表</string>
     <string name="task_load_task_fail">读取任务失败</string>
-    <string name="task_load_index_fail">找不到索引文件</string>
     <string name="task_delete_multi">批量删除</string>
     <string name="task_delete_all">删除所有</string>
-    <string name="task_delete_confirm">是否删除下载内容</string>
+
+    <string name="dir_picker">目录选择</string>
+    <string name="dir_picker_parent">&lt; 返回上层目录 &gt;</string>
 
     <string name="event_select">事件选择</string>
     <string name="event_null">无</string>

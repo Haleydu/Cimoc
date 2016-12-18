@@ -8,7 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -44,6 +43,7 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeL
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -143,13 +143,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                 EventUtils.getPageClickEventChoice(mPreference) : EventUtils.getStreamClickEventChoice(mPreference);
         mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
                 EventUtils.getPageLongClickEventChoice(mPreference) : EventUtils.getStreamLongClickEventChoice(mPreference);
-        Parcelable[] array = getIntent().getParcelableArrayExtra(EXTRA_CHAPTER);
-        Chapter[] chapter = new Chapter[array.length];
-        for (int i = 0; i != array.length; ++i) {
-            chapter[i] = (Chapter) array[i];
-        }
         long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        mPresenter.loadInit(id, chapter);
+        List<Chapter> list = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTER);
+        mPresenter.loadInit(id, list.toArray(new Chapter[list.size()]));
     }
 
     @Override
@@ -408,20 +404,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         String[] urls = mReaderAdapter.getItem(position).getUrl();
         try {
             for (String url : urls) {
-                String suffix = StringUtils.getSplit(url, "\\.", -1);
-                if (suffix == null) {
-                    suffix = "jpg";
-                } else {
-                    suffix = suffix.split("\\?")[0];
-                }
                 if (url.startsWith("file")) {
-                    InputStream inputStream = FileUtils.getInputStream(url.replace("file://", "."));
-                    mPresenter.savePicture(inputStream, suffix);
+                    InputStream inputStream = FileUtils.getInputStream(url.replace("file://", ""));
+                    mPresenter.savePicture(inputStream, url);
                     break;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {
-                        mPresenter.savePicture(resource.openStream(), suffix);
+                        mPresenter.savePicture(resource.openStream(), url);
                         break;
                     }
                 }
@@ -496,10 +486,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private static final String EXTRA_CHAPTER = "b";
     private static final String EXTRA_MODE = "c";
 
-    public static Intent createIntent(Context context, long id, int mode, List<Chapter> list) {
+    public static Intent createIntent(Context context, long id, List<Chapter> list, int mode) {
         Intent intent = getIntent(context, mode);
         intent.putExtra(EXTRA_ID, id);
-        intent.putExtra(EXTRA_CHAPTER, list.toArray(new Chapter[list.size()]));
+        intent.putExtra(EXTRA_CHAPTER, new ArrayList<>(list));
         intent.putExtra(EXTRA_MODE, mode);
         return intent;
     }

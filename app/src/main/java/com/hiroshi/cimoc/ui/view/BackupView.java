@@ -1,10 +1,14 @@
 package com.hiroshi.cimoc.ui.view;
 
+import com.hiroshi.cimoc.model.Tag;
+
+import java.util.List;
+
 /**
  * Created by Hiroshi on 2016/10/19.
  */
 
-public interface BackupView extends BaseView {
+public interface BackupView extends BaseView, DialogView {
 
     void onBackupSaveSuccess(int size);
 
@@ -18,7 +22,7 @@ public interface BackupView extends BaseView {
 
     void onTagFileLoadSuccess(String[] file);
 
-    void onTagLoadSuccess(String[] tag);
+    void onTagLoadSuccess(List<Tag> list);
 
     void onTagLoadFail();
 

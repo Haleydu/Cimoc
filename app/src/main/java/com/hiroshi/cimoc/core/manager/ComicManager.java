@@ -39,7 +39,18 @@ public class ComicManager {
         mComicDao.getSession().runInTx(runnable);
     }
 
-    public Observable<List<Comic>> listFavorite() {
+    public <T> T callInTx(Callable<T> callable) {
+        return mComicDao.getSession().callInTxNoException(callable);
+    }
+
+    public List<Comic> listFavorite() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Favorite.isNotNull())
+                .orderDesc(Properties.Highlight, Properties.Favorite)
+                .list();
+    }
+
+    public Observable<List<Comic>> listFavoriteInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull())
                 .orderDesc(Properties.Highlight, Properties.Favorite)
@@ -47,7 +58,23 @@ public class ComicManager {
                 .list();
     }
 
-    public Observable<List<Comic>> listHistory() {
+    public Observable<List<Comic>> listFinishInRx() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Favorite.isNotNull(), Properties.Finish.eq(true))
+                .orderDesc(Properties.Highlight, Properties.Favorite)
+                .rx()
+                .list();
+    }
+
+    public Observable<List<Comic>> listContinueInRx() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Favorite.isNotNull(), Properties.Finish.notEq(true))
+                .orderDesc(Properties.Highlight, Properties.Favorite)
+                .rx()
+                .list();
+    }
+
+    public Observable<List<Comic>> listHistoryInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.History.isNotNull())
                 .orderDesc(Properties.History)
@@ -55,7 +82,7 @@ public class ComicManager {
                 .list();
     }
 
-    public Observable<List<Comic>> listDownload() {
+    public Observable<List<Comic>> listDownloadInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Download.isNotNull())
                 .orderDesc(Properties.Download)
@@ -73,6 +100,11 @@ public class ComicManager {
                 .unique();
     }
 
+    public Comic loadOrCreate(int source, String cid) {
+        Comic comic = load(source, cid);
+        return comic == null ? new Comic(source, cid) : comic;
+    }
+
     public Observable<Comic> loadLast() {
         return mComicDao.queryBuilder()
                 .where(Properties.History.isNotNull())
@@ -82,20 +114,37 @@ public class ComicManager {
                 .unique();
     }
 
+    public void updateOrInsert(Comic comic) {
+        if (comic.getId() == null) {
+            insert(comic);
+        } else {
+            update(comic);
+        }
+    }
+
     public void update(Comic comic) {
         mComicDao.update(comic);
     }
 
+    public void updateOrDelete(Comic comic) {
+        if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
+            mComicDao.delete(comic);
+            comic.setId(null);
+        } else {
+            update(comic);
+        }
+    }
+
     public void delete(Comic comic) {
-        mComicDao.delete(comic);
+        if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
+            mComicDao.delete(comic);
+            comic.setId(null);
+        }
     }
 
-    public void deleteByKey(long id) {
-        mComicDao.deleteByKey(id);
-    }
-
-    public long insert(Comic comic) {
-        return mComicDao.insert(comic);
+    public void insert(Comic comic) {
+        long id = mComicDao.insert(comic);
+        comic.setId(id);
     }
 
     public static ComicManager getInstance() {

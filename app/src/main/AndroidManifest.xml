@@ -32,6 +32,14 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.ChapterActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.TagEditorActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.TaskActivity"
             android:screenOrientation="portrait"/>
 
@@ -52,7 +60,18 @@
             android:screenOrientation="portrait"/>
 
         <activity
-            android:name=".ui.activity.TagComicActivity"
+            android:name=".ui.activity.CategoryActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.SearchActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ui.activity.PartFavoriteActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".ui.activity.DirPickerActivity"
             android:screenOrientation="portrait"/>
 
         <activity

@@ -31,7 +31,6 @@ public class Task implements Parcelable {
 
     @Transient private int source;
     @Transient private String cid;
-    @Transient private String comic;
     @Transient private int state;
 
     public Task(Parcel source) {
@@ -43,7 +42,6 @@ public class Task implements Parcelable {
         this.max = source.readInt();
         this.source = source.readInt();
         this.cid = source.readString();
-        this.comic = source.readString();
         this.state = source.readInt();
     }
 
@@ -132,18 +130,16 @@ public class Task implements Parcelable {
         return this.source;
     }
 
+    public void setSource(int source) {
+        this.source = source;
+    }
+
     public String getCid() {
         return cid;
     }
 
-    public String getComic() {
-        return comic;
-    }
-
-    public void setInfo(int source, String cid, String comic) {
-        this.source = source;
+    public void setCid(String cid) {
         this.cid = cid;
-        this.comic = comic;
     }
 
     public boolean isFinish() {
@@ -165,7 +161,6 @@ public class Task implements Parcelable {
         dest.writeInt(max);
         dest.writeInt(source);
         dest.writeString(cid);
-        dest.writeString(comic);
         dest.writeInt(state);
     }
 

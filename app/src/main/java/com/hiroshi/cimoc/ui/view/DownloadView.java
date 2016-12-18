@@ -22,10 +22,8 @@ public interface DownloadView extends GridView {
 
     void onDownloadStop();
 
-    void onDownloadDeleteSuccess();
+    void onDownloadDeleteSuccess(long id);
 
     void onDownloadDeleteFail();
-
-    void onComicRead(MiniComic comic);
 
 }

@@ -109,15 +109,6 @@ public class TaskAdapter extends BaseAdapter<Task> {
         return -1;
     }
 
-    public String[] getTaskTitle() {
-        int size = mDataSet.size();
-        String[] array = new String[size];
-        for (int i = 0; i != size; ++i) {
-            array[i] = mDataSet.get(i).getTitle();
-        }
-        return array;
-    }
-
     public void notifyItemChanged(Task task) {
         super.notifyItemChanged(mDataSet.indexOf(task));
     }

@@ -1,8 +1,13 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.utils.FileUtils;
+import android.content.ContentResolver;
+import android.support.v4.provider.DocumentFile;
+
+import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import rx.Observable;
@@ -15,41 +20,73 @@ import rx.schedulers.Schedulers;
 
 public class Storage {
 
-    public static String STORAGE_DIR;
+    private static String DOWNLOAD = "download";
+    private static String PICTURE = "picture";
+    private static String BACKUP = "backup";
 
-    public static Observable<Void> moveFolder(final String path) {
-        return Observable.create(new Observable.OnSubscribe<Void>() {
+    private static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile dst, String name) {
+        DocumentFile file = src.findFile(name);
+        if (file != null && file.isDirectory()) {
+            return DocumentUtils.copyDir(resolver, file, dst);
+        }
+        return true;
+    }
+
+    public static Observable<Integer> moveRootDir(final DocumentFile dst) {
+        return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                String dst = FileUtils.getPath(path, "Cimoc");
-                if (FileUtils.mkDirsIfNotExist(dst)) {
-                    if (!FileUtils.isDirsExist(STORAGE_DIR) || FileUtils.copyFolder(STORAGE_DIR, dst)) {
-                        FileUtils.deleteDir(STORAGE_DIR);
-                        STORAGE_DIR = dst;
-                        subscriber.onNext(null);
-                        subscriber.onCompleted();
-                    } else {
-                        subscriber.onError(new Throwable());
+            public void call(Subscriber<? super Integer> subscriber) {
+                if (dst.canWrite()) {
+                    DocumentFile src = CimocApplication.getDocumentFile();
+                    ContentResolver resolver = CimocApplication.getResolver();
+                    if (!src.getUri().equals(dst.getUri())) {
+                        subscriber.onNext(1);
+                        if (copyDir(resolver, src, dst, BACKUP)) {
+                            subscriber.onNext(2);
+                            if (copyDir(resolver, src, dst, DOWNLOAD)) {
+                                subscriber.onNext(3);
+                                if (copyDir(resolver, src, dst, PICTURE)) {
+                                    subscriber.onNext(4);
+                                    DocumentUtils.deleteDir(src);
+                                    subscriber.onCompleted();
+                                }
+                            }
+                        }
                     }
-                } else {
-                    subscriber.onError(new Throwable());
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<String> savePicture(final InputStream inputStream, final String suffix) {
+    private static String buildFileName(String filename) {
+        String suffix = StringUtils.split(filename, "\\.", -1);
+        if (suffix == null) {
+            suffix = "jpg";
+        } else {
+            suffix = suffix.split("\\?")[0];
+        }
+        return StringUtils.getDateStringWithSuffix(suffix);
+    }
+
+    public static Observable<String> savePicture(final InputStream stream, final String url) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                String filename = StringUtils.getDateStringWithSuffix(suffix);
-                String path = FileUtils.getPath(STORAGE_DIR, "picture", filename);
-                if (FileUtils.writeBinaryToFile(FileUtils.getPath(STORAGE_DIR, "picture"), filename, inputStream)) {
-                    subscriber.onNext(path);
-                    subscriber.onCompleted();
-                } else {
-                    subscriber.onError(new Exception());
+                try {
+                    DocumentFile root = CimocApplication.getDocumentFile();
+                    ContentResolver resolver = CimocApplication.getResolver();
+                    DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
+                    if (dir != null) {
+                        DocumentFile file = dir.createFile("", buildFileName(url));
+                        DocumentUtils.writeBinaryToFile(resolver, file, stream);
+                        subscriber.onNext(file.getUri().toString());
+                        subscriber.onCompleted();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }

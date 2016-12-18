@@ -40,7 +40,7 @@ public abstract class BackActivity extends BaseActivity {
     }
 
     protected boolean isProgressBarShown() {
-        return mProgressBar == null || mProgressBar.isShown();
+        return mProgressBar != null && mProgressBar.isShown();
     }
 
     protected void hideProgressBar() {

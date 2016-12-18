@@ -1,16 +1,18 @@
 package com.hiroshi.cimoc.source;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Request;
@@ -20,6 +22,10 @@ import okhttp3.Request;
  */
 
 public class HHSSEE extends MangaParser {
+
+    public HHSSEE() {
+        category = new Category();
+    }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
@@ -36,10 +42,9 @@ public class HHSSEE extends MangaParser {
         return new NodeIterator(body.list("#list > div.cComicList > li > a")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("href");
-                cid = cid.substring(7, cid.length() - 5);
+                String cid = node.hrefWithSubString(7, -6);
                 String title = node.text();
-                String cover = node.attr("img", "src");
+                String cover = node.src("img");
                 return new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, null, null);
             }
         };
@@ -52,26 +57,26 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public String parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String title = body.text("#about_kit > ul > li:eq(0) > h1").trim();
-        String cover = body.attr("#about_style > img", "src");
-        String[] args = body.text("#about_kit > ul > li:eq(4)", 3).split("\\D");
-        String update = StringUtils.format("%4d-%02d-%02d",
-                Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-        String author = body.text("#about_kit > ul > li:eq(1)", 3);
-        String intro = body.text("#about_kit > ul > li:eq(7)", 3);
-        boolean status = body.text("#about_kit > ul > li:eq(2)").contains("完结");
+        String title = body.text("#about_kit > ul > li:eq(0) > h1");
+        String cover = body.src("#about_style > img");
+        String update = body.textWithSubstring("#about_kit > ul > li:eq(4)", 3);
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
+        String author = body.textWithSubstring("#about_kit > ul > li:eq(1)", 3);
+        String intro = body.textWithSubstring("#about_kit > ul > li:eq(7)", 3);
+        boolean status = isFinish(body.text("#about_kit > ul > li:eq(2)"));
         comic.setInfo(title, cover, update, intro, author, status);
-
-        return null;
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
-        List<Chapter> list = new LinkedList<>();
+        List<Chapter> list = new ArrayList<>();
         Node body = new Node(html);
-        String name = body.text("#about_kit > ul > li:eq(0) > h1").trim();
+        String name = body.text("#about_kit > ul > li:eq(0) > h1");
         for (Node node : body.list("#permalink > div.cVolList > ul.cVolUl > li > a")) {
             String title = node.text();
             title = title.replaceFirst(name, "");
@@ -80,49 +85,23 @@ public class HHSSEE extends MangaParser {
                 title = temp;
             }
             String[] array = StringUtils.match("/page(\\d+).*s=(\\d+)", node.attr("href"), 1, 2);
-            String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
+            //String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
+            String path = array != null ? array[0].concat("-").concat(array[1]) : "";
             list.add(new Chapter(title.trim(), path));
         }
         return list;
     }
 
     @Override
-    public Request getRecentRequest(int page) {
-        if (page == 1) {
-            String url = "http://www.hhssee.com/top/newrating.aspx";
-            return new Request.Builder().url(url).build();
-        }
-        return null;
-    }
-
-    @Override
-    public List<Comic> parseRecent(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#list > div.cTopComicList > div.cComicItem")) {
-            String cid = node.attr("div.cListSlt > a", "href");
-            cid = cid.substring(7, cid.length() - 5);
-            String title = node.text("a > span.cComicTitle");
-            String cover = node.attr("div.cListSlt > a > img", "src");
-            String[] args = node.text("span.cComicRating", 5).split("\\D");
-            String update = StringUtils.format("%4d-%02d-%02d",
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-            String author = node.text("span.cComicAuthor");
-            list.add(new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, update, author));
-        }
-        return list;
-    }
-
-    @Override
     public Request getImagesRequest(String cid, String path) {
-        String[] array = path.split(" ");
+        String[] array = path.split("-");
         String url = StringUtils.format("http://www.hhssee.com/page%s/1.html?s=%s", array[0], array[1]);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
-        List<ImageUrl> list = new LinkedList<>();
+        List<ImageUrl> list = new ArrayList<>();
         Node body = new Node(html);
         int page = Integer.parseInt(body.attr("#hdPageCount", "value"));
         String path = body.attr("#hdVolID", "value");
@@ -141,10 +120,14 @@ public class HHSSEE extends MangaParser {
     @Override
     public String parseLazy(String html, String url) {
         Node body = new Node(html);
-        String server = body.attr("#hdDomain", "value").split("\\|")[0];
-        String name = body.attr("#iBodyQ > img", "name");
-        String result = unsuan(name).substring(1);
-        return server.concat(result);
+        String server = body.attr("#hdDomain", "value");
+        if (server != null) {
+            server = server.split("\\|")[0];
+            String name = body.attr("#iBodyQ > img", "name");
+            String result = unsuan(name).substring(1);
+            return server.concat(result);
+        }
+        return null;
     }
 
     @Override
@@ -154,8 +137,12 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        String[] args = new Node(html).text("span.cComicRating", 5).split("\\D");
-        return StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        String update = new Node(html).textWithSubstring("#about_kit > ul > li:eq(4)", 3);
+        if (update != null) {
+            String[] args = update.split("\\D");
+            update = StringUtils.format("%4d-%02d-%02d", Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        }
+        return update;
     }
 
     private String unsuan(String str) {
@@ -173,6 +160,73 @@ public class HHSSEE extends MangaParser {
             builder.append((char) Integer.parseInt(array[i]));
         }
         return builder.toString();
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new ArrayList<>();
+        Node body = new Node(html);
+        for (Node node : body.list("#list > div.cComicList > li > a")) {
+            String cid = node.hrefWithSubString(7, -6);
+            String title = node.attr("title");
+            String cover = node.src("img");
+            list.add(new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, null, null));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
+        @Override
+        public String getFormat(String... args) {
+            if (!"".equals(args[CATEGORY_SUBJECT])) {
+                return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_SUBJECT]);
+            } else if (!"".equals(args[CATEGORY_AREA])) {
+                return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_AREA]);
+            } else {
+                return "http://www.hhssee.com/comic/%d.html";
+            }
+        }
+
+        @Override
+        protected List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("萌系", "1"));
+            list.add(Pair.create("搞笑", "2"));
+            list.add(Pair.create("格斗", "3"));
+            list.add(Pair.create("科幻", "4"));
+            list.add(Pair.create("剧情", "5"));
+            list.add(Pair.create("侦探", "6"));
+            list.add(Pair.create("竞技", "7"));
+            list.add(Pair.create("魔法", "8"));
+            list.add(Pair.create("神鬼", "9"));
+            list.add(Pair.create("校园", "10"));
+            list.add(Pair.create("惊栗", "11"));
+            list.add(Pair.create("厨艺", "12"));
+            list.add(Pair.create("伪娘", "13"));
+            list.add(Pair.create("冒险", "15"));
+            list.add(Pair.create("耽美", "21"));
+            list.add(Pair.create("经典", "22"));
+            list.add(Pair.create("亲情", "25"));
+            return list;
+        }
+
+        @Override
+        protected boolean hasArea() {
+            return true;
+        }
+
+        @Override
+        protected List<Pair<String, String>> getArea() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("大陆", "19"));
+            list.add(Pair.create("香港", "20"));
+            list.add(Pair.create("欧美", "23"));
+            list.add(Pair.create("日文", "24"));
+            return list;
+        }
+
     }
 
 }

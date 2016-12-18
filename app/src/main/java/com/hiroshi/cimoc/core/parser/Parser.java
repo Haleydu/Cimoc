@@ -19,23 +19,15 @@ public interface Parser {
 
     Request getInfoRequest(String cid);
 
-    String parseInfo(String html, Comic comic);
+    void parseInfo(String html, Comic comic);
 
-    Request getChapterRequest(String cid);
+    Request getChapterRequest(String html, String cid);
 
     List<Chapter> parseChapter(String html);
-
-    Request getBeforeImagesRequest();
-
-    void beforeImages(String html);
 
     Request getImagesRequest(String cid, String path);
 
     List<ImageUrl> parseImages(String html);
-
-    Request getRecentRequest(int page);
-
-    List<Comic> parseRecent(String html, int page);
 
     Request getLazyRequest(String url);
 
@@ -44,5 +36,11 @@ public interface Parser {
     Request getCheckRequest(String cid);
 
     String parseCheck(String html);
+
+    Category getCategory();
+
+    Request getCategoryRequest(String format, int page);
+
+    List<Comic> parseCategory(String html, int page);
 
 }

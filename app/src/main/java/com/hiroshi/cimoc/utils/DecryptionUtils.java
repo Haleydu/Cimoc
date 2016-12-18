@@ -5,6 +5,8 @@ import android.util.Base64;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Key;
 
 import javax.crypto.Cipher;
@@ -26,7 +28,7 @@ public class DecryptionUtils {
         return new String(result, "UTF-8");
     }
 
-    public static String base64Decrypt(String cipherString) throws Exception {
+    public static String base64Decrypt(String cipherString) throws UnsupportedEncodingException {
         byte[] cipherBytes = Base64.decode(cipherString, Base64.DEFAULT);
         return new String(cipherBytes, "UTF-8");
     }
@@ -37,6 +39,14 @@ public class DecryptionUtils {
         Scriptable scope = rhino.initStandardObjects();
         Object object = rhino.evaluateString(scope, jsCode, null, 1, null);
         return Context.toString(object);
+    }
+
+    public static String urlDecrypt(String str) {
+        try {
+            return URLDecoder.decode(str, "utf-8");
+        } catch (Exception e) {
+            return str;
+        }
     }
 
 }
