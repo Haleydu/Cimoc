@@ -2,8 +2,6 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.rx.RxBus;
-import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.SourceView;
 
 import java.util.List;

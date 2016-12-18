@@ -121,7 +121,7 @@ public class Manga {
                     html = getResponseBody(mClient, request);
                     List<ImageUrl> list = parser.parseImages(html);
                     if (list.isEmpty()) {
-                        throw new ParseErrorException();
+                        throw new Exception();
                     } else {
                         subscriber.onNext(list);
                         subscriber.onCompleted();

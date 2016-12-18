@@ -102,6 +102,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
                         }, new Action1<Throwable>() {
                             @Override
                             public void call(Throwable throwable) {
+                                throwable.printStackTrace();
                                 if (obj.page == 1) {
                                     obj.state = STATE_DONE;
                                     if (++error == mStateArray.length) {

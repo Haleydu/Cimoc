@@ -91,16 +91,20 @@ public class CimocApplication extends Application {
 
     private void updateTaskPath() {
         // 更新汗汗漫画章节路径
-        List<Comic> list = mDaoSession.getComicDao().queryBuilder().where(ComicDao.Properties.Source.eq(7)).list();
-        TaskDao dao = mDaoSession.getTaskDao();
-        for (Comic comic : list) {
-            List<Task> tasks = dao.queryBuilder().where(TaskDao.Properties.Key.eq(comic.getId())).list();
-            for (Task task : tasks) {
-                String path = task.getPath();
-                String[] args = path.split(" ");
-                task.setPath(args[0].concat("-").concat(args[1]));
-                dao.update(task);
+        try {
+            List<Comic> list = mDaoSession.getComicDao().queryBuilder().where(ComicDao.Properties.Source.eq(7)).list();
+            TaskDao dao = mDaoSession.getTaskDao();
+            for (Comic comic : list) {
+                List<Task> tasks = dao.queryBuilder().where(TaskDao.Properties.Key.eq(comic.getId())).list();
+                for (Task task : tasks) {
+                    String path = task.getPath();
+                    String[] args = path.split(" ");
+                    task.setPath(args[0].concat("-").concat(args[1]));
+                    dao.update(task);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

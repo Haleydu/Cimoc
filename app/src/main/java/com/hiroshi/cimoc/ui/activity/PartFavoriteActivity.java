@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.util.Log;
 import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
@@ -16,7 +15,6 @@ import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -32,7 +32,7 @@ public class HHAAZZ extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://hhaazz.com/comicsearch/s.aspx?s=".concat(keyword);
+            String url = "http://hhaass.com/comicsearch/s.aspx?s=".concat(keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -49,7 +49,6 @@ public class HHAAZZ extends MangaParser {
                 String cover = node.src("a.pic > img");
                 String update = node.textWithSubstring("a.pic > div > p:eq(4) > span", 0, 10);
                 String author = node.text("a.pic > div > p:eq(1)");
-                // boolean status = node.text("a.tool > span.h").contains("完结");
                 return new Comic(SourceManager.SOURCE_HHAAZZ, cid, title, cover, update, author);
             }
         };
@@ -57,7 +56,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://hhaazz.com/comic/".concat(cid);
+        String url = "http://hhaass.com/comic/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -87,7 +86,7 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "http://hhaazz.com/".concat(path);
+        String url = "http://hhaass.com/".concat(path);
         return new Request.Builder().url(url).build();
     }
 
@@ -152,15 +151,15 @@ public class HHAAZZ extends MangaParser {
         @Override
         public String getFormat(String... args) {
             if (!"".equals(args[CATEGORY_SUBJECT])) {
-                return StringUtils.format("http://hhaazz.com/lists/%s/%%d", args[CATEGORY_SUBJECT]);
+                return StringUtils.format("http://hhaass.com/lists/%s/%%d", args[CATEGORY_SUBJECT]);
             } else if (!"".equals(args[CATEGORY_AREA])) {
-                return StringUtils.format("http://hhaazz.com/lists/%s/%%d", args[CATEGORY_AREA]);
+                return StringUtils.format("http://hhaass.com/lists/%s/%%d", args[CATEGORY_AREA]);
             } else if (!"".equals(args[CATEGORY_READER])) {
-                return StringUtils.format("http://hhaazz.com/duzhequn/%s/%%d", args[CATEGORY_PROGRESS]);
+                return StringUtils.format("http://hhaass.com/duzhequn/%s/%%d", args[CATEGORY_PROGRESS]);
             } else if (!"".equals(args[CATEGORY_PROGRESS])) {
-                return StringUtils.format("http://hhaazz.com/lianwan/%s/%%d", args[CATEGORY_PROGRESS]);
+                return StringUtils.format("http://hhaass.com/lianwan/%s/%%d", args[CATEGORY_PROGRESS]);
             } else {
-                return "http://hhaazz.com/dfcomiclist_%d.htm";
+                return "http://hhaass.com/dfcomiclist_%d.htm";
             }
         }
 

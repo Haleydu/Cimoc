@@ -181,11 +181,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        if (throwable instanceof Manga.NetworkErrorException) {
-                            mBaseView.onNetworkError();
-                        } else {
-                            mBaseView.onParseError();
-                        }
+                        mBaseView.onParseError();
                         if (status != LOAD_INIT && ++count < 2) {
                             status = LOAD_NULL;
                         }

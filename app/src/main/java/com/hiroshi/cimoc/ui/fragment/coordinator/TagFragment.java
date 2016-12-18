@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.TagPresenter;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;

@@ -71,7 +71,7 @@ public class DownloadService extends Service {
         mConnectTimes = manager.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
         mWorkerArray = new LongSparseArray<>();
         mExecutorService = Executors.newFixedThreadPool(num);
-        mHttpClient = new OkHttpClient();
+        mHttpClient = CimocApplication.getHttpClient();
         mTaskManager = TaskManager.getInstance();
         mContentResolver = getContentResolver();
     }

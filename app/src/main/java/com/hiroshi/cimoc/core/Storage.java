@@ -20,9 +20,9 @@ import rx.schedulers.Schedulers;
 
 public class Storage {
 
-    public static String DOWNLOAD = "download";
-    public static String PICTURE = "picture";
-    public static String BACKUP = "backup";
+    private static String DOWNLOAD = "download";
+    private static String PICTURE = "picture";
+    private static String BACKUP = "backup";
 
     private static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile dst, String name) {
         DocumentFile file = src.findFile(name);
@@ -36,18 +36,20 @@ public class Storage {
         return Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
-                DocumentFile src = CimocApplication.getDocumentFile();
-                ContentResolver resolver = CimocApplication.getResolver();
-                if (!src.getUri().equals(dst.getUri())) {
-                    subscriber.onNext(1);
-                    if (copyDir(resolver, src, dst, BACKUP)) {
-                        subscriber.onNext(2);
-                        if (copyDir(resolver, src, dst, DOWNLOAD)) {
-                            subscriber.onNext(3);
-                            if (copyDir(resolver, src, dst, PICTURE)) {
-                                subscriber.onNext(4);
-                                DocumentUtils.deleteDir(src);
-                                subscriber.onCompleted();
+                if (dst.canWrite()) {
+                    DocumentFile src = CimocApplication.getDocumentFile();
+                    ContentResolver resolver = CimocApplication.getResolver();
+                    if (!src.getUri().equals(dst.getUri())) {
+                        subscriber.onNext(1);
+                        if (copyDir(resolver, src, dst, BACKUP)) {
+                            subscriber.onNext(2);
+                            if (copyDir(resolver, src, dst, DOWNLOAD)) {
+                                subscriber.onNext(3);
+                                if (copyDir(resolver, src, dst, PICTURE)) {
+                                    subscriber.onNext(4);
+                                    DocumentUtils.deleteDir(src);
+                                    subscriber.onCompleted();
+                                }
                             }
                         }
                     }

@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 
 import org.json.JSONArray;
@@ -181,7 +182,11 @@ public class Download {
                 if (uris.length != 0) {
                     List<ImageUrl> list = new ArrayList<>(uris.length);
                     for (int i = 0; i < uris.length; ++i) {
-                        list.add(new ImageUrl(i + 1, uris[i].toString(), false));
+                        String uri = uris[i].toString();
+                        if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径不解码 Fresco 读取不了
+                            uri = DecryptionUtils.urlDecrypt(uri);
+                        }
+                        list.add(new ImageUrl(i + 1, uri, false));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();

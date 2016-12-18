@@ -108,6 +108,7 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
         bundle.putInt(DialogView.EXTRA_DIALOG_BUNDLE_ARG_1, source);
         EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.source_server,
                 ImageServer.get(source), bundle, DIALOG_REQUEST_EDITOR);
+        fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -122,9 +123,12 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_EDITOR:
-                int source = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
-                String value = bundle.getString(DialogView.EXTRA_DIALOG_RESULT_VALUE);
-                ImageServer.update(mPreference, source, value);
+                Bundle extra = bundle.getBundle(EXTRA_DIALOG_BUNDLE);
+                if (extra != null) {
+                    int source = extra.getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
+                    String value = bundle.getString(DialogView.EXTRA_DIALOG_RESULT_VALUE);
+                    ImageServer.update(mPreference, source, value);
+                }
                 break;
         }
     }

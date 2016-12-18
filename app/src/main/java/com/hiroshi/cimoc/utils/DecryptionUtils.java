@@ -6,6 +6,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.Key;
 
 import javax.crypto.Cipher;
@@ -38,6 +39,14 @@ public class DecryptionUtils {
         Scriptable scope = rhino.initStandardObjects();
         Object object = rhino.evaluateString(scope, jsCode, null, 1, null);
         return Context.toString(object);
+    }
+
+    public static String urlDecrypt(String str) {
+        try {
+            return URLDecoder.decode(str, "utf-8");
+        } catch (Exception e) {
+            return str;
+        }
     }
 
 }
