@@ -214,8 +214,8 @@ public class U17 extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("人气", "ob9"));
             list.add(Pair.create("更新", "ob0"));
+            list.add(Pair.create("人气", "ob9"));
             list.add(Pair.create("章节", "ob1"));
             list.add(Pair.create("评论", "ob3"));
             list.add(Pair.create("发布", "ob2"));

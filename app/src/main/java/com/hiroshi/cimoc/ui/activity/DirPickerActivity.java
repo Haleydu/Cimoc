@@ -3,10 +3,11 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Environment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.DirAdapter;
 
 import java.io.File;
@@ -22,21 +23,19 @@ import butterknife.OnClick;
 
 public class DirPickerActivity extends CoordinatorActivity {
 
-    public static final String EXTRA_PICKER_PATH = "cimoc.intent.extra.EXTRA_PICKER_PATH";
-
     private DirAdapter mDirAdapter;
     private File mFile;
 
     @Override
-    protected void initView() {
-        super.initView();
+    protected BaseAdapter initAdapter() {
         mDirAdapter = new DirAdapter(this, new ArrayList<String>());
-        mDirAdapter.setOnItemClickListener(this);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mDirAdapter);
+        return mDirAdapter;
+    }
+
+    @Override
+    protected void initActionButton() {
         mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.setVisibility(View.VISIBLE);
+        mActionButton.show();
     }
 
     @Override
@@ -48,7 +47,7 @@ public class DirPickerActivity extends CoordinatorActivity {
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_PICKER_PATH, mFile.getAbsolutePath());
+        intent.putExtra(Extra.EXTRA_PICKER_PATH, mFile.getAbsolutePath());
         setResult(Activity.RESULT_OK, intent);
         finish();
     }

@@ -7,6 +7,10 @@ public interface SettingsView extends BaseView, DialogView {
 
     void onFileMoveSuccess();
 
-    void onFileMoveFail();
+    void onDownloadDeleteSuccess();
+
+    void onDownloadScanSuccess();
+
+    void onExecuteFail();
 
 }

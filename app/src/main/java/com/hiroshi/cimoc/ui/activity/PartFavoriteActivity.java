@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.PartFavoritePresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
@@ -39,21 +41,23 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     }
 
     @Override
-    protected void initView() {
-        super.initView();
+    protected BaseAdapter initAdapter() {
         mGridAdapter = new GridAdapter(this, new LinkedList<MiniComic>());
-        mGridAdapter.setOnItemClickListener(this);
-        mGridAdapter.setOnItemLongClickListener(this);
         mGridAdapter.setProvider(((CimocApplication) getApplication()).getBuilderProvider());
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 3);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.addItemDecoration(mGridAdapter.getItemDecoration());
-        mRecyclerView.setAdapter(mGridAdapter);
+        return mGridAdapter;
+    }
+
+    @Override
+    protected void initActionButton() {
         if (getIntent().getLongExtra(EXTRA_ID, -1) < 0) {
             mLayoutView.removeView(mActionButton);
             mActionButton = null;
         }
+    }
+
+    @Override
+    protected RecyclerView.LayoutManager initLayoutManager() {
+        return new GridLayoutManager(this, 3);
     }
 
     @Override
@@ -113,7 +117,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
                 long cid = mGridAdapter.getItem(pos).getId();
                 mPresenter.delete(tid, cid);
                 mGridAdapter.remove(pos);
-                showSnackbar(R.string.common_delete_success);
+                showSnackbar(R.string.common_execute_success);
                 break;
             case DIALOG_REQUEST_ADD:
                 showProgressDialog();
@@ -159,13 +163,13 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     public void onComicInsertSuccess(List<MiniComic> list) {
         hideProgressDialog();
         mGridAdapter.addAll(list);
-        showSnackbar(R.string.common_add_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onComicInsertFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_add_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

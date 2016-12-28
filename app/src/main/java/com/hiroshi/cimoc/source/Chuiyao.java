@@ -166,8 +166,8 @@ public class Chuiyao extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("发布", "1"));
             list.add(Pair.create("更新", "3"));
+            list.add(Pair.create("发布", "1"));
             list.add(Pair.create("人气", "2"));
             return list;
         }

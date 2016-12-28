@@ -169,7 +169,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                 showSnackbar(R.string.search_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(this, keyword,
-                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_TYPE_SEARCH));
+                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
             }
         }
     }

@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.4.4.0"
+        versionName "1.4.4.1"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -37,9 +37,9 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'org.greenrobot:greendao:3.2.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.facebook.fresco:fresco:1.0'
+    compile 'com.facebook.fresco:fresco:1.0.0'
     compile 'org.jsoup:jsoup:1.10.1'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
-    compile 'io.reactivex:rxjava:1.2.3'
+    compile 'io.reactivex:rxjava:1.2.4'
     compile 'io.reactivex:rxandroid:1.2.1'
 }

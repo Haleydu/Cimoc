@@ -46,6 +46,18 @@ public class DocumentUtils {
         return list.toArray(new Uri[list.size()]);
     }
 
+    public static int countWithoutSuffix(DocumentFile dir, String suffix) {
+        int count = 0;
+        if (dir.isDirectory()) {
+            for (DocumentFile file : dir.listFiles()) {
+                if (file.isFile() && !file.getName().endsWith(suffix)) {
+                    ++count;
+                }
+            }
+        }
+        return count;
+    }
+
     public static String[] listFilesWithSuffix(DocumentFile dir, String... suffix) {
         List<String> list = new ArrayList<>();
         if (dir.isDirectory()) {
@@ -183,6 +195,10 @@ public class DocumentUtils {
 
     public static boolean copyFile(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
         if (src.isFile() && parent.isDirectory()) {
+            DocumentFile old = parent.findFile(src.getName());
+            if (old != null) {
+                old.delete();
+            }
             DocumentFile file = createFile(parent, "", src.getName());
             if (file != null) {
                 try {

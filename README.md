@@ -24,24 +24,24 @@ Online manga reader based on Android
 
 # 感谢以下的开源项目及作者
 - [Android Open Source Project](http://source.android.com/)
-- [ButterKnife](http://jakewharton.github.io/butterknife/)
-- [GreenDAO](http://greenrobot.org/greendao/)
-- [OkHttp](http://square.github.io/okhttp/)
-- [Fresco](http://frescolib.org/)
-- [Jsoup](https://jsoup.org/)
+- [ButterKnife](https://github.com/JakeWharton/butterknife)
+- [GreenDAO](https://github.com/greenrobot/greenDAO)
+- [OkHttp](https://github.com/square/okhttp)
+- [Fresco](https://github.com/facebook/fresco)
+- [Jsoup](https://github.com/jhy/jsoup)
 - [DiscreteSeekBar](https://github.com/AnderWeb/discreteSeekBar)
 - [RxJava](https://github.com/ReactiveX/RxJava)
 - [RxAndroid](https://github.com/ReactiveX/RxAndroid)
 - [RecyclerViewPager](https://github.com/lsjwzh/RecyclerViewPager)
 - [PhotoDraweeView](https://github.com/ongakuer/PhotoDraweeView)
-- [Rhino](https://www.mozilla.org/rhino/)
+- [Rhino](https://github.com/mozilla/rhino)
 
 # ToDo
 - ~~综合搜索~~
 - ~~漫画标签分类~~
 - ~~多任务下载~~
 - ~~更改下载路径~~
-- 扫描已下载漫画
+- ~~扫描已下载漫画~~
 - ~~阅读状态自定义点击事件~~
 
 # 应用截图

@@ -164,13 +164,13 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     public void onBackupRestoreSuccess() {
         hideProgressDialog();
-        showSnackbar(R.string.backup_restore_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onBackupRestoreFail() {
         hideProgressDialog();
-        showSnackbar(R.string.backup_restore_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     public void onBackupSaveFail() {
         hideProgressDialog();
-        showSnackbar(R.string.backup_save_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

@@ -72,12 +72,15 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                 }
                 break;
             case DIALOG_REQUEST_DELETE:
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
+                Bundle extra = bundle.getBundle(EXTRA_DIALOG_BUNDLE);
                 if (start) {
                     showSnackbar(R.string.download_ask_stop);
-                } else {
+                } else if (extra != null) {
                     showProgressDialog();
+                    int pos = extra.getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                     mPresenter.deleteComic(mGridAdapter.getItem(pos).getId());
+                } else {
+                    showSnackbar(R.string.common_execute_fail);
                 }
                 break;
         }
@@ -164,13 +167,13 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onDownloadDeleteSuccess(long id) {
         hideProgressDialog();
         mGridAdapter.removeItemById(id);
-        showSnackbar(R.string.common_delete_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onDownloadDeleteFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_delete_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

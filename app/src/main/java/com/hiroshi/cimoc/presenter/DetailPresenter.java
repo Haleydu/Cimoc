@@ -22,6 +22,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/4.
@@ -193,7 +194,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             }
-        }).observeOn(AndroidSchedulers.mainThread())
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<ArrayList<Task>>() {
                     @Override
                     public void call(ArrayList<Task> list) {

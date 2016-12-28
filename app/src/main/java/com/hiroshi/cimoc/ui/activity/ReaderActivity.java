@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
@@ -33,7 +34,7 @@ import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
-import com.hiroshi.cimoc.utils.EventUtils;
+import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -89,7 +90,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-        mode = getIntent().getIntExtra(EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
+        mode = getIntent().getIntExtra(Extra.EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_ORIENTATION : PreferenceManager.PREF_READER_STREAM_ORIENTATION;
         orientation = mPreference.getInt(key, PreferenceManager.READER_ORIENTATION_PORTRAIT);
@@ -140,11 +141,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @Override
     protected void initData() {
         mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
-                EventUtils.getPageClickEventChoice(mPreference) : EventUtils.getStreamClickEventChoice(mPreference);
+                ClickEvents.getPageClickEventChoice(mPreference) : ClickEvents.getStreamClickEventChoice(mPreference);
         mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
-                EventUtils.getPageLongClickEventChoice(mPreference) : EventUtils.getStreamLongClickEventChoice(mPreference);
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        List<Chapter> list = getIntent().getParcelableArrayListExtra(EXTRA_CHAPTER);
+                ClickEvents.getPageLongClickEventChoice(mPreference) : ClickEvents.getStreamLongClickEventChoice(mPreference);
+        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+        List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
         mPresenter.loadInit(id, list.toArray(new Chapter[list.size()]));
     }
 
@@ -308,7 +309,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (mReaderAdapter.getItemCount() != 0) {
-            int value = EventUtils.EVENT_NULL;
+            int value = ClickEvents.EVENT_NULL;
             switch (keyCode) {
                 case KeyEvent.KEYCODE_VOLUME_UP:
                     value = mClickArray[5];
@@ -317,7 +318,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                     value = mClickArray[6];
                     break;
             }
-            if (value != EventUtils.EVENT_NULL) {
+            if (value != ClickEvents.EVENT_NULL) {
                 doClickEvent(value);
                 return true;
             }
@@ -356,37 +357,37 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     private void doClickEvent(int value) {
         switch (value) {
-            case EventUtils.EVENT_PREV_PAGE:
+            case ClickEvents.EVENT_PREV_PAGE:
                 prevPage();
                 break;
-            case EventUtils.EVENT_NEXT_PAGE:
+            case ClickEvents.EVENT_NEXT_PAGE:
                 nextPage();
                 break;
-            case EventUtils.EVENT_SAVE_PICTURE:
+            case ClickEvents.EVENT_SAVE_PICTURE:
                 savePicture();
                 break;
-            case EventUtils.EVENT_LOAD_PREV:
+            case ClickEvents.EVENT_LOAD_PREV:
                 loadPrev();
                 break;
-            case EventUtils.EVENT_LOAD_NEXT:
+            case ClickEvents.EVENT_LOAD_NEXT:
                 loadNext();
                 break;
-            case EventUtils.EVENT_EXIT_READER:
+            case ClickEvents.EVENT_EXIT_READER:
                 exitReader();
                 break;
-            case EventUtils.EVENT_TO_FIRST:
+            case ClickEvents.EVENT_TO_FIRST:
                 toFirst();
                 break;
-            case EventUtils.EVENT_TO_LAST:
+            case ClickEvents.EVENT_TO_LAST:
                 toLast();
                 break;
-            case EventUtils.EVENT_SWITCH_SCREEN:
+            case ClickEvents.EVENT_SWITCH_SCREEN:
                 switchScreen();
                 break;
-            case EventUtils.EVENT_SWITCH_MODE:
+            case ClickEvents.EVENT_SWITCH_MODE:
                 switchMode();
                 break;
-            case EventUtils.EVENT_SWITCH_CONTROL:
+            case ClickEvents.EVENT_SWITCH_CONTROL:
                 switchControl();
                 break;
         }
@@ -456,10 +457,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         Intent intent = getIntent();
         if (mode == PreferenceManager.READER_MODE_PAGE) {
             intent.setClass(this, StreamReaderActivity.class);
-            intent.putExtra(EXTRA_MODE, PreferenceManager.READER_MODE_STREAM);
+            intent.putExtra(Extra.EXTRA_MODE, PreferenceManager.READER_MODE_STREAM);
         } else {
             intent.setClass(this, PageReaderActivity.class);
-            intent.putExtra(EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
+            intent.putExtra(Extra.EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
         }
         finish();
         startActivity(intent);
@@ -482,15 +483,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
     }
 
-    private static final String EXTRA_ID = "a";
-    private static final String EXTRA_CHAPTER = "b";
-    private static final String EXTRA_MODE = "c";
-
     public static Intent createIntent(Context context, long id, List<Chapter> list, int mode) {
         Intent intent = getIntent(context, mode);
-        intent.putExtra(EXTRA_ID, id);
-        intent.putExtra(EXTRA_CHAPTER, new ArrayList<>(list));
-        intent.putExtra(EXTRA_MODE, mode);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_CHAPTER, new ArrayList<>(list));
+        intent.putExtra(Extra.EXTRA_MODE, mode);
         return intent;
     }
 

@@ -66,7 +66,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
                 int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                 mPresenter.delete(mGridAdapter.getItem(pos));
                 mGridAdapter.remove(pos);
-                showSnackbar(R.string.common_delete_success);
+                showSnackbar(R.string.common_execute_success);
                 break;
             case DIALOG_REQUEST_CLEAR:
                 showProgressDialog();

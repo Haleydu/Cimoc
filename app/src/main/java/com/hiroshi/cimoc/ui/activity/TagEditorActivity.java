@@ -2,13 +2,14 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.TagEditorPresenter;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TagEditorAdapter;
 import com.hiroshi.cimoc.ui.view.TagEditorView;
 
@@ -33,20 +34,21 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
     }
 
     @Override
-    protected void initView() {
-        super.initView();
+    protected BaseAdapter initAdapter() {
         mTagAdapter = new TagEditorAdapter(this, new ArrayList<Pair<Tag, Boolean>>());
-        mTagAdapter.setOnItemClickListener(this);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(mTagAdapter);
+        return mTagAdapter;
+    }
+
+    @Override
+    protected void initActionButton() {
         mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.setVisibility(View.VISIBLE);
+        mActionButton.show();
+        hideProgressBar();
     }
 
     @Override
     protected void initData() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
+        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
         mPresenter.load(id);
     }
 
@@ -114,11 +116,9 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
         return getString(R.string.tag_editor);
     }
 
-    private static final String EXTRA_ID = "a";
-
     public static Intent createIntent(Context context, long id) {
         Intent intent = new Intent(context, TagEditorActivity.class);
-        intent.putExtra(EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_ID, id);
         return intent;
     }
 

@@ -65,13 +65,19 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
         mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Void>() {
             @Override
             public void call(Subscriber<? super Void> subscriber) {
-                Comic comic = mComicManager.load(id);
-                if (comic.getFavorite() == null && comic.getHistory() == null) {
-                    mComicManager.delete(comic);
-                } else {
-                    comic.setDownload(null);
-                    mComicManager.update(comic);
-                }
+                final Comic comic = mComicManager.load(id);
+                mComicManager.runInTx(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTaskManager.deleteInTx(id);
+                        if (comic.getFavorite() == null && comic.getHistory() == null) {
+                            mComicManager.delete(comic);
+                        } else {
+                            comic.setDownload(null);
+                            mComicManager.update(comic);
+                        }
+                    }
+                });
                 Download.delete(comic);
                 subscriber.onNext(null);
                 subscriber.onCompleted();

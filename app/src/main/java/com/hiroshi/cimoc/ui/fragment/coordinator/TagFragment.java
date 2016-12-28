@@ -127,7 +127,7 @@ public class TagFragment extends CoordinatorFragment implements TagView {
                     Tag tag = new Tag(null, text);
                     mPresenter.insert(tag);
                     mTagAdapter.add(tag);
-                    showSnackbar(R.string.common_add_success);
+                    showSnackbar(R.string.common_execute_success);
                 }
                 break;
         }
@@ -150,13 +150,13 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     public void onTagDeleteSuccess(Tag tag) {
         hideProgressDialog();
         mTagAdapter.remove(tag);
-        showSnackbar(R.string.common_delete_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onTagDeleteFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_delete_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

@@ -4,17 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.DetailAdapter;
 import com.hiroshi.cimoc.ui.view.DetailView;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -43,21 +46,23 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
     }
 
     @Override
-    protected void initView() {
-        super.initView();
+    protected BaseAdapter initAdapter() {
         mDetailAdapter = new DetailAdapter(this, new ArrayList<Chapter>());
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        mRecyclerView.setAdapter(mDetailAdapter);
-        mRecyclerView.addItemDecoration(mDetailAdapter.getItemDecoration());
+        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        return mDetailAdapter;
+    }
+
+    @Override
+    protected RecyclerView.LayoutManager initLayoutManager() {
+        return new GridLayoutManager(this, 4);
     }
 
     @Override
     protected void initData() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
-        String cid = getIntent().getStringExtra(EXTRA_CID);
+        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
+        String cid = getIntent().getStringExtra(Extra.EXTRA_CID);
         mPresenter.load(id, source, cid);
     }
 
@@ -95,7 +100,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
                     break;
                 case R.id.detail_search_title:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null, ResultActivity.LAUNCH_TYPE_SEARCH);
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.detail_search_empty);
@@ -103,7 +108,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
                     break;
                 case R.id.detail_search_author:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
-                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_TYPE_SEARCH);
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.detail_search_empty);
@@ -121,7 +126,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
             switch (requestCode) {
                 case REQUEST_CODE_DOWNLOAD:
                     showProgressDialog();
-                    List<Chapter> list = data.getParcelableArrayListExtra(ChapterActivity.EXTRA_CHAPTER);
+                    List<Chapter> list = data.getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
                     mPresenter.addTask(mDetailAdapter.getDateSet(), list);
                     break;
             }
@@ -158,7 +163,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
     }
 
     private void startReader(String path) {
-        boolean favorite = getIntent().getBooleanExtra(EXTRA_FAVORITE, false);
+        boolean favorite = getIntent().getBooleanExtra(Extra.EXTRA_MODE, false);
         long id = mPresenter.updateLast(path, favorite);
         mDetailAdapter.setLast(path);
         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
@@ -229,17 +234,12 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
         return getString(R.string.detail);
     }
 
-    public static final String EXTRA_ID = "a";
-    public static final String EXTRA_SOURCE = "b";
-    public static final String EXTRA_CID = "c";
-    public static final String EXTRA_FAVORITE = "d";
-
     public static Intent createIntent(Context context, Long id, int source, String cid, boolean favorite) {
         Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(EXTRA_ID, id);
-        intent.putExtra(EXTRA_SOURCE, source);
-        intent.putExtra(EXTRA_CID, cid);
-        intent.putExtra(EXTRA_FAVORITE, favorite);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_SOURCE, source);
+        intent.putExtra(Extra.EXTRA_CID, cid);
+        intent.putExtra(Extra.EXTRA_MODE, favorite);
         return intent;
     }
 

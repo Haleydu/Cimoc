@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
@@ -24,6 +25,7 @@ import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.StorageEditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.ServiceUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.io.File;
@@ -51,7 +53,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) AppCompatCheckBox mHideBox;
-    @BindView(R.id.settings_download_order_checkbox) AppCompatCheckBox mOrderBox;
     @BindView(R.id.settings_search_complete_checkbox) AppCompatCheckBox mCompleteBox;
 
     private SettingsPresenter mPresenter;
@@ -83,7 +84,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mThreadValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
-        mOrderBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false));
         mCompleteBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false));
     }
 
@@ -94,8 +94,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         super.onDestroy();
     }
 
-    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn,
-            R.id.settings_download_order_btn, R.id.settings_search_complete_btn})
+    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_search_complete_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_bright_btn:
@@ -103,9 +102,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_reader_hide_btn:
                 checkedAndSave(mHideBox, PreferenceManager.PREF_READER_HIDE_INFO);
-                break;
-            case R.id.settings_download_order_btn:
-                checkedAndSave(mOrderBox, PreferenceManager.PREF_DOWNLOAD_ORDER);
                 break;
             case R.id.settings_search_complete_btn:
                 checkedAndSave(mCompleteBox, PreferenceManager.PREF_SEARCH_COMPLETE);
@@ -158,10 +154,14 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                         mPresenter.moveFiles(DocumentFile.fromTreeUri(this, uri));
                     } else {
                         showProgressDialog();
-                        String path = data.getStringExtra(DirPickerActivity.EXTRA_PICKER_PATH);
-                        DocumentFile file = DocumentFile.fromFile(new File(path));
-                        mTempStorage = file.getUri().toString();
-                        mPresenter.moveFiles(file);
+                        String path = data.getStringExtra(Extra.EXTRA_PICKER_PATH);
+                        if (!StringUtils.isEmpty(path)) {
+                            DocumentFile file = DocumentFile.fromFile(new File(path));
+                            mTempStorage = file.getUri().toString();
+                            mPresenter.moveFiles(file);
+                        } else {
+                            onExecuteFail();
+                        }
                     }
                     break;
             }
@@ -223,7 +223,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mBrightBox.setSupportButtonTintList(stateList);
         mHideBox.setSupportButtonTintList(stateList);
-        mOrderBox.setSupportButtonTintList(stateList);
         mCompleteBox.setSupportButtonTintList(stateList);
     }
 
@@ -249,10 +248,15 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         fragment.show(getFragmentManager(), null);
     }
 
+    @OnClick(R.id.settings_download_scan_btn) void onDownloadScanClick() {
+        showProgressDialog();
+        mPresenter.scanTask();
+    }
+
     @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {
         showProgressDialog();
         mPresenter.clearCache();
-        showSnackbar(R.string.settings_other_cache_success);
+        showSnackbar(R.string.common_execute_success);
         hideProgressDialog();
     }
 
@@ -262,13 +266,25 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempStorage);
         mStoragePath = mTempStorage;
         ((CimocApplication) getApplication()).initRootDocumentFile();
-        showSnackbar(R.string.settings_other_storage_move_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
-    public void onFileMoveFail() {
+    public void onDownloadDeleteSuccess() {
         hideProgressDialog();
-        showSnackbar(R.string.settings_other_storage_move_fail);
+        showSnackbar(R.string.common_execute_success);
+    }
+
+    @Override
+    public void onDownloadScanSuccess() {
+        hideProgressDialog();
+        showSnackbar(R.string.common_execute_success);
+    }
+
+    @Override
+    public void onExecuteFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

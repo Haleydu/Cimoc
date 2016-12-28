@@ -301,8 +301,8 @@ public class IKanman extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("发布", "index"));
             list.add(Pair.create("更新", "update"));
+            list.add(Pair.create("发布", "index"));
             list.add(Pair.create("人气", "view"));
             list.add(Pair.create("评分", "rate"));
             return list;

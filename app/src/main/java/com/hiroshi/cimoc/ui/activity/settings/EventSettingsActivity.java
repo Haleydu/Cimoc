@@ -13,7 +13,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.DialogView;
-import com.hiroshi.cimoc.utils.EventUtils;
+import com.hiroshi.cimoc.global.ClickEvents;
 
 import java.util.List;
 
@@ -46,18 +46,18 @@ public class EventSettingsActivity extends BaseActivity implements DialogView {
         boolean isStream = getIntent().getBooleanExtra(EXTRA_IS_STREAM, false);
         isLong = getIntent().getBooleanExtra(EXTRA_IS_LONG, false);
         if (isStream) {
-            mKeyArray = isLong ? EventUtils.getStreamLongClickEvents() : EventUtils.getStreamClickEvents();
-            mChoiceArray = isLong ? EventUtils.getStreamLongClickEventChoice(mPreference) :
-                    EventUtils.getStreamClickEventChoice(mPreference);
+            mKeyArray = isLong ? ClickEvents.getStreamLongClickEvents() : ClickEvents.getStreamClickEvents();
+            mChoiceArray = isLong ? ClickEvents.getStreamLongClickEventChoice(mPreference) :
+                    ClickEvents.getStreamClickEventChoice(mPreference);
         } else {
-            mKeyArray = isLong ? EventUtils.getPageLongClickEvents() : EventUtils.getPageClickEvents();
-            mChoiceArray = isLong ? EventUtils.getPageLongClickEventChoice(mPreference) :
-                    EventUtils.getPageClickEventChoice(mPreference);
+            mKeyArray = isLong ? ClickEvents.getPageLongClickEvents() : ClickEvents.getPageClickEvents();
+            mChoiceArray = isLong ? ClickEvents.getPageLongClickEventChoice(mPreference) :
+                    ClickEvents.getPageClickEventChoice(mPreference);
         }
 
         for (int i = 0; i != 5; ++i) {
             final int index = i;
-            mButtonList.get(i).setText(EventUtils.getTitleId(mChoiceArray[i]));
+            mButtonList.get(i).setText(ClickEvents.getTitleId(mChoiceArray[i]));
             mButtonList.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -94,7 +94,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogView {
         mChoiceArray[requestCode] = index;
         mPreference.putInt(mKeyArray[requestCode], index);
         if (requestCode < 5) {
-            mButtonList.get(requestCode).setText(EventUtils.getTitleId(index));
+            mButtonList.get(requestCode).setText(ClickEvents.getTitleId(index));
         }
     }
 

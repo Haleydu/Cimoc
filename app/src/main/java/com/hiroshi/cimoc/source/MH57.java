@@ -277,8 +277,8 @@ public class MH57 extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("发布", "id"));
             list.add(Pair.create("更新", "addtime"));
+            list.add(Pair.create("发布", "id"));
             list.add(Pair.create("人气", "hits"));
             list.add(Pair.create("评分", "gold"));
             return list;
