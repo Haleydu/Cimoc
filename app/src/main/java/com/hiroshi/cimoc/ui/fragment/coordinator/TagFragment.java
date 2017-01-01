@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TagPresenter;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
 import com.hiroshi.cimoc.ui.activity.SearchActivity;
@@ -41,9 +42,10 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     private TagAdapter mTagAdapter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new TagPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -71,13 +73,6 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     @Override
     protected void initData() {
         mPresenter.load();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
     }
 
     @Override

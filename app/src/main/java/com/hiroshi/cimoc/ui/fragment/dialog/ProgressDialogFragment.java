@@ -59,7 +59,6 @@ public class ProgressDialogFragment extends DialogFragment {
         if (mCompositeSubscription != null) {
             mCompositeSubscription.unsubscribe();
         }
-        mCompositeSubscription = null;
         super.onDestroyView();
         unbinder.unbind();
     }

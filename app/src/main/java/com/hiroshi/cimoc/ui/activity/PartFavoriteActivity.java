@@ -9,7 +9,9 @@ import android.view.View;
 
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.PartFavoritePresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
@@ -35,9 +37,10 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     private GridAdapter mGridAdapter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new PartFavoritePresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
 
     @Override
     protected void initActionButton() {
-        if (getIntent().getLongExtra(EXTRA_ID, -1) < 0) {
+        if (getIntent().getLongExtra(Extra.EXTRA_ID, -1) < 0) {
             mLayoutView.removeView(mActionButton);
             mActionButton = null;
         }
@@ -62,16 +65,9 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
 
     @Override
     protected void initData() {
-        long id = getIntent().getLongExtra(EXTRA_ID, -1);
-        String title = getIntent().getStringExtra(EXTRA_TITLE);
+        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+        String title = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
         mPresenter.load(id, title);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
@@ -113,7 +109,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
                 int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
-                long tid = getIntent().getLongExtra(EXTRA_ID, -1);
+                long tid = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
                 long cid = mGridAdapter.getItem(pos).getId();
                 mPresenter.delete(tid, cid);
                 mGridAdapter.remove(pos);
@@ -184,7 +180,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
 
     @Override
     protected String getDefaultTitle() {
-        return getIntent().getStringExtra(EXTRA_TITLE);
+        return getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
     }
 
     @Override
@@ -192,13 +188,10 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         return R.layout.activity_part_favorite;
     }
 
-    private static final String EXTRA_ID = "a";
-    private static final String EXTRA_TITLE = "b";
-
     public static Intent createIntent(Context context, long id, String title) {
         Intent intent = new Intent(context, PartFavoriteActivity.class);
-        intent.putExtra(EXTRA_ID, id);
-        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_KEYWORD, title);
         return intent;
     }
 

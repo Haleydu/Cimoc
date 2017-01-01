@@ -25,6 +25,7 @@ import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
@@ -99,9 +100,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new ReaderPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -166,12 +168,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
         if (mImagePipelineFactory != null) {
             mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
-            mImagePipelineFactory = null;
         }
     }
 

@@ -7,6 +7,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DownloadPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
@@ -31,9 +32,10 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     private boolean start = false;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new DownloadPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -42,13 +44,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             onDownloadStart();
         }
         mPresenter.loadComic();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {

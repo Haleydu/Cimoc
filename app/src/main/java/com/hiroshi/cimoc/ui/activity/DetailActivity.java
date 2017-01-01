@@ -9,12 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
+import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DetailPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -32,22 +36,27 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/7/2.
  */
-public class DetailActivity extends CoordinatorActivity implements DetailView, DetailAdapter.OnTitleClickListener {
+public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     public static final int REQUEST_CODE_DOWNLOAD = 0;
 
     private DetailAdapter mDetailAdapter;
     private DetailPresenter mPresenter;
+    protected ImagePipelineFactory mImagePipelineFactory;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new DetailPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
     protected BaseAdapter initAdapter() {
+        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         mDetailAdapter = new DetailAdapter(this, new ArrayList<Chapter>());
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
+        mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         return mDetailAdapter;
@@ -68,9 +77,10 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
+        if (mImagePipelineFactory != null) {
+            mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
+        }
     }
 
     @Override
@@ -84,6 +94,15 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
         Intent intent;
         if (!isProgressBarShown()) {
             switch (item.getItemId()) {
+                case R.id.detail_history:
+                    if (!mDetailAdapter.getDateSet().isEmpty()) {
+                        String path = mPresenter.getComic().getLast();
+                        if (path == null) {
+                            path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
+                        }
+                        startReader(path);
+                    }
+                    break;
                 case R.id.detail_download:
                     if (!mDetailAdapter.getDateSet().isEmpty()) {
                         intent = ChapterActivity.createIntent(this, new ArrayList<>(mDetailAdapter.getDateSet()));
@@ -153,15 +172,6 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
         }
     }
 
-    @Override
-    public void onTitleClick() {
-        String path = mPresenter.getComic().getLast();
-        if (path == null) {
-            path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
-        }
-        startReader(path);
-    }
-
     private void startReader(String path) {
         boolean favorite = getIntent().getBooleanExtra(Extra.EXTRA_MODE, false);
         long id = mPresenter.updateLast(path, favorite);
@@ -205,7 +215,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
 
     @Override
     public void onComicLoadSuccess(Comic comic) {
-        mDetailAdapter.setInfo(comic.getSource(), comic.getCover(), comic.getTitle(), comic.getAuthor(),
+        mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
@@ -218,9 +228,9 @@ public class DetailActivity extends CoordinatorActivity implements DetailView, D
     @Override
     public void onChapterLoadSuccess(List<Chapter> list) {
         hideProgressBar();
-        mDetailAdapter.setOnItemClickListener(this);
-        mDetailAdapter.setOnTitleClickListener(this);
-        mDetailAdapter.addAll(list);
+        if (mPresenter.getComic().getTitle() != null && mPresenter.getComic().getCover() != null) {
+            mDetailAdapter.addAll(list);
+        }
     }
 
     @Override

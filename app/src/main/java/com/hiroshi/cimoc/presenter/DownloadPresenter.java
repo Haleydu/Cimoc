@@ -70,12 +70,8 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     @Override
                     public void run() {
                         mTaskManager.deleteInTx(id);
-                        if (comic.getFavorite() == null && comic.getHistory() == null) {
-                            mComicManager.delete(comic);
-                        } else {
-                            comic.setDownload(null);
-                            mComicManager.update(comic);
-                        }
+                        comic.setDownload(null);
+                        mComicManager.updateOrDelete(comic);
                     }
                 });
                 Download.delete(comic);

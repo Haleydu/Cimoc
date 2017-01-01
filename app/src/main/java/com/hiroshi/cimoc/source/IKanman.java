@@ -155,6 +155,9 @@ public class IKanman extends MangaParser {
             String cid = node.hrefWithSplit("a", 1);
             String title = node.attr("a", "title");
             String cover = node.src("a > img");
+            if (cover == null) {
+                cover = node.attr("a > img", "data-src");
+            }
             String update = node.textWithSubstring("span.updateon", 4, 14);
             list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, null));
         }

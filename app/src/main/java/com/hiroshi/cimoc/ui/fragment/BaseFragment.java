@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
@@ -27,16 +28,18 @@ import butterknife.Unbinder;
  */
 public abstract class BaseFragment extends Fragment {
 
-    private Unbinder unbinder;
-    protected PreferenceManager mPreference;
     @Nullable @BindView(R.id.custom_progress_bar) ProgressBar mProgressBar;
+    protected PreferenceManager mPreference;
+    private Unbinder unbinder;
+    private BasePresenter mBasePresenter;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutRes(), container, false);
         unbinder = ButterKnife.bind(this, view);
         mPreference = ((CimocApplication) getActivity().getApplication()).getPreferenceManager();
-        initPresenter();
+        mBasePresenter = initPresenter();
         initProgressBar();
         initView();
         initData();
@@ -45,6 +48,9 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        if (mBasePresenter != null) {
+            mBasePresenter.detachView();
+        }
         super.onDestroyView();
         unbinder.unbind();
     }
@@ -68,7 +74,9 @@ public abstract class BaseFragment extends Fragment {
 
     protected void initData() {}
 
-    protected void initPresenter() {}
+    protected BasePresenter initPresenter() {
+        return null;
+    }
 
     protected abstract @LayoutRes int getLayoutRes();
 

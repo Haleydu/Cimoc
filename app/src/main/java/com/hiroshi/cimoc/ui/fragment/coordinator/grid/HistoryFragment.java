@@ -6,11 +6,11 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.HistoryView;
-import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.OnClick;
 
@@ -25,21 +25,15 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     private HistoryPresenter mPresenter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new HistoryPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
     protected void initData() {
         mPresenter.load();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
     }
 
     @Override
@@ -84,15 +78,14 @@ public class HistoryFragment extends GridFragment implements HistoryView {
 
     @Override
     public void onHistoryClearSuccess() {
-        int count = mGridAdapter.getItemCount();
         mGridAdapter.clear();
-        showSnackbar(StringUtils.format(getString(R.string.history_clear_success), count));
+        showSnackbar(R.string.common_execute_success);
         hideProgressDialog();
     }
 
     @Override
     public void onHistoryClearFail() {
-        showSnackbar(R.string.history_clear_fail);
+        showSnackbar(R.string.common_execute_fail);
         hideProgressDialog();
     }
 

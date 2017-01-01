@@ -16,6 +16,7 @@ import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
@@ -46,9 +47,10 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     private boolean mTaskOrder;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new TaskPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -72,13 +74,9 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
         if (mConnection != null) {
             unbindService(mConnection);
-            mConnection = null;
-            mBinder = null;
         }
     }
 
@@ -89,6 +87,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+        // Todo 从这里进去 如果改变了 last 会导致不一致 影响不大暂时不改
         Comic comic = mPresenter.getComic();
         Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null, false);
         startActivity(intent);
@@ -104,21 +103,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         Task task = mTaskAdapter.getItem(position);
         switch (task.getState()) {
             case Task.STATE_FINISH:
-                String last = task.getPath();
-                List<Chapter> list = new ArrayList<>();
-                for (Task t : mTaskAdapter.getDateSet()) {
-                    if (t.getState() == Task.STATE_FINISH) {
-                        list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true));
-                    }
-                }
-                if (mTaskOrder) {
-                    Collections.reverse(list);
-                }
-                mTaskAdapter.setLast(last);
-                long id = mPresenter.updateLast(last);
-                int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-                Intent readerIntent = ReaderActivity.createIntent(this, id, list, mode);
-                startActivity(readerIntent);
+                startReader(task.getPath());
                 break;
             case Task.STATE_PAUSE:
             case Task.STATE_ERROR:
@@ -142,6 +127,13 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.task_history:
+                String path = mPresenter.getComic().getLast();
+                if (path == null) {
+                    path = mTaskAdapter.getItem(mTaskOrder ? 0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                }
+                startReader(path);
+                break;
             case R.id.task_delete:
                 int size = mTaskAdapter.getItemCount();
                 String[] arr1 = new String[size];
@@ -160,6 +152,23 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startReader(String path) {
+        List<Chapter> list = new ArrayList<>();
+        for (Task t : mTaskAdapter.getDateSet()) {
+            if (t.getState() == Task.STATE_FINISH) {
+                list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true));
+            }
+        }
+        if (mTaskOrder) {
+            Collections.reverse(list);
+        }
+        mTaskAdapter.setLast(path);
+        long id = mPresenter.updateLast(path);
+        int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+        Intent readerIntent = ReaderActivity.createIntent(this, id, list, mode);
+        startActivity(readerIntent);
     }
 
     @Override

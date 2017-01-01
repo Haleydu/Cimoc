@@ -81,6 +81,12 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 mBaseView.onLastChange(path);
             }
         });
+        addSubscription(RxEvent.EVENT_COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mComic.setPage((int) rxEvent.getData());
+            }
+        });
     }
 
     public Comic getComic() {

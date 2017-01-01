@@ -113,31 +113,25 @@ public class Backup {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Integer> saveTag(final Tag tag, final List<Comic> list) {
-        return Observable.create(new Observable.OnSubscribe<Integer>() {
-            @Override
-            public void call(Subscriber<? super Integer> subscriber) {
-                ContentResolver resolver = CimocApplication.getResolver();
-                DocumentFile root = CimocApplication.getDocumentFile();
-                DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
-                if (dir != null) {
-                    try {
-                        JSONObject result = new JSONObject();
-                        result.put(JSON_KEY_VERSION, 1);
-                        result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
-                        result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
-                        String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
-                        DocumentFile file = dir.createFile("", filename);
-                        DocumentUtils.writeStringToFile(resolver, file, result.toString());
-                        subscriber.onNext(list.size());
-                        subscriber.onCompleted();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                subscriber.onError(new Exception());
+    public static int saveTag(final Tag tag, final List<Comic> list) {
+        ContentResolver resolver = CimocApplication.getResolver();
+        DocumentFile root = CimocApplication.getDocumentFile();
+        DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+        if (dir != null) {
+            try {
+                JSONObject result = new JSONObject();
+                result.put(JSON_KEY_VERSION, 1);
+                result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
+                result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
+                String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
+                DocumentFile file = dir.createFile("", filename);
+                DocumentUtils.writeStringToFile(resolver, file, result.toString());
+                return list.size();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }).subscribeOn(Schedulers.io());
+        }
+        return -1;
     }
 
     private static JSONObject buildTagObject(Tag tag) throws JSONException {

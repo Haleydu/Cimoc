@@ -43,11 +43,6 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         initSpinner();
     }
 
-    @Override
-    protected void initData() {
-        super.initData();
-    }
-
     private void initSpinner() {
         int[] type = new int[]{Category.CATEGORY_SUBJECT, Category.CATEGORY_AREA, Category.CATEGORY_READER,
                 Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};

@@ -33,7 +33,7 @@ import rx.schedulers.Schedulers;
 public class Download {
 
     /**
-     *  version 1 [1.4.3.0, 1.4.4.1)
+     *  version 1 [1.4.3.0, ...)
      *  comic:
      *  {
      *      list: 章节列表 array
@@ -46,21 +46,21 @@ public class Download {
      *      title: 标题 string
      *      cover: 封面 string
      *      type: 类型 string (comic)
-     *      version: 版本 int (1)
+     *      version: 版本 int ("1")
      *  }
      *  chapter:
      *  {
      *      title: 章节名称 string
      *      path: 章节路径 string
      *      type: 类型 string (chapter)
-     *      version: 版本 int (1)
+     *      version: 版本 int ("1")
      *  }
      *
-     *  version 2 [1.4.4.1, ...)
+     *  version 2 [遥遥无期, 遥遥无期)
      *  comic:
      *  {
      *      list: 章节列表 array
-     *      [ path: 章节路径 string ]
+     *      [ 章节路径 string ]
      *      source: 图源 int
      *      cid: 漫画ID string
      *      title: 标题 string
@@ -73,6 +73,8 @@ public class Download {
      *      title: 章节名称 string
      *      path: 章节路径 string
      *      max: 总页数 int
+     *      list: 图片列表 array
+     *      [ 文件名 string ]
      *      type: 类型 int (2)
      *      version: 版本 int (2)
      *  }

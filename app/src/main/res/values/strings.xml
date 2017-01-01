@@ -33,11 +33,12 @@
     <string name="detail">详情</string>
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
-    <string name="detail_tag">标签</string>
     <string name="detail_tag_favorite">请先收藏漫画</string>
+    <string name="detail_history">继续阅读</string>
     <string name="detail_download">下载</string>
     <string name="detail_download_queue_success">已加入下载队列</string>
     <string name="detail_download_queue_fail">加入下载队列失败</string>
+    <string name="detail_tag">编辑标签</string>
     <string name="detail_search_title">搜索标题</string>
     <string name="detail_search_author">搜索作者</string>
     <string name="detail_search_empty">关键字为空</string>
@@ -45,8 +46,6 @@
     <string name="tag_editor">标签编辑</string>
     <string name="tag_editor_load_empty">没有找到标签</string>
     <string name="tag_editor_load_fail">读取标签失败</string>
-    <string name="tag_editor_update_success">更新标签成功</string>
-    <string name="tag_editor_update_fail">更新标签失败</string>
     <string name="tag_editor_update_invalid">标签未改变</string>
 
     <string name="chapter">章节列表</string>
@@ -74,8 +73,6 @@
 
     <string name="history_delete_confirm">是否删除该历史纪录</string>
     <string name="history_clear_confirm">是否清除所有历史纪录</string>
-    <string name="history_clear_success">删除成功 共 %d 条记录</string>
-    <string name="history_clear_fail">清除历史失败</string>
 
     <string name="reader_prev_none">前面没有了</string>
     <string name="reader_next_none">后面没有了</string>
@@ -125,12 +122,12 @@
     <string name="settings_download_connection_summary">单页下载错误时最大自动重试次数</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_thread_summary">最大同时下载任务数量</string>
-    <string name="settings_download_delete">删除无效章节</string>
-    <string name="settings_download_delete_summary">扫描并删除已下载的无效漫画章节</string>
-    <string name="settings_download_delete_confirm">此功能用于删除显示下载完成但不在存储目录中的章节！\n删除过程中最好不要检查漫画更新！</string>
+    <string name="settings_download_delete">删除无效漫画</string>
+    <string name="settings_download_delete_summary">扫描并删除已下载的无效漫画</string>
+    <string name="settings_download_delete_confirm">删除存储目录中不存在的无效下载漫画或章节，删除过程中最好不要检查漫画更新！</string>
     <string name="settings_download_scan">扫描已下载漫画</string>
     <string name="settings_download_scan_summary">扫描并恢复已下载漫画</string>
-    <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！\n重点是，不一定可以成功！</string>
+    <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！重点是，不一定可以成功！</string>
     <string name="settings_search">搜索设置</string>
     <string name="settings_search_complete">开启搜索提示</string>
     <string name="settings_search_complete_summary">根据输入的关键字弹出提示</string>
@@ -210,8 +207,9 @@
     <string name="task_finish">下载完成</string>
     <string name="task_error">下载错误</string>
     <string name="task_list">任务列表</string>
+    <string name="task_history">继续阅读</string>
     <string name="task_load_task_fail">读取任务失败</string>
-    <string name="task_delete">删除</string>
+    <string name="task_delete">删除任务</string>
     <string name="task_sort">排序</string>
 
     <string name="dir_picker">目录选择</string>

@@ -27,6 +27,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
@@ -68,9 +69,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private boolean night;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new MainPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -163,8 +165,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
         ((CimocApplication) getApplication()).getBuilderProvider().clear();
         ((CimocApplication) getApplication()).getGridRecycledPool().clear();

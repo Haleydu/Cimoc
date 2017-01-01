@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
@@ -35,8 +36,8 @@ import rx.schedulers.Schedulers;
  */
 public class SettingsPresenter extends BasePresenter<SettingsView> {
 
-    ComicManager mComicManager;
-    TaskManager mTaskManager;
+    private ComicManager mComicManager;
+    private TaskManager mTaskManager;
 
     public SettingsPresenter() {
         mComicManager = ComicManager.getInstance();
@@ -76,46 +77,53 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     public void scanTask() {
         mCompositeSubscription.add(Download.scan()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Pair<Comic, List<Task>>>() {
+                .doOnNext(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
                     public void call(Pair<Comic, List<Task>> pair) {
                         Comic comic = mComicManager.load(pair.first.getSource(), pair.first.getCid());
                         if (comic == null) {
                             mComicManager.insert(pair.first);
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, pair.first.getTitle()));
                             updateKey(pair.first.getId(), pair.second);
                             mTaskManager.insertInTx(pair.second);
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(pair.first)));
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, pair.first.getTitle()));
                         } else {
+                            comic.setDownload(System.currentTimeMillis());
+                            mComicManager.update(comic);
                             updateKey(comic.getId(), pair.second);
                             mTaskManager.insertIfNotExist(pair.second);
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(comic)));
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, comic.getTitle()));
                         }
                     }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Pair<Comic, List<Task>>>() {
+                    @Override
+                    public void call(Pair<Comic, List<Task>> pair) {}
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onExecuteFail();
                     }
                 }, new Action0() {
                     @Override
                     public void call() {
-                        mBaseView.onDownloadScanSuccess();
+                        mBaseView.onExecuteSuccess();
                     }
                 }));
     }
 
     public void deleteTask() {
-        // 停止检查更新
         mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 subscriber.onNext("正在读取漫画");
                 LongSparseArray<Comic> array = buildComicMap();
                 subscriber.onNext("正在搜索无效任务");
-                List<Task> list = findInvalid(array);
+                Pair<List<Comic>, List<Task>> pair = findInvalid(array);
                 subscriber.onNext("正在删除无效任务");
-                deleteInvalid(array, list);
+                deleteInvalid(pair.first, pair.second);
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io())
@@ -133,38 +141,44 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 }, new Action0() {
                     @Override
                     public void call() {
-                        mBaseView.onDownloadDeleteSuccess();
+                        mBaseView.onExecuteSuccess();
                     }
                 }));
     }
 
-    private List<Task> findInvalid(LongSparseArray<Comic> array) {
-        List<Task> list = new LinkedList<>();
+    private Pair<List<Comic>, List<Task>> findInvalid(LongSparseArray<Comic> array) {
+        List<Task> tList = new LinkedList<>();
+        List<Comic> cList = new LinkedList<>();
         Set<Long> set = new HashSet<>();
-        for (Task task : mTaskManager.listComplete()) {
+        for (Task task : mTaskManager.listValid()) {
             Comic comic = array.get(task.getKey());
             if (comic == null || Download.getChapterDir(comic, new Chapter(task.getTitle(), task.getPath())) == null) {
-                list.add(task);
+                tList.add(task);
             } else {
                 set.add(task.getKey());
             }
         }
-        for (Long id : set) {
-            array.remove(id);
+        for (int i = 0; i != array.size(); ++i) {
+            if (!set.contains(array.keyAt(i))) {
+                cList.add(array.valueAt(i));
+            }
         }
-        return list;
+        return Pair.create(cList, tList);
     }
 
-    private void deleteInvalid(final LongSparseArray<Comic> array, final List<Task> list) {
+    private void deleteInvalid(final List<Comic> cList, final List<Task> tList) {
+        // Todo 暂时反过来吧
+        for (Comic comic : cList) {
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, comic.getId()));
+        }
         mComicManager.runInTx(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i != array.size(); ++i) {
-                    Comic comic = array.valueAt(i);
+                for (Comic comic : cList) {
                     comic.setDownload(null);
                     mComicManager.updateOrDelete(comic);
                 }
-                mTaskManager.deleteInTx(list);
+                mTaskManager.deleteInTx(tList);
             }
         });
     }

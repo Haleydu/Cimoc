@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TagEditorPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TagEditorAdapter;
@@ -24,13 +25,14 @@ import butterknife.OnClick;
 
 public class TagEditorActivity extends CoordinatorActivity implements TagEditorView {
 
-    TagEditorPresenter mPresenter;
-    TagEditorAdapter mTagAdapter;
+    private TagEditorPresenter mPresenter;
+    private TagEditorAdapter mTagAdapter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new TagEditorPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -50,13 +52,6 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
     protected void initData() {
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
         mPresenter.load(id);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
     }
 
     @Override
@@ -84,13 +79,13 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
     @Override
     public void onTagUpdateSuccess() {
         hideProgressDialog();
-        showSnackbar(R.string.tag_editor_update_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onTagUpdateFail() {
         hideProgressDialog();
-        showSnackbar(R.string.tag_editor_update_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

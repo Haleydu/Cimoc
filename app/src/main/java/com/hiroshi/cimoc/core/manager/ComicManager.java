@@ -141,13 +141,6 @@ public class ComicManager {
         }
     }
 
-    public void delete(Comic comic) {
-        if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
-            mComicDao.delete(comic);
-            comic.setId(null);
-        }
-    }
-
     public void insert(Comic comic) {
         long id = mComicDao.insert(comic);
         comic.setId(id);

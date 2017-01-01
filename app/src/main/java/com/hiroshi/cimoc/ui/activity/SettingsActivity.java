@@ -17,10 +17,12 @@ import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.StorageEditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
@@ -47,6 +49,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_CONN = 3;
     private static final int DIALOG_REQUEST_OTHER_STORAGE = 4;
     private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 5;
+    private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 6;
+    private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 7;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
@@ -66,9 +70,10 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private String mTempStorage;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new SettingsPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -85,13 +90,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
         mCompleteBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false));
-    }
-
-    @Override
-    public void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
     }
 
     @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_search_complete_btn})
@@ -170,8 +168,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
-        int index;
-        int value;
+        int index, value;
         switch (requestCode) {
             case DIALOG_REQUEST_READER_MODE:
                 index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
@@ -208,6 +205,14 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
                 mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_THREAD, value);
                 mThreadValue = value;
+                break;
+            case DIALOG_REQUEST_DOWNLOAD_SCAN:
+                showProgressDialog();
+                mPresenter.scanTask();
+                break;
+            case DIALOG_REQUEST_DOWNLOAD_DELETE:
+                showProgressDialog();
+                mPresenter.deleteTask();
                 break;
         }
     }
@@ -249,8 +254,15 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick(R.id.settings_download_scan_btn) void onDownloadScanClick() {
-        showProgressDialog();
-        mPresenter.scanTask();
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.settings_download_scan_confirm,
+                true, null, DIALOG_REQUEST_DOWNLOAD_SCAN);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @OnClick(R.id.settings_download_delete_btn) void onDownloadDeleteClick() {
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.settings_download_delete_confirm,
+                true, null, DIALOG_REQUEST_DOWNLOAD_DELETE);
+        fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {
@@ -270,13 +282,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @Override
-    public void onDownloadDeleteSuccess() {
-        hideProgressDialog();
-        showSnackbar(R.string.common_execute_success);
-    }
-
-    @Override
-    public void onDownloadScanSuccess() {
+    public void onExecuteSuccess() {
         hideProgressDialog();
         showSnackbar(R.string.common_execute_success);
     }

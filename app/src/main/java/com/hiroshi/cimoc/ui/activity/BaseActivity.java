@@ -9,6 +9,7 @@ import android.view.View;
 import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
@@ -25,6 +26,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Nullable @BindView(R.id.custom_toolbar) Toolbar mToolbar;
     protected PreferenceManager mPreference;
     private ProgressDialogFragment mProgressDialog;
+    private BasePresenter mBasePresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +37,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initNight();
         initToolbar();
-        initPresenter();
+        mBasePresenter = initPresenter();
         mProgressDialog = ProgressDialogFragment.newInstance();
         initView();
         initData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mBasePresenter != null) {
+            mBasePresenter.detachView();
+        }
+        super.onDestroy();
     }
 
     protected void initTheme() {
@@ -73,7 +83,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         return null;
     }
 
-    protected void initPresenter() {}
+    protected BasePresenter initPresenter() {
+        return null;
+    }
 
     protected void initView() {}
 

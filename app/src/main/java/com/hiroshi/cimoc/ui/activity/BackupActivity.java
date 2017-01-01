@@ -6,6 +6,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BackupPresenter;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.BackupView;
 import com.hiroshi.cimoc.utils.PermissionUtils;
@@ -31,16 +32,10 @@ public class BackupActivity extends BackActivity implements BackupView {
     private BackupPresenter mPresenter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new BackupPresenter();
         mPresenter.attachView(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
+        return mPresenter;
     }
 
     @OnClick(R.id.backup_save_favorite_btn) void onSaveFavoriteClick() {

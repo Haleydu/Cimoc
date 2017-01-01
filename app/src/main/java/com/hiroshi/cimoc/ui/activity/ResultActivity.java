@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
@@ -37,11 +38,12 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     private int type;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         String keyword = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
         int[] source = getIntent().getIntArrayExtra(Extra.EXTRA_SOURCE);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -65,19 +67,14 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                        switch (newState){
-                            case RecyclerView.SCROLL_STATE_DRAGGING:
-                                mProvider.pause();
-                                break;
-                            case RecyclerView.SCROLL_STATE_IDLE:
-                                mProvider.resume();
-                                break;
-                        }
-                    }
-                };
+                switch (newState){
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        mProvider.pause();
+                        break;
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        mProvider.resume();
+                        break;
+                }
             }
         });
         mRecyclerView.setAdapter(mResultAdapter);
@@ -91,12 +88,9 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
         if (mProvider != null) {
             mProvider.clear();
-            mProvider = null;
         }
     }
 

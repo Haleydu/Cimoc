@@ -25,9 +25,9 @@ public class TaskManager {
         mTaskDao = CimocApplication.getDaoSession().getTaskDao();
     }
 
-    public List<Task> listComplete() {
+    public List<Task> listValid() {
         return mTaskDao.queryBuilder()
-                .where(Properties.Max.notEq(0), Properties.Max.eq(Properties.Progress))
+                .where(Properties.Max.notEq(0))
                 .list();
     }
 
