@@ -21,6 +21,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/10/19.
@@ -107,12 +108,11 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     public void saveTag(final long id, final String title) {
-        // Todo
-        mCompositeSubscription.add(mTagManager.listByTag(id)
-                .flatMap(new Func1<List<TagRef>, Observable<List<Comic>>>() {
+        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Integer>() {
                     @Override
-                    public Observable<List<Comic>> call(final List<TagRef> list) {
-                        return mComicManager.callInRx(new Callable<List<Comic>>() {
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        final List<TagRef> list = mTagManager.listByTag(id);
+                        List<Comic> result = mComicManager.callInTx(new Callable<List<Comic>>() {
                             @Override
                             public List<Comic> call() throws Exception {
                                 List<Comic> result = new LinkedList<>();
@@ -122,14 +122,14 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                                 return result;
                             }
                         });
+                        int size = Backup.saveTag(new Tag(id, title), result);
+                        if (size == -1) {
+                            subscriber.onError(new Exception());
+                        } else {
+                            subscriber.onNext(size);
+                        }
                     }
-                })
-                .flatMap(new Func1<List<Comic>, Observable<Integer>>() {
-                    @Override
-                    public Observable<Integer> call(List<Comic> list) {
-                        return Backup.saveTag(new Tag(id, title), list);
-                    }
-                })
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Integer>() {
                     @Override

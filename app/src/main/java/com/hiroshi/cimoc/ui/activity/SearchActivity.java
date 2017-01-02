@@ -18,6 +18,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
 import com.hiroshi.cimoc.ui.adapter.AutoCompleteAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
@@ -50,9 +51,10 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     private boolean mAutoComplete;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new SearchPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -94,13 +96,6 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     protected void initData() {
         mSourceList = new ArrayList<>();
         mPresenter.loadSource();
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
     }
 
     @Override
@@ -169,7 +164,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                 showSnackbar(R.string.search_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(this, keyword,
-                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_TYPE_SEARCH));
+                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
             }
         }
     }

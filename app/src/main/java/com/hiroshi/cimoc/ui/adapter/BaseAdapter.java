@@ -8,6 +8,7 @@ import android.view.View;
 import com.hiroshi.cimoc.global.FastClick;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -76,6 +77,11 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public boolean contains(T data) {
         return mDataSet.contains(data);
+    }
+
+    public void reverse() {
+        Collections.reverse(mDataSet);
+        notifyDataSetChanged();
     }
 
     public void clear() {

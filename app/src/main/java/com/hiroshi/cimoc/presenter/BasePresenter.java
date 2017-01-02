@@ -31,7 +31,6 @@ public abstract class BasePresenter<T extends BaseView> {
         if (mCompositeSubscription != null) {
             mCompositeSubscription.unsubscribe();
         }
-        mCompositeSubscription = null;
         mBaseView = null;
     }
 

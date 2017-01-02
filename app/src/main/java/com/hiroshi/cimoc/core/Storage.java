@@ -32,21 +32,21 @@ public class Storage {
         return true;
     }
 
-    public static Observable<Integer> moveRootDir(final DocumentFile dst) {
-        return Observable.create(new Observable.OnSubscribe<Integer>() {
+    public static Observable<String> moveRootDir(final DocumentFile dst) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public void call(Subscriber<? super Integer> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 if (dst.canWrite()) {
                     DocumentFile src = CimocApplication.getDocumentFile();
                     ContentResolver resolver = CimocApplication.getResolver();
                     if (!src.getUri().equals(dst.getUri())) {
-                        subscriber.onNext(1);
+                        subscriber.onNext("正在移动备份文件");
                         if (copyDir(resolver, src, dst, BACKUP)) {
-                            subscriber.onNext(2);
+                            subscriber.onNext("正在移动下载文件");
                             if (copyDir(resolver, src, dst, DOWNLOAD)) {
-                                subscriber.onNext(3);
+                                subscriber.onNext("正在移动截图文件");
                                 if (copyDir(resolver, src, dst, PICTURE)) {
-                                    subscriber.onNext(4);
+                                    subscriber.onNext("正在删除原文件");
                                     DocumentUtils.deleteDir(src);
                                     subscriber.onCompleted();
                                 }

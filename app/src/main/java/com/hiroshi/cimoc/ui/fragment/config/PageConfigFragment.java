@@ -88,12 +88,12 @@ public class PageConfigFragment extends BaseFragment implements DialogView {
         switch (requestCode) {
             case DIALOG_REQUEST_ORIENTATION:
                 index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                mPreference.putInt(PreferenceManager.PREF_READER_STREAM_ORIENTATION, index);
+                mPreference.putInt(PreferenceManager.PREF_READER_PAGE_ORIENTATION, index);
                 mReaderOrientationChoice = index;
                 break;
             case DIALOG_REQUEST_TURN:
                 index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                mPreference.putInt(PreferenceManager.PREF_READER_STREAM_TURN, index);
+                mPreference.putInt(PreferenceManager.PREF_READER_PAGE_TURN, index);
                 mReaderTurnChoice = index;
                 break;
             case DIALOG_REQUEST_OFFSET:

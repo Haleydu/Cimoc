@@ -35,8 +35,8 @@ import okhttp3.OkHttpClient;
  */
 public class CimocApplication extends Application {
 
-    // 1.04.04.000
-    public static final int VERSION = 10404000;
+    // 1.04.04.001
+    public static final int VERSION = 10404001;
 
     private static DaoSession mDaoSession;
     private static OkHttpClient mHttpClient;
@@ -51,7 +51,6 @@ public class CimocApplication extends Application {
     public void onCreate() {
         super.onCreate();
         DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
-        mHttpClient = new OkHttpClient();
         mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
         mPreferenceManager = new PreferenceManager(getApplicationContext());
         update();
@@ -139,6 +138,9 @@ public class CimocApplication extends Application {
     }
 
     public static OkHttpClient getHttpClient() {
+        if (mHttpClient == null) {
+            mHttpClient = new OkHttpClient();
+        }
         return mHttpClient;
     }
 

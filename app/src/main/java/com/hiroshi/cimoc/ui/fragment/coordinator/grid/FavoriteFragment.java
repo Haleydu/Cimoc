@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
@@ -30,9 +31,10 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     private NotificationManager mManager;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new FavoritePresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -49,12 +51,9 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroyView();
         if (mBuilder != null) {
             NotificationUtils.cancelNotification(0, mManager);
-            mBuilder = null;
         }
     }
 

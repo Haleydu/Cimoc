@@ -8,10 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.custom.ChapterButton;
 
@@ -24,11 +23,10 @@ import butterknife.BindView;
  */
 public class DetailAdapter extends BaseAdapter<Chapter> {
 
-    private OnTitleClickListener mTitleClickListener;
+    private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
 
-    private int source;
     private String title;
-    private String image;
+    private String cover;
     private String update;
     private String author;
     private String intro;
@@ -54,14 +52,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
         HeaderHolder(View view) {
             super(view);
-            mComicTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mTitleClickListener != null) {
-                        mTitleClickListener.onTitleClick();
-                    }
-                }
-            });
         }
     }
 
@@ -105,9 +95,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         return new ViewHolder(view);
     }
 
-    public void setInfo(int source, String image, String title, String author, String intro, Boolean finish, String update, String last) {
-        this.source = source;
-        this.image = image;
+    public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last) {
+        this.cover = cover;
         this.title = title;
         this.intro = intro;
         this.finish = finish;
@@ -116,18 +105,13 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         this.last = last;
     }
 
-    public void setOnTitleClickListener(OnTitleClickListener listener) {
-        mTitleClickListener = listener;
-    }
-
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
-            PipelineDraweeControllerBuilder builder = ControllerBuilderSupplierFactory.get(mContext, source);
             if (title != null) {
-                headerHolder.mComicImage.setController(builder.setUri(image).build());
+                headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
                 headerHolder.mComicTitle.setText(title);
                 headerHolder.mComicIntro.setText(intro);
                 if (finish != null) {
@@ -163,6 +147,10 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         });
     }
 
+    public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {
+        this.mControllerSupplier = supplier;
+    }
+
     public void setLast(String value) {
         if (value == null || value.equals(last)) {
             return;
@@ -177,10 +165,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 notifyItemChanged(i + 1);
             }
         }
-    }
-
-    public interface OnTitleClickListener {
-        void onTitleClick();
     }
 
 }

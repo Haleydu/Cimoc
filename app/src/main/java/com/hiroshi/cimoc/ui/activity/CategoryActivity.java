@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.Category;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Pair;
 
 import java.util.List;
@@ -34,17 +35,12 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
 
     @Override
     protected void initView() {
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         if (mToolbar != null) {
             mToolbar.setTitle(SourceManager.getTitle(source));
         }
         mCategory = SourceManager.getParser(source).getCategory();
         initSpinner();
-    }
-
-    @Override
-    protected void initData() {
-        super.initData();
     }
 
     private void initSpinner() {
@@ -80,9 +76,9 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         for (int i = 0; i != args.length; ++i) {
             args[i] = getSpinnerValue(mSpinnerList.get(i));
         }
-        int source = getIntent().getIntExtra(EXTRA_SOURCE, -1);
+        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         String format = mCategory.getFormat(args);
-        Intent intent = ResultActivity.createIntent(this, format, source, ResultActivity.LAUNCH_TYPE_CATEGORY);
+        Intent intent = ResultActivity.createIntent(this, format, source, ResultActivity.LAUNCH_MODE_CATEGORY);
         startActivity(intent);
     }
 
@@ -104,11 +100,9 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         return R.layout.activity_category;
     }
 
-    private static final String EXTRA_SOURCE = "a";
-
     public static Intent createIntent(Context context, int source) {
         Intent intent = new Intent(context, CategoryActivity.class);
-        intent.putExtra(EXTRA_SOURCE, source);
+        intent.putExtra(Extra.EXTRA_SOURCE, source);
         return intent;
     }
 

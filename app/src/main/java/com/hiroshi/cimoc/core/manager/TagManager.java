@@ -48,10 +48,16 @@ public class TagManager {
                 .list();
     }
 
-    public Observable<List<TagRef>> listByTag(long id) {
+    public Observable<List<TagRef>> listByTagInRx(long id) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Tid.eq(id))
                 .rx()
+                .list();
+    }
+
+    public List<TagRef> listByTag(long id) {
+        return mRefDao.queryBuilder()
+                .where(TagRefDao.Properties.Tid.eq(id))
                 .list();
     }
 

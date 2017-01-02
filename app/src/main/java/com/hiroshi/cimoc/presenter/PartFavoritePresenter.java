@@ -86,7 +86,7 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                         }
                     }));
         } else {
-            return mTagManager.listByTag(id)
+            return mTagManager.listByTagInRx(id)
                     .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
                         @Override
                         public Observable<List<MiniComic>> call(final List<TagRef> tagRefs) {

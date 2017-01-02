@@ -34,6 +34,18 @@ public class ControllerBuilderProvider {
         return supplier.get();
     }
 
+    public void pause() {
+        for (int i = 0; i != mPipelineArray.size(); ++i) {
+            mPipelineArray.valueAt(i).pause();
+        }
+    }
+
+    public void resume() {
+        for (int i = 0; i != mPipelineArray.size(); ++i) {
+            mPipelineArray.valueAt(i).resume();
+        }
+    }
+
     public void clear() {
         for (int i = 0; i != mPipelineArray.size(); ++i) {
             mPipelineArray.valueAt(i).clearMemoryCaches();

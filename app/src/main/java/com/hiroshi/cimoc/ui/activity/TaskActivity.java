@@ -6,32 +6,32 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
+import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.OnClick;
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 /**
  * Created by Hiroshi on 2016/9/7.
@@ -44,43 +44,39 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     private TaskPresenter mPresenter;
     private ServiceConnection mConnection;
     private DownloadServiceBinder mBinder;
+    private boolean mTaskOrder;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new TaskPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
-    protected void initView() {
-        super.initView();
+    protected BaseAdapter initAdapter() {
         mTaskAdapter = new TaskAdapter(this, new LinkedList<Task>());
-        mTaskAdapter.setOnItemClickListener(this);
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setItemAnimator(null);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.addItemDecoration(mTaskAdapter.getItemDecoration());
-        mRecyclerView.setAdapter(mTaskAdapter);
+        return mTaskAdapter;
+    }
+
+    @Override
+    protected void initActionButton() {
         mActionButton.setImageResource(R.drawable.ic_launch_white_24dp);
-        mActionButton.setVisibility(View.VISIBLE);
+        mActionButton.show();
     }
 
     @Override
     protected void initData() {
-        long key = getIntent().getLongExtra(EXTRA_KEY, -1);
-        boolean asc = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
-        mPresenter.load(key, asc);
+        long key = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+        mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
+        mPresenter.load(key, mTaskOrder);
     }
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
         if (mConnection != null) {
             unbindService(mConnection);
-            mConnection = null;
-            mBinder = null;
         }
     }
 
@@ -91,6 +87,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+        // Todo 从这里进去 如果改变了 last 会导致不一致 影响不大暂时不改
         Comic comic = mPresenter.getComic();
         Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null, false);
         startActivity(intent);
@@ -106,36 +103,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         Task task = mTaskAdapter.getItem(position);
         switch (task.getState()) {
             case Task.STATE_FINISH:
-                final String last = mTaskAdapter.getItem(position).getPath();
-                Observable.from(mTaskAdapter.getDateSet())
-                        .filter(new Func1<Task, Boolean>() {
-                            @Override
-                            public Boolean call(Task task) {
-                                return task.getState() == Task.STATE_FINISH;
-                            }
-                        })
-                        .map(new Func1<Task, Chapter>() {
-                            @Override
-                            public Chapter call(Task task) {
-                                return new Chapter(task.getTitle(), task.getPath(), task.getMax(), true, true);
-                            }
-                        })
-                        .toList()
-                        .subscribe(new Action1<List<Chapter>>() {
-                            @Override
-                            public void call(final List<Chapter> list) {
-                                for (Chapter chapter : list) {
-                                    if (chapter.getPath().equals(last)) {
-                                        mTaskAdapter.setLast(last);
-                                        long id = mPresenter.updateLast(last);
-                                        int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-                                        Intent readerIntent = ReaderActivity.createIntent(TaskActivity.this, id, list, mode);
-                                        startActivity(readerIntent);
-                                        break;
-                                    }
-                                }
-                            }
-                        });
+                startReader(task.getPath());
                 break;
             case Task.STATE_PAUSE:
             case Task.STATE_ERROR:
@@ -159,7 +127,14 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.task_delete_multi:
+            case R.id.task_history:
+                String path = mPresenter.getComic().getLast();
+                if (path == null) {
+                    path = mTaskAdapter.getItem(mTaskOrder ? 0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                }
+                startReader(path);
+                break;
+            case R.id.task_delete:
                 int size = mTaskAdapter.getItemCount();
                 String[] arr1 = new String[size];
                 boolean[] arr2 = new boolean[size];
@@ -167,11 +142,33 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     arr1[i] = mTaskAdapter.getItem(i).getTitle();
                     arr2[i] = false;
                 }
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete_multi, arr1, arr2, null, DIALOG_REQUEST_DELETE);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete, arr1, arr2, null, DIALOG_REQUEST_DELETE);
                 fragment.show(getFragmentManager(), null);
+                break;
+            case R.id.task_sort:
+                mTaskAdapter.reverse();
+                mTaskOrder = !mTaskOrder;
+                mPreference.putBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, mTaskOrder);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startReader(String path) {
+        List<Chapter> list = new ArrayList<>();
+        for (Task t : mTaskAdapter.getDateSet()) {
+            if (t.getState() == Task.STATE_FINISH) {
+                list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true));
+            }
+        }
+        if (mTaskOrder) {
+            Collections.reverse(list);
+        }
+        mTaskAdapter.setLast(path);
+        long id = mPresenter.updateLast(path);
+        int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
+        Intent readerIntent = ReaderActivity.createIntent(this, id, list, mode);
+        startActivity(readerIntent);
     }
 
     @Override
@@ -179,22 +176,24 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
                 boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
-                int size = mTaskAdapter.getItemCount();
-                List<Task> result = new ArrayList<>();
-                for (int i = 0; i < size; ++i) {
-                    if (check[i]) {
-                        result.add(mTaskAdapter.getItem(i));
+                if (check != null) {
+                    int size = mTaskAdapter.getItemCount();
+                    List<Task> result = new ArrayList<>();
+                    for (int i = 0; i < size; ++i) {
+                        if (check[i]) {
+                            result.add(mTaskAdapter.getItem(i));
+                        }
                     }
-                }
-                if (!result.isEmpty()) {
-                    showProgressDialog();
-                    for (Task task : result) {
-                        mBinder.getService().removeDownload(task.getId());
+                    if (!result.isEmpty()) {
+                        showProgressDialog();
+                        for (Task task : result) {
+                            mBinder.getService().removeDownload(task.getId());
+                        }
+                        mPresenter.deleteTask(result, mTaskAdapter.getItemCount() == result.size());
                     }
-                    mPresenter.deleteTask(result, mTaskAdapter.getItemCount() == result.size());
-                } else {
-                    showSnackbar("未选择任务");
+                    break;
                 }
+                showSnackbar("未选择任务");
                 break;
         }
     }
@@ -203,13 +202,13 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     public void onTaskDeleteSuccess(List<Task> list) {
         hideProgressDialog();
         mTaskAdapter.removeAll(list);
-        showSnackbar(R.string.common_delete_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onTaskDeleteFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_delete_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override
@@ -305,11 +304,9 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         return getString(R.string.task_list);
     }
 
-    public static final String EXTRA_KEY = "a";
-
     public static Intent createIntent(Context context, Long id) {
         Intent intent = new Intent(context, TaskActivity.class);
-        intent.putExtra(EXTRA_KEY, id);
+        intent.putExtra(Extra.EXTRA_ID, id);
         return intent;
     }
 

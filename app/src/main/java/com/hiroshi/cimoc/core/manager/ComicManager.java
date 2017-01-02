@@ -50,6 +50,12 @@ public class ComicManager {
                 .list();
     }
 
+    public List<Comic> listDownload() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Download.isNotNull())
+                .list();
+    }
+
     public Observable<List<Comic>> listFavoriteInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull())
@@ -132,13 +138,6 @@ public class ComicManager {
             comic.setId(null);
         } else {
             update(comic);
-        }
-    }
-
-    public void delete(Comic comic) {
-        if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
-            mComicDao.delete(comic);
-            comic.setId(null);
         }
     }
 

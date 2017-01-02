@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ComicPresenter;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
 import com.hiroshi.cimoc.ui.activity.SearchActivity;
@@ -47,9 +48,10 @@ public class ComicFragment extends BaseFragment implements ComicView {
     private List<Tag> mTagList;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new ComicPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -65,19 +67,8 @@ public class ComicFragment extends BaseFragment implements ComicView {
         mViewPager.setAdapter(mTabAdapter);
         mViewPager.setCurrentItem(1);
         mTabLayout.setupWithViewPager(mViewPager);
-        hideProgressBar();
-    }
-
-    @Override
-    protected void initData() {
         mTagList = new ArrayList<>();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
+        hideProgressBar();
     }
 
     @Override

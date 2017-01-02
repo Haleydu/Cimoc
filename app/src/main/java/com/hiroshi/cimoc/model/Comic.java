@@ -30,17 +30,17 @@ public class Comic {
     @Transient private String author;
 
     public Comic(int source, String cid, String title, String cover, String update, String author) {
-        this.source = source;
-        this.cid = cid;
-        this.title = title;
-        this.cover = cover;
-        this.update = update;
+        this(null, source, cid, title, cover, false, update, null, null, null, null, null, null);
         this.author = author;
     }
 
     public Comic(int source, String cid) {
         this.source = source;
         this.cid = cid;
+    }
+
+    public Comic(int source, String cid, String title, String cover, long download) {
+        this(null, source, cid, title, cover, false, null, null, null, null, download, null, null);
     }
 
     @Generated(hash = 1222404104)

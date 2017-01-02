@@ -2,14 +2,17 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/detail_tag"
-        android:title="@string/detail_tag"
-        android:icon="@drawable/ic_local_offer_white_24dp"
+    <item android:id="@+id/detail_history"
+        android:title="@string/detail_history"
+        android:icon="@drawable/ic_history_white_24dp"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/detail_download"
         android:title="@string/detail_download"
         android:icon="@drawable/ic_file_download_white_24dp"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/detail_tag"
+        android:title="@string/detail_tag"
+        app:showAsAction="never" />
     <item android:id="@+id/detail_search_title"
         android:title="@string/detail_search_title"
         app:showAsAction="never"/>

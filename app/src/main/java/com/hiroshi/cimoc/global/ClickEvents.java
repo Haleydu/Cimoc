@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.utils;
+package com.hiroshi.cimoc.global;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
@@ -7,7 +7,7 @@ import com.hiroshi.cimoc.core.manager.PreferenceManager;
  * Created by Hiroshi on 2016/10/9.
  */
 
-public class EventUtils {
+public class ClickEvents {
 
     public static final int EVENT_NULL = 0;
     public static final int EVENT_PREV_PAGE = 1;
@@ -39,7 +39,7 @@ public class EventUtils {
         int[] array = new int[7];
         array[0] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, 0);
         array[1] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_TOP, 0);
-        array[2] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, 0);
+        array[2] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, EVENT_SWITCH_CONTROL);
         array[3] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM, 0);
         array[4] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, 0);
         array[5] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_UP, 0);
@@ -74,7 +74,7 @@ public class EventUtils {
         int[] array = new int[7];
         array[0] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, 0);
         array[1] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_TOP, 0);
-        array[2] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, 0);
+        array[2] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, EVENT_SWITCH_CONTROL);
         array[3] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM, 0);
         array[4] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, 0);
         array[5] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, 0);

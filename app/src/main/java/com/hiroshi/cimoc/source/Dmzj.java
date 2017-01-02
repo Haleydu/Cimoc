@@ -272,8 +272,8 @@ public class Dmzj extends MangaParser {
         @Override
         public List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("人气", "0"));
             list.add(Pair.create("更新", "1"));
+            list.add(Pair.create("人气", "0"));
             return list;
         }
 

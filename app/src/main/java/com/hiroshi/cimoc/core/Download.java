@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.DocumentUtils;
@@ -19,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import rx.Observable;
@@ -30,8 +32,68 @@ import rx.schedulers.Schedulers;
  */
 public class Download {
 
+    /**
+     *  version 1 [1.4.3.0, ...)
+     *  comic:
+     *  {
+     *      list: 章节列表 array
+     *      [{
+     *          title: 章节名称 string
+     *          path: 章节路径 string
+     *      }]
+     *      source: 图源 int
+     *      cid: 漫画ID string
+     *      title: 标题 string
+     *      cover: 封面 string
+     *      type: 类型 string (comic)
+     *      version: 版本 int ("1")
+     *  }
+     *  chapter:
+     *  {
+     *      title: 章节名称 string
+     *      path: 章节路径 string
+     *      type: 类型 string (chapter)
+     *      version: 版本 int ("1")
+     *  }
+     *
+     *  version 2 [遥遥无期, 遥遥无期)
+     *  comic:
+     *  {
+     *      list: 章节列表 array
+     *      [ 章节路径 string ]
+     *      source: 图源 int
+     *      cid: 漫画ID string
+     *      title: 标题 string
+     *      cover: 封面 string
+     *      type: 类型 int (1)
+     *      version: 版本 int (2)
+     *  }
+     *  chapter:
+     *  {
+     *      title: 章节名称 string
+     *      path: 章节路径 string
+     *      max: 总页数 int
+     *      list: 图片列表 array
+     *      [ 文件名 string ]
+     *      type: 类型 int (2)
+     *      version: 版本 int (2)
+     *  }
+     */
+
+    private static final String JSON_KEY_VERSION = "version";
+    private static final String JSON_KEY_TYPE = "type";
+    private static final String JSON_KEY_TYPE_COMIC = "comic";
+    private static final String JSON_KEY_TYPE_CHAPTER = "chapter";
+    private static final String JSON_KEY_COMIC_LIST = "list";
+    private static final String JSON_KEY_COMIC_SOURCE = "source";
+    private static final String JSON_KEY_COMIC_CID = "cid";
+    private static final String JSON_KEY_COMIC_TITLE = "title";
+    private static final String JSON_KEY_COMIC_COVER = "cover";
+    private static final String JSON_KEY_CHAPTER_PATH = "path";
+    private static final String JSON_KEY_CHAPTER_TITLE = "title";
+
     private static final String DOWNLOAD = "download";
-    private static final String COMIC_INDEX = "index.cdif";
+    private static final String FILE_INDEX = "index.cdif";
     private static final String NO_MEDIA = ".nomedia";
 
     private static void createNoMedia(DocumentFile root) {
@@ -44,7 +106,7 @@ public class Download {
         DocumentFile source = DocumentUtils.getOrCreateSubDirectory(home, String.valueOf(comic.getSource()));
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(source, comic.getCid());
         if (dir != null) {
-            return DocumentUtils.createFile(dir, "", COMIC_INDEX);
+            return DocumentUtils.createFile(dir, "", FILE_INDEX);
         }
         return null;
     }
@@ -69,20 +131,20 @@ public class Download {
 
     private static String getJsonFromComic(List<Chapter> list, Comic comic) throws JSONException {
         JSONObject object = new JSONObject();
-        object.put("version", "1");
-        object.put("type", "comic");
-        object.put("source", comic.getSource());
-        object.put("cid", comic.getCid());
-        object.put("title", comic.getTitle());
-        object.put("cover", comic.getCover());
+        object.put(JSON_KEY_VERSION, "1");
+        object.put(JSON_KEY_TYPE, JSON_KEY_TYPE_COMIC);
+        object.put(JSON_KEY_COMIC_SOURCE, comic.getSource());
+        object.put(JSON_KEY_COMIC_CID, comic.getCid());
+        object.put(JSON_KEY_COMIC_TITLE, comic.getTitle());
+        object.put(JSON_KEY_COMIC_COVER, comic.getCover());
         JSONArray array = new JSONArray();
         for (Chapter chapter : list) {
             JSONObject temp = new JSONObject();
-            temp.put("title", chapter.getTitle());
-            temp.put("path", chapter.getPath());
+            temp.put(JSON_KEY_CHAPTER_TITLE, chapter.getTitle());
+            temp.put(JSON_KEY_CHAPTER_PATH, chapter.getPath());
             array.put(temp);
         }
-        object.put("list", array);
+        object.put(JSON_KEY_COMIC_LIST, array);
         return object.toString();
     }
 
@@ -96,7 +158,7 @@ public class Download {
             DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getCid());
             DocumentFile dir4 = DocumentUtils.getOrCreateSubDirectory(dir3, task.getPath());
             if (dir4 != null) {
-                DocumentFile file = dir4.createFile("", COMIC_INDEX);
+                DocumentFile file = dir4.createFile("", FILE_INDEX);
                 DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
                 return dir4;
             }
@@ -108,10 +170,10 @@ public class Download {
 
     private static String getJsonFromChapter(String title, String path) throws JSONException {
         JSONObject object = new JSONObject();
-        object.put("version", "1");
-        object.put("type", "chapter");
-        object.put("title", title);
-        object.put("path", path);
+        object.put(JSON_KEY_VERSION, "1");
+        object.put(JSON_KEY_TYPE, JSON_KEY_TYPE_CHAPTER);
+        object.put(JSON_KEY_CHAPTER_TITLE, title);
+        object.put(JSON_KEY_CHAPTER_PATH, path);
         return object.toString();
     }
 
@@ -134,10 +196,9 @@ public class Download {
         ContentResolver resolver = CimocApplication.getResolver();
         DocumentFile root = CimocApplication.getDocumentFile();
         DocumentFile dir = getComicDir(root, comic);
-        DocumentFile file = dir.findFile(COMIC_INDEX);
+        DocumentFile file = dir.findFile(FILE_INDEX);
         if (file != null) {
-            char[] magic = DocumentUtils.readCharFromFile(resolver, file, 5);
-            if (Arrays.equals(magic, "cimoc".toCharArray())) {
+            if (hasMagicNumber(file)) {
                 String jsonString = DocumentUtils.readLineFromFile(resolver, file);
                 if (jsonString != null) {
                     try {
@@ -154,17 +215,18 @@ public class Download {
     private static List<String> readPathFromJson(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         // We use "c" as the key in old version
-        JSONArray array = jsonObject.has("list") ? jsonObject.getJSONArray("list") : jsonObject.getJSONArray("c");
+        JSONArray array = jsonObject.has(JSON_KEY_COMIC_LIST) ? jsonObject.getJSONArray(JSON_KEY_COMIC_LIST) : jsonObject.getJSONArray("c");
         int size = array.length();
         List<String> list = new ArrayList<>(size);
         for (int i = 0; i != size; ++i) {
             JSONObject object = array.getJSONObject(i);
-            list.add(object.has("path") ? object.getString("path") : object.getString("p"));
+            list.add(object.has(JSON_KEY_CHAPTER_PATH) ? object.getString(JSON_KEY_CHAPTER_PATH) : object.getString("p"));
         }
         return list;
     }
 
-    private static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter) {
+    public static DocumentFile getChapterDir(Comic comic, Chapter chapter) {
+        DocumentFile root = CimocApplication.getDocumentFile();
         DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()), comic.getCid(), chapter.getPath());
         if (result == null) {
             result = DocumentUtils.findFile(root, DOWNLOAD, SourceManager.getTitle(comic.getSource()), comic.getTitle(), chapter.getTitle());
@@ -176,9 +238,8 @@ public class Download {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                DocumentFile root = CimocApplication.getDocumentFile();
-                DocumentFile dir = getChapterDir(root, comic, chapter);
-                Uri[] uris = DocumentUtils.listUrisWithoutSuffix(dir, ".cdif");
+                DocumentFile dir = getChapterDir(comic, chapter);
+                Uri[] uris = DocumentUtils.listUrisWithoutSuffix(dir, "cdif");
                 if (uris.length != 0) {
                     List<ImageUrl> list = new ArrayList<>(uris.length);
                     for (int i = 0; i < uris.length; ++i) {
@@ -197,9 +258,8 @@ public class Download {
     }
 
     public static void delete(Comic comic, List<Chapter> list) {
-        DocumentFile root = CimocApplication.getDocumentFile();
         for (Chapter chapter : list) {
-            DocumentFile dir = getChapterDir(root, comic, chapter);
+            DocumentFile dir = getChapterDir(comic, chapter);
             if (dir != null) {
                 DocumentUtils.deleteDir(dir);
             }
@@ -212,6 +272,102 @@ public class Download {
         if (dir != null) {
             DocumentUtils.deleteDir(dir);
         }
+    }
+
+    private static String getIndexJsonFromDir(DocumentFile dir) {
+        if (dir.isDirectory()) {
+            DocumentFile file = dir.findFile(FILE_INDEX);
+            if (hasMagicNumber(file)) {
+                String jsonString = DocumentUtils.readLineFromFile(CimocApplication.getResolver(), file);
+                if (jsonString != null) {
+                    return jsonString.substring(5);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Task buildTaskFromDir(DocumentFile dir) {
+        String jsonString = getIndexJsonFromDir(dir);
+        if (jsonString != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(jsonString);
+                if (JSON_KEY_TYPE_CHAPTER.equals(jsonObject.get(JSON_KEY_TYPE))) {
+                    int count = DocumentUtils.countWithoutSuffix(dir, "cdif");
+                    if (count != 0) {
+                        String path = jsonObject.getString(JSON_KEY_CHAPTER_PATH);
+                        String title = jsonObject.getString(JSON_KEY_CHAPTER_TITLE);
+                        return new Task(null, -1, path, title, count, count);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     *  1.4.3 之后，因为有在章节文件夹内写索引文件，所以恢复起来简单
+     *  1.4.3 之前，章节文件夹内没有索引文件，需要比较文件夹名称，有点麻烦，暂不实现
+     */
+    private static Comic buildComicFromDir(DocumentFile dir) {
+        String jsonString = getIndexJsonFromDir(dir);
+        if (jsonString != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(jsonString);
+                if (!JSON_KEY_TYPE_COMIC.equals(jsonObject.get(JSON_KEY_TYPE))) {
+                    return null;
+                }
+                int source = jsonObject.getInt(JSON_KEY_COMIC_SOURCE);
+                String title = jsonObject.getString(JSON_KEY_COMIC_TITLE);
+                String cid = jsonObject.getString(JSON_KEY_COMIC_CID);
+                String cover = jsonObject.getString(JSON_KEY_COMIC_COVER);
+                return new Comic(source, cid, title, cover, System.currentTimeMillis());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public static Observable<Pair<Comic, List<Task>>> scan() {
+        return Observable.create(new Observable.OnSubscribe<Pair<Comic, List<Task>>>() {
+            @Override
+            public void call(Subscriber<? super Pair<Comic, List<Task>>> subscriber) {
+                DocumentFile downloadDir = DocumentUtils.getOrCreateSubDirectory(CimocApplication.getDocumentFile(), DOWNLOAD);
+                if (downloadDir != null) {
+                    for (DocumentFile sourceDir : downloadDir.listFiles()) {
+                        if (sourceDir.isDirectory()) {
+                            for (DocumentFile comicDir : sourceDir.listFiles()) {
+                                Comic comic = buildComicFromDir(comicDir);
+                                if (comic != null) {
+                                    List<Task> list = new LinkedList<>();
+                                    for (DocumentFile chapterDir : comicDir.listFiles()) {
+                                        Task task = buildTaskFromDir(chapterDir);
+                                        if (task != null) {
+                                            list.add(task);
+                                        }
+                                    }
+                                    if (!list.isEmpty()) {
+                                        subscriber.onNext(Pair.create(comic, list));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    private static boolean hasMagicNumber(DocumentFile file) {
+        if (file != null) {
+            char[] magic = DocumentUtils.readCharFromFile(CimocApplication.getResolver(), file, 5);
+            return Arrays.equals(magic, "cimoc".toCharArray());
+        }
+        return false;
     }
 
 }

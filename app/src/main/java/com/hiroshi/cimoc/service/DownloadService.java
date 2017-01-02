@@ -177,6 +177,9 @@ public class DownloadService extends Service {
                                     if (url != null) {
                                         Request request = buildRequest(headers, url);
                                         success = RequestAndWrite(dir, request, i + 1, url);
+                                        if (success) {
+                                            break;
+                                        }
                                     }
                                 }
                             }

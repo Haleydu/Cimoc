@@ -9,7 +9,9 @@ import android.widget.FrameLayout;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ResultAdapter;
@@ -36,11 +38,12 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     private int type;
 
     @Override
-    protected void initPresenter() {
-        String keyword = getIntent().getStringExtra(EXTRA_KEYWORD);
-        int[] source = getIntent().getIntArrayExtra(EXTRA_SOURCE);
+    protected BasePresenter initPresenter() {
+        String keyword = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
+        int[] source = getIntent().getIntArrayExtra(Extra.EXTRA_SOURCE);
         mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -61,33 +64,42 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
                     load();
                 }
             }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState){
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        mProvider.pause();
+                        break;
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        mProvider.resume();
+                        break;
+                }
+            }
         });
         mRecyclerView.setAdapter(mResultAdapter);
     }
 
     @Override
     protected void initData() {
-        type = getIntent().getIntExtra(EXTRA_TYPE, -1);
+        type = getIntent().getIntExtra(Extra.EXTRA_MODE, -1);
         load();
     }
 
     @Override
     protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
         super.onDestroy();
         if (mProvider != null) {
             mProvider.clear();
-            mProvider = null;
         }
     }
 
     private void load() {
         switch (type) {
-            case LAUNCH_TYPE_SEARCH:
+            case LAUNCH_MODE_SEARCH:
                 mPresenter.loadSearch();
                 break;
-            case LAUNCH_TYPE_CATEGORY:
+            case LAUNCH_MODE_CATEGORY:
                 mPresenter.loadCategory();
                 break;
         }
@@ -143,17 +155,13 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
      * 根据用户输入的关键词搜索
      * Extra: 关键词 图源列表
      */
-    public static final int LAUNCH_TYPE_SEARCH = 0;
+    public static final int LAUNCH_MODE_SEARCH = 0;
 
     /**
      * 根据分类搜索，关键词字段存放 url 格式
      * Extra: 格式 图源
      */
-    public static final int LAUNCH_TYPE_CATEGORY = 1;
-
-    public static final String EXTRA_KEYWORD = "a";
-    public static final String EXTRA_SOURCE = "b";
-    public static final String EXTRA_TYPE = "c";
+    public static final int LAUNCH_MODE_CATEGORY = 1;
 
     public static Intent createIntent(Context context, String keyword, int source, int type) {
         return createIntent(context, keyword, new int[]{source}, type);
@@ -161,9 +169,9 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
     public static Intent createIntent(Context context, String keyword, int[] array, int type) {
         Intent intent = new Intent(context, ResultActivity.class);
-        intent.putExtra(EXTRA_TYPE, type);
-        intent.putExtra(EXTRA_SOURCE, array);
-        intent.putExtra(EXTRA_KEYWORD, keyword);
+        intent.putExtra(Extra.EXTRA_MODE, type);
+        intent.putExtra(Extra.EXTRA_SOURCE, array);
+        intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
         return intent;
     }
 

@@ -14,6 +14,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourcePresenter;
 import com.hiroshi.cimoc.ui.activity.CategoryActivity;
 import com.hiroshi.cimoc.ui.activity.SearchActivity;
@@ -37,9 +38,10 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
     private SourceAdapter mSourceAdapter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new SourcePresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -69,13 +71,6 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
     @Override
     protected void initData() {
         mPresenter.load();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DownloadPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
@@ -31,9 +32,10 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     private boolean start = false;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new DownloadPresenter();
         mPresenter.attachView(this);
+        return mPresenter;
     }
 
     @Override
@@ -42,13 +44,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             onDownloadStart();
         }
         mPresenter.loadComic();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroyView();
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
@@ -72,12 +67,15 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                 }
                 break;
             case DIALOG_REQUEST_DELETE:
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
+                Bundle extra = bundle.getBundle(EXTRA_DIALOG_BUNDLE);
                 if (start) {
                     showSnackbar(R.string.download_ask_stop);
-                } else {
+                } else if (extra != null) {
                     showProgressDialog();
+                    int pos = extra.getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                     mPresenter.deleteComic(mGridAdapter.getItem(pos).getId());
+                } else {
+                    showSnackbar(R.string.common_execute_fail);
                 }
                 break;
         }
@@ -164,13 +162,13 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onDownloadDeleteSuccess(long id) {
         hideProgressDialog();
         mGridAdapter.removeItemById(id);
-        showSnackbar(R.string.common_delete_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onDownloadDeleteFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_delete_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.view.AboutView;
 
 import butterknife.BindView;
@@ -30,16 +31,10 @@ public class AboutActivity extends BackActivity implements AboutView {
     private boolean checking = false;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new AboutPresenter();
         mPresenter.attachView(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
+        return mPresenter;
     }
 
     @OnClick(R.id.about_support_btn) void onSupportClick() {

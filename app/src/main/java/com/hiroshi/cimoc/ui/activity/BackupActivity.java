@@ -6,6 +6,7 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BackupPresenter;
+import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.BackupView;
 import com.hiroshi.cimoc.utils.PermissionUtils;
@@ -31,16 +32,10 @@ public class BackupActivity extends BackActivity implements BackupView {
     private BackupPresenter mPresenter;
 
     @Override
-    protected void initPresenter() {
+    protected BasePresenter initPresenter() {
         mPresenter = new BackupPresenter();
         mPresenter.attachView(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        mPresenter.detachView();
-        mPresenter = null;
-        super.onDestroy();
+        return mPresenter;
     }
 
     @OnClick(R.id.backup_save_favorite_btn) void onSaveFavoriteClick() {
@@ -164,13 +159,13 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     public void onBackupRestoreSuccess() {
         hideProgressDialog();
-        showSnackbar(R.string.backup_restore_success);
+        showSnackbar(R.string.common_execute_success);
     }
 
     @Override
     public void onBackupRestoreFail() {
         hideProgressDialog();
-        showSnackbar(R.string.backup_restore_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override
@@ -182,7 +177,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     public void onBackupSaveFail() {
         hideProgressDialog();
-        showSnackbar(R.string.backup_save_fail);
+        showSnackbar(R.string.common_execute_fail);
     }
 
     @Override

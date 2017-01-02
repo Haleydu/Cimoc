@@ -200,38 +200,50 @@
                             android:textSize="14sp"
                             android:text="@string/settings_download_thread_summary"/>
                     </LinearLayout>
-                    <RelativeLayout
-                        android:id="@+id/settings_download_order_btn"
+                    <LinearLayout
+                        android:id="@+id/settings_download_scan_btn"
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:padding="16dp"
                         android:clickable="true"
                         android:background="?android:attr/selectableItemBackground">
-                        <android.support.v7.widget.AppCompatCheckBox
-                            android:id="@+id/settings_download_order_checkbox"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:clickable="false"
-                            android:focusable="false"
-                            android:background="@null"/>
                         <TextView
-                            android:id="@+id/settings_download_order_title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_download_order_checkbox"
                             android:textSize="16sp"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/settings_download_order"/>
+                            android:text="@string/settings_download_scan"/>
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toLeftOf="@id/settings_download_order_checkbox"
-                            android:layout_below="@id/settings_download_order_title"
+                            android:paddingTop="2dp"
                             android:textSize="14sp"
-                            android:text="@string/settings_download_order_summary"/>
-                    </RelativeLayout>
+                            android:text="@string/settings_download_scan_summary"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/settings_download_delete_btn"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:background="?android:attr/selectableItemBackground">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:text="@string/settings_download_delete"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="2dp"
+                            android:textSize="14sp"
+                            android:text="@string/settings_download_delete_summary"/>
+                    </LinearLayout>
                 </LinearLayout>
                 <LinearLayout
                     android:orientation="vertical"

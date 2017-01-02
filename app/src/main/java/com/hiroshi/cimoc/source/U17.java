@@ -62,9 +62,9 @@ public class U17 extends MangaParser {
     public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.comic_info > div.left > h1.fl");
-        String cover = body.src("#cover > a > img");
+        String cover = body.src("div.comic_info > div.left > div.coverBox > div.cover > a > img");
         String author = body.text("div.comic_info > div.right > div.author_info > div.info > a.name");
-        String intro = body.text("div.comic_info > div.left > div.info > #words");
+        String intro = body.text("#words");
         boolean status = isFinish(body.text("div.comic_info > div.left > div.info > div.top > div.line1 > span:eq(2)"));
         String update = body.textWithSubstring("div.main > div.chapterlist > div.chapterlist_box > div.bot > div.fl > span", 7);
         comic.setInfo(title, cover, update, intro, author, status);
@@ -141,9 +141,11 @@ public class U17 extends MangaParser {
             String cid = node.hrefWithSplit("div.info > h3 > strong > a", 1);
             String title = node.attr("div.info > h3 > strong > a", "title");
             String cover = node.src("div.cover > a > img");
-            String update = node.textWithSubstring("div.info > h3 > span.fr", 7);
+            if (cover == null || cover.isEmpty()) {
+                cover = node.attr("div.cover > a > img", "xsrc");
+            }
             String author = node.text("div.info > h3 > a[title]");
-            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author));
+            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, null, author));
         }
         return list;
     }
@@ -214,8 +216,8 @@ public class U17 extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("人气", "ob9"));
             list.add(Pair.create("更新", "ob0"));
+            list.add(Pair.create("人气", "ob9"));
             list.add(Pair.create("章节", "ob1"));
             list.add(Pair.create("评论", "ob3"));
             list.add(Pair.create("发布", "ob2"));
