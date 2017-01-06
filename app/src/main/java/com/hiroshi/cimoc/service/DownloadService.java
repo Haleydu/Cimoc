@@ -19,6 +19,7 @@ import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
@@ -86,7 +87,7 @@ public class DownloadService extends Service {
                         R.string.download_service_doing, true);
                 NotificationUtils.notifyBuilder(1, notification, builder);
             }
-            List<Task> list =  intent.getParcelableArrayListExtra(EXTRA_TASK);
+            List<Task> list =  intent.getParcelableArrayListExtra(Extra.EXTRA_TASK);
             for (Task task : list) {
                 Worker worker = new Worker(task);
                 Future future = mExecutorService.submit(worker);
@@ -210,7 +211,7 @@ public class DownloadService extends Service {
                 if (response.isSuccessful()) {
                     //String mimeType = response.header("Content-Type", "image/jpeg");
                     String displayName = buildFileName(num, url);
-                    DocumentFile file = parent.createFile(null, displayName);
+                    DocumentFile file = DocumentUtils.createFile(parent, displayName);
                     DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
                     return true;
                 }
@@ -269,8 +270,6 @@ public class DownloadService extends Service {
 
     }
 
-    private static final String EXTRA_TASK = "a";
-
     public static Intent createIntent(Context context, Task task) {
         ArrayList<Task> list = new ArrayList<>(1);
         list.add(task);
@@ -279,7 +278,7 @@ public class DownloadService extends Service {
 
     public static Intent createIntent(Context context, ArrayList<Task> list) {
         Intent intent = new Intent(context, DownloadService.class);
-        intent.putParcelableArrayListExtra(EXTRA_TASK, list);
+        intent.putParcelableArrayListExtra(Extra.EXTRA_TASK, list);
         return intent;
     }
 

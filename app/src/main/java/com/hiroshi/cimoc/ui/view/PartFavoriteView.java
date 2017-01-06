@@ -22,4 +22,6 @@ public interface PartFavoriteView extends BaseView, DialogView {
 
     void onComicRemove(long id);
 
+    void onHighlightCancel(MiniComic comic);
+
 }

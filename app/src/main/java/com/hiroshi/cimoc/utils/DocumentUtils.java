@@ -22,6 +22,17 @@ import java.util.List;
 
 public class DocumentUtils {
 
+    public static DocumentFile createFile(DocumentFile parent, String displayName) {
+        if (parent.isDirectory()) {
+            DocumentFile file = parent.findFile(displayName);
+            if (file == null) {
+                return parent.createFile(null, displayName);
+            }
+            return file;
+        }
+        return null;
+    }
+
     public static DocumentFile findFile(DocumentFile parent, String... filenames) {
         if (parent != null) {
             for (String filename : filenames) {
@@ -74,17 +85,6 @@ public class DocumentUtils {
             }
         }
         return list.toArray(new String[list.size()]);
-    }
-
-    public static DocumentFile createFile(DocumentFile parent, String mimeType, String displayName) {
-        if (parent.isDirectory()) {
-            DocumentFile file = parent.findFile(displayName);
-            if (file == null) {
-                return parent.createFile(mimeType, displayName);
-            }
-            return file;
-        }
-        return null;
     }
 
     public static DocumentFile getOrCreateSubDirectory(DocumentFile parent, String displayName) {
@@ -199,7 +199,7 @@ public class DocumentUtils {
             if (old != null) {
                 old.delete();
             }
-            DocumentFile file = createFile(parent, "", src.getName());
+            DocumentFile file = createFile(parent, src.getName());
             if (file != null) {
                 try {
                     writeBinaryToFile(resolver, src, file);

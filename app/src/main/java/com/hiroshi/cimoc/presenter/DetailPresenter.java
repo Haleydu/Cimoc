@@ -64,8 +64,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             mComic = mComicManager.loadOrCreate(source, cid);
         } else {
             mComic = mComicManager.load(id);
-            cancelHighlight();
         }
+        cancelHighlight();
         load();
     }
 
@@ -116,6 +116,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             mComic.setHighlight(false);
             mComic.setFavorite(System.currentTimeMillis());
             mComicManager.update(mComic);
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CANCEL_HIGHLIGHT, new MiniComic(mComic)));
         }
     }
 

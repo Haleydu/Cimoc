@@ -21,7 +21,6 @@ public class ImagePipelineFactoryBuilder {
         ImagePipelineConfig config =
                 OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client, getHeaders(source))
                         .setBitmapsConfig(Bitmap.Config.RGB_565)
-                        .setDownsampleEnabled(true)
                         .build();
         return new ImagePipelineFactory(config);
     }
@@ -33,7 +32,7 @@ public class ImagePipelineFactoryBuilder {
             case SourceManager.SOURCE_DMZJ:
                 return Headers.of("Referer", "http://m.dmzj.com/");
             case SourceManager.SOURCE_HHAAZZ:
-                return Headers.of("Referer", "http://hhaazz.com");
+                return Headers.of("Referer", "http://hhaass.com");
             case SourceManager.SOURCE_CCTUKU:
                 return Headers.of("Referer", "http://m.tuku.cc");
             case SourceManager.SOURCE_U17:
@@ -45,7 +44,7 @@ public class ImagePipelineFactoryBuilder {
             case SourceManager.SOURCE_HHSSEE:
                 return Headers.of("Referer", "http://www.hhssee.com");
             case SourceManager.SOURCE_57MH:
-                return Headers.of("Referer", "http://m.57mh.com");
+                return Headers.of("Referer", "http://m.57mh.com/");
             case SourceManager.SOURCE_CHUIYAO:
                 return Headers.of("Referer", "http://m.chuiyao.com");
 /*            case SourceManager.SOURCE_EHENTAI:

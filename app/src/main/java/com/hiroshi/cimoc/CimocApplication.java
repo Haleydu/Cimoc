@@ -35,8 +35,8 @@ import okhttp3.OkHttpClient;
  */
 public class CimocApplication extends Application {
 
-    // 1.04.04.001
-    public static final int VERSION = 10404001;
+    // 1.04.04.002
+    public static final int VERSION = 10404002;
 
     private static DaoSession mDaoSession;
     private static OkHttpClient mHttpClient;

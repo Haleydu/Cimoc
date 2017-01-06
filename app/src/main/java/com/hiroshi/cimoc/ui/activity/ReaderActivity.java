@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
+import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -35,16 +36,15 @@ import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
-import com.hiroshi.cimoc.global.ClickEvents;
-import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -405,8 +405,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         try {
             for (String url : urls) {
                 if (url.startsWith("file")) {
-                    InputStream inputStream = FileUtils.getInputStream(url.replace("file://", ""));
-                    mPresenter.savePicture(inputStream, url);
+                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url);
+                    break;
+                } else if (url.startsWith("content")) {
+                    mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url);
                     break;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));

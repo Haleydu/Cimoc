@@ -83,18 +83,14 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        cancelHighlight(position, comic);
         Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null, true);
         startActivity(intent);
     }
 
-    private void cancelHighlight(int position, MiniComic comic) {
-        if (comic.isHighlight()) {
-            comic.setFavorite(System.currentTimeMillis());
-            comic.setHighlight(false);
-            mGridAdapter.remove(position);
-            mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
-        }
+    @Override
+    public void onHighlightCancel(MiniComic comic) {
+        mGridAdapter.remove(comic);
+        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
     }
 
     @Override

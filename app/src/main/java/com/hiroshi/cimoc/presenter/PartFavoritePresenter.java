@@ -66,6 +66,12 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                 }
             }
         });
+        addSubscription(RxEvent.EVENT_COMIC_CANCEL_HIGHLIGHT, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onHighlightCancel((MiniComic) rxEvent.getData());
+            }
+        });
     }
 
     private Observable<List<MiniComic>> getObservable(long id) {

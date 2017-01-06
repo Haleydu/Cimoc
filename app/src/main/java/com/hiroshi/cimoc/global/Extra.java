@@ -7,6 +7,7 @@ package com.hiroshi.cimoc.global;
 public class Extra {
 
     public static final String EXTRA_CHAPTER = "cimoc.intent.extra.EXTRA_CHAPTER";
+    public static final String EXTRA_TASK = "cimoc.intent.extra.EXTRA_TASK";
     public static final String EXTRA_ID = "cimoc.intent.extra.EXTRA_ID";
     public static final String EXTRA_SOURCE = "cimoc.intent.extra.EXTRA_SOURCE";
     public static final String EXTRA_CID = "cimoc.intent.extra.EXTRA_CID";

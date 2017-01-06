@@ -46,14 +46,14 @@ public class Download {
      *      title: 标题 string
      *      cover: 封面 string
      *      type: 类型 string (comic)
-     *      version: 版本 int ("1")
+     *      version: 版本 string ("1")
      *  }
      *  chapter:
      *  {
      *      title: 章节名称 string
      *      path: 章节路径 string
      *      type: 类型 string (chapter)
-     *      version: 版本 int ("1")
+     *      version: 版本 string ("1")
      *  }
      *
      *  version 2 [遥遥无期, 遥遥无期)
@@ -98,7 +98,7 @@ public class Download {
 
     private static void createNoMedia(DocumentFile root) {
         DocumentFile home = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
-        DocumentUtils.createFile(home, "", NO_MEDIA);
+        DocumentUtils.createFile(home, NO_MEDIA);
     }
 
     private static DocumentFile createComicIndex(DocumentFile root, Comic comic) {
@@ -106,7 +106,7 @@ public class Download {
         DocumentFile source = DocumentUtils.getOrCreateSubDirectory(home, String.valueOf(comic.getSource()));
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(source, comic.getCid());
         if (dir != null) {
-            return DocumentUtils.createFile(dir, "", FILE_INDEX);
+            return DocumentUtils.createFile(dir, FILE_INDEX);
         }
         return null;
     }
@@ -156,9 +156,9 @@ public class Download {
             DocumentFile dir1 = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
             DocumentFile dir2 = DocumentUtils.getOrCreateSubDirectory(dir1, String.valueOf(task.getSource()));
             DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getCid());
-            DocumentFile dir4 = DocumentUtils.getOrCreateSubDirectory(dir3, task.getPath());
+            DocumentFile dir4 = DocumentUtils.getOrCreateSubDirectory(dir3, task.getPath().replaceAll("/", "-"));
             if (dir4 != null) {
-                DocumentFile file = dir4.createFile("", FILE_INDEX);
+                DocumentFile file = DocumentUtils.createFile(dir4, FILE_INDEX);
                 DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
                 return dir4;
             }
@@ -227,7 +227,7 @@ public class Download {
 
     public static DocumentFile getChapterDir(Comic comic, Chapter chapter) {
         DocumentFile root = CimocApplication.getDocumentFile();
-        DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()), comic.getCid(), chapter.getPath());
+        DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()), comic.getCid(), chapter.getPath().replaceAll("/", "-"));
         if (result == null) {
             result = DocumentUtils.findFile(root, DOWNLOAD, SourceManager.getTitle(comic.getSource()), comic.getTitle(), chapter.getTitle());
         }

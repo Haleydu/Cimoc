@@ -46,6 +46,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     @Override
     protected BaseAdapter initAdapter() {
         mGridAdapter = new GridAdapter(this, new LinkedList<MiniComic>());
+        mGridAdapter.setSymbol(true);
         mGridAdapter.setProvider(((CimocApplication) getApplication()).getBuilderProvider());
         return mGridAdapter;
     }
@@ -93,6 +94,12 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         MiniComic comic = mGridAdapter.getItem(position);
         Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null, true);
         startActivity(intent);
+    }
+
+    @Override
+    public void onHighlightCancel(MiniComic comic) {
+        mGridAdapter.remove(comic);
+        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
     }
 
     @Override

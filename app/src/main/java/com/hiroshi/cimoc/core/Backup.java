@@ -124,7 +124,7 @@ public class Backup {
                 result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
                 result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
                 String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
-                DocumentFile file = dir.createFile("", filename);
+                DocumentFile file = DocumentUtils.createFile(dir, filename);
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
                 return list.size();
             } catch (Exception e) {

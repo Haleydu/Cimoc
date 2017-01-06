@@ -13,7 +13,7 @@
     <string name="main_double_click">再按一次退出</string>
     <string name="main_last_read_fail">读取最后阅读失败</string>
     <string name="main_notice">作者声明</string>
-    <string name="main_notice_content">由于应用不够完善，遇到一些不正常的问题属于正常现象！\n使用过程中有什么建议或者遇到什么问题，欢迎邮件反馈！\n电子邮箱：cimoc_app@163.com\n如果问题比较严重，我会尽量在第二时间解决！\n最后，请不要在公开场合传播本应用，谢谢合作！</string>
+    <string name="main_notice_content">由于应用不够完善，遇到一些不正常的问题属于正常现象！\n使用过程中有什么建议或者遇到什么问题，欢迎邮件反馈！\n电子邮箱：cimoc_app@163.com\n如果问题比较严重，我会尽量在第三时间解决！\n最后，请不要在公开场合传播本应用，谢谢合作！</string>
     <string name="main_permission">权限请求</string>
     <string name="main_permission_content">下载、备份还原与保存图片功能需要访问SD卡的权限！\n请在之后的弹出框中确定授予权限！</string>
     <string name="main_permission_success">授权成功</string>
@@ -157,7 +157,7 @@
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
-    <string name="about_version">version: 1.4.4.1</string>
+    <string name="about_version">version: 1.4.4.2</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -175,7 +175,6 @@
     <string name="about_update_fail">检查更新失败</string>
     <string name="about_resource_fail">打开网页失败</string>
     <string name="about_update_log">更新日志</string>
-    <string name="about_update_log_content">v1.4.4\n</string>
 
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
