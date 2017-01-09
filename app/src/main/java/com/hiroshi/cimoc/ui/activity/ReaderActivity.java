@@ -109,19 +109,23 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @Override
     protected void initView() {
         hide = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
-        if (hide) {
-            mInfoLayout.setVisibility(View.INVISIBLE);
-        }
+        mInfoLayout.setVisibility(hide ? View.INVISIBLE : View.VISIBLE);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
         turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
-        mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
-        mSeekBar.setOnProgressChangeListener(this);
+        initSeekBar();
         initLayoutManager();
         initReaderAdapter();
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+    }
+
+    private void initSeekBar() {
+        mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
+        mSeekBar.setOnProgressChangeListener(this);
+        boolean popup = mPreference.getBoolean(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
+        mSeekBar.setIndicatorPopupEnabled(!popup);
     }
 
     private void initReaderAdapter() {
@@ -130,7 +134,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         mReaderAdapter.setTurn(turn);
-        mReaderAdapter.setAutoSplit(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderAdapter.setSplitPageEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderAdapter.setCutWhiteEdgeEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
     }
 
     private void initLayoutManager() {

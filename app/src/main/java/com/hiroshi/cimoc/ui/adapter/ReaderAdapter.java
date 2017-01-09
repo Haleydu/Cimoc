@@ -18,6 +18,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.SplitPostprocessor;
+import com.hiroshi.cimoc.fresco.WhiteEdgePostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
@@ -37,8 +38,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     public static final int READER_PAGE = 0;
     public static final int READER_STREAM = 1;
 
-    public static final int TYPE_LOADING = 2016101214;
-    public static final int TYPE_IMAGE = 2016101215;
+    private static final int TYPE_LOADING = 2016101214;
+    private static final int TYPE_IMAGE = 2016101215;
 
     @IntDef({READER_PAGE, READER_STREAM})
     @Retention(RetentionPolicy.SOURCE)
@@ -50,7 +51,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private OnLazyLoadListener mLazyLoadListener;
     private @ReaderMode int reader;
     private int turn;
-    private boolean split = false;
+    private boolean mSplitPage;
+    private boolean mCutWhiteEdge;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -139,8 +141,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         for (int i = 0; i != url.length; ++i) {
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url[i]));
-            if (reader == READER_STREAM && turn == PreferenceManager.READER_TURN_ATB && split) {
+            if (reader == READER_STREAM && turn == PreferenceManager.READER_TURN_ATB && mSplitPage) {
                 imageRequestBuilder.setPostprocessor(new SplitPostprocessor(url[i]));
+            } else if (reader == READER_PAGE && mCutWhiteEdge) {
+                imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(url[i]));
             }
             request[i] = imageRequestBuilder.build();
         }
@@ -164,8 +168,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         this.mLazyLoadListener = listener;
     }
 
-    public void setAutoSplit(boolean split) {
-        this.split = split;
+    public void setSplitPageEnabled(boolean enabled) {
+        mSplitPage = enabled;
+    }
+
+    public void setCutWhiteEdgeEnabled(boolean enabled) {
+        mCutWhiteEdge = enabled;
     }
 
     public void setReaderMode(@ReaderMode int reader) {

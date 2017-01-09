@@ -2,8 +2,8 @@ package com.hiroshi.cimoc.ui.fragment.config;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
@@ -24,10 +24,10 @@ public class StreamConfigFragment extends BaseFragment implements DialogView {
     private static final int DIALOG_REQUEST_ORIENTATION = 0;
     private static final int DIALOG_REQUEST_TURN = 1;
 
-    @BindView(R.id.settings_reader_split_checkbox) CheckBox mReaderSplitBox;
-    @BindView(R.id.settings_reader_interval_checkbox) CheckBox mReaderIntervalBox;
-    @BindView(R.id.settings_reader_load_prev_checkbox) CheckBox mReaderLoadPrevBox;
-    @BindView(R.id.settings_reader_load_next_checkbox) CheckBox mReaderLoadNextBox;
+    @BindView(R.id.settings_reader_split_checkbox) AppCompatCheckBox mReaderSplitBox;
+    @BindView(R.id.settings_reader_interval_checkbox) AppCompatCheckBox mReaderIntervalBox;
+    @BindView(R.id.settings_reader_load_prev_checkbox) AppCompatCheckBox mReaderLoadPrevBox;
+    @BindView(R.id.settings_reader_load_next_checkbox) AppCompatCheckBox mReaderLoadNextBox;
 
     private int mReaderOrientationChoice;
     private int mReaderTurnChoice;
@@ -100,7 +100,7 @@ public class StreamConfigFragment extends BaseFragment implements DialogView {
         }
     }
 
-    private void checkedAndSave(CheckBox box, String key) {
+    private void checkedAndSave(AppCompatCheckBox box, String key) {
         boolean checked = !box.isChecked();
         box.setChecked(checked);
         mPreference.putBoolean(key, checked);

@@ -107,6 +107,10 @@
     <string name="settings_reader_load_prev_summary">位于第一页自动加载上一章</string>
     <string name="settings_reader_load_next">自动加载下一章</string>
     <string name="settings_reader_load_next_summary">位于最后一页自动加载下一章</string>
+    <string name="settings_reader_white_edge">自动裁剪白边</string>
+    <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
+    <string name="settings_reader_disable_popup">禁用进度指示</string>
+    <string name="settings_reader_disable_popup_summary">阅读状态禁用进度指示</string>
     <string name="settings_reader_split">自动切割分页</string>
     <string name="settings_reader_split_summary">阅读状态自动切割长图</string>
     <string name="settings_reader_bright">保持屏幕常亮</string>

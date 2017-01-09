@@ -244,7 +244,7 @@ public class Download {
                     List<ImageUrl> list = new ArrayList<>(uris.length);
                     for (int i = 0; i < uris.length; ++i) {
                         String uri = uris[i].toString();
-                        if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径不解码 Fresco 读取不了
+                        if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
                             uri = DecryptionUtils.urlDecrypt(uri);
                         }
                         list.add(new ImageUrl(i + 1, uri, false));

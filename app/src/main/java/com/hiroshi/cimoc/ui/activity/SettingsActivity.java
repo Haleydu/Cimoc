@@ -52,11 +52,13 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 6;
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 7;
 
-    @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
+    @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title,
+            R.id.settings_search_title, R.id.settings_reader_disable_popup_title})
     List<TextView> mTitleList;
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
     @BindView(R.id.settings_reader_hide_checkbox) AppCompatCheckBox mHideBox;
+    @BindView(R.id.settings_reader_disable_popup_checkbox) AppCompatCheckBox mPopupBox;
     @BindView(R.id.settings_search_complete_checkbox) AppCompatCheckBox mCompleteBox;
 
     private SettingsPresenter mPresenter;
@@ -89,10 +91,12 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mThreadValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
         mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
         mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
+        mPopupBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_DISABLE_POPUP, false));
         mCompleteBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false));
     }
 
-    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_search_complete_btn})
+    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn,
+            R.id.settings_reader_disable_popup_btn, R.id.settings_search_complete_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_bright_btn:
@@ -103,6 +107,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case R.id.settings_search_complete_btn:
                 checkedAndSave(mCompleteBox, PreferenceManager.PREF_SEARCH_COMPLETE);
+                break;
+            case R.id.settings_reader_disable_popup_btn:
+                checkedAndSave(mPopupBox, PreferenceManager.PREF_READER_DISABLE_POPUP);
                 break;
         }
     }

@@ -104,7 +104,7 @@
             android:padding="16dp"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/settings_reader_load_prev_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
             android:padding="16dp"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/settings_reader_load_next_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -168,7 +168,7 @@
             android:padding="16dp"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/settings_reader_interval_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -200,7 +200,7 @@
             android:padding="16dp"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/settings_reader_split_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

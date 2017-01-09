@@ -29,6 +29,7 @@ public class PreferenceManager {
     public static final String PREF_READER_MODE = "pref_reader_mode";
     public static final String PREF_READER_KEEP_ON = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide_info";
+    public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
     public static final String PREF_READER_PAGE_ORIENTATION = "pref_reader_page_orientation";
@@ -47,6 +48,7 @@ public class PreferenceManager {
     public static final String PREF_READER_PAGE_LOAD_PREV = "pref_reader_page_load_prev";
     public static final String PREF_READER_PAGE_LOAD_NEXT = "pref_reader_page_load_next";
     public static final String PREF_READER_PAGE_TRIGGER = "pref_reader_page_trigger";
+    public static final String PREF_READER_PAGE_WHITE_EDGE = "pref_reader_white_edge";
 
     public static final String PREF_READER_STREAM_TURN = "pref_reader_stream_turn";
     public static final String PREF_READER_STREAM_ORIENTATION = "pref_reader_stream_orientation";

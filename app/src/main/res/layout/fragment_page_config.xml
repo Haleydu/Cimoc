@@ -104,7 +104,7 @@
             android:padding="16dp"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/settings_reader_load_prev_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
             android:padding="16dp"
             android:clickable="true"
             android:background="?android:attr/selectableItemBackground">
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/settings_reader_load_next_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -159,6 +159,38 @@
                 android:layout_below="@id/settings_reader_load_next_title"
                 android:textSize="14sp"
                 android:text="@string/settings_reader_load_next_summary"/>
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/settings_reader_white_edge_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/settings_reader_white_edge_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:clickable="false"
+                android:focusable="false"
+                android:background="@null"/>
+            <TextView
+                android:id="@+id/settings_reader_white_edge_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/settings_reader_white_edge_checkbox"
+                android:textSize="16sp"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@string/settings_reader_white_edge"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/settings_reader_white_edge_checkbox"
+                android:layout_below="@id/settings_reader_white_edge_title"
+                android:textSize="14sp"
+                android:text="@string/settings_reader_white_edge_summary"/>
         </RelativeLayout>
         <LinearLayout
             android:id="@+id/settings_reader_trigger_btn"

@@ -2,8 +2,8 @@ package com.hiroshi.cimoc.ui.fragment.config;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
-import android.widget.CheckBox;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
@@ -26,8 +26,9 @@ public class PageConfigFragment extends BaseFragment implements DialogView {
     private static final int DIALOG_REQUEST_TURN = 1;
     private static final int DIALOG_REQUEST_OFFSET = 2;
 
-    @BindView(R.id.settings_reader_load_prev_checkbox) CheckBox mReaderLoadPrevBox;
-    @BindView(R.id.settings_reader_load_next_checkbox) CheckBox mReaderLoadNextBox;
+    @BindView(R.id.settings_reader_load_prev_checkbox) AppCompatCheckBox mReaderLoadPrevBox;
+    @BindView(R.id.settings_reader_load_next_checkbox) AppCompatCheckBox mReaderLoadNextBox;
+    @BindView(R.id.settings_reader_white_edge_checkbox) AppCompatCheckBox mReaderWhiteEdgeBox;
 
     private int mReaderOrientationChoice;
     private int mReaderTurnChoice;
@@ -39,6 +40,7 @@ public class PageConfigFragment extends BaseFragment implements DialogView {
         mReaderTurnChoice = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TURN, PreferenceManager.READER_TURN_LTR);
         mReaderLoadPrevBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true));
         mReaderLoadNextBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true));
+        mReaderWhiteEdgeBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
         mReaderTriggerValue = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 5);
     }
 
@@ -64,7 +66,7 @@ public class PageConfigFragment extends BaseFragment implements DialogView {
         fragment.show(getFragmentManager(), null);
     }
 
-    @OnClick({R.id.settings_reader_load_prev_btn, R.id.settings_reader_load_next_btn})
+    @OnClick({R.id.settings_reader_load_prev_btn, R.id.settings_reader_load_next_btn, R.id.settings_reader_white_edge_btn})
     void onCheckBoxClick(View view) {
         switch (view.getId()) {
             case R.id.settings_reader_load_prev_btn:
@@ -73,10 +75,13 @@ public class PageConfigFragment extends BaseFragment implements DialogView {
             case R.id.settings_reader_load_next_btn:
                 checkedAndSave(mReaderLoadNextBox, PreferenceManager.PREF_READER_PAGE_LOAD_NEXT);
                 break;
+            case R.id.settings_reader_white_edge_btn:
+                checkedAndSave(mReaderWhiteEdgeBox, PreferenceManager.PREF_READER_PAGE_WHITE_EDGE);
+                break;
         }
     }
 
-    private void checkedAndSave(CheckBox box, String key) {
+    private void checkedAndSave(AppCompatCheckBox box, String key) {
         boolean checked = !box.isChecked();
         box.setChecked(checked);
         mPreference.putBoolean(key, checked);

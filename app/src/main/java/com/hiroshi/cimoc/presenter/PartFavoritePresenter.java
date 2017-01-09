@@ -13,6 +13,8 @@ import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,6 +105,15 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                                     for (TagRef ref : tagRefs) {
                                         list.add(new MiniComic(mComicManager.load(ref.getCid())));
                                     }
+                                    Collections.sort(list, new Comparator<MiniComic>() {
+                                        @Override
+                                        public int compare(MiniComic lhs, MiniComic rhs) {
+                                            if (lhs.isHighlight() == rhs.isHighlight()) {
+                                                return lhs.getFavorite() - rhs.getFavorite() > 0 ? -1 : 1;
+                                            }
+                                            return lhs.isHighlight() ? -1 : 1;
+                                        }
+                                    });
                                     return list;
                                 }
                             });

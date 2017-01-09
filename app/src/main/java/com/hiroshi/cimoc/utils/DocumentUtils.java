@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -48,7 +50,14 @@ public class DocumentUtils {
     public static Uri[] listUrisWithoutSuffix(DocumentFile dir, String suffix) {
         List<Uri> list = new ArrayList<>();
         if (dir.isDirectory()) {
-            for (DocumentFile file : dir.listFiles()) {
+            DocumentFile[] files = dir.listFiles();
+            Arrays.sort(files, new Comparator<DocumentFile>() {
+                @Override
+                public int compare(DocumentFile lhs, DocumentFile rhs) {
+                    return lhs.getName().compareTo(rhs.getName());
+                }
+            });
+            for (DocumentFile file : files) {
                 if (file.isFile() && !file.getName().endsWith(suffix)) {
                     list.add(file.getUri());
                 }

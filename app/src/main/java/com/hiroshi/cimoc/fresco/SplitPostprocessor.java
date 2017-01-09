@@ -33,9 +33,9 @@ public class SplitPostprocessor extends BasePostprocessor {
                 int remain = height - 20 * unit;
                 int[] pixels = new int[(remain > unit ? remain : unit) * width];
                 for (int i = 1; i >= 0; --i) {
-                    for (int j = 0; j != 20; ++j) {
-                        sourceBitmap.getPixels(pixels, 0, width, i * width / 2, j % 20 * unit, width / 2, unit);
-                        bitmap.setPixels(pixels, 0, width, 0, base + j % 20 * unit, width / 2, unit);
+                    for (int j = 0; j < 20; ++j) {
+                        sourceBitmap.getPixels(pixels, 0, width, i * width / 2, j * unit, width / 2, unit);
+                        bitmap.setPixels(pixels, 0, width, 0, base + j * unit, width / 2, unit);
                     }
                     if (remain > 0) {
                         sourceBitmap.getPixels(pixels, 0, width, i * width / 2, 20 * unit, width / 2, remain);
