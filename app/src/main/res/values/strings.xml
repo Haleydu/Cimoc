@@ -91,8 +91,7 @@
     <string name="source_server">图片服务器</string>
 
     <string name="settings_reader">阅读设置</string>
-    <string name="settings_reader_mode">阅读模式</string>
-    <string name="settings_reader_mode_summary">选择默认阅读模式</string>
+    <string name="settings_reader_mode">默认阅读模式</string>
     <string name="settings_reader_config">阅读配置</string>
     <string name="settings_reader_config_summary">自定义阅读模式下各项功能</string>
     <string name="settings_reader_turn">阅读方向</string>
@@ -111,18 +110,17 @@
     <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
     <string name="settings_reader_disable_popup">禁用进度指示</string>
     <string name="settings_reader_disable_popup_summary">阅读状态禁用进度指示</string>
-    <string name="settings_reader_split">自动切割分页</string>
+    <string name="settings_reader_split">自动切割长图</string>
     <string name="settings_reader_split_summary">阅读状态自动切割长图</string>
-    <string name="settings_reader_bright">保持屏幕常亮</string>
-    <string name="settings_reader_bright_summary">阅读状态保持屏幕常亮</string>
-    <string name="settings_reader_hide">隐藏阅读信息</string>
-    <string name="settings_reader_hide_summary">阅读状态隐藏右上角的信息</string>
+    <string name="settings_reader_keep_bright">保持屏幕常亮</string>
+    <string name="settings_reader_keep_bright_summary">阅读状态保持屏幕常亮</string>
+    <string name="settings_reader_hide_info">隐藏阅读信息</string>
+    <string name="settings_reader_hide_info_summary">阅读状态隐藏右上角的信息</string>
     <string name="settings_reader_trigger">翻页触发位移</string>
-    <string name="settings_reader_trigger_summary">自定义触发翻页的百分比</string>
     <string name="settings_reader_interval">显示图片间隔</string>
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_download">下载设置</string>
-    <string name="settings_download_connection">自动重试次数</string>
+    <string name="settings_download_connection">单页最大重试次数</string>
     <string name="settings_download_connection_summary">单页下载错误时最大自动重试次数</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_thread_summary">最大同时下载任务数量</string>
@@ -133,18 +131,17 @@
     <string name="settings_download_scan_summary">扫描并恢复已下载漫画</string>
     <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！重点是，不一定可以成功！</string>
     <string name="settings_search">搜索设置</string>
-    <string name="settings_search_complete">开启搜索提示</string>
-    <string name="settings_search_complete_summary">根据输入的关键字弹出提示</string>
+    <string name="settings_search_auto_complete">开启搜索提示</string>
+    <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
-    <string name="settings_other_launch">启动页</string>
-    <string name="settings_other_launch_summary">选择默认启动页</string>
+    <string name="settings_other_launch">默认启动页</string>
     <string name="settings_other_theme">主题颜色</string>
-    <string name="settings_other_theme_summary">选择默认主题颜色</string>
     <string name="settings_other_storage">存储路径</string>
     <string name="settings_other_storage_summary">自定义存储路径</string>
     <string name="settings_other_storage_not_found">打开 DocumentUI 失败</string>
     <string name="settings_other_storage_edit_neutral">选择路径</string>
-    <string name="settings_other_cache">清除缓存</string>
+    <string name="settings_other_clear_cache">清理缓存</string>
+    <string name="settings_other_clear_cache_summary">清理在线漫画的缓存数据</string>
 
     <string name="backup_save">备份</string>
     <string name="backup_save_favorite">备份收藏</string>
@@ -180,6 +177,7 @@
     <string name="about_resource_fail">打开网页失败</string>
     <string name="about_update_log">更新日志</string>
 
+    <string name="dialog_choice">单项选择</string>
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>

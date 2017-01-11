@@ -27,8 +27,8 @@ public class PreferenceManager {
     public static final String PREF_MAIN_NOTICE = "pref_main_notice";
 
     public static final String PREF_READER_MODE = "pref_reader_mode";
-    public static final String PREF_READER_KEEP_ON = "pref_reader_keep_on";
-    public static final String PREF_READER_HIDE_INFO = "pref_reader_hide_info";
+    public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";
+    public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
     public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
@@ -79,7 +79,7 @@ public class PreferenceManager {
     public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
 
-    public static final String PREF_SEARCH_COMPLETE = "pref_search_complete";
+    public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
 
     public static final String PREF_SOURCE_SERVER_IKANMAN = "pref_source_server_ikanman";
     public static final String PREF_SOURCE_SERVER_HHAAZZ = "pref_source_server_hhaazz";

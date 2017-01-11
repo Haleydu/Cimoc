@@ -3,4 +3,12 @@
     <declare-styleable name="ChapterButton">
         <attr name="selected_color" format="color" />
     </declare-styleable>
+    <declare-styleable name="Option">
+        <attr name="title" format="string" />
+        <attr name="summary" format="string" />
+    </declare-styleable>
+    <declare-styleable name="Preference">
+        <attr name="min" format="integer" />
+        <attr name="max" format="integer" />
+    </declare-styleable>
 </resources>

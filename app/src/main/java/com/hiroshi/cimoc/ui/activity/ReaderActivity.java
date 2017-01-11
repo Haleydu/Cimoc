@@ -88,7 +88,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected void initTheme() {
         super.initTheme();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false)) {
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         mode = getIntent().getIntExtra(Extra.EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);

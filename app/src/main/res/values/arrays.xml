@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="home_items">
+    <string-array name="launch_items">
         <item>漫画</item>
         <item>图源</item>
         <item>标签</item>

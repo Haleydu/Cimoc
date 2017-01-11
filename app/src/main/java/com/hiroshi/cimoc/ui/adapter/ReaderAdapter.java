@@ -17,6 +17,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.fresco.BinaryPostprocessor;
 import com.hiroshi.cimoc.fresco.SplitPostprocessor;
 import com.hiroshi.cimoc.fresco.WhiteEdgePostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -146,6 +147,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             } else if (reader == READER_PAGE && mCutWhiteEdge) {
                 imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(url[i]));
             }
+            //imageRequestBuilder.setPostprocessor(new BinaryPostprocessor(url[i]));
             request[i] = imageRequestBuilder.build();
         }
         builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);

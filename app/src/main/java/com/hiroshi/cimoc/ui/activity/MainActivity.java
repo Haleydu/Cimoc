@@ -319,7 +319,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (home < 0 || home > 2) {
             home = PreferenceManager.HOME_COMIC;
         }
-        return getResources().getStringArray(R.array.home_items)[home];
+        return getResources().getStringArray(R.array.launch_items)[home];
     }
 
     @Override

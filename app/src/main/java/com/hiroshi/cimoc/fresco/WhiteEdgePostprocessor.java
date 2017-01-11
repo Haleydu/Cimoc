@@ -82,13 +82,24 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
             }
         }
 
-        pixels = new int[(y2 - y1) * (x2 - x1)];
+        int dx = x2 - x1;
+        int dy = y2 - y1;
+        int unit = dy / 20;
+        int remain = dy - 20 * unit;
 
-        CloseableReference<Bitmap> reference = bitmapFactory.createBitmap((x2 - x1), (y2 - y1), Bitmap.Config.RGB_565);
+        pixels = new int[(remain > unit ? remain : unit) * dx];
+
+        CloseableReference<Bitmap> reference = bitmapFactory.createBitmap(dx, dy, Bitmap.Config.RGB_565);
         try {
             Bitmap bitmap = reference.get();
-            sourceBitmap.getPixels(pixels, 0, x2 - x1, x1, y1, x2 - x1, y2 - y1);
-            bitmap.setPixels(pixels, 0, x2 - x1, 0, 0, x2 - x1, y2 - y1);
+            for (int i = 0; i < 20; ++i) {
+                sourceBitmap.getPixels(pixels, 0, dx, x1, y1 + i * unit, dx, unit);
+                bitmap.setPixels(pixels, 0, dx, 0, i * unit, dx, unit);
+            }
+            if (remain > 0) {
+                sourceBitmap.getPixels(pixels, 0, dx, x1, y1 + 20 * unit, dx, remain);
+                bitmap.setPixels(pixels, 0, dx, 0, 20 * unit, dx, remain);
+            }
             return CloseableReference.cloneOrNull(reference);
         } finally {
             CloseableReference.closeSafely(reference);
@@ -97,7 +108,7 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
 
     @Override
     public CacheKey getPostprocessorCacheKey() {
-        return new SimpleCacheKey(url.concat("white"));
+        return new SimpleCacheKey(url.concat("cut"));
     }
 
     /**
@@ -115,9 +126,7 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
 
     /**
      * 二维扫描
-     * 10 * 10 方格 按 3:4:3 划分为三个区域 权值分别为 1 2 3
-     * L = 30, M = 40, R = 30
-     * 加权值 = NUM_L * 1 + NUM_M * 2 + NUM_R * 3
+     * 10 * 10 方格 按 3:3:2:2 划分为四个区域 权值分别为 0 1 2 3
      * @return 加权值 > 30 代表有效信息 即不裁剪
      */
     private boolean twoDimensionScan(int[] pixels, int length, boolean vertical, boolean reverse) {
@@ -150,12 +159,25 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
         if (white) {
             return 0;
         }
-        if (pos < 3) {
-            return reverse ? 3 : 1;
-        } else if (pos > 6) {
-            return reverse ? 1 : 3;
+        if (reverse) {
+            if (pos < 2) {
+                return 3;
+            } else if (pos < 4) {
+                return 2;
+            } else if (pos < 7) {
+                return 1;
+            }
+            return 0;
+        } else {
+            if (pos < 3) {
+                return 0;
+            } else if (pos < 6) {
+                return 1;
+            } else if (pos < 8) {
+                return 2;
+            }
+            return 3;
         }
-        return 2;
     }
 
     /**
