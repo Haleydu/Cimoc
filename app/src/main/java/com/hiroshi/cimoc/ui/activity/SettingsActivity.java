@@ -11,7 +11,7 @@ import android.support.v4.provider.DocumentFile;
 import android.view.View;
 import android.widget.TextView;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
@@ -79,9 +79,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     protected void initView() {
         super.initView();
-        if (CimocApplication.getDocumentFile() != null) {
-            mStoragePath = CimocApplication.getDocumentFile().getUri().toString();
-        }
+        mStoragePath = getAppInstance().getDocumentFile().getUri().toString();
         mReaderKeepBright.bindPreference(PreferenceManager.PREF_READER_KEEP_BRIGHT, false);
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mReaderDisablePopup.bindPreference(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
@@ -223,7 +221,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         hideProgressDialog();
         mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempStorage);
         mStoragePath = mTempStorage;
-        ((CimocApplication) getApplication()).initRootDocumentFile();
+        ((App) getApplication()).initRootDocumentFile();
         showSnackbar(R.string.common_execute_success);
     }
 

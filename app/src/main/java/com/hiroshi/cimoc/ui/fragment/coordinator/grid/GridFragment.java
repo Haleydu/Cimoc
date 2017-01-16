@@ -6,7 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -28,17 +28,17 @@ public abstract class GridFragment extends CoordinatorFragment implements GridVi
     @Override
     protected BaseAdapter initAdapter() {
         mGridAdapter = new GridAdapter(getActivity(), new LinkedList<MiniComic>());
-        mGridAdapter.setProvider(((CimocApplication) getActivity().getApplication()).getBuilderProvider());
-        mRecyclerView.setRecycledViewPool(((CimocApplication) getActivity().getApplication()).getGridRecycledPool());
+        mGridAdapter.setProvider(((App) getActivity().getApplication()).getBuilderProvider());
+        mRecyclerView.setRecycledViewPool(((App) getActivity().getApplication()).getGridRecycledPool());
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 switch (newState){
                     case RecyclerView.SCROLL_STATE_DRAGGING:
-                        ((CimocApplication) getActivity().getApplication()).getBuilderProvider().pause();
+                        ((App) getActivity().getApplication()).getBuilderProvider().pause();
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:
-                        ((CimocApplication) getActivity().getApplication()).getBuilderProvider().resume();
+                        ((App) getActivity().getApplication()).getBuilderProvider().resume();
                         break;
                 }
             }

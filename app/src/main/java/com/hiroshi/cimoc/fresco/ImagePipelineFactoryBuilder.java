@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 
 import okhttp3.Headers;
@@ -17,7 +17,7 @@ import okhttp3.OkHttpClient;
 public class ImagePipelineFactoryBuilder {
 
     public static ImagePipelineFactory build(Context context, int source) {
-        OkHttpClient client = CimocApplication.getHttpClient();
+        OkHttpClient client = App.getHttpClient();
         ImagePipelineConfig config =
                 OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client, getHeaders(source))
                         .setBitmapsConfig(Bitmap.Config.RGB_565)

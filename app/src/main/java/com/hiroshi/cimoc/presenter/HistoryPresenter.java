@@ -21,8 +21,9 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     private ComicManager mComicManager;
 
-    public HistoryPresenter() {
-        mComicManager = ComicManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
     }
 
     @Override

@@ -28,9 +28,10 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
 
-    public DownloadPresenter() {
-        mComicManager = ComicManager.getInstance();
-        mTaskManager = TaskManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mTaskManager = TaskManager.getInstance(mBaseView);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                         mComicManager.updateOrDelete(comic);
                     }
                 });
-                Download.delete(comic);
+                Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic);
                 subscriber.onNext(null);
                 subscriber.onCompleted();
             }

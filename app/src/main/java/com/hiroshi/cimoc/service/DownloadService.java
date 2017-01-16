@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.LongSparseArray;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
@@ -25,6 +25,7 @@ import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.ui.view.BaseView;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -46,7 +47,7 @@ import okhttp3.Response;
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-public class DownloadService extends Service {
+public class DownloadService extends Service implements BaseView {
 
     private LongSparseArray<Pair<Worker, Future>> mWorkerArray;
     private ExecutorService mExecutorService;
@@ -67,13 +68,13 @@ public class DownloadService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        PreferenceManager manager = ((CimocApplication) getApplication()).getPreferenceManager();
+        PreferenceManager manager = ((App) getApplication()).getPreferenceManager();
         int num = manager.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
         mConnectTimes = manager.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
         mWorkerArray = new LongSparseArray<>();
         mExecutorService = Executors.newFixedThreadPool(num);
-        mHttpClient = CimocApplication.getHttpClient();
-        mTaskManager = TaskManager.getInstance();
+        mHttpClient = App.getHttpClient();
+        mTaskManager = TaskManager.getInstance(this);
         mContentResolver = getContentResolver();
     }
 
@@ -104,6 +105,11 @@ public class DownloadService extends Service {
             mExecutorService.shutdownNow();
             notifyCompleted();
         }
+    }
+
+    @Override
+    public App getAppInstance() {
+        return (App) getApplication();
     }
 
     public synchronized void addWorker(long id, Worker worker, Future future) {
@@ -163,7 +169,7 @@ public class DownloadService extends Service {
                 if (size != 0) {
                     int source = task.getSource();
                     Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
-                    DocumentFile dir = Download.updateChapterIndex(task);
+                    DocumentFile dir = Download.updateChapterIndex(mContentResolver, getAppInstance().getDocumentFile(), task);
                     if (dir != null) {
                         task.setMax(size);
                         task.setState(Task.STATE_DOING);

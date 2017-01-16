@@ -7,7 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -47,7 +47,7 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     protected BaseAdapter initAdapter() {
         mGridAdapter = new GridAdapter(this, new LinkedList<MiniComic>());
         mGridAdapter.setSymbol(true);
-        mGridAdapter.setProvider(((CimocApplication) getApplication()).getBuilderProvider());
+        mGridAdapter.setProvider(((App) getApplication()).getBuilderProvider());
         return mGridAdapter;
     }
 

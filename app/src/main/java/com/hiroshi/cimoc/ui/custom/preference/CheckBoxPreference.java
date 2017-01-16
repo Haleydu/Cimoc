@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 
@@ -39,7 +39,7 @@ public class CheckBoxPreference extends FrameLayout implements View.OnClickListe
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutInflater.inflate(R.layout.custom_option_checkbox, this);
 
-        mPreferenceManager = ((CimocApplication) context.getApplicationContext()).getPreferenceManager();
+        mPreferenceManager = ((App) context.getApplicationContext()).getPreferenceManager();
 
         init(context, attrs);
 

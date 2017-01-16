@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.manager.TagManager;
+import com.hiroshi.cimoc.core.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
@@ -28,11 +29,14 @@ import rx.schedulers.Schedulers;
 public class TagEditorPresenter extends BasePresenter<TagEditorView> {
 
     private TagManager mTagManager;
+    private TagRefManager mTagRefManager;
     private long mComicId;
     private Set<Long> mTagSet;
 
-    public TagEditorPresenter() {
-        mTagManager = TagManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mTagManager = TagManager.getInstance(mBaseView);
+        mTagRefManager = TagRefManager.getInstance(mBaseView);
     }
 
     public void load(long id) {
@@ -65,20 +69,20 @@ public class TagEditorPresenter extends BasePresenter<TagEditorView> {
 
     private void initTagSet() {
         mTagSet = new HashSet<>();
-        for (TagRef ref : mTagManager.listByComic(mComicId)) {
+        for (TagRef ref : mTagRefManager.listByComic(mComicId)) {
             mTagSet.add(ref.getTid());
         }
     }
 
     private void updateInTx(final List<Long> dList, final List<Long> iList) {
-        mTagManager.runInTx(new Runnable() {
+        mTagRefManager.runInTx(new Runnable() {
             @Override
             public void run() {
                 for (Long id : dList) {
-                    mTagManager.delete(id, mComicId);
+                    mTagRefManager.delete(id, mComicId);
                 }
                 for (Long id : iList) {
-                    mTagManager.insert(new TagRef(null, id, mComicId));
+                    mTagRefManager.insert(new TagRef(null, id, mComicId));
                 }
             }
         });

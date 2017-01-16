@@ -16,8 +16,9 @@ public class SourcePresenter extends BasePresenter<SourceView> {
 
     private SourceManager mSourceManager;
 
-    public SourcePresenter() {
-        mSourceManager = SourceManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void load() {

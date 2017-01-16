@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
+import com.hiroshi.cimoc.ui.view.BaseView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
@@ -20,7 +21,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Hiroshi on 2016/7/1.
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements BaseView {
 
     @Nullable @BindView(R.id.custom_night_mask) View mNightMask;
     @Nullable @BindView(R.id.custom_toolbar) Toolbar mToolbar;
@@ -31,7 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPreference = ((CimocApplication) getApplication()).getPreferenceManager();
+        mPreference = ((App) getApplication()).getPreferenceManager();
         initTheme();
         setContentView(getLayoutRes());
         ButterKnife.bind(this);
@@ -49,6 +50,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             mBasePresenter.detachView();
         }
         super.onDestroy();
+    }
+
+    @Override
+    public App getAppInstance() {
+        return (App) getApplication();
     }
 
     protected void initTheme() {

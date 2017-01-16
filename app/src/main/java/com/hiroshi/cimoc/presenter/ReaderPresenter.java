@@ -38,8 +38,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private int count = 0;
     private int status = LOAD_INIT;
 
-    public ReaderPresenter() {
-        mComicManager = ComicManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
@@ -101,7 +102,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
-        return chapter.isComplete() ? Download.images(mComic, chapter) :
+        return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(), mComic, chapter) :
                 Manga.getChapterImage(mComic.getSource(), mComic.getCid(), chapter.getPath());
     }
 
@@ -128,7 +129,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     public void savePicture(InputStream inputStream, String url) {
-        mCompositeSubscription.add(Storage.savePicture(inputStream, url)
+        mCompositeSubscription.add(Storage.savePicture(mBaseView.getAppInstance().getContentResolver(),
+                mBaseView.getAppInstance().getDocumentFile(), inputStream, url)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override

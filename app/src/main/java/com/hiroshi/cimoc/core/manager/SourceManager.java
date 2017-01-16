@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.core.manager;
 
 import android.util.SparseArray;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
@@ -17,6 +16,7 @@ import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
+import com.hiroshi.cimoc.ui.view.BaseView;
 
 import java.util.List;
 
@@ -38,18 +38,12 @@ public class SourceManager {
     public static final int SOURCE_57MH = 8;
     public static final int SOURCE_CHUIYAO = 9;
 
-    public static final int SOURCE_EHENTAI = 100;
-    public static final int SOURCE_EXHENTAI = 101;
-    public static final int SOURCE_NHENTAI = 102;
-    public static final int SOURCE_WNACG = 103;
-    public static final int SOURCE_177PIC = 104;
-
-    private static SourceManager mSourceManager;
+    private static SourceManager mInstance;
 
     private SourceDao mSourceDao;
 
-    private SourceManager() {
-        mSourceDao = CimocApplication.getDaoSession().getSourceDao();
+    private SourceManager(BaseView view) {
+        mSourceDao = view.getAppInstance().getDaoSession().getSourceDao();
     }
 
     public Observable<List<Source>> list() {
@@ -104,16 +98,6 @@ public class SourceManager {
                 return "57漫画";
             case SOURCE_CHUIYAO:
                 return "吹妖漫画";
-/*            case SOURCE_EHENTAI:
-                return "E-Hentai";
-            case SOURCE_EXHENTAI:
-                return "ExHentai";
-            case SOURCE_NHENTAI:
-                return "NHentai";
-            case SOURCE_WNACG:
-                return "绅士漫画";
-            case SOURCE_177PIC:
-                return "177漫画"; */
         }
         return "null";
     }
@@ -154,32 +138,17 @@ public class SourceManager {
                 case SOURCE_CHUIYAO:
                     parser = new Chuiyao();
                     break;
-/*                case SOURCE_EHENTAI:
-                    parser = new EHentai();
-                    break;
-                case SOURCE_EXHENTAI:
-                    parser = new ExHentai();
-                    break;
-                case SOURCE_NHENTAI:
-                    parser = new NHentai();
-                    break;
-                case SOURCE_WNACG:
-                    parser = new Wnacg();
-                    break;
-                case SOURCE_177PIC:
-                    parser = new Pic177();
-                    break;  */
             }
             mParserArray.put(source, parser);
         }
         return parser;
     }
 
-    public static SourceManager getInstance() {
-        if (mSourceManager == null) {
-            mSourceManager = new SourceManager();
+    public static SourceManager getInstance(BaseView view) {
+        if (mInstance == null) {
+            mInstance = new SourceManager(view);
         }
-        return mSourceManager;
+        return mInstance;
     }
 
 }

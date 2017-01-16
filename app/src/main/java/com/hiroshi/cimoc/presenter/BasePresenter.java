@@ -17,9 +17,12 @@ public abstract class BasePresenter<T extends BaseView> {
 
     public void attachView(T mBaseView) {
         this.mBaseView = mBaseView;
+        onViewAttach();
         mCompositeSubscription = new CompositeSubscription();
         initSubscription();
     }
+
+    protected void onViewAttach() {}
 
     protected void initSubscription() {}
 

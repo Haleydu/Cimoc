@@ -39,9 +39,10 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
 
-    public SettingsPresenter() {
-        mComicManager = ComicManager.getInstance();
-        mTaskManager = TaskManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mTaskManager = TaskManager.getInstance(mBaseView);
     }
 
     public void clearCache() {
@@ -49,7 +50,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void moveFiles(DocumentFile dst) {
-        mCompositeSubscription.add(Storage.moveRootDir(dst)
+        mCompositeSubscription.add(Storage.moveRootDir(mBaseView.getAppInstance().getContentResolver(),
+                mBaseView.getAppInstance().getDocumentFile(), dst)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -76,7 +78,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void scanTask() {
-        mCompositeSubscription.add(Download.scan()
+        mCompositeSubscription.add(Download.scan(mBaseView.getAppInstance().getContentResolver(), mBaseView.getAppInstance().getDocumentFile())
                 .doOnNext(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
                     public void call(Pair<Comic, List<Task>> pair) {
@@ -152,7 +154,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         Set<Long> set = new HashSet<>();
         for (Task task : mTaskManager.listValid()) {
             Comic comic = array.get(task.getKey());
-            if (comic == null || Download.getChapterDir(comic, new Chapter(task.getTitle(), task.getPath())) == null) {
+            if (comic == null || Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(), comic,
+                    new Chapter(task.getTitle(), task.getPath())) == null) {
                 tList.add(task);
             } else {
                 set.add(task.getKey());

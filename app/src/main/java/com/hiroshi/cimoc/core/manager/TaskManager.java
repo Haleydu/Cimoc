@@ -1,13 +1,12 @@
 package com.hiroshi.cimoc.core.manager;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.model.TaskDao.Properties;
+import com.hiroshi.cimoc.ui.view.BaseView;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
-import java.util.Iterator;
 import java.util.List;
 
 import rx.Observable;
@@ -17,12 +16,12 @@ import rx.Observable;
  */
 public class TaskManager {
 
-    private static TaskManager mTaskManager;
+    private static TaskManager mInstance;
 
     private TaskDao mTaskDao;
 
-    private TaskManager() {
-        mTaskDao = CimocApplication.getDaoSession().getTaskDao();
+    private TaskManager(BaseView view) {
+        mTaskDao = view.getAppInstance().getDaoSession().getTaskDao();
     }
 
     public List<Task> listValid() {
@@ -93,11 +92,11 @@ public class TaskManager {
         });
     }
 
-    public static TaskManager getInstance() {
-        if (mTaskManager == null) {
-            mTaskManager = new TaskManager();
+    public static TaskManager getInstance(BaseView view) {
+        if (mInstance == null) {
+            mInstance = new TaskManager(view);
         }
-        return mTaskManager;
+        return mInstance;
     }
 
 }

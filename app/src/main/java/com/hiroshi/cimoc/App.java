@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
-import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
@@ -33,29 +32,26 @@ import okhttp3.OkHttpClient;
 /**
  * Created by Hiroshi on 2016/7/5.
  */
-public class CimocApplication extends Application {
+public class App extends Application {
 
-    // 1.04.04.002
-    public static final int VERSION = 10404002;
+    // 1.04.04.003
+    public static final int VERSION = 10404003;
 
-    private static DaoSession mDaoSession;
     private static OkHttpClient mHttpClient;
-    private static DocumentFile mDocumentFile;
-    private static ContentResolver mContentResolver;
 
+    private DocumentFile mDocumentFile;
     private PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
     private RecyclerView.RecycledViewPool mRecycledPool;
+    private DBOpenHelper mOpenHelper;
+    private DaoSession mDaoSession;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
-        mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
+        mOpenHelper = new DBOpenHelper(this, "cimoc.db");
         mPreferenceManager = new PreferenceManager(getApplicationContext());
         update();
-        mContentResolver = getContentResolver();
-        initRootDocumentFile();
         ImageServer.init(mPreferenceManager);
         Fresco.initialize(this);
     }
@@ -125,33 +121,31 @@ public class CimocApplication extends Application {
         }
     }
 
-    public static DocumentFile getDocumentFile() {
+    public DocumentFile getDocumentFile() {
+        if (mDocumentFile == null) {
+            initRootDocumentFile();
+        }
         return mDocumentFile;
     }
 
-    public static ContentResolver getResolver() {
-        return mContentResolver;
-    }
-
-    public static DaoSession getDaoSession() {
+    public DaoSession getDaoSession() {
+        if (mDaoSession == null) {
+            mDaoSession = new DaoMaster(mOpenHelper.getWritableDatabase()).newSession(IdentityScopeType.None);
+        }
         return mDaoSession;
     }
 
-    public static OkHttpClient getHttpClient() {
-        if (mHttpClient == null) {
-            mHttpClient = new OkHttpClient();
-        }
-        return mHttpClient;
-    }
-
     public PreferenceManager getPreferenceManager() {
+        if (mPreferenceManager == null) {
+            mPreferenceManager = new PreferenceManager(getApplicationContext());
+        }
         return mPreferenceManager;
     }
 
     public RecyclerView.RecycledViewPool getGridRecycledPool() {
         if (mRecycledPool == null) {
             mRecycledPool = new RecyclerView.RecycledViewPool();
-            mRecycledPool.setMaxRecycledViews(GridAdapter.GRID_ITEM_TYPE, 20);
+            mRecycledPool.setMaxRecycledViews(GridAdapter.TYPE_GRID, 20);
         }
         return mRecycledPool;
     }
@@ -161,6 +155,13 @@ public class CimocApplication extends Application {
             mBuilderProvider = new ControllerBuilderProvider(getApplicationContext());
         }
         return mBuilderProvider;
+    }
+
+    public static OkHttpClient getHttpClient() {
+        if (mHttpClient == null) {
+            mHttpClient = new OkHttpClient();
+        }
+        return mHttpClient;
     }
 
 }

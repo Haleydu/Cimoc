@@ -1,9 +1,9 @@
 package com.hiroshi.cimoc.core.manager;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
+import com.hiroshi.cimoc.ui.view.BaseView;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -15,12 +15,12 @@ import rx.Observable;
  */
 public class ComicManager {
 
-    private static ComicManager mComicManager;
+    private static ComicManager mInstance;
 
     private ComicDao mComicDao;
 
-    private ComicManager() {
-        mComicDao = CimocApplication.getDaoSession().getComicDao();
+    private ComicManager(BaseView view) {
+        mComicDao = view.getAppInstance().getDaoSession().getComicDao();
     }
 
     public <T> Observable<T> callInRx(Callable<T> callable) {
@@ -146,11 +146,11 @@ public class ComicManager {
         comic.setId(id);
     }
 
-    public static ComicManager getInstance() {
-        if (mComicManager == null) {
-            mComicManager = new ComicManager();
+    public static ComicManager getInstance(BaseView view) {
+        if (mInstance == null) {
+            mInstance = new ComicManager(view);
         }
-        return mComicManager;
+        return mInstance;
     }
 
 }

@@ -17,8 +17,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private ComicManager mComicManager;
 
-    public MainPresenter() {
-        mComicManager = ComicManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
     }
 
     @Override

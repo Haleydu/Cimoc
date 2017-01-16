@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TagManager;
+import com.hiroshi.cimoc.core.manager.TagRefManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -31,13 +31,14 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
-    private TagManager mTagManager;
+    private TagRefManager mTagRefManager;
     private Comic mComic;
 
-    public DetailPresenter() {
-        mComicManager = ComicManager.getInstance();
-        mTaskManager = TaskManager.getInstance();
-        mTagManager = TagManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mTaskManager = TaskManager.getInstance(mBaseView);
+        mTagRefManager = TagRefManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -153,7 +154,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     public void unfavoriteComic() {
         long id = mComic.getId();
         mComic.setFavorite(null);
-        mTagManager.deleteByComic(id);
+        mTagRefManager.deleteByComic(id);
         mComicManager.updateOrDelete(mComic);
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UNFAVORITE, id));
     }
@@ -191,7 +192,8 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                         }
                     }
                 });
-                Download.updateComicIndex(cList, mComic);
+                Download.updateComicIndex(mBaseView.getAppInstance().getContentResolver(),
+                        mBaseView.getAppInstance().getDocumentFile(), cList, mComic);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             }

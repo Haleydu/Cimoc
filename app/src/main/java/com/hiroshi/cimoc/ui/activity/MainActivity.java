@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -166,8 +166,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((CimocApplication) getApplication()).getBuilderProvider().clear();
-        ((CimocApplication) getApplication()).getGridRecycledPool().clear();
+        ((App) getApplication()).getBuilderProvider().clear();
+        ((App) getApplication()).getGridRecycledPool().clear();
     }
 
     @Override
@@ -247,7 +247,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         switch (requestCode) {
             case 0:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ((CimocApplication) getApplication()).initRootDocumentFile();
+                    ((App) getApplication()).initRootDocumentFile();
                     showSnackbar(R.string.main_permission_success);
                 } else {
                     showSnackbar(R.string.main_permission_fail);
@@ -271,7 +271,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastSource = source;
         mLastCid = cid;
         mLastText.setText(title);
-        DraweeController controller = ((CimocApplication) getApplication()).getBuilderProvider().get(source)
+        DraweeController controller = ((App) getApplication()).getBuilderProvider().get(source)
                 .setOldController(mDraweeView.getController())
                 .setUri(cover)
                 .build();

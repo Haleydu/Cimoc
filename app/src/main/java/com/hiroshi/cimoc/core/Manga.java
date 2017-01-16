@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
@@ -31,8 +31,6 @@ import rx.schedulers.Schedulers;
  */
 public class Manga {
 
-    private static OkHttpClient mClient = CimocApplication.getHttpClient();
-
     public static Observable<Comic> getSearchResult(final int source, final String keyword, final int page) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
@@ -41,7 +39,7 @@ public class Manga {
                 Request request = parser.getSearchRequest(keyword, page);
                 Random random = new Random();
                 try {
-                    String html = getResponseBody(mClient, request);
+                    String html = getResponseBody(App.getHttpClient(), request);
                     SearchIterator iterator = parser.getSearchIterator(html, page);
                     if (iterator == null || iterator.empty()) {
                         throw new Exception();
@@ -68,11 +66,11 @@ public class Manga {
                 Parser parser = SourceManager.getParser(comic.getSource());
                 Request request = parser.getInfoRequest(comic.getCid());
                 try {
-                    String html = getResponseBody(mClient, request);
+                    String html = getResponseBody(App.getHttpClient(), request);
                     parser.parseInfo(html, comic);
                     request = parser.getChapterRequest(html, comic.getCid());
                     if (request != null) {
-                        html = getResponseBody(mClient, request);
+                        html = getResponseBody(App.getHttpClient(), request);
                     }
                     List<Chapter> list = parser.parseChapter(html);
                     if (!list.isEmpty()) {
@@ -95,7 +93,7 @@ public class Manga {
                 Parser parser = SourceManager.getParser(source);
                 Request request = parser.getCategoryRequest(format, page);
                 try {
-                    String html = getResponseBody(mClient, request);
+                    String html = getResponseBody(App.getHttpClient(), request);
                     List<Comic> list = parser.parseCategory(html, page);
                     if (!list.isEmpty()) {
                         subscriber.onNext(list);
@@ -118,7 +116,7 @@ public class Manga {
                 String html;
                 try {
                     Request request = parser.getImagesRequest(cid, path);
-                    html = getResponseBody(mClient, request);
+                    html = getResponseBody(App.getHttpClient(), request);
                     List<ImageUrl> list = parser.parseImages(html);
                     if (list.isEmpty()) {
                         throw new Exception();
@@ -188,7 +186,7 @@ public class Manga {
                 Request request = parser.getLazyRequest(url);
                 String newUrl = null;
                 try {
-                    newUrl = parser.parseLazy(getResponseBody(mClient, request), url);
+                    newUrl = parser.parseLazy(getResponseBody(App.getHttpClient(), request), url);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -211,7 +209,7 @@ public class Manga {
                         .post(body)
                         .build();
                 try {
-                    String jsonString = getResponseBody(mClient, request);
+                    String jsonString = getResponseBody(App.getHttpClient(), request);
                     JSONArray array = new JSONArray(jsonString);
                     List<String> list = new ArrayList<>();
                     for (int i = 0; i != array.length(); ++i) {

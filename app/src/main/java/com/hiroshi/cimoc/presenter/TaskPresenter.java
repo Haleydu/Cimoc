@@ -31,9 +31,10 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     private ComicManager mComicManager;
     private Comic mComic;
 
-    public TaskPresenter() {
-        mTaskManager = TaskManager.getInstance();
-        mComicManager = ComicManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mTaskManager = TaskManager.getInstance(mBaseView);
+        mComicManager = ComicManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +110,8 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     @Override
                     public void call(List<Task> list) {
                         updateTaskList(list);
-                        final List<String> sList = Download.getComicIndex(mComic);
+                        final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
+                                mBaseView.getAppInstance().getDocumentFile(), mComic);
                         if (sList != null) {
                             Collections.sort(list, new Comparator<Task>() {
                                 @Override
@@ -160,13 +162,13 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 .doOnNext(new Action1<List<String>>() {
                     @Override
                     public void call(List<String> strings) {
-                        Download.delete(mComic, buildChapterList(list));
+                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic, buildChapterList(list));
                         mTaskManager.deleteInTx(list);
                         if (isEmpty) {
                             long id = mComic.getId();
                             mComic.setDownload(null);
                             mComicManager.updateOrDelete(mComic);
-                            Download.delete(mComic);
+                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic);
                             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
                         }
                     }

@@ -23,7 +23,7 @@ import butterknife.BindView;
  */
 public class GridAdapter extends BaseAdapter<MiniComic> {
 
-    public static int GRID_ITEM_TYPE = 2016101213;
+    public static int TYPE_GRID = 2016101213;
 
     private ControllerBuilderProvider mProvider;
     private boolean symbol = false;
@@ -45,7 +45,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
 
     @Override
     public int getItemViewType(int position) {
-        return GRID_ITEM_TYPE;
+        return TYPE_GRID;
     }
 
     @Override

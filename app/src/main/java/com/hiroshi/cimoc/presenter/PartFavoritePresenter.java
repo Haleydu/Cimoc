@@ -4,6 +4,7 @@ import android.support.v4.util.LongSparseArray;
 
 import com.hiroshi.cimoc.core.manager.ComicManager;
 import com.hiroshi.cimoc.core.manager.TagManager;
+import com.hiroshi.cimoc.core.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Tag;
@@ -33,13 +34,14 @@ import rx.functions.Func1;
 public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
 
     private ComicManager mComicManager;
-    private TagManager mTagManager;
+    private TagRefManager mTagRefManager;
     private Tag mTag;
     private LongSparseArray<MiniComic> mComicArray;
 
-    public PartFavoritePresenter() {
-        mComicManager = ComicManager.getInstance();
-        mTagManager = TagManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mTagRefManager = TagRefManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +96,7 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                         }
                     }));
         } else {
-            return mTagManager.listByTagInRx(id)
+            return mTagRefManager.listByTagInRx(id)
                     .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
                         @Override
                         public Observable<List<MiniComic>> call(final List<TagRef> tagRefs) {
@@ -172,12 +174,12 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                 mComicArray.remove(comic.getId());
             }
         }
-        mTagManager.insertInTx(rList);
+        mTagRefManager.insertInTx(rList);
         mBaseView.onComicInsertSuccess(cList);
     }
 
     public void delete(long tid, long cid) {
-        mTagManager.delete(tid, cid);
+        mTagRefManager.delete(tid, cid);
     }
 
 }

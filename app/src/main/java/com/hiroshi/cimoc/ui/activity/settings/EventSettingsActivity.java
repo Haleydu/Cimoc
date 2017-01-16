@@ -10,10 +10,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.DialogView;
-import com.hiroshi.cimoc.global.ClickEvents;
 
 import java.util.List;
 

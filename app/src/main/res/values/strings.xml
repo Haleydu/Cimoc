@@ -120,10 +120,8 @@
     <string name="settings_reader_interval">显示图片间隔</string>
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_download">下载设置</string>
-    <string name="settings_download_connection">单页最大重试次数</string>
-    <string name="settings_download_connection_summary">单页下载错误时最大自动重试次数</string>
+    <string name="settings_download_connection">下载错误重试次数</string>
     <string name="settings_download_thread">多任务下载数量</string>
-    <string name="settings_download_thread_summary">最大同时下载任务数量</string>
     <string name="settings_download_delete">删除无效漫画</string>
     <string name="settings_download_delete_summary">扫描并删除已下载的无效漫画</string>
     <string name="settings_download_delete_confirm">删除存储目录中不存在的无效下载漫画或章节，删除过程中最好不要检查漫画更新！</string>
@@ -158,7 +156,7 @@
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
-    <string name="about_version">version: 1.4.4.2</string>
+    <string name="about_version">version: 1.4.4.3</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

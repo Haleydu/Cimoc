@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 
 import org.json.JSONObject;
 
@@ -16,28 +16,33 @@ import rx.schedulers.Schedulers;
  */
 public class Update {
 
+    private static final String UPDATE_URL = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/update";
+    private static final String SERVER_FILENAME = "server_filename";
+    private static final String LIST = "list";
+
     public static Observable<String> check() {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                String url = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/update";
-                OkHttpClient client = CimocApplication.getHttpClient();
-                Request request = new Request.Builder().url(url).build();
+                OkHttpClient client = App.getHttpClient();
+                Request request = new Request.Builder().url(UPDATE_URL).build();
+                Response response = null;
                 try {
-                    Response response = client.newCall(request).execute();
+                    response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String json = response.body().string();
-                        JSONObject object = new JSONObject(json).getJSONArray("list").getJSONObject(0);
-                        String version = object.getString("server_filename");
+                        JSONObject object = new JSONObject(json).getJSONArray(LIST).getJSONObject(0);
+                        String version = object.getString(SERVER_FILENAME);
                         subscriber.onNext(version);
-                    } else {
-                        subscriber.onError(new Exception());
                     }
-                    response.close();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    subscriber.onError(new Exception());
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
                 }
+                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }

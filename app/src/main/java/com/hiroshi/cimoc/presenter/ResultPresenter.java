@@ -34,15 +34,21 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private int error = 0;
 
     public ResultPresenter(int[] source, String keyword) {
-        mSourceManager = SourceManager.getInstance();
         this.keyword = keyword;
-        initStateArray(source);
+        if (source != null) {
+            initStateArray(source);
+        }
+    }
+
+    @Override
+    protected void onViewAttach() {
+        mSourceManager = SourceManager.getInstance(mBaseView);
+        if (mStateArray == null) {
+            initStateArray(loadSource());
+        }
     }
 
     private void initStateArray(int[] source) {
-        if (source == null) {
-            source = loadSource();
-        }
         mStateArray = new State[source.length];
         for (int i = 0; i != mStateArray.length; ++i) {
             mStateArray[i] = new State();
