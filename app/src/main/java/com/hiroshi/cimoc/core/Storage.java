@@ -1,11 +1,15 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,6 +26,23 @@ public class Storage {
     private static String DOWNLOAD = "download";
     private static String PICTURE = "picture";
     private static String BACKUP = "backup";
+
+    public static DocumentFile initRoot(Context context, String uri) {
+        if (uri == null) {
+            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc");
+            if (file.exists() || file.mkdirs()) {
+                return DocumentFile.fromFile(file);
+            } else {
+                return null;
+            }
+        } else if (uri.startsWith("content")) {
+            return DocumentFile.fromTreeUri(context, Uri.parse(uri));
+        } else if (uri.startsWith("file")) {
+            return DocumentFile.fromFile(new File(Uri.parse(uri).getPath()));
+        } else {
+            return DocumentFile.fromFile(new File(uri, "Cimoc"));
+        }
+    }
 
     private static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile dst, String name) {
         DocumentFile file = src.findFile(name);

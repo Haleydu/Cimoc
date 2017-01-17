@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TagRefManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
@@ -32,6 +33,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
     private TagRefManager mTagRefManager;
+    private SourceManager mSourceManager;
     private Comic mComic;
 
     @Override
@@ -39,6 +41,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         mComicManager = ComicManager.getInstance(mBaseView);
         mTaskManager = TaskManager.getInstance(mBaseView);
         mTagRefManager = TagRefManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +90,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     private void load() {
-        mCompositeSubscription.add(Manga.getComicInfo(mComic)
+        mCompositeSubscription.add(Manga.getComicInfo(mSourceManager.getParser(mComic.getSource()), mComic)
                 .doOnNext(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {

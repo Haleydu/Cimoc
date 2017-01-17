@@ -68,6 +68,10 @@
             android:screenOrientation="portrait"/>
 
         <activity
+            android:name=".ui.activity.SourceDetailActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
             android:name=".ui.activity.PartFavoriteActivity"
             android:screenOrientation="portrait"/>
 

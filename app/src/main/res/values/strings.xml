@@ -88,7 +88,11 @@
     <string name="reader_config_page">翻页模式</string>
     <string name="reader_config_stream">卷纸模式</string>
 
-    <string name="source_server">图片服务器</string>
+    <string name="source_detail">图源详情</string>
+    <string name="source_detail_type">图源 ID</string>
+    <string name="source_detail_title">图源名称</string>
+    <string name="source_detail_favorite">收藏统计</string>
+    <string name="source_detail_server">图片服务器</string>
 
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">默认阅读模式</string>
@@ -134,6 +138,7 @@
     <string name="settings_other">应用设置</string>
     <string name="settings_other_launch">默认启动页</string>
     <string name="settings_other_theme">主题颜色</string>
+    <string name="settings_other_night_alpha">夜间模式亮度</string>
     <string name="settings_other_storage">存储路径</string>
     <string name="settings_other_storage_summary">自定义存储路径</string>
     <string name="settings_other_storage_not_found">打开 DocumentUI 失败</string>

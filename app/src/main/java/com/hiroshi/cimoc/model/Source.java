@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.model;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Keep;
 import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.annotation.Unique;
 
@@ -17,18 +16,20 @@ public class Source {
     @NotNull private String title;
     @Unique private int type;
     @NotNull private boolean enable;
+    private String server;
 
-    @Keep
-    @Generated(hash = 1339691905)
-    public Source(Long id, @NotNull String title, int type, boolean enable) {
+    @Generated(hash = 615387317)
+    public Source() {
+    }
+
+    @Generated(hash = 1558423385)
+    public Source(Long id, @NotNull String title, int type, boolean enable,
+            String server) {
         this.id = id;
         this.title = title;
         this.type = type;
         this.enable = enable;
-    }
-
-    @Generated(hash = 615387317)
-    public Source() {
+        this.server = server;
     }
 
     @Override
@@ -71,6 +72,14 @@ public class Source {
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public String getServer() {
+        return this.server;
+    }
+
+    public void setServer(String server) {
+        this.server = server;
     }
 
 }

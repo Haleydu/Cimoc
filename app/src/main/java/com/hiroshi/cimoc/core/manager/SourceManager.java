@@ -41,6 +41,7 @@ public class SourceManager {
     private static SourceManager mInstance;
 
     private SourceDao mSourceDao;
+    private SparseArray<Parser> mParserArray = new SparseArray<>();
 
     private SourceManager(BaseView view) {
         mSourceDao = view.getAppInstance().getDaoSession().getSourceDao();
@@ -66,6 +67,12 @@ public class SourceManager {
                 .where(Properties.Enable.eq(true))
                 .orderAsc(Properties.Type)
                 .list();
+    }
+
+    public Source load(int type) {
+        return mSourceDao.queryBuilder()
+                .where(Properties.Type.eq(type))
+                .unique();
     }
 
     public long insert(Source source) {
@@ -102,20 +109,21 @@ public class SourceManager {
         return "null";
     }
 
-    private static SparseArray<Parser> mParserArray = new SparseArray<>();
-
-    public static Parser getParser(int source) {
-        Parser parser = mParserArray.get(source);
+    public Parser getParser(int type) {
+        Parser parser = mParserArray.get(type);
         if (parser == null) {
-            switch (source) {
+            Source source;
+            switch (type) {
                 case SOURCE_IKANMAN:
-                    parser = new IKanman();
+                    source = load(type);
+                    parser = new IKanman(source.getServer());
                     break;
                 case SOURCE_DMZJ:
                     parser = new Dmzj();
                     break;
                 case SOURCE_HHAAZZ:
-                    parser = new HHAAZZ();
+                    source = load(type);
+                    parser = new HHAAZZ(source.getServer());
                     break;
                 case SOURCE_CCTUKU:
                     parser = new CCTuku();
@@ -133,13 +141,14 @@ public class SourceManager {
                     parser = new HHSSEE();
                     break;
                 case SOURCE_57MH:
-                    parser = new MH57();
+                    source = load(type);
+                    parser = new MH57(source.getServer());
                     break;
                 case SOURCE_CHUIYAO:
                     parser = new Chuiyao();
                     break;
             }
-            mParserArray.put(source, parser);
+            mParserArray.put(type, parser);
         }
         return parser;
     }

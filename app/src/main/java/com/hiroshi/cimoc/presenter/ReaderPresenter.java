@@ -4,6 +4,7 @@ import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -31,6 +32,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private PreloadAdapter mPreloadAdapter;
     private ComicManager mComicManager;
+    private SourceManager mSourceManager;
     private Comic mComic;
 
     private boolean isShowNext = true;
@@ -41,10 +43,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.loadLazyUrl(mComic.getSource(), imageUrl.getFirstUrl())
+        mCompositeSubscription.add(Manga.loadLazyUrl(mSourceManager.getParser(mComic.getSource()), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -103,7 +106,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(), mComic, chapter) :
-                Manga.getChapterImage(mComic.getSource(), mComic.getCid(), chapter.getPath());
+                Manga.getChapterImage(mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
     }
 
     public void toNextChapter() {

@@ -8,11 +8,14 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.facebook.binaryresource.BinaryResource;
@@ -87,7 +90,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @Override
     protected void initTheme() {
         super.initTheme();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
@@ -119,6 +122,23 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        int options = getWindow().getDecorView().getSystemUiVisibility();
+
+        options |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+
+        if (Build.VERSION.SDK_INT >= 16) {
+            options |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+        }
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            options |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        }
+
+        getWindow().getDecorView().setSystemUiVisibility(options);
     }
 
     private void initSeekBar() {
@@ -208,11 +228,46 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     protected void hideControl() {
         if (mProgressLayout.isShown()) {
+            Animation upAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, -1.0f);
+            upAction.setDuration(300);
+            Animation downAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 1.0f);
+            downAction.setDuration(300);
+            mProgressLayout.startAnimation(downAction);
             mProgressLayout.setVisibility(View.INVISIBLE);
+            mInfoLayout.startAnimation(upAction);
             mBackLayout.setVisibility(View.INVISIBLE);
             if (hide) {
+                mInfoLayout.startAnimation(upAction);
                 mInfoLayout.setVisibility(View.INVISIBLE);
             }
+        }
+    }
+
+    protected void showControl() {
+        Animation upAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 1.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f);
+        upAction.setDuration(300);
+        Animation downAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f);
+        downAction.setDuration(300);
+        if (mSeekBar.getMax() != max) {
+            mSeekBar.setMax(max);
+            mSeekBar.setProgress(max);
+        }
+        mSeekBar.setProgress(progress);
+        mProgressLayout.startAnimation(upAction);
+        mProgressLayout.setVisibility(View.VISIBLE);
+        mBackLayout.startAnimation(downAction);
+        mBackLayout.setVisibility(View.VISIBLE);
+        if (hide) {
+            mInfoLayout.startAnimation(downAction);
+            mInfoLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -476,16 +531,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (mProgressLayout.isShown()) {
             hideControl();
         } else {
-            if (mSeekBar.getMax() != max) {
-                mSeekBar.setMax(max);
-                mSeekBar.setProgress(max);
-            }
-            mSeekBar.setProgress(progress);
-            mProgressLayout.setVisibility(View.VISIBLE);
-            mBackLayout.setVisibility(View.VISIBLE);
-            if (hide) {
-                mInfoLayout.setVisibility(View.VISIBLE);
-            }
+            showControl();
         }
     }
 

@@ -96,6 +96,12 @@ public class ComicManager {
                 .list();
     }
 
+    public long countBySource(int type) {
+        return mComicDao.queryBuilder()
+                .where(Properties.Source.eq(type), Properties.Favorite.isNotNull())
+                .count();
+    }
+
     public Comic load(long id) {
         return mComicDao.load(id);
     }

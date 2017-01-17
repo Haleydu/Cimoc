@@ -47,7 +47,20 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 SourceDao.createTable(db, false);
                 TagDao.createTable(db, false);
                 TagRefDao.createTable(db, false);
+            case 7:
+                updateSource(db);
         }
+    }
+
+    private void updateSource(Database db) {
+        db.beginTransaction();
+        db.execSQL("ALTER TABLE \"SOURCE\" RENAME TO \"SOURCE2\"");
+        ComicDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"SOURCE\" (\"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", \"SERVER\",)" +
+                " SELECT \"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", null");
+        db.execSQL("DROP TABLE \"SOURCE2\"");
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     private void updateDownload(Database db) {

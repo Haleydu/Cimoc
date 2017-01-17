@@ -17,7 +17,9 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -55,6 +57,7 @@ public class DownloadService extends Service implements BaseView {
     private Notification.Builder builder;
     private NotificationManager notification;
     private TaskManager mTaskManager;
+    private SourceManager mSourceManager;
     private ContentResolver mContentResolver;
 
     private int mConnectTimes;
@@ -75,6 +78,7 @@ public class DownloadService extends Service implements BaseView {
         mExecutorService = Executors.newFixedThreadPool(num);
         mHttpClient = App.getHttpClient();
         mTaskManager = TaskManager.getInstance(this);
+        mSourceManager = SourceManager.getInstance(this);
         mContentResolver = getContentResolver();
     }
 
@@ -148,17 +152,19 @@ public class DownloadService extends Service implements BaseView {
         for (Task task : list) {
             Pair<Worker, Future> pair = mWorkerArray.get(task.getId());
             if (pair != null) {
-                task.setState(pair.first.task.getState());
+                task.setState(pair.first.mTask.getState());
             }
         }
     }
 
     public class Worker implements Runnable {
 
-        private Task task;
+        private Task mTask;
+        private Parser mParse;
 
         Worker(Task task) {
-            this.task = task;
+            mTask = task;
+            mParse = mSourceManager.getParser(task.getSource());
         }
 
         @Override
@@ -167,20 +173,20 @@ public class DownloadService extends Service implements BaseView {
                 List<ImageUrl> list = onDownloadParse();
                 int size = list.size();
                 if (size != 0) {
-                    int source = task.getSource();
+                    int source = mTask.getSource();
                     Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
-                    DocumentFile dir = Download.updateChapterIndex(mContentResolver, getAppInstance().getDocumentFile(), task);
+                    DocumentFile dir = Download.updateChapterIndex(mContentResolver, getAppInstance().getDocumentFile(), mTask);
                     if (dir != null) {
-                        task.setMax(size);
-                        task.setState(Task.STATE_DOING);
-                        for (int i = task.getProgress(); i < size; ++i) {
+                        mTask.setMax(size);
+                        mTask.setState(Task.STATE_DOING);
+                        for (int i = mTask.getProgress(); i < size; ++i) {
                             int count = 0;  // 单页下载错误次数
                             boolean success = false; // 是否下载成功
                             while (count++ <= mConnectTimes && !success) {
                                 onDownloadProgress(i);
                                 ImageUrl image = list.get(i);
                                 for (String url : image.getUrl()) {
-                                    url = image.isLazy() ? Manga.getLazyUrl(mHttpClient, source, url) : url;
+                                    url = image.isLazy() ? Manga.getLazyUrl(mParse, url) : url;
                                     if (url != null) {
                                         Request request = buildRequest(headers, url);
                                         success = RequestAndWrite(dir, request, i + 1, url);
@@ -191,23 +197,23 @@ public class DownloadService extends Service implements BaseView {
                                 }
                             }
                             if (count == mConnectTimes + 1) {     // 单页下载错误
-                                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
+                                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, mTask.getId()));
                                 break;
                             } else if (success && i + 1 == size) {
                                 onDownloadProgress(size);
                             }
                         }
                     } else {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, mTask.getId()));
                     }
                 } else {
-                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, task.getId()));
+                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, mTask.getId()));
                 }
             } catch (InterruptedIOException e) {
-                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PAUSE, task.getId()));
+                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PAUSE, mTask.getId()));
             }
 
-            completeDownload(task.getId());
+            completeDownload(mTask.getId());
         }
 
         private boolean RequestAndWrite(DocumentFile parent, Request request, int num, String url) throws InterruptedIOException {
@@ -254,16 +260,15 @@ public class DownloadService extends Service implements BaseView {
         }
 
         private List<ImageUrl> onDownloadParse() throws InterruptedIOException {
-            task.setState(Task.STATE_PARSE);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PARSE, task.getId()));
-            int source = task.getSource();
-            return Manga.getImageUrls(mHttpClient, source, task.getCid(), task.getPath());
+            mTask.setState(Task.STATE_PARSE);
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PARSE, mTask.getId()));
+            return Manga.getImageUrls(mParse, mTask.getCid(), mTask.getPath());
         }
 
         private void onDownloadProgress(int progress) {
-            task.setProgress(progress);
-            mTaskManager.update(task);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_PROCESS, task.getId(), progress, task.getMax()));
+            mTask.setProgress(progress);
+            mTaskManager.update(mTask);
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_PROCESS, mTask.getId(), progress, mTask.getMax()));
         }
 
     }

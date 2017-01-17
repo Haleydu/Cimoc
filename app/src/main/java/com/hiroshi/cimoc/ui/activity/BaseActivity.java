@@ -65,6 +65,8 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     protected void initNight() {
         if (mNightMask != null) {
             boolean night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
+            int color = mPreference.getInt(PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0) << 24;
+            mNightMask.setBackgroundColor(color);
             if (night) {
                 mNightMask.setVisibility(View.VISIBLE);
             }

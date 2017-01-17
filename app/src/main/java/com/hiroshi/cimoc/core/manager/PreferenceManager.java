@@ -74,6 +74,7 @@ public class PreferenceManager {
     public static final String PREF_OTHER_STORAGE = "pref_other_storage";
     public static final String PREF_OTHER_THEME = "pref_other_theme";
     public static final String PREF_OTHER_LAUNCH = "pref_other_launch";
+    public static final String PREF_OTHER_NIGHT_ALPHA = "pref_other_night_alpha";
 
     public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
     public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";

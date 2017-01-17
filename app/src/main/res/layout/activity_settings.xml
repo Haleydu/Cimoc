@@ -133,6 +133,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_theme"/>
+                <com.hiroshi.cimoc.ui.custom.preference.SliderPreference
+                    android:id="@+id/settings_other_night_alpha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_other_night_alpha"
+                    app:min="100"
+                    app:max="200"/>
                 <com.hiroshi.cimoc.ui.custom.Option
                     android:id="@+id/settings_other_storage"
                     android:layout_width="match_parent"

@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.core.parser.Parser;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.ResultView;
@@ -69,8 +70,9 @@ public class ResultPresenter extends BasePresenter<ResultView> {
 
     public void loadCategory() {
         if (mStateArray[0].state == STATE_NULL) {
+            Parser parser = mSourceManager.getParser(mStateArray[0].source);
             mStateArray[0].state = STATE_DOING;
-            mCompositeSubscription.add(Manga.getCategoryComic(mStateArray[0].source, keyword, ++mStateArray[0].page)
+            mCompositeSubscription.add(Manga.getCategoryComic(parser, keyword, ++mStateArray[0].page)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<Comic>>() {
                         @Override
@@ -97,8 +99,9 @@ public class ResultPresenter extends BasePresenter<ResultView> {
         }
         for (final State obj : mStateArray) {
             if (obj.state == STATE_NULL) {
+                Parser parser = mSourceManager.getParser(obj.source);
                 obj.state = STATE_DOING;
-                mCompositeSubscription.add(Manga.getSearchResult(obj.source, keyword, ++obj.page)
+                mCompositeSubscription.add(Manga.getSearchResult(parser, keyword, ++obj.page)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<Comic>() {
                             @Override

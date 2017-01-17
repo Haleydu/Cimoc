@@ -50,6 +50,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 5;
     private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 6;
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 7;
+    private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 8;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
@@ -61,6 +62,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
     @BindView(R.id.settings_other_theme) ChoicePreference mOtherTheme;
+    @BindView(R.id.settings_other_night_alpha) SliderPreference mOtherNightAlpha;
     @BindView(R.id.settings_download_connection) SliderPreference mDownloadConnection;
     @BindView(R.id.settings_download_thread) SliderPreference mDownloadThread;
 
@@ -68,6 +70,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     private String mStoragePath;
     private String mTempStorage;
+
+    private int[] mResultArray = new int[6];
+    private Intent mResultIntent = new Intent();
 
     @Override
     protected BasePresenter initPresenter() {
@@ -90,6 +95,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 PreferenceManager.HOME_COMIC, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
         mOtherTheme.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_THEME,
                 ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
+        mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
+                R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
         mDownloadConnection.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0,
                 R.string.settings_download_connection, DIALOG_REQUEST_DOWNLOAD_CONN);
         mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
@@ -145,11 +152,15 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 if (mOtherTheme.getValue() != index) {
                     mOtherTheme.setValue(index);
                     int theme = ThemeUtils.getThemeById(index);
-                    setTheme(theme);
                     int primary = ThemeUtils.getResourceId(this, R.attr.colorPrimary);
                     int accent = ThemeUtils.getResourceId(this, R.attr.colorAccent);
-                    changeTheme(primary, accent);
-                    mPresenter.changeTheme(theme, primary, accent);
+                    changeTheme(theme, primary, accent);
+                    mResultArray[0] = 1;
+                    mResultArray[1] = theme;
+                    mResultArray[2] = primary;
+                    mResultArray[3] = accent;
+                    mResultIntent.putExtra(Extra.EXTRA_RESULT, mResultArray);
+                    setResult(Activity.RESULT_OK, mResultIntent);
                 }
                 break;
             case DIALOG_REQUEST_DOWNLOAD_CONN:
@@ -169,10 +180,22 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 showProgressDialog();
                 mPresenter.deleteTask();
                 break;
+            case DIALOG_REQUEST_OTHER_NIGHT_ALPHA:
+                int alpha = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
+                mOtherNightAlpha.setValue(alpha);
+                if (mNightMask != null) {
+                    mNightMask.setBackgroundColor(alpha << 24);
+                }
+                mResultArray[4] = 1;
+                mResultArray[5] = alpha;
+                mResultIntent.putExtra(Extra.EXTRA_RESULT, mResultArray);
+                setResult(Activity.RESULT_OK, mResultIntent);
+                break;
         }
     }
 
-    private void changeTheme(int primary, int accent) {
+    private void changeTheme(int theme, int primary, int accent) {
+        setTheme(theme);
         if (mToolbar != null) {
             mToolbar.setBackgroundColor(ContextCompat.getColor(this, primary));
         }

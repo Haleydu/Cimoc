@@ -27,6 +27,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
@@ -48,6 +49,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private static final int DIALOG_REQUEST_NOTICE = 0;
     private static final int DIALOG_REQUEST_PERMISSION = 1;
+
+    private static final int REQUEST_ACTIVITY_SETTINGS = 0;
 
     private static final int FRAGMENT_NUM = 3;
 
@@ -215,7 +218,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     }
                     break;
                 case R.id.drawer_settings:
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_ACTIVITY_SETTINGS);
                     break;
                 case R.id.drawer_about:
                     startActivity(new Intent(MainActivity.this, AboutActivity.class));
@@ -226,6 +229,23 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_ACTIVITY_SETTINGS:
+                    int[] result = data.getIntArrayExtra(Extra.EXTRA_RESULT);
+                    if (result[0] == 1) {
+                        changeTheme(result[1], result[2], result[3]);
+                    }
+                    if (result[4] == 1 && mNightMask != null) {
+                        mNightMask.setBackgroundColor(result[5] << 24);
+                    }
+                    break;
+            }
+        }
     }
 
     @Override
@@ -278,8 +298,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mDraweeView.setController(controller);
     }
 
-    @Override
-    public void onThemeChange(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
+    private void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
         ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
                 new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});

@@ -5,7 +5,6 @@ import com.hiroshi.cimoc.core.parser.MangaCategory;
 import com.hiroshi.cimoc.core.parser.MangaParser;
 import com.hiroshi.cimoc.core.parser.NodeIterator;
 import com.hiroshi.cimoc.core.parser.SearchIterator;
-import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -28,8 +27,8 @@ import okhttp3.Request;
  */
 public class IKanman extends MangaParser {
 
-    public IKanman() {
-        server = ImageServer.get(SourceManager.SOURCE_IKANMAN).split("\\s+");
+    public IKanman(String list) {
+        server = list.split("\\s+");
         category = new Category();
     }
 

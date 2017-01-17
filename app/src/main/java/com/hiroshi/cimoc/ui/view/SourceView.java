@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/8/21.
  */
-public interface SourceView extends BaseView, ThemeView, DialogView {
+public interface SourceView extends BaseView, ThemeView {
 
     void onSourceLoadSuccess(List<Source> list);
 

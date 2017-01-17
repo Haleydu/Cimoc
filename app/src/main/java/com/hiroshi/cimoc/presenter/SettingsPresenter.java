@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.annotation.ColorRes;
-import android.support.annotation.StyleRes;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.LongSparseArray;
 
@@ -192,10 +190,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             array.put(comic.getId(), comic);
         }
         return array;
-    }
-
-    public void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_THEME_CHANGE, theme, primary, accent));
     }
 
 }

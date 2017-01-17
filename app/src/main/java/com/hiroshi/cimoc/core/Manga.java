@@ -31,11 +31,10 @@ import rx.schedulers.Schedulers;
  */
 public class Manga {
 
-    public static Observable<Comic> getSearchResult(final int source, final String keyword, final int page) {
+    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
-                Parser parser = SourceManager.getParser(source);
                 Request request = parser.getSearchRequest(keyword, page);
                 Random random = new Random();
                 try {
@@ -59,11 +58,10 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Chapter>> getComicInfo(final Comic comic) {
+    public static Observable<List<Chapter>> getComicInfo(final Parser parser, final Comic comic) {
         return Observable.create(new Observable.OnSubscribe<List<Chapter>>() {
             @Override
             public void call(Subscriber<? super List<Chapter>> subscriber) {
-                Parser parser = SourceManager.getParser(comic.getSource());
                 Request request = parser.getInfoRequest(comic.getCid());
                 try {
                     String html = getResponseBody(App.getHttpClient(), request);
@@ -86,11 +84,10 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Comic>> getCategoryComic(final int source, final String format, final int page) {
+    public static Observable<List<Comic>> getCategoryComic(final Parser parser, final String format, final int page) {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
-                Parser parser = SourceManager.getParser(source);
                 Request request = parser.getCategoryRequest(format, page);
                 try {
                     String html = getResponseBody(App.getHttpClient(), request);
@@ -108,11 +105,10 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<ImageUrl>> getChapterImage(final int source, final String cid, final String path) {
+    public static Observable<List<ImageUrl>> getChapterImage(final Parser parser, final String cid, final String path) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                Parser parser = SourceManager.getParser(source);
                 String html;
                 try {
                     Request request = parser.getImagesRequest(cid, path);
@@ -131,13 +127,12 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static List<ImageUrl> getImageUrls(OkHttpClient client, int source, String cid, String path) throws InterruptedIOException {
+    public static List<ImageUrl> getImageUrls(Parser parser, String cid, String path) throws InterruptedIOException {
         List<ImageUrl> list = new ArrayList<>();
-        Parser parser = SourceManager.getParser(source);
         Response response = null;
         try {
             Request request  = parser.getImagesRequest(cid, path);
-            response = client.newCall(request).execute();
+            response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
                 list.addAll(parser.parseImages(response.body().string()));
             } else {
@@ -155,12 +150,11 @@ public class Manga {
         return list;
     }
 
-    public static String getLazyUrl(OkHttpClient client, int source, String url) throws InterruptedIOException {
-        Parser parser = SourceManager.getParser(source);
+    public static String getLazyUrl(Parser parser, String url) throws InterruptedIOException {
         Request request = parser.getLazyRequest(url);
         Response response = null;
         try {
-            response = client.newCall(request).execute();
+            response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
                 return parser.parseLazy(response.body().string(), url);
             } else {
@@ -178,11 +172,10 @@ public class Manga {
         return null;
     }
 
-    public static Observable<String> loadLazyUrl(final int source, final String url) {
+    public static Observable<String> loadLazyUrl(final Parser parser, final String url) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                Parser parser = SourceManager.getParser(source);
                 Request request = parser.getLazyRequest(url);
                 String newUrl = null;
                 try {
@@ -224,7 +217,7 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Pair<Comic, Pair<Integer, Integer>>> checkUpdate(final List<Comic> list) {
+    public static Observable<Pair<Comic, Pair<Integer, Integer>>> checkUpdate(final SourceManager manager, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Pair<Comic, Pair<Integer, Integer>>>() {
             @Override
             public void call(Subscriber<? super Pair<Comic, Pair<Integer, Integer>>> subscriber) {
@@ -237,7 +230,7 @@ public class Manga {
                 for (Comic comic : list) {
                     Pair<Comic, Pair<Integer, Integer>> pair = Pair.create(comic, Pair.create(++count, size));
                     if (comic.getSource() < 100) {
-                        Parser parser = SourceManager.getParser(comic.getSource());
+                        Parser parser = manager.getParser(comic.getSource());
                         Request request = parser.getCheckRequest(comic.getCid());
                         try {
                             String update = parser.parseCheck(getResponseBody(client, request));

@@ -39,7 +39,7 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         if (mToolbar != null) {
             mToolbar.setTitle(SourceManager.getTitle(source));
         }
-        mCategory = SourceManager.getParser(source).getCategory();
+        mCategory = SourceManager.getInstance(this).getParser(source).getCategory();
         initSpinner();
     }
 

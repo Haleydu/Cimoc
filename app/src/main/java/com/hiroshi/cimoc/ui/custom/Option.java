@@ -50,5 +50,9 @@ public class Option extends FrameLayout {
         typedArray.recycle();
     }
 
+    public void setSummary(CharSequence text) {
+        mSummaryView.setText(text);
+    }
+
 }
 
