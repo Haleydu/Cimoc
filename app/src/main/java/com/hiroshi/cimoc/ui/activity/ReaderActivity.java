@@ -83,14 +83,17 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected int orientation;
     protected int mode;
 
-    private boolean hide;
+    private boolean mHideInfo;
+    private boolean mHideNav;
     private int[] mClickArray;
     private int[] mLongClickArray;
 
     @Override
     protected void initTheme() {
         super.initTheme();
-        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
@@ -111,8 +114,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initView() {
-        hide = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
-        mInfoLayout.setVisibility(hide ? View.INVISIBLE : View.VISIBLE);
+        mHideNav = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        mHideInfo = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
+        mInfoLayout.setVisibility(mHideInfo ? View.INVISIBLE : View.VISIBLE);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
         turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
@@ -128,13 +132,15 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     public void onWindowFocusChanged(boolean hasFocus) {
         int options = getWindow().getDecorView().getSystemUiVisibility();
 
-        options |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        if (mHideNav) {
+            options |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        }
 
-        if (Build.VERSION.SDK_INT >= 16) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             options |= View.SYSTEM_UI_FLAG_FULLSCREEN;
         }
 
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             options |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         }
 
@@ -240,7 +246,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mProgressLayout.setVisibility(View.INVISIBLE);
             mInfoLayout.startAnimation(upAction);
             mBackLayout.setVisibility(View.INVISIBLE);
-            if (hide) {
+            if (mHideInfo) {
                 mInfoLayout.startAnimation(upAction);
                 mInfoLayout.setVisibility(View.INVISIBLE);
             }
@@ -265,7 +271,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mProgressLayout.setVisibility(View.VISIBLE);
         mBackLayout.startAnimation(downAction);
         mBackLayout.setVisibility(View.VISIBLE);
-        if (hide) {
+        if (mHideInfo) {
             mInfoLayout.startAnimation(downAction);
             mInfoLayout.setVisibility(View.VISIBLE);
         }

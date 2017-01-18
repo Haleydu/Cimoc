@@ -94,6 +94,13 @@
     <string name="source_detail_favorite">收藏统计</string>
     <string name="source_detail_server">图片服务器</string>
 
+    <string name="category_subject">主题</string>
+    <string name="category_area">地区</string>
+    <string name="category_reader">读者</string>
+    <string name="category_year">年份</string>
+    <string name="category_progress">进度</string>
+    <string name="category_order">顺序</string>
+
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">默认阅读模式</string>
     <string name="settings_reader_config">阅读配置</string>
@@ -123,6 +130,8 @@
     <string name="settings_reader_trigger">翻页触发位移</string>
     <string name="settings_reader_interval">显示图片间隔</string>
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
+    <string name="settings_reader_hide_nav">隐藏导航栏</string>
+    <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
     <string name="settings_download">下载设置</string>
     <string name="settings_download_connection">下载错误重试次数</string>
     <string name="settings_download_thread">多任务下载数量</string>
@@ -193,6 +202,8 @@
     <string name="tag_comic">标签详情</string>
     <string name="tag_comic_select">选择漫画</string>
     <string name="tag_comic_delete_confirm">是否删除漫画</string>
+
+    <string name="part_favorite_add">添加漫画</string>
 
     <string name="download_service_doing">正在下载漫画</string>
     <string name="download_service_complete">所有任务已完成</string>

@@ -58,6 +58,12 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_disable_popup"
                     app:summary="@string/settings_reader_disable_popup_summary"/>
+                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_hide_nav"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_reader_hide_nav"
+                    app:summary="@string/settings_reader_hide_nav_summary"/>
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"

@@ -230,15 +230,16 @@ public class BackupPresenter extends BasePresenter<BackupView> {
             @Override
             public List<MiniComic> call() throws Exception {
                 List<MiniComic> result = new LinkedList<>();
+                long favorite = System.currentTimeMillis() + list.size();
                 for (Comic comic : list) {
                     Comic temp = mComicManager.load(comic.getSource(), comic.getCid());
                     if (temp == null) {
-                        comic.setFavorite(System.currentTimeMillis());
+                        comic.setFavorite(--favorite);
                         mComicManager.insert(comic);
                         result.add(new MiniComic(comic));
                     } else {
                         if (temp.getFavorite() == null) {
-                            temp.setFavorite(System.currentTimeMillis());
+                            temp.setFavorite(--favorite);
                             mComicManager.update(temp);
                             result.add(new MiniComic(temp));
                         }

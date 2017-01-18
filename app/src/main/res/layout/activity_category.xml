@@ -30,7 +30,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:text="题材" />
+                    android:text="@string/category_subject" />
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_subject"
                     android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:text="地区" />
+                    android:text="@string/category_area" />
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_area"
                     android:layout_width="match_parent"
@@ -78,7 +78,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:text="读者" />
+                    android:text="@string/category_reader" />
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_reader"
                     android:layout_width="match_parent"
@@ -102,7 +102,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:text="进度" />
+                    android:text="@string/category_progress" />
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_progress"
                     android:layout_width="match_parent"
@@ -126,7 +126,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:text="年份" />
+                    android:text="@string/category_year" />
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_year"
                     android:layout_width="match_parent"
@@ -150,7 +150,7 @@
                     android:layout_marginRight="10dp"
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp"
-                    android:text="顺序" />
+                    android:text="@string/category_order" />
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_order"
                     android:layout_width="match_parent"

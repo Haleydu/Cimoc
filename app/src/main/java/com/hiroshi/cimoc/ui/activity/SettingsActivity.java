@@ -58,6 +58,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_keep_bright) CheckBoxPreference mReaderKeepBright;
     @BindView(R.id.settings_reader_hide_info) CheckBoxPreference mReaderHideInfo;
     @BindView(R.id.settings_reader_disable_popup) CheckBoxPreference mReaderDisablePopup;
+    @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
@@ -88,6 +89,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderKeepBright.bindPreference(PreferenceManager.PREF_READER_KEEP_BRIGHT, false);
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mReaderDisablePopup.bindPreference(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
+        mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -152,9 +154,10 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 if (mOtherTheme.getValue() != index) {
                     mOtherTheme.setValue(index);
                     int theme = ThemeUtils.getThemeById(index);
+                    setTheme(theme);
                     int primary = ThemeUtils.getResourceId(this, R.attr.colorPrimary);
                     int accent = ThemeUtils.getResourceId(this, R.attr.colorAccent);
-                    changeTheme(theme, primary, accent);
+                    changeTheme(primary, accent);
                     mResultArray[0] = 1;
                     mResultArray[1] = theme;
                     mResultArray[2] = primary;
@@ -194,8 +197,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
     }
 
-    private void changeTheme(int theme, int primary, int accent) {
-        setTheme(theme);
+    private void changeTheme(int primary, int accent) {
         if (mToolbar != null) {
             mToolbar.setBackgroundColor(ContextCompat.getColor(this, primary));
         }
@@ -207,6 +209,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderKeepBright.setColorStateList(stateList);
         mReaderHideInfo.setColorStateList(stateList);
         mReaderDisablePopup.setColorStateList(stateList);
+        mReaderHideNav.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
     }
 

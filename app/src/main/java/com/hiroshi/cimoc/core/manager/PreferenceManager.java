@@ -30,6 +30,7 @@ public class PreferenceManager {
     public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
     public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
+    public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
     public static final String PREF_READER_PAGE_ORIENTATION = "pref_reader_page_orientation";
@@ -81,10 +82,6 @@ public class PreferenceManager {
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
 
     public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
-
-    public static final String PREF_SOURCE_SERVER_IKANMAN = "pref_source_server_ikanman";
-    public static final String PREF_SOURCE_SERVER_HHAAZZ = "pref_source_server_hhaazz";
-    public static final String PREF_SOURCE_SERVER_57MH = "pref_source_server_57mh";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

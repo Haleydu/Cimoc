@@ -63,4 +63,9 @@ public abstract class CoordinatorActivity extends BackActivity implements
         return mLayoutView;
     }
 
+    @Override
+    protected boolean isNavTranslation() {
+        return false;
+    }
+
 }

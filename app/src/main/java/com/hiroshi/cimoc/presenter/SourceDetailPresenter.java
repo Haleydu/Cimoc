@@ -27,4 +27,13 @@ public class SourceDetailPresenter extends BasePresenter<SourceDetailView> {
         mBaseView.onSourceLoadSuccess(type, mSource.getTitle(), count, mSource.getServer());
     }
 
+    public String getServer() {
+        return mSource.getServer();
+    }
+
+    public void updateServer(String server) {
+        mSource.setServer(server);
+        mSourceManager.update(mSource);
+    }
+
 }

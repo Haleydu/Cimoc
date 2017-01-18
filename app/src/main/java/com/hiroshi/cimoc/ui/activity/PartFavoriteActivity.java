@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.App;
@@ -22,16 +24,20 @@ import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 import java.util.LinkedList;
 import java.util.List;
 
-import butterknife.OnClick;
+import butterknife.BindView;
 
 /**
  * Created by Hiroshi on 2016/10/11.
  */
 
-public class PartFavoriteActivity extends CoordinatorActivity implements PartFavoriteView {
+public class PartFavoriteActivity extends BackActivity implements PartFavoriteView, BaseAdapter.OnItemClickListener,
+        BaseAdapter.OnItemLongClickListener {
 
     private static final int DIALOG_REQUEST_DELETE = 0;
     private static final int DIALOG_REQUEST_ADD = 1;
+
+    @BindView(R.id.part_favorite_recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.part_favorite_layout) View mLayoutView;
 
     private PartFavoritePresenter mPresenter;
     private GridAdapter mGridAdapter;
@@ -44,24 +50,18 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     }
 
     @Override
-    protected BaseAdapter initAdapter() {
+    protected void initView() {
+        super.initView();
         mGridAdapter = new GridAdapter(this, new LinkedList<MiniComic>());
         mGridAdapter.setSymbol(true);
         mGridAdapter.setProvider(((App) getApplication()).getBuilderProvider());
-        return mGridAdapter;
-    }
-
-    @Override
-    protected void initActionButton() {
-        if (getIntent().getLongExtra(Extra.EXTRA_ID, -1) < 0) {
-            mLayoutView.removeView(mActionButton);
-            mActionButton = null;
-        }
-    }
-
-    @Override
-    protected RecyclerView.LayoutManager initLayoutManager() {
-        return new GridLayoutManager(this, 3);
+        mGridAdapter.setOnItemClickListener(this);
+        mGridAdapter.setOnItemLongClickListener(this);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.addItemDecoration(mGridAdapter.getItemDecoration());
+        mRecyclerView.setAdapter(mGridAdapter);
     }
 
     @Override
@@ -71,22 +71,36 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
         mPresenter.load(id, title);
     }
 
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        List<MiniComic> list = mPresenter.getComicList();
-        int size = list.size();
-        String[] arr1 = new String[size];
-        boolean[] arr2 = new boolean[size];
-        long[] arr3 = new long[size];
-        for (int i = 0; i < size; ++i) {
-            MiniComic comic = list.get(i);
-            arr1[i] = comic.getTitle();
-            arr2[i] = false;
-            arr3[i] = comic.getId();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (getIntent().getLongExtra(Extra.EXTRA_ID, -1) >= 0) {
+            getMenuInflater().inflate(R.menu.part_favorite_menu, menu);
         }
-        Bundle bundle = new Bundle();
-        bundle.putLongArray(EXTRA_DIALOG_BUNDLE_ARG_1, arr3);
-        MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, bundle, DIALOG_REQUEST_ADD);
-        fragment.show(getFragmentManager(), null);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.part_favorite_add:
+                List<MiniComic> list = mPresenter.getComicList();
+                int size = list.size();
+                String[] arr1 = new String[size];
+                boolean[] arr2 = new boolean[size];
+                long[] arr3 = new long[size];
+                for (int i = 0; i < size; ++i) {
+                    MiniComic comic = list.get(i);
+                    arr1[i] = comic.getTitle();
+                    arr2[i] = false;
+                    arr3[i] = comic.getId();
+                }
+                Bundle bundle = new Bundle();
+                bundle.putLongArray(EXTRA_DIALOG_BUNDLE_ARG_1, arr3);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, bundle, DIALOG_REQUEST_ADD);
+                fragment.show(getFragmentManager(), null);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -156,10 +170,6 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     public void onComicLoadSuccess(List<MiniComic> list) {
         hideProgressBar();
         mGridAdapter.addAll(list);
-        if (mActionButton != null) {
-            mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
-            mActionButton.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
@@ -193,6 +203,11 @@ public class PartFavoriteActivity extends CoordinatorActivity implements PartFav
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_part_favorite;
+    }
+
+    @Override
+    protected View getLayoutView() {
+        return mLayoutView;
     }
 
     public static Intent createIntent(Context context, long id, String title) {

@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
@@ -30,6 +32,14 @@ public class BackupActivity extends BackActivity implements BackupView {
     @BindView(R.id.backup_layout) View mLayoutView;
 
     private BackupPresenter mPresenter;
+
+    @Override
+    protected void initTheme() {
+        super.initTheme();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
+    }
 
     @Override
     protected BasePresenter initPresenter() {

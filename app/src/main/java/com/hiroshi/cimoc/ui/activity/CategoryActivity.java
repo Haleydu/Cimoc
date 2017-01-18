@@ -91,6 +91,11 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
     }
 
     @Override
+    protected boolean isNavTranslation() {
+        return false;
+    }
+
+    @Override
     protected String getDefaultTitle() {
         return getString(R.string.category);
     }

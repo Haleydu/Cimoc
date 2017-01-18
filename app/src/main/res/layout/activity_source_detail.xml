@@ -13,11 +13,13 @@
             android:id="@+id/source_detail_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
             app:title="@string/source_detail_type"/>
         <com.hiroshi.cimoc.ui.custom.Option
             android:id="@+id/source_detail_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clickable="true"
             app:title="@string/source_detail_title"/>
         <com.hiroshi.cimoc.ui.custom.Option
             android:id="@+id/source_detail_favorite"
