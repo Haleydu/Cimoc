@@ -112,7 +112,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case DIALOG_REQUEST_OTHER_STORAGE:
@@ -224,14 +223,14 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick(R.id.settings_download_scan) void onDownloadScanClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.settings_download_scan_confirm,
-                true, null, DIALOG_REQUEST_DOWNLOAD_SCAN);
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
         fragment.show(getFragmentManager(), null);
     }
 
     @OnClick(R.id.settings_download_delete) void onDownloadDeleteClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.settings_download_delete_confirm,
-                true, null, DIALOG_REQUEST_DOWNLOAD_DELETE);
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
         fragment.show(getFragmentManager(), null);
     }
 

@@ -58,10 +58,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                if ((boolean) rxEvent.getData(1)) {
-                    MiniComic comic = (MiniComic) rxEvent.getData();
-                    mBaseView.onComicRead(comic);
-                }
+                mBaseView.onComicRead((MiniComic) rxEvent.getData());
             }
         });
         addSubscription(RxEvent.EVENT_COMIC_CANCEL_HIGHLIGHT, new Action1<RxEvent>() {

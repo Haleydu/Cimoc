@@ -48,11 +48,8 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
     }
 
     @OnClick(R.id.source_detail_server) void onSourceServerClick() {
-        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
-        Bundle bundle = new Bundle();
-        bundle.putInt(DialogView.EXTRA_DIALOG_BUNDLE_ARG_1, source);
         EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.source_detail_server,
-                mPresenter.getServer(), bundle, DIALOG_REQUEST_EDITOR);
+                mPresenter.getServer(), DIALOG_REQUEST_EDITOR);
         fragment.show(getFragmentManager(), null);
     }
 

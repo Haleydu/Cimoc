@@ -5,7 +5,7 @@ import com.hiroshi.cimoc.model.MiniComic;
 /**
  * Created by Hiroshi on 2016/8/21.
  */
-public interface HistoryView extends GridView {
+public interface HistoryView extends GridView, DialogView {
 
     void onItemUpdate(MiniComic comic);
 

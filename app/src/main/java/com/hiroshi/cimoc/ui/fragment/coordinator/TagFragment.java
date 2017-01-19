@@ -27,19 +27,19 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.OnClick;
-
 /**
  * Created by Hiroshi on 2016/10/10.
  */
 
-public class TagFragment extends CoordinatorFragment implements TagView {
+public class TagFragment extends RecyclerViewFragment implements TagView {
 
     private static final int DIALOG_REQUEST_DELETE = 0;
     private static final int DIALOG_REQUEST_EDITOR = 1;
 
     private TagPresenter mPresenter;
     private TagAdapter mTagAdapter;
+
+    private Tag mSavedTag;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -66,11 +66,6 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     }
 
     @Override
-    protected void initActionButton() {
-        mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
-    }
-
-    @Override
     protected void initData() {
         mPresenter.load();
     }
@@ -78,7 +73,7 @@ public class TagFragment extends CoordinatorFragment implements TagView {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.tag_menu, menu);
+        inflater.inflate(R.menu.menu_tag, menu);
     }
 
     @Override
@@ -87,6 +82,11 @@ public class TagFragment extends CoordinatorFragment implements TagView {
             case R.id.comic_search:
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.tag_add:
+                EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add, null, DIALOG_REQUEST_EDITOR);
+                fragment.setTargetFragment(this, 0);
+                fragment.show(getFragmentManager(), null);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -101,9 +101,9 @@ public class TagFragment extends CoordinatorFragment implements TagView {
 
     @Override
     public void onItemLongClick(View view, int position) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_DIALOG_BUNDLE_ARG_1, position);
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.tag_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
+        mSavedTag = mTagAdapter.getItem(position);
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.tag_delete_confirm, true, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -113,8 +113,7 @@ public class TagFragment extends CoordinatorFragment implements TagView {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
                 showProgressDialog();
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
-                mPresenter.delete(mTagAdapter.getItem(pos));
+                mPresenter.delete(mSavedTag);
                 break;
             case DIALOG_REQUEST_EDITOR:
                 String text = bundle.getString(EXTRA_DIALOG_RESULT_VALUE);
@@ -126,12 +125,6 @@ public class TagFragment extends CoordinatorFragment implements TagView {
                 }
                 break;
         }
-    }
-
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add, null, null, DIALOG_REQUEST_EDITOR);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
     }
 
     @Override
@@ -168,7 +161,6 @@ public class TagFragment extends CoordinatorFragment implements TagView {
 
     @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
-        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
         mTagAdapter.setColor(ContextCompat.getColor(getActivity(), primary));
         mTagAdapter.notifyDataSetChanged();
     }

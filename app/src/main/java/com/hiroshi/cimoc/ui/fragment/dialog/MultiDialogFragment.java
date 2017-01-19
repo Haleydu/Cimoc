@@ -50,19 +50,17 @@ public class MultiDialogFragment extends DialogFragment implements DialogInterfa
     public void onClick(DialogInterface dialogInterface, int which) {
         int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
         Bundle bundle = new Bundle();
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, getArguments().getBundle(DialogView.EXTRA_DIALOG_BUNDLE));
         bundle.putBooleanArray(DialogView.EXTRA_DIALOG_RESULT_VALUE, mCheckArray);
         DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
     }
 
-    public static MultiDialogFragment newInstance(int title, String[] item, boolean[] check, Bundle extra, int requestCode) {
+    public static MultiDialogFragment newInstance(int title, String[] item, boolean[] check, int requestCode) {
         MultiDialogFragment fragment = new MultiDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
         bundle.putStringArray(DialogView.EXTRA_DIALOG_ITEMS, item);
         bundle.putBooleanArray(DialogView.EXTRA_DIALOG_CHOICE_ITEMS, check);
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
         bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;

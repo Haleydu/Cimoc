@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/8/11.
  */
-public class SourceFragment extends CoordinatorFragment implements SourceView, SourceAdapter.OnItemCheckedListener {
+public class SourceFragment extends RecyclerViewFragment implements SourceView, SourceAdapter.OnItemCheckedListener {
 
     private SourcePresenter mPresenter;
     private SourceAdapter mSourceAdapter;
@@ -58,12 +58,6 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
     }
 
     @Override
-    protected void initActionButton() {
-        mLayoutView.removeView(mActionButton);
-        mActionButton = null;
-    }
-
-    @Override
     protected void initData() {
         mPresenter.load();
     }
@@ -71,7 +65,7 @@ public class SourceFragment extends CoordinatorFragment implements SourceView, S
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.source_menu, menu);
+        inflater.inflate(R.menu.menu_source, menu);
     }
 
     @Override

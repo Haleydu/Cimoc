@@ -60,6 +60,10 @@
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
+    <string name="comic_clear_history">清除历史</string>
+    <string name="comic_start_download">开始下载</string>
+    <string name="comic_stop_download">停止下载</string>
+    <string name="comic_check_update">检查更新</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_filter_continue">连载</string>
     <string name="comic_filter_finish">完结</string>
@@ -199,9 +203,8 @@
     <string name="tag_add_empty">标签名称不能为空</string>
     <string name="tag_delete_confirm">是否删除标签</string>
 
-    <string name="tag_comic">标签详情</string>
-    <string name="tag_comic_select">选择漫画</string>
-    <string name="tag_comic_delete_confirm">是否删除漫画</string>
+    <string name="part_favorite_select">选择漫画</string>
+    <string name="part_favorite_delete_confirm">是否删除漫画</string>
 
     <string name="part_favorite_add">添加漫画</string>
 

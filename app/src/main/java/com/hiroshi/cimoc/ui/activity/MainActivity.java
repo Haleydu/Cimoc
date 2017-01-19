@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             @Override
             public void onClick(View v) {
                 if (mLastSource != -1 && mLastCid != null) {
-                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid, false);
+                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
                     startActivity(intent);
                 }
             }
@@ -318,7 +318,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private boolean showAuthorNotice() {
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, null, DIALOG_REQUEST_NOTICE);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
+                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
             fragment.show(getFragmentManager(), null);
             return true;
         }
@@ -327,7 +328,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private void showPermission() {
         if (!PermissionUtils.hasStoragePermission(this)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission, R.string.main_permission_content, false, null, DIALOG_REQUEST_PERMISSION);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission,
+                    R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -349,6 +351,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected View getLayoutView() {
         return mDrawerLayout;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
 }

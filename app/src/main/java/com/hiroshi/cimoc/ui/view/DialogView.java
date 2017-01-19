@@ -16,8 +16,6 @@ public interface DialogView {
     String EXTRA_DIALOG_CONTENT = "cimoc.intent.extra.EXTRA_DIALOG_CONTENT";
     String EXTRA_DIALOG_NEGATIVE = "cimoc.intent.extra.EXTRA_DIALOG_NEGATIVE";
     String EXTRA_DIALOG_CHOICE_ITEMS = "cimoc.intent.extra.EXTRA_DIALOG_CHOICE_ITEMS";
-    String EXTRA_DIALOG_BUNDLE = "cimoc.intent.extra.EXTRA_DIALOG_BUNDLE";
-    String EXTRA_DIALOG_BUNDLE_ARG_1 = "cimoc.intent.extra.EXTRA_DIALOG_BUNDLE_ARG_1";
 
     void onDialogResult(int requestCode, Bundle bundle);
 

@@ -128,7 +128,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         mComic.setLast(chapter.getPath());
         mComic.setPage(isNext ? 1 : chapter.getCount());
         mComicManager.update(mComic);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, chapter.getPath()));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE));
     }
 
     public void savePicture(InputStream inputStream, String url) {
@@ -152,7 +152,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         if (status != LOAD_INIT) {
             mComic.setPage(page);
             mComicManager.update(mComic);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_PAGE_CHANGE, page));
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE));
         }
     }
 

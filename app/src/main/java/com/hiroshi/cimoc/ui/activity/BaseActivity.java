@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
@@ -62,6 +63,9 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     protected void initTheme() {
         int theme = mPreference.getInt(PreferenceManager.PREF_OTHER_THEME, ThemeUtils.THEME_BLUE);
         setTheme(ThemeUtils.getThemeById(theme));
+        if (isNavTranslation() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
     }
 
     protected void initNight() {
@@ -105,6 +109,10 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     protected void initData() {}
 
     protected abstract int getLayoutRes();
+
+    protected boolean isNavTranslation() {
+        return false;
+    }
 
     protected void showSnackbar(String msg) {
         HintUtils.showSnackbar(getLayoutView(), msg);

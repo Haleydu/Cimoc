@@ -9,7 +9,6 @@ import com.hiroshi.cimoc.ui.view.HistoryView;
 
 import java.util.List;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -67,10 +66,10 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     public void clear() {
         mCompositeSubscription.add(mComicManager.listHistoryInRx()
-                .flatMap(new Func1<List<Comic>, Observable<Void>>() {
+                .doOnNext(new Action1<List<Comic>>() {
                     @Override
-                    public Observable<Void> call(final List<Comic> list) {
-                        return mComicManager.runInRx(new Runnable() {
+                    public void call(final List<Comic> list) {
+                        mComicManager.runInTx(new Runnable() {
                             @Override
                             public void run() {
                                 for (Comic comic : list) {
@@ -82,9 +81,9 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Action1<List<Comic>>() {
                     @Override
-                    public void call(Void v) {
+                    public void call(List<Comic> list) {
                         mBaseView.onHistoryClearSuccess();
                     }
                 }, new Action1<Throwable>() {

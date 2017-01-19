@@ -85,7 +85,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -173,8 +173,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     }
 
     private void startReader(String path) {
-        boolean favorite = getIntent().getBooleanExtra(Extra.EXTRA_MODE, false);
-        long id = mPresenter.updateLast(path, favorite);
+        long id = mPresenter.updateLast(path);
         mDetailAdapter.setLast(path);
         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
         Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet(), mode);
@@ -244,12 +243,11 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         return getString(R.string.detail);
     }
 
-    public static Intent createIntent(Context context, Long id, int source, String cid, boolean favorite) {
+    public static Intent createIntent(Context context, Long id, int source, String cid) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(Extra.EXTRA_ID, id);
         intent.putExtra(Extra.EXTRA_SOURCE, source);
         intent.putExtra(Extra.EXTRA_CID, cid);
-        intent.putExtra(Extra.EXTRA_MODE, favorite);
         return intent;
     }
 

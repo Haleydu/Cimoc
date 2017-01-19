@@ -33,6 +33,11 @@ public class UpdateHelper {
         }
     }
 
+    /**
+     * app: 1.4.4.2 -> 1.4.4.3
+     * db: 7 -> 8
+     * 表 SOURCE 添加 SERVER 字段
+     */
     private static void updateSourceServer(final DaoSession session) {
         session.runInTx(new Runnable() {
             @Override
@@ -51,6 +56,9 @@ public class UpdateHelper {
         });
     }
 
+    /**
+     * 初始化图源
+     */
     private static void initSource(DaoSession session) {
         int[] type = {SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ, SourceManager.SOURCE_CCTUKU,
                 SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5, SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE,

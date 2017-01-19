@@ -108,7 +108,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     public void onItemClick(View view, int position) {
         Comic comic = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid(), false);
+        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid());
         startActivity(intent);
     }
 
@@ -149,6 +149,11 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     protected View getLayoutView() {
         return mLayoutView;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
     /**

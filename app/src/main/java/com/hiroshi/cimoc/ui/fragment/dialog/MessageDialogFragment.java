@@ -31,20 +31,16 @@ public class MessageDialogFragment extends DialogFragment implements DialogInter
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
         int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
-        Bundle extra = getArguments().getBundle(DialogView.EXTRA_DIALOG_BUNDLE);
-        Bundle bundle = new Bundle();
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
         DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
-        target.onDialogResult(requestCode, bundle);
+        target.onDialogResult(requestCode, null);
     }
 
-    public static MessageDialogFragment newInstance(int title, int content, boolean negative, Bundle extra, int requestCode) {
+    public static MessageDialogFragment newInstance(int title, int content, boolean negative, int requestCode) {
         MessageDialogFragment fragment = new MessageDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
         bundle.putInt(DialogView.EXTRA_DIALOG_CONTENT, content);
         bundle.putBoolean(DialogView.EXTRA_DIALOG_NEGATIVE, negative);
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
         bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;

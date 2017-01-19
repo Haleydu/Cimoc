@@ -74,18 +74,11 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 }
             }
         });
-        addSubscription(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_UPDATE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                String path = (String) rxEvent.getData();
-                mComic.setLast(path);
-                mBaseView.onLastChange(path);
-            }
-        });
-        addSubscription(RxEvent.EVENT_COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mComic.setPage((int) rxEvent.getData());
+                mComic = mComicManager.load(mComic.getId());
+                mBaseView.onLastChange(mComic.getLast());
             }
         });
     }
@@ -188,6 +181,9 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     }
 
     public long updateLast(String path) {
+        if (mComic.getFavorite() != null) {
+            mComic.setFavorite(System.currentTimeMillis());
+        }
         mComic.setHistory(System.currentTimeMillis());
         if (!path.equals(mComic.getLast())) {
             mComic.setLast(path);

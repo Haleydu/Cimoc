@@ -121,4 +121,10 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         return count;
     }
 
+    public void moveItemTop(MiniComic comic) {
+        if (remove(comic)) {
+            add(findFirstNotHighlight(), comic);
+        }
+    }
+
 }

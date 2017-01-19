@@ -100,7 +100,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_search, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -117,7 +117,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                         arr2[i] = mSourceList.get(i).second;
                     }
                     MultiDialogFragment fragment =
-                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, null, DIALOG_REQUEST_SOURCE);
+                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
                     fragment.show(getFragmentManager(), null);
                     break;
                 }
@@ -197,6 +197,11 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_search;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
 }

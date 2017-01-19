@@ -42,6 +42,9 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     private PartFavoritePresenter mPresenter;
     private GridAdapter mGridAdapter;
 
+    private MiniComic mSavedComic;
+    private long[] mSavedId;
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new PartFavoritePresenter();
@@ -74,7 +77,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (getIntent().getLongExtra(Extra.EXTRA_ID, -1) >= 0) {
-            getMenuInflater().inflate(R.menu.part_favorite_menu, menu);
+            getMenuInflater().inflate(R.menu.menu_part_favorite, menu);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -85,18 +88,14 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
             case R.id.part_favorite_add:
                 List<MiniComic> list = mPresenter.getComicList();
                 int size = list.size();
-                String[] arr1 = new String[size];
-                boolean[] arr2 = new boolean[size];
-                long[] arr3 = new long[size];
+                String[] title = new String[size];
+                mSavedId = new long[size];
                 for (int i = 0; i < size; ++i) {
                     MiniComic comic = list.get(i);
-                    arr1[i] = comic.getTitle();
-                    arr2[i] = false;
-                    arr3[i] = comic.getId();
+                    title[i] = comic.getTitle();
+                    mSavedId[i] = comic.getId();
                 }
-                Bundle bundle = new Bundle();
-                bundle.putLongArray(EXTRA_DIALOG_BUNDLE_ARG_1, arr3);
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.tag_comic_select, arr1, arr2, bundle, DIALOG_REQUEST_ADD);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select, title, null, DIALOG_REQUEST_ADD);
                 fragment.show(getFragmentManager(), null);
                 break;
         }
@@ -106,22 +105,15 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null, true);
+        Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null);
         startActivity(intent);
     }
 
     @Override
-    public void onHighlightCancel(MiniComic comic) {
-        mGridAdapter.remove(comic);
-        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
-    }
-
-    @Override
     public void onItemLongClick(View view, int position) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_DIALOG_BUNDLE_ARG_1, position);
+        mSavedComic = mGridAdapter.getItem(position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.tag_comic_delete_confirm, true, bundle, DIALOG_REQUEST_DELETE);
+                R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -129,33 +121,16 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
-                int pos = bundle.getBundle(EXTRA_DIALOG_BUNDLE).getInt(EXTRA_DIALOG_BUNDLE_ARG_1);
                 long tid = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-                long cid = mGridAdapter.getItem(pos).getId();
+                long cid = mSavedComic.getId();
                 mPresenter.delete(tid, cid);
-                mGridAdapter.remove(pos);
+                mGridAdapter.remove(mSavedComic);
                 showSnackbar(R.string.common_execute_success);
                 break;
             case DIALOG_REQUEST_ADD:
                 showProgressDialog();
-                Bundle extra = bundle.getBundle(EXTRA_DIALOG_BUNDLE);
-                if (extra != null) {
-                    long[] id = extra.getLongArray(EXTRA_DIALOG_BUNDLE_ARG_1);
-                    boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
-                    if (id != null && check != null && id.length == check.length) {
-                        List<Long> list = new LinkedList<>();
-                        for (int i = 0; i != check.length; ++i) {
-                            if (check[i]) {
-                                list.add(id[i]);
-                            }
-                        }
-                        mPresenter.insert(list);
-                    } else {
-                        onComicInsertFail();
-                    }
-                } else {
-                    onComicInsertFail();
-                }
+                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
+                mPresenter.insert(mSavedId, check);
                 break;
         }
     }
@@ -186,6 +161,16 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     }
 
     @Override
+    public void onHighlightCancel(MiniComic comic) {
+        mGridAdapter.moveItemTop(comic);
+    }
+
+    @Override
+    public void onComicRead(MiniComic comic) {
+        mGridAdapter.moveItemTop(comic);
+    }
+
+    @Override
     public void onComicRemove(long id) {
         mGridAdapter.removeItemById(id);
     }
@@ -208,6 +193,11 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     protected View getLayoutView() {
         return mLayoutView;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
     public static Intent createIntent(Context context, long id, String title) {

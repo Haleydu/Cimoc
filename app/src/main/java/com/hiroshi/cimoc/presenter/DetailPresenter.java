@@ -47,18 +47,11 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
-        addSubscription(RxEvent.EVENT_COMIC_CHAPTER_CHANGE, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_COMIC_UPDATE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                String path = (String) rxEvent.getData();
-                mComic.setLast(path);
+                mComic = mComicManager.load(mComic.getId());
                 mBaseView.onLastChange(mComic.getLast());
-            }
-        });
-        addSubscription(RxEvent.EVENT_COMIC_PAGE_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mComic.setPage((int) rxEvent.getData());
             }
         });
     }
@@ -127,11 +120,10 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     /**
      * 更新最后阅读
      * @param path 最后阅读
-     * @param favorite 是否从收藏界面进入
      * @return 漫画ID
      */
-    public long updateLast(String path, boolean favorite) {
-        if (favorite && mComic.getFavorite() != null) {     // 从收藏界面进入且没有取消收藏
+    public long updateLast(String path) {
+        if (mComic.getFavorite() != null) {
             mComic.setFavorite(System.currentTimeMillis());
         }
         mComic.setHistory(System.currentTimeMillis());
@@ -140,7 +132,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             mComic.setPage(1);
         }
         mComicManager.updateOrInsert(mComic);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_READ, new MiniComic(mComic), favorite));
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_READ, new MiniComic(mComic)));
         return mComic.getId();
     }
 

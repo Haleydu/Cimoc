@@ -76,6 +76,12 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                 mBaseView.onHighlightCancel((MiniComic) rxEvent.getData());
             }
         });
+        addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onComicRead((MiniComic) rxEvent.getData());
+            }
+        });
     }
 
     private Observable<List<MiniComic>> getObservable(long id) {
@@ -163,19 +169,25 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
         return list;
     }
 
-    public void insert(List<Long> list) {
-        List<TagRef> rList = new ArrayList<>();
-        List<MiniComic> cList = new ArrayList<>();
-        for (Long id : list) {
-            MiniComic comic = mComicArray.get(id);
-            if (comic != null) {
-                rList.add(new TagRef(null, mTag.getId(), comic.getId()));
-                cList.add(comic);
-                mComicArray.remove(comic.getId());
+    public void insert(long[] idList, boolean[] checkList) {
+        if (idList != null && checkList != null && idList.length == checkList.length) {
+            List<TagRef> rList = new ArrayList<>();
+            List<MiniComic> cList = new ArrayList<>();
+            for (int i = 0; i != idList.length; ++i) {
+                if (checkList[i]) {
+                    MiniComic comic = mComicArray.get(idList[i]);
+                    if (comic != null) {
+                        rList.add(new TagRef(null, mTag.getId(), comic.getId()));
+                        cList.add(comic);
+                        mComicArray.remove(comic.getId());
+                    }
+                }
             }
+            mTagRefManager.insertInTx(rList);
+            mBaseView.onComicInsertSuccess(cList);
+        } else {
+            mBaseView.onComicInsertFail();
         }
-        mTagRefManager.insertInTx(rList);
-        mBaseView.onComicInsertSuccess(cList);
     }
 
     public void delete(long tid, long cid) {

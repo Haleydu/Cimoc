@@ -88,7 +88,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogView {
 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
-                getResources().getStringArray(R.array.event_items), mChoiceArray[index], null, index);
+                getResources().getStringArray(R.array.event_items), mChoiceArray[index], index);
         fragment.show(getFragmentManager(), null);
     }
 

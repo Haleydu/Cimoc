@@ -34,20 +34,18 @@ public class ChoiceDialogFragment extends DialogFragment implements DialogInterf
         String value = index == -1 ? null : mItems[index];
         int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
         Bundle bundle = new Bundle();
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, getArguments().getBundle(DialogView.EXTRA_DIALOG_BUNDLE));
         bundle.putInt(DialogView.EXTRA_DIALOG_RESULT_INDEX, index);
         bundle.putString(DialogView.EXTRA_DIALOG_RESULT_VALUE, value);
         DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
     }
 
-    public static ChoiceDialogFragment newInstance(int title, String[] item, int choice, Bundle extra, int requestCode) {
+    public static ChoiceDialogFragment newInstance(int title, String[] item, int choice, int requestCode) {
         ChoiceDialogFragment fragment = new ChoiceDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
         bundle.putStringArray(DialogView.EXTRA_DIALOG_ITEMS, item);
         bundle.putInt(DialogView.EXTRA_DIALOG_CHOICE_ITEMS, choice);
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
         bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;

@@ -34,7 +34,6 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     private Unbinder unbinder;
     private BasePresenter mBasePresenter;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutRes(), container, false);

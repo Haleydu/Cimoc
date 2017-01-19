@@ -1,9 +1,7 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Tag;
@@ -33,13 +31,7 @@ public class BackupActivity extends BackActivity implements BackupView {
 
     private BackupPresenter mPresenter;
 
-    @Override
-    protected void initTheme() {
-        super.initTheme();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
-    }
+    private long[] mSavedId;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -101,16 +93,10 @@ public class BackupActivity extends BackActivity implements BackupView {
                 break;
             case DIALOG_REQUEST_SAVE_TAG:
                 showProgressDialog();
-                Bundle extra = bundle.getBundle(EXTRA_DIALOG_BUNDLE);
-                if (extra != null) {
-                    long[] array = extra.getLongArray(EXTRA_DIALOG_BUNDLE_ARG_1);
-                    if (array != null) {
-                        value = bundle.getString(EXTRA_DIALOG_RESULT_VALUE);
-                        choice = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                        mPresenter.saveTag(array[choice], value);
-                    } else {
-                        onBackupSaveFail();
-                    }
+                if (mSavedId != null) {
+                    value = bundle.getString(EXTRA_DIALOG_RESULT_VALUE);
+                    choice = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                    mPresenter.saveTag(mSavedId[choice], value);
                 } else {
                     onBackupSaveFail();
                 }
@@ -123,15 +109,13 @@ public class BackupActivity extends BackActivity implements BackupView {
         if (!list.isEmpty()) {
             int size = list.size();
             String[] title = new String[size];
-            long[] id = new long[size];
+            mSavedId = new long[size];
             for (int i = 0; i != size; ++i) {
                 Tag tag = list.get(i);
-                id[i] = tag.getId();
+                mSavedId[i] = tag.getId();
                 title[i] = tag.getTitle();
             }
-            Bundle bundle = new Bundle();
-            bundle.putLongArray(EXTRA_DIALOG_BUNDLE_ARG_1, id);
-            showChoiceDialog(R.string.backup_save_tag, title, bundle, DIALOG_REQUEST_SAVE_TAG);
+            showChoiceDialog(R.string.backup_save_tag, title, DIALOG_REQUEST_SAVE_TAG);
         } else {
             showSnackbar(R.string.backup_save_tag_not_found);
             hideProgressDialog();
@@ -140,17 +124,17 @@ public class BackupActivity extends BackActivity implements BackupView {
 
     @Override
     public void onFavoriteFileLoadSuccess(String[] file) {
-        showChoiceDialog(R.string.backup_restore_favorite, file, null, DIALOG_REQUEST_RESTORE_FAVORITE);
+        showChoiceDialog(R.string.backup_restore_favorite, file, DIALOG_REQUEST_RESTORE_FAVORITE);
     }
 
     @Override
     public void onTagFileLoadSuccess(String[] file) {
-        showChoiceDialog(R.string.backup_restore_tag, file, null, DIALOG_REQUEST_RESTORE_TAG);
+        showChoiceDialog(R.string.backup_restore_tag, file, DIALOG_REQUEST_RESTORE_TAG);
     }
 
-    private void showChoiceDialog(int title, String[] item, Bundle extra, int request) {
+    private void showChoiceDialog(int title, String[] item, int request) {
         hideProgressDialog();
-        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(title, item, -1, extra, request);
+        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(title, item, -1, request);
         fragment.show(getFragmentManager(), null);
     }
 

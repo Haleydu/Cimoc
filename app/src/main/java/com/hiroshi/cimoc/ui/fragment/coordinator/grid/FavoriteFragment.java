@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -11,20 +10,16 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
-import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.List;
-
-import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/7/1.
  */
 public class FavoriteFragment extends GridFragment implements FavoriteView {
-
-    private static final int DIALOG_REQUEST_UPDATE = 0;
 
     private FavoritePresenter mPresenter;
     private Notification.Builder mBuilder;
@@ -58,39 +53,10 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    public void onDialogResult(int requestCode, Bundle bundle) {
-        switch (requestCode) {
-            case DIALOG_REQUEST_UPDATE:
-                if (mBuilder == null) {
-                    mPresenter.checkUpdate();
-                    mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
-                            R.string.favorite_check_update_doing, true, 0, 0, true);
-                    NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-                } else {
-                    showSnackbar(R.string.favorite_check_update_doing);
-                }
-                break;
-        }
-    }
-
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.favorite_check_update_confirm, true, null, DIALOG_REQUEST_UPDATE);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null, true);
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
         startActivity(intent);
-    }
-
-    @Override
-    public void onHighlightCancel(MiniComic comic) {
-        mGridAdapter.remove(comic);
-        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
     }
 
     @Override
@@ -106,12 +72,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     public void OnComicUnFavorite(long id) {
         mGridAdapter.removeItemById(id);
-    }
-
-    @Override
-    public void onComicRead(MiniComic comic) {
-        mGridAdapter.remove(comic);
-        mGridAdapter.add(mGridAdapter.findFirstNotHighlight(), comic);
     }
 
     @Override
@@ -139,8 +99,24 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     @Override
-    protected int getImageRes() {
-        return R.drawable.ic_sync_white_24dp;
+    public void onHighlightCancel(MiniComic comic) {
+        mGridAdapter.moveItemTop(comic);
+    }
+
+    @Override
+    public void onComicRead(MiniComic comic) {
+        mGridAdapter.moveItemTop(comic);
+    }
+
+    public void checkUpdate() {
+        if (mBuilder == null) {
+            mPresenter.checkUpdate();
+            mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
+                    R.string.favorite_check_update_doing, true, 0, 0, true);
+            NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+        } else {
+            HintUtils.showToast(getActivity(), R.string.favorite_check_update_doing);
+        }
     }
 
 }

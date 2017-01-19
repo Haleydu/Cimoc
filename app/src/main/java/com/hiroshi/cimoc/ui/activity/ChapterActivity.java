@@ -59,7 +59,7 @@ public class ChapterActivity extends CoordinatorActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.chapter_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_chapter, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

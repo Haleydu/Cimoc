@@ -10,4 +10,13 @@
         android:title="@string/comic_filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/comic_check_update"
+        android:title="@string/comic_check_update"
+        app:showAsAction="never" />
+    <item android:id="@+id/comic_clear_history"
+        android:title="@string/comic_clear_history"
+        app:showAsAction="never" />
+    <item android:id="@+id/comic_switch_download"
+        android:title="@string/comic_start_download"
+        app:showAsAction="never" />
 </menu>
