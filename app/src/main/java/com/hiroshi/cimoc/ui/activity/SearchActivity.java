@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -59,7 +59,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
 
     @Override
     protected void initView() {
-        mAutoComplete = mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false);
+        mAutoComplete = mPreference.getBoolean(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -100,7 +100,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_search, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -117,7 +117,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                         arr2[i] = mSourceList.get(i).second;
                     }
                     MultiDialogFragment fragment =
-                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, null, DIALOG_REQUEST_SOURCE);
+                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
                     fragment.show(getFragmentManager(), null);
                     break;
                 }
@@ -197,6 +197,11 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_search;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
 }

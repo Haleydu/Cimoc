@@ -14,6 +14,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -21,6 +23,17 @@ import java.util.List;
  */
 
 public class DocumentUtils {
+
+    public static DocumentFile createFile(DocumentFile parent, String displayName) {
+        if (parent.isDirectory()) {
+            DocumentFile file = parent.findFile(displayName);
+            if (file == null) {
+                return parent.createFile(null, displayName);
+            }
+            return file;
+        }
+        return null;
+    }
 
     public static DocumentFile findFile(DocumentFile parent, String... filenames) {
         if (parent != null) {
@@ -37,7 +50,14 @@ public class DocumentUtils {
     public static Uri[] listUrisWithoutSuffix(DocumentFile dir, String suffix) {
         List<Uri> list = new ArrayList<>();
         if (dir.isDirectory()) {
-            for (DocumentFile file : dir.listFiles()) {
+            DocumentFile[] files = dir.listFiles();
+            Arrays.sort(files, new Comparator<DocumentFile>() {
+                @Override
+                public int compare(DocumentFile lhs, DocumentFile rhs) {
+                    return lhs.getName().compareTo(rhs.getName());
+                }
+            });
+            for (DocumentFile file : files) {
                 if (file.isFile() && !file.getName().endsWith(suffix)) {
                     list.add(file.getUri());
                 }
@@ -74,17 +94,6 @@ public class DocumentUtils {
             }
         }
         return list.toArray(new String[list.size()]);
-    }
-
-    public static DocumentFile createFile(DocumentFile parent, String mimeType, String displayName) {
-        if (parent.isDirectory()) {
-            DocumentFile file = parent.findFile(displayName);
-            if (file == null) {
-                return parent.createFile(mimeType, displayName);
-            }
-            return file;
-        }
-        return null;
     }
 
     public static DocumentFile getOrCreateSubDirectory(DocumentFile parent, String displayName) {
@@ -199,7 +208,7 @@ public class DocumentUtils {
             if (old != null) {
                 old.delete();
             }
-            DocumentFile file = createFile(parent, "", src.getName());
+            DocumentFile file = createFile(parent, src.getName());
             if (file != null) {
                 try {
                     writeBinaryToFile(resolver, src, file);

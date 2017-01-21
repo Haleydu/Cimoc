@@ -1,14 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaCategory;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -30,8 +31,16 @@ import okhttp3.RequestBody;
 
 public class Webtoon extends MangaParser {
 
-    public Webtoon() {
-        category = new Category();
+    public static final int TYPE = 6;
+    public static final String DEFAULT_TITLE = "Webtoon";
+    public static final String DEFAULT_SERVER = null;
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public Webtoon(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -54,7 +63,7 @@ public class Webtoon extends MangaParser {
                 String title = node.text("div.row > div.info > p.subj > span");
                 String cover = node.src("div.row > div.pic > img");
                 String author = node.text("div.row > div.info > p.author");
-                return new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, author);
+                return new Comic(TYPE, cid, title, cover, null, author);
             }
         };
     }
@@ -149,7 +158,7 @@ public class Webtoon extends MangaParser {
             String cid = node.hrefWithSplit(-1);
             String title = node.text("div.info > p.subj > span");
             String cover = node.attrWithSplit("div.pic", "style", "\\(|\\)", 1);
-            list.add(new Comic(SourceManager.SOURCE_WEBTOON, cid, title, cover, null, null));
+            list.add(new Comic(TYPE, cid, title, cover, null, null));
         }
         return list;
     }
@@ -168,6 +177,11 @@ public class Webtoon extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.webtoons.com");
     }
 
 }

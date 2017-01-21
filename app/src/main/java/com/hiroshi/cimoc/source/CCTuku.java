@@ -1,14 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaCategory;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -24,8 +25,16 @@ import okhttp3.Request;
  */
 public class CCTuku extends MangaParser {
 
-    public CCTuku() {
-        category = new Category();
+    public static final int TYPE = 3;
+    public static final String DEFAULT_TITLE = "CC图库";
+    public static final String DEFAULT_SERVER = null;
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public CCTuku(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -49,7 +58,7 @@ public class CCTuku extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
                 String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                return new Comic(SourceManager.SOURCE_CCTUKU, cid, title, cover, update, author);
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -135,7 +144,7 @@ public class CCTuku extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
                 String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                list.add(new Comic(SourceManager.SOURCE_CCTUKU, cid, title, cover, update, author));
+                list.add(new Comic(TYPE, cid, title, cover, update, author));
             }
         }
         return list;
@@ -228,6 +237,11 @@ public class CCTuku extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.tuku.cc");
     }
 
 }

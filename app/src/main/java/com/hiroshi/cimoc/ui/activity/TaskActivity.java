@@ -11,10 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
@@ -82,14 +81,12 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.task_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_task, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        // Todo 从这里进去 如果改变了 last 会导致不一致 影响不大暂时不改
-        Comic comic = mPresenter.getComic();
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null, false);
+        Intent intent = DetailActivity.createIntent(this, mPresenter.getComic().getId(), -1, null);
         startActivity(intent);
     }
 
@@ -142,7 +139,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     arr1[i] = mTaskAdapter.getItem(i).getTitle();
                     arr2[i] = false;
                 }
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete, arr1, arr2, null, DIALOG_REQUEST_DELETE);
+                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete, arr1, arr2, DIALOG_REQUEST_DELETE);
                 fragment.show(getFragmentManager(), null);
                 break;
             case R.id.task_sort:

@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.SearchView;
 
@@ -18,8 +18,9 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     private SourceManager mSourceManager;
 
-    public SearchPresenter() {
-        mSourceManager = SourceManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void loadSource() {

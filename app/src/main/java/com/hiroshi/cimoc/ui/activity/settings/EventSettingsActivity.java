@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -10,10 +11,10 @@ import android.view.WindowManager;
 import android.widget.Button;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.DialogCaller;
+import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
-import com.hiroshi.cimoc.ui.view.DialogView;
-import com.hiroshi.cimoc.global.ClickEvents;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import butterknife.BindViews;
  * Created by Hiroshi on 2016/10/9.
  */
 
-public class EventSettingsActivity extends BaseActivity implements DialogView {
+public class EventSettingsActivity extends BaseActivity implements DialogCaller {
 
     @BindViews({ R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right })
     List<Button> mButtonList;
@@ -36,6 +37,9 @@ public class EventSettingsActivity extends BaseActivity implements DialogView {
     protected void initTheme() {
         super.initTheme();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }
         int value = getIntent().getBooleanExtra(EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         setRequestedOrientation(value);
@@ -84,7 +88,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogView {
 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
-                getResources().getStringArray(R.array.event_items), mChoiceArray[index], null, index);
+                getResources().getStringArray(R.array.event_items), mChoiceArray[index], index);
         fragment.show(getFragmentManager(), null);
     }
 

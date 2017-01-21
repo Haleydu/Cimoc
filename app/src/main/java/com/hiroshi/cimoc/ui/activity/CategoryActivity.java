@@ -8,10 +8,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.Category;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.parser.Category;
 
 import java.util.List;
 
@@ -37,9 +37,9 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
     protected void initView() {
         int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         if (mToolbar != null) {
-            mToolbar.setTitle(SourceManager.getTitle(source));
+            mToolbar.setTitle(getIntent().getStringExtra(Extra.EXTRA_KEYWORD));
         }
-        mCategory = SourceManager.getParser(source).getCategory();
+        mCategory = SourceManager.getInstance(this).getParser(source).getCategory();
         initSpinner();
     }
 
@@ -100,9 +100,10 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         return R.layout.activity_category;
     }
 
-    public static Intent createIntent(Context context, int source) {
+    public static Intent createIntent(Context context, int source, String title) {
         Intent intent = new Intent(context, CategoryActivity.class);
         intent.putExtra(Extra.EXTRA_SOURCE, source);
+        intent.putExtra(Extra.EXTRA_KEYWORD, title);
         return intent;
     }
 

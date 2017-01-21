@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ResultPresenter;
@@ -52,8 +53,9 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
         mResultAdapter.setOnItemClickListener(this);
-        mProvider = new ControllerBuilderProvider(this);
+        mProvider = new ControllerBuilderProvider(this, SourceManager.getInstance(this).new HeaderGetter());
         mResultAdapter.setProvider(mProvider);
+        mResultAdapter.setTitleGetter(SourceManager.getInstance(this).new TitleGetter());
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.addItemDecoration(mResultAdapter.getItemDecoration());
@@ -108,7 +110,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     public void onItemClick(View view, int position) {
         Comic comic = mResultAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid(), false);
+        Intent intent = DetailActivity.createIntent(this, null, comic.getSource(), comic.getCid());
         startActivity(intent);
     }
 
@@ -149,6 +151,11 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     protected View getLayoutView() {
         return mLayoutView;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
     /**

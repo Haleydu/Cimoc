@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Hiroshi on 2016/9/30.
  */
 
-public interface GridView extends BaseView, ThemeView, DialogView {
+public interface GridView extends BaseView {
 
     void onComicLoadSuccess(List<MiniComic> list);
 

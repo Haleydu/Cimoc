@@ -11,10 +11,11 @@ import android.view.View;
 
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
@@ -42,7 +43,10 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     private DetailAdapter mDetailAdapter;
     private DetailPresenter mPresenter;
-    protected ImagePipelineFactory mImagePipelineFactory;
+    private ImagePipelineFactory mImagePipelineFactory;
+
+    private boolean mAutoBackup;
+    private int mBackupCount;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -53,10 +57,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     protected BaseAdapter initAdapter() {
-        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         mDetailAdapter = new DetailAdapter(this, new ArrayList<Chapter>());
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
-        mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         return mDetailAdapter;
@@ -69,10 +70,20 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     protected void initData() {
+        mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, false);
+        mBackupCount = mPreference.getInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, 0);
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
         int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(Extra.EXTRA_CID);
         mPresenter.load(id, source, cid);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mAutoBackup) {
+            mPreference.putInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, mBackupCount);
+        }
     }
 
     @Override
@@ -85,7 +96,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -155,10 +166,12 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         if (mPresenter.getComic().getFavorite() != null) {
             mPresenter.unfavoriteComic();
+            increment();
             mActionButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
             showSnackbar(R.string.detail_unfavorite);
         } else {
             mPresenter.favoriteComic();
+            increment();
             mActionButton.setImageResource(R.drawable.ic_favorite_white_24dp);
             showSnackbar(R.string.detail_favorite);
         }
@@ -173,8 +186,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     }
 
     private void startReader(String path) {
-        boolean favorite = getIntent().getBooleanExtra(Extra.EXTRA_MODE, false);
-        long id = mPresenter.updateLast(path, favorite);
+        long id = mPresenter.updateLast(path);
         mDetailAdapter.setLast(path);
         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
         Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet(), mode);
@@ -219,6 +231,9 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
+            mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader());
+            mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
+
             int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
             mActionButton.setImageResource(resId);
             mActionButton.setVisibility(View.VISIBLE);
@@ -239,17 +254,24 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         showSnackbar(R.string.common_parse_error);
     }
 
+    private void increment() {
+        if (mAutoBackup && ++mBackupCount == 10) {
+            mBackupCount = 0;
+            mPreference.putInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, 0);
+            mPresenter.backup();
+        }
+    }
+
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.detail);
     }
 
-    public static Intent createIntent(Context context, Long id, int source, String cid, boolean favorite) {
+    public static Intent createIntent(Context context, Long id, int source, String cid) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.putExtra(Extra.EXTRA_ID, id);
         intent.putExtra(Extra.EXTRA_SOURCE, source);
         intent.putExtra(Extra.EXTRA_CID, cid);
-        intent.putExtra(Extra.EXTRA_MODE, favorite);
         return intent;
     }
 

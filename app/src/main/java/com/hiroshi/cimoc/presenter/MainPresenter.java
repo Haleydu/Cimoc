@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -17,8 +17,9 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private ComicManager mComicManager;
 
-    public MainPresenter() {
-        mComicManager = ComicManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
     }
 
     @Override
@@ -28,12 +29,6 @@ public class MainPresenter extends BasePresenter<MainView> {
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();
                 mBaseView.onLastChange(comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
-            }
-        });
-        addSubscription(RxEvent.EVENT_THEME_CHANGE, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onThemeChange((int) rxEvent.getData(), (int) rxEvent.getData(1), (int) rxEvent.getData(2));
             }
         });
     }

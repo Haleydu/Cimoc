@@ -1,15 +1,14 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.annotation.ColorRes;
-import android.support.annotation.StyleRes;
 import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.LongSparseArray;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Storage;
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -38,10 +37,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
+    private SourceManager mSourceManager;
 
-    public SettingsPresenter() {
-        mComicManager = ComicManager.getInstance();
-        mTaskManager = TaskManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mTaskManager = TaskManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void clearCache() {
@@ -49,7 +51,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void moveFiles(DocumentFile dst) {
-        mCompositeSubscription.add(Storage.moveRootDir(dst)
+        mCompositeSubscription.add(Storage.moveRootDir(mBaseView.getAppInstance().getContentResolver(),
+                mBaseView.getAppInstance().getDocumentFile(), dst)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -76,7 +79,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void scanTask() {
-        mCompositeSubscription.add(Download.scan()
+        // Todo
+        mCompositeSubscription.add(Download.scan(mBaseView.getAppInstance().getContentResolver(), mBaseView.getAppInstance().getDocumentFile())
                 .doOnNext(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
                     public void call(Pair<Comic, List<Task>> pair) {
@@ -152,7 +156,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         Set<Long> set = new HashSet<>();
         for (Task task : mTaskManager.listValid()) {
             Comic comic = array.get(task.getKey());
-            if (comic == null || Download.getChapterDir(comic, new Chapter(task.getTitle(), task.getPath())) == null) {
+            if (comic == null || Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(), comic,
+                    new Chapter(task.getTitle(), task.getPath()), mSourceManager.getParser(comic.getSource()).getTitle()) == null) {
                 tList.add(task);
             } else {
                 set.add(task.getKey());
@@ -167,9 +172,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     private void deleteInvalid(final List<Comic> cList, final List<Task> tList) {
-        // Todo 暂时反过来吧
+        List<Long> list = new LinkedList<>();
         for (Comic comic : cList) {
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, comic.getId()));
+            list.add(comic.getId());
         }
         mComicManager.runInTx(new Runnable() {
             @Override
@@ -181,6 +186,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 mTaskManager.deleteInTx(tList);
             }
         });
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_CLEAR, list));
     }
 
     private LongSparseArray<Comic> buildComicMap() {
@@ -189,10 +195,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             array.put(comic.getId(), comic);
         }
         return array;
-    }
-
-    public void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_THEME_CHANGE, theme, primary, accent));
     }
 
 }

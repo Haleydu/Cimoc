@@ -10,8 +10,8 @@ import android.widget.TextView;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;
@@ -23,9 +23,10 @@ import butterknife.BindView;
  */
 public class GridAdapter extends BaseAdapter<MiniComic> {
 
-    public static int GRID_ITEM_TYPE = 2016101213;
+    public static int TYPE_GRID = 2016101213;
 
     private ControllerBuilderProvider mProvider;
+    private SourceManager.TitleGetter mTitleGetter;
     private boolean symbol = false;
 
     static class GridHolder extends BaseViewHolder {
@@ -45,7 +46,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
 
     @Override
     public int getItemViewType(int position) {
-        return GRID_ITEM_TYPE;
+        return TYPE_GRID;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         MiniComic comic = mDataSet.get(position);
         GridHolder gridHolder = (GridHolder) holder;
         gridHolder.comicTitle.setText(comic.getTitle());
-        gridHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
+        gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         if (mProvider != null) {
             DraweeController controller = mProvider.get(comic.getSource())
                     .setOldController(gridHolder.comicImage.getController())
@@ -73,6 +74,10 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
 
     public void setProvider(ControllerBuilderProvider provider) {
         mProvider = provider;
+    }
+
+    public void setTitleGetter(SourceManager.TitleGetter getter) {
+        mTitleGetter = getter;
     }
 
     public void setSymbol(boolean symbol) {
@@ -99,15 +104,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         }
     }
 
-    public MiniComic getItemById(long id) {
-        for (MiniComic comic : mDataSet) {
-            if (comic.getId() == id) {
-                return comic;
-            }
-        }
-        return null;
-    }
-
     public int findFirstNotHighlight() {
         int count = 0;
         if (symbol) {
@@ -119,6 +115,12 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
             }
         }
         return count;
+    }
+
+    public void moveItemTop(MiniComic comic) {
+        if (remove(comic)) {
+            add(findFirstNotHighlight(), comic);
+        }
     }
 
 }

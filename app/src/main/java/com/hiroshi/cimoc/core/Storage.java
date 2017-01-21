@@ -1,12 +1,15 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 
-import com.hiroshi.cimoc.CimocApplication;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -24,6 +27,23 @@ public class Storage {
     private static String PICTURE = "picture";
     private static String BACKUP = "backup";
 
+    public static DocumentFile initRoot(Context context, String uri) {
+        if (uri == null) {
+            File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "Cimoc");
+            if (file.exists() || file.mkdirs()) {
+                return DocumentFile.fromFile(file);
+            } else {
+                return null;
+            }
+        } else if (uri.startsWith("content")) {
+            return DocumentFile.fromTreeUri(context, Uri.parse(uri));
+        } else if (uri.startsWith("file")) {
+            return DocumentFile.fromFile(new File(Uri.parse(uri).getPath()));
+        } else {
+            return DocumentFile.fromFile(new File(uri, "Cimoc"));
+        }
+    }
+
     private static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile dst, String name) {
         DocumentFile file = src.findFile(name);
         if (file != null && file.isDirectory()) {
@@ -32,22 +52,20 @@ public class Storage {
         return true;
     }
 
-    public static Observable<String> moveRootDir(final DocumentFile dst) {
+    public static Observable<String> moveRootDir(final ContentResolver resolver, final DocumentFile root, final DocumentFile dst) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 if (dst.canWrite()) {
-                    DocumentFile src = CimocApplication.getDocumentFile();
-                    ContentResolver resolver = CimocApplication.getResolver();
-                    if (!src.getUri().equals(dst.getUri())) {
+                    if (!root.getUri().equals(dst.getUri())) {
                         subscriber.onNext("正在移动备份文件");
-                        if (copyDir(resolver, src, dst, BACKUP)) {
+                        if (copyDir(resolver, root, dst, BACKUP)) {
                             subscriber.onNext("正在移动下载文件");
-                            if (copyDir(resolver, src, dst, DOWNLOAD)) {
+                            if (copyDir(resolver, root, dst, DOWNLOAD)) {
                                 subscriber.onNext("正在移动截图文件");
-                                if (copyDir(resolver, src, dst, PICTURE)) {
+                                if (copyDir(resolver, root, dst, PICTURE)) {
                                     subscriber.onNext("正在删除原文件");
-                                    DocumentUtils.deleteDir(src);
+                                    DocumentUtils.deleteDir(root);
                                     subscriber.onCompleted();
                                 }
                             }
@@ -69,13 +87,12 @@ public class Storage {
         return StringUtils.getDateStringWithSuffix(suffix);
     }
 
-    public static Observable<String> savePicture(final InputStream stream, final String url) {
+    public static Observable<String> savePicture(final ContentResolver resolver, final DocumentFile root,
+                                                 final InputStream stream, final String url) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 try {
-                    DocumentFile root = CimocApplication.getDocumentFile();
-                    ContentResolver resolver = CimocApplication.getResolver();
                     DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
                     if (dir != null) {
                         DocumentFile file = dir.createFile("", buildFileName(url));

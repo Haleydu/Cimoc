@@ -1,20 +1,19 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Download;
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.DownloadView;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -27,12 +26,16 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
+    private SourceManager mSourceManager;
 
-    public DownloadPresenter() {
-        mComicManager = ComicManager.getInstance();
-        mTaskManager = TaskManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mTaskManager = TaskManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         addSubscription(RxEvent.EVENT_TASK_INSERT, new Action1<RxEvent>() {
@@ -47,42 +50,38 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 mBaseView.onDownloadDelete((long) rxEvent.getData());
             }
         });
-        addSubscription(RxEvent.EVENT_DOWNLOAD_START, new Action1<RxEvent>() {
+        addSubscription(RxEvent.EVENT_DOWNLOAD_CLEAR, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onDownloadStart();
-            }
-        });
-        addSubscription(RxEvent.EVENT_DOWNLOAD_STOP, new Action1<RxEvent>() {
-            @Override
-            public void call(RxEvent rxEvent) {
-                mBaseView.onDownloadStop();
+                for (long id : (List<Long>) rxEvent.getData()) {
+                    mBaseView.onDownloadDelete(id);
+                }
             }
         });
     }
 
-    public void deleteComic(final long id) {
-        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Void>() {
-            @Override
-            public void call(Subscriber<? super Void> subscriber) {
-                final Comic comic = mComicManager.load(id);
-                mComicManager.runInTx(new Runnable() {
+    public void deleteComic(long id) {
+        mCompositeSubscription.add(Observable.just(id)
+                .doOnNext(new Action1<Long>() {
                     @Override
-                    public void run() {
-                        mTaskManager.deleteInTx(id);
-                        comic.setDownload(null);
-                        mComicManager.updateOrDelete(comic);
+                    public void call(final Long id) {
+                        Comic comic = mComicManager.callInTx(new Callable<Comic>() {
+                            @Override
+                            public Comic call() throws Exception {
+                                Comic comic = mComicManager.load(id);
+                                mTaskManager.delete(id);
+                                comic.setDownload(null);
+                                mComicManager.updateOrDelete(comic);
+                                return comic;
+                            }
+                        });
+                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic, mSourceManager.getParser(comic.getSource()).getTitle());
                     }
-                });
-                Download.delete(comic);
-                subscriber.onNext(null);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io())
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Action1<Long>() {
                     @Override
-                    public void call(Void v) {
+                    public void call(Long id) {
                         mBaseView.onDownloadDeleteSuccess(id);
                     }
                 }, new Action1<Throwable>() {
@@ -93,7 +92,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 }));
     }
 
-    public void loadComic() {
+    public void load() {
         mCompositeSubscription.add(mComicManager.listDownloadInRx()
                 .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
                     @Override
@@ -111,35 +110,6 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                     @Override
                     public void call(Throwable throwable) {
                         mBaseView.onComicLoadFail();
-                    }
-                }));
-    }
-
-    public void loadTask() {
-        mCompositeSubscription.add(mTaskManager.listInRx()
-                .flatMap(new Func1<List<Task>, Observable<Task>>() {
-                    @Override
-                    public Observable<Task> call(List<Task> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .filter(new Func1<Task, Boolean>() {
-                    @Override
-                    public Boolean call(Task task) {
-                        return !task.isFinish();
-                    }
-                })
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Task>>() {
-                    @Override
-                    public void call(List<Task> list) {
-                        mBaseView.onTaskLoadSuccess(new ArrayList<>(list));
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onTaskLoadFail();
                     }
                 }));
     }

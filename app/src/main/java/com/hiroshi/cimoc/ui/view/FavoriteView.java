@@ -23,4 +23,6 @@ public interface FavoriteView extends GridView {
 
     void onComicRead(MiniComic comic);
 
+    void onHighlightCancel(MiniComic comic);
+
 }

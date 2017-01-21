@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.SourceView;
 
@@ -16,8 +16,9 @@ public class SourcePresenter extends BasePresenter<SourceView> {
 
     private SourceManager mSourceManager;
 
-    public SourcePresenter() {
-        mSourceManager = SourceManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void load() {

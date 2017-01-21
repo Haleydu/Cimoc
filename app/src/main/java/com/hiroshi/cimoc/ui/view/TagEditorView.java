@@ -17,8 +17,6 @@ public interface TagEditorView extends BaseView {
 
     void onTagUpdateSuccess();
 
-    void onTagUpdateInvalid();
-
     void onTagUpdateFail();
 
 }

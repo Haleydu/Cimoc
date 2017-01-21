@@ -8,21 +8,26 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
+import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -35,16 +40,15 @@ import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
-import com.hiroshi.cimoc.global.ClickEvents;
-import com.hiroshi.cimoc.utils.FileUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,15 +84,19 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected int orientation;
     protected int mode;
 
-    private boolean hide;
+    private boolean mHideInfo;
+    private boolean mHideNav;
     private int[] mClickArray;
     private int[] mLongClickArray;
 
     @Override
     protected void initTheme() {
         super.initTheme();
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false)) {
+        mHideNav = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        if (!mHideNav || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_BRIGHT, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         mode = getIntent().getIntExtra(Extra.EXTRA_MODE, PreferenceManager.READER_MODE_PAGE);
@@ -108,20 +116,43 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initView() {
-        hide = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
-        if (hide) {
-            mInfoLayout.setVisibility(View.INVISIBLE);
-        }
+        mHideInfo = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
+        mInfoLayout.setVisibility(mHideInfo ? View.INVISIBLE : View.VISIBLE);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
         turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
-        mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
-        mSeekBar.setOnProgressChangeListener(this);
+        initSeekBar();
         initLayoutManager();
         initReaderAdapter();
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (mHideNav) {
+            int options = getWindow().getDecorView().getSystemUiVisibility();
+
+            options |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                options |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                options |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            }
+
+            getWindow().getDecorView().setSystemUiVisibility(options);
+        }
+    }
+
+    private void initSeekBar() {
+        mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
+        mSeekBar.setOnProgressChangeListener(this);
+        boolean popup = mPreference.getBoolean(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
+        mSeekBar.setIndicatorPopupEnabled(!popup);
     }
 
     private void initReaderAdapter() {
@@ -130,7 +161,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         mReaderAdapter.setTurn(turn);
-        mReaderAdapter.setAutoSplit(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderAdapter.setSplitPageEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderAdapter.setCutWhiteEdgeEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
     }
 
     private void initLayoutManager() {
@@ -203,11 +235,46 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     protected void hideControl() {
         if (mProgressLayout.isShown()) {
+            Animation upAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, -1.0f);
+            upAction.setDuration(300);
+            Animation downAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 1.0f);
+            downAction.setDuration(300);
+            mProgressLayout.startAnimation(downAction);
             mProgressLayout.setVisibility(View.INVISIBLE);
+            mBackLayout.startAnimation(upAction);
             mBackLayout.setVisibility(View.INVISIBLE);
-            if (hide) {
+            if (mHideInfo) {
+                mInfoLayout.startAnimation(upAction);
                 mInfoLayout.setVisibility(View.INVISIBLE);
             }
+        }
+    }
+
+    protected void showControl() {
+        Animation upAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 1.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f);
+        upAction.setDuration(300);
+        Animation downAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
+                Animation.RELATIVE_TO_SELF, 0.0f);
+        downAction.setDuration(300);
+        if (mSeekBar.getMax() != max) {
+            mSeekBar.setMax(max);
+            mSeekBar.setProgress(max);
+        }
+        mSeekBar.setProgress(progress);
+        mProgressLayout.startAnimation(upAction);
+        mProgressLayout.setVisibility(View.VISIBLE);
+        mBackLayout.startAnimation(downAction);
+        mBackLayout.setVisibility(View.VISIBLE);
+        if (mHideInfo) {
+            mInfoLayout.startAnimation(downAction);
+            mInfoLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -239,7 +306,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source) {
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader());
         mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mReaderAdapter.addAll(list);
         if (progress != 1) {
@@ -405,8 +472,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         try {
             for (String url : urls) {
                 if (url.startsWith("file")) {
-                    InputStream inputStream = FileUtils.getInputStream(url.replace("file://", ""));
-                    mPresenter.savePicture(inputStream, url);
+                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url);
+                    break;
+                } else if (url.startsWith("content")) {
+                    mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url);
                     break;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
@@ -469,16 +538,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (mProgressLayout.isShown()) {
             hideControl();
         } else {
-            if (mSeekBar.getMax() != max) {
-                mSeekBar.setMax(max);
-                mSeekBar.setProgress(max);
-            }
-            mSeekBar.setProgress(progress);
-            mProgressLayout.setVisibility(View.VISIBLE);
-            mBackLayout.setVisibility(View.VISIBLE);
-            if (hide) {
-                mInfoLayout.setVisibility(View.VISIBLE);
-            }
+            showControl();
         }
     }
 

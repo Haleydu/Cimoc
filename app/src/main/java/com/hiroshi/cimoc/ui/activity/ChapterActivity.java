@@ -8,8 +8,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
@@ -59,7 +59,7 @@ public class ChapterActivity extends CoordinatorActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.chapter_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_chapter, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

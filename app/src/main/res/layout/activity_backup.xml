@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -31,50 +32,24 @@
                         android:textColor="?attr/colorPrimary"
                         android:textSize="14sp"
                         android:text="@string/backup_save"/>
-                    <LinearLayout
-                        android:id="@+id/backup_save_favorite_btn"
-                        android:orientation="vertical"
+                    <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                        android:id="@+id/backup_save_favorite_auto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/backup_save_favorite"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/backup_save_favorite_summary"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/backup_save_tag_btn"
-                        android:orientation="vertical"
+                        app:title="@string/backup_save_favorite_auto"
+                        app:summary="@string/backup_save_favorite_auto_summary"/>
+                    <com.hiroshi.cimoc.ui.custom.Option
+                        android:id="@+id/backup_save_favorite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/backup_save_tag"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/backup_save_tag_summary"/>
-                    </LinearLayout>
+                        app:title="@string/backup_save_favorite"
+                        app:summary="@string/backup_save_favorite_summary"/>
+                    <com.hiroshi.cimoc.ui.custom.Option
+                        android:id="@+id/backup_save_tag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/backup_save_tag"
+                        app:summary="@string/backup_save_tag_summary"/>
                 </LinearLayout>
                 <LinearLayout
                     android:orientation="vertical"
@@ -90,50 +65,18 @@
                         android:textColor="?attr/colorPrimary"
                         android:textSize="14sp"
                         android:text="@string/backup_restore"/>
-                    <LinearLayout
-                        android:id="@+id/backup_restore_favorite_btn"
-                        android:orientation="vertical"
+                    <com.hiroshi.cimoc.ui.custom.Option
+                        android:id="@+id/backup_restore_favorite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/backup_restore_favorite"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/backup_restore_favorite_summary"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/backup_restore_tag_btn"
-                        android:orientation="vertical"
+                        app:title="@string/backup_restore_favorite"
+                        app:summary="@string/backup_restore_favorite_summary"/>
+                    <com.hiroshi.cimoc.ui.custom.Option
+                        android:id="@+id/backup_restore_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:clickable="true"
-                        android:background="?android:attr/selectableItemBackground">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="16sp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:text="@string/backup_restore_tag"/>
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="2dp"
-                            android:textSize="14sp"
-                            android:text="@string/backup_restore_tag_summary"/>
-                    </LinearLayout>
+                        app:title="@string/backup_restore_tag"
+                        app:summary="@string/backup_restore_tag_summary"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

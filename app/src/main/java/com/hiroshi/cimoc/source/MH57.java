@@ -1,15 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaCategory;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
-import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -20,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -28,9 +28,16 @@ import okhttp3.Request;
 
 public class MH57 extends MangaParser {
 
-    public MH57() {
-        server = ImageServer.get(SourceManager.SOURCE_57MH).split("\\s+");
-        category = new Category();
+    public static final int TYPE = 8;
+    public static final String DEFAULT_TITLE = "57漫画";
+    public static final String DEFAULT_SERVER = "http://images.333dm.com http://cartoon.akshk.com";
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public MH57(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -59,7 +66,7 @@ public class MH57 extends MangaParser {
                 String cover = node.attr("a:eq(0) > div.thumb > img", "data-src");
                 String update = node.text("dl:eq(4) > dd");
                 String author = node.text("dl:eq(1) > a > dd");
-                return new Comic(SourceManager.SOURCE_57MH, cid, title, cover, update, author);
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -148,7 +155,7 @@ public class MH57 extends MangaParser {
             String title = node.attr("a", "title");
             String cover = node.attr("a > img", "data-src");
             String update = node.textWithSubstring("span.updateon", 4, 14);
-            list.add(new Comic(SourceManager.SOURCE_57MH, cid, title, cover, update, null));
+            list.add(new Comic(TYPE, cid, title, cover, update, null));
         }
         return list;
     }
@@ -163,7 +170,7 @@ public class MH57 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://www.57mh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
-                    args[1], args[0], args[3], args[4], args[5]);
+                    args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override
@@ -284,6 +291,11 @@ public class MH57 extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.57mh.com/");
     }
 
 }

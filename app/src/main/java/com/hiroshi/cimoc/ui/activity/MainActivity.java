@@ -24,18 +24,20 @@ import android.widget.TextView;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.component.ThemeResponsive;
+import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.SourceFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.TagFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.SourceFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.TagFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
-import com.hiroshi.cimoc.ui.view.ThemeView;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import butterknife.BindView;
@@ -48,6 +50,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private static final int DIALOG_REQUEST_NOTICE = 0;
     private static final int DIALOG_REQUEST_PERMISSION = 1;
+
+    private static final int REQUEST_ACTIVITY_SETTINGS = 0;
 
     private static final int FRAGMENT_NUM = 3;
 
@@ -116,7 +120,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             @Override
             public void onClick(View v) {
                 if (mLastSource != -1 && mLastCid != null) {
-                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid, false);
+                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
                     startActivity(intent);
                 }
             }
@@ -166,8 +170,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((CimocApplication) getApplication()).getBuilderProvider().clear();
-        ((CimocApplication) getApplication()).getGridRecycledPool().clear();
+        ((App) getApplication()).getBuilderProvider().clear();
+        ((App) getApplication()).getGridRecycledPool().clear();
     }
 
     @Override
@@ -184,7 +188,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else if (System.currentTimeMillis() - mExitTime > 2000) {
-            mCurrentFragment.showSnackbar(R.string.main_double_click);
+            HintUtils.showToast(this, R.string.main_double_click);
             mExitTime = System.currentTimeMillis();
         } else {
             finish();
@@ -215,7 +219,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     }
                     break;
                 case R.id.drawer_settings:
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_ACTIVITY_SETTINGS);
                     break;
                 case R.id.drawer_about:
                     startActivity(new Intent(MainActivity.this, AboutActivity.class));
@@ -226,6 +230,23 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
         }
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_ACTIVITY_SETTINGS:
+                    int[] result = data.getIntArrayExtra(Extra.EXTRA_RESULT);
+                    if (result[0] == 1) {
+                        changeTheme(result[1], result[2], result[3]);
+                    }
+                    if (result[4] == 1 && mNightMask != null) {
+                        mNightMask.setBackgroundColor(result[5] << 24);
+                    }
+                    break;
+            }
+        }
     }
 
     @Override
@@ -247,10 +268,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         switch (requestCode) {
             case 0:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    ((CimocApplication) getApplication()).initRootDocumentFile();
-                    showSnackbar(R.string.main_permission_success);
+                    ((App) getApplication()).initRootDocumentFile();
+                    HintUtils.showToast(this, R.string.main_permission_success);
                 } else {
-                    showSnackbar(R.string.main_permission_fail);
+                    HintUtils.showToast(this, R.string.main_permission_fail);
                 }
                 break;
         }
@@ -263,7 +284,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     public void onLastLoadFail() {
-        showSnackbar(R.string.main_last_read_fail);
+        HintUtils.showToast(this, R.string.main_last_read_fail);
     }
 
     @Override
@@ -271,15 +292,14 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastSource = source;
         mLastCid = cid;
         mLastText.setText(title);
-        DraweeController controller = ((CimocApplication) getApplication()).getBuilderProvider().get(source)
+        DraweeController controller = ((App) getApplication()).getBuilderProvider().get(source)
                 .setOldController(mDraweeView.getController())
                 .setUri(cover)
                 .build();
         mDraweeView.setController(controller);
     }
 
-    @Override
-    public void onThemeChange(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
+    private void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
         ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
                 new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
@@ -293,13 +313,14 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         }
 
         for (int i = 0; i < mFragmentArray.size(); ++i) {
-            ((ThemeView) mFragmentArray.valueAt(i)).onThemeChange(primary, accent);
+            ((ThemeResponsive) mFragmentArray.valueAt(i)).onThemeChange(primary, accent);
         }
     }
 
     private boolean showAuthorNotice() {
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice, R.string.main_notice_content, false, null, DIALOG_REQUEST_NOTICE);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
+                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
             fragment.show(getFragmentManager(), null);
             return true;
         }
@@ -308,7 +329,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private void showPermission() {
         if (!PermissionUtils.hasStoragePermission(this)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission, R.string.main_permission_content, false, null, DIALOG_REQUEST_PERMISSION);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission,
+                    R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -319,7 +341,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (home < 0 || home > 2) {
             home = PreferenceManager.HOME_COMIC;
         }
-        return getResources().getStringArray(R.array.home_items)[home];
+        return getResources().getStringArray(R.array.launch_items)[home];
     }
 
     @Override
@@ -330,6 +352,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected View getLayoutView() {
         return mDrawerLayout;
+    }
+
+    @Override
+    protected boolean isNavTranslation() {
+        return true;
     }
 
 }

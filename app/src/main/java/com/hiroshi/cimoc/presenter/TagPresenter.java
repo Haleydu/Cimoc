@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.TagManager;
+import com.hiroshi.cimoc.manager.TagManager;
+import com.hiroshi.cimoc.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TagView;
@@ -17,9 +18,12 @@ import rx.functions.Action1;
 public class TagPresenter extends BasePresenter<TagView> {
 
     private TagManager mTagManager;
+    private TagRefManager mTagRefManager;
 
-    public TagPresenter() {
-        mTagManager = TagManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mTagManager = TagManager.getInstance(mBaseView);
+        mTagRefManager = TagRefManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -54,10 +58,10 @@ public class TagPresenter extends BasePresenter<TagView> {
     }
 
     public void delete(final Tag tag) {
-        mCompositeSubscription.add(mTagManager.runInRx(new Runnable() {
+        mCompositeSubscription.add(mTagRefManager.runInRx(new Runnable() {
             @Override
             public void run() {
-                mTagManager.deleteByTag(tag.getId());
+                mTagRefManager.deleteByTag(tag.getId());
                 mTagManager.delete(tag);
             }
         }).observeOn(AndroidSchedulers.mainThread())

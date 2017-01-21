@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 
 import java.util.List;
@@ -24,6 +24,7 @@ import butterknife.BindView;
 public class ResultAdapter extends BaseAdapter<Comic> {
 
     private ControllerBuilderProvider mProvider;
+    private SourceManager.TitleGetter mTitleGetter;
 
     class ResultViewHolder extends BaseViewHolder {
         @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
@@ -54,13 +55,17 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         ResultViewHolder viewHolder = (ResultViewHolder) holder;
         viewHolder.comicTitle.setText(comic.getTitle());
         viewHolder.comicAuthor.setText(comic.getAuthor());
-        viewHolder.comicSource.setText(SourceManager.getTitle(comic.getSource()));
+        viewHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         viewHolder.comicUpdate.setText(comic.getUpdate());
         viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
     }
 
     public void setProvider(ControllerBuilderProvider provider) {
         mProvider = provider;
+    }
+
+    public void setTitleGetter(SourceManager.TitleGetter getter) {
+        mTitleGetter = getter;
     }
 
     @Override

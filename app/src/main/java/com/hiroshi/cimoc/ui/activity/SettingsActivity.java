@@ -8,22 +8,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.provider.DocumentFile;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.hiroshi.cimoc.CimocApplication;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
-import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
+import com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference;
+import com.hiroshi.cimoc.ui.custom.preference.ChoicePreference;
+import com.hiroshi.cimoc.ui.custom.preference.SliderPreference;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
-import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.StorageEditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 import com.hiroshi.cimoc.utils.ServiceUtils;
@@ -51,23 +50,30 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 5;
     private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 6;
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 7;
+    private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 8;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
     @BindView(R.id.settings_layout) View mSettingsLayout;
-    @BindView(R.id.settings_reader_bright_checkbox) AppCompatCheckBox mBrightBox;
-    @BindView(R.id.settings_reader_hide_checkbox) AppCompatCheckBox mHideBox;
-    @BindView(R.id.settings_search_complete_checkbox) AppCompatCheckBox mCompleteBox;
+    @BindView(R.id.settings_reader_keep_bright) CheckBoxPreference mReaderKeepBright;
+    @BindView(R.id.settings_reader_hide_info) CheckBoxPreference mReaderHideInfo;
+    @BindView(R.id.settings_reader_disable_popup) CheckBoxPreference mReaderDisablePopup;
+    @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
+    @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
+    @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
+    @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
+    @BindView(R.id.settings_other_theme) ChoicePreference mOtherTheme;
+    @BindView(R.id.settings_other_night_alpha) SliderPreference mOtherNightAlpha;
+    @BindView(R.id.settings_download_connection) SliderPreference mDownloadConnection;
+    @BindView(R.id.settings_download_thread) SliderPreference mDownloadThread;
 
     private SettingsPresenter mPresenter;
 
-    private int mLaunchChoice;
-    private int mThemeChoice;
-    private int mReaderModeChoice;
-    private int mConnectionValue;
-    private int mThreadValue;
     private String mStoragePath;
     private String mTempStorage;
+
+    private int[] mResultArray = new int[6];
+    private Intent mResultIntent = new Intent();
 
     @Override
     protected BasePresenter initPresenter() {
@@ -79,71 +85,37 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @Override
     protected void initView() {
         super.initView();
-        mLaunchChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
-        mThemeChoice = mPreference.getInt(PreferenceManager.PREF_OTHER_THEME, ThemeUtils.THEME_BLUE);
-        mReaderModeChoice = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-        if (CimocApplication.getDocumentFile() != null) {
-            mStoragePath = CimocApplication.getDocumentFile().getUri().toString();
-        }
-        mConnectionValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
-        mThreadValue = mPreference.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
-        mBrightBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_ON, false));
-        mHideBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false));
-        mCompleteBox.setChecked(mPreference.getBoolean(PreferenceManager.PREF_SEARCH_COMPLETE, false));
+        mStoragePath = getAppInstance().getDocumentFile().getUri().toString();
+        mReaderKeepBright.bindPreference(PreferenceManager.PREF_READER_KEEP_BRIGHT, false);
+        mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
+        mReaderDisablePopup.bindPreference(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
+        mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
+        mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
+                PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
+        mOtherLaunch.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_LAUNCH,
+                PreferenceManager.HOME_COMIC, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
+        mOtherTheme.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_THEME,
+                ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
+        mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
+                R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
+        mDownloadConnection.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0,
+                R.string.settings_download_connection, DIALOG_REQUEST_DOWNLOAD_CONN);
+        mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
+                R.string.settings_download_thread, DIALOG_REQUEST_DOWNLOAD_THREAD);
     }
 
-    @OnClick({R.id.settings_reader_bright_btn, R.id.settings_reader_hide_btn, R.id.settings_search_complete_btn})
-    void onCheckBoxClick(View view) {
-        switch (view.getId()) {
-            case R.id.settings_reader_bright_btn:
-                checkedAndSave(mBrightBox, PreferenceManager.PREF_READER_KEEP_ON);
-                break;
-            case R.id.settings_reader_hide_btn:
-                checkedAndSave(mHideBox, PreferenceManager.PREF_READER_HIDE_INFO);
-                break;
-            case R.id.settings_search_complete_btn:
-                checkedAndSave(mCompleteBox, PreferenceManager.PREF_SEARCH_COMPLETE);
-                break;
-        }
-    }
-
-    private void checkedAndSave(CheckBox box, String key) {
-        boolean checked = !box.isChecked();
-        box.setChecked(checked);
-        mPreference.putBoolean(key, checked);
-    }
-
-    @OnClick(R.id.settings_reader_config_btn) void onReaderConfigBtnClick() {
+    @OnClick(R.id.settings_reader_config) void onReaderConfigBtnClick() {
         Intent intent = new Intent(this, ReaderConfigActivity.class);
         startActivity(intent);
     }
 
-    @OnClick(R.id.settings_reader_mode_btn) void onReaderModeClick() {
-        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_reader_mode,
-                getResources().getStringArray(R.array.reader_mode_items), mReaderModeChoice, null, DIALOG_REQUEST_READER_MODE);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @OnClick(R.id.settings_other_launch_btn) void onOtherLaunchClick() {
-        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_launch,
-                getResources().getStringArray(R.array.home_items), mLaunchChoice, null, DIALOG_REQUEST_OTHER_LAUNCH);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @OnClick(R.id.settings_other_theme_btn) void onOtherThemeBtnClick() {
-        ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.settings_other_theme,
-                getResources().getStringArray(R.array.theme_items), mThemeChoice, null, DIALOG_REQUEST_OTHER_THEME);
-        fragment.show(getFragmentManager(), null);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case DIALOG_REQUEST_OTHER_STORAGE:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        // Todo release permission ?
                         showProgressDialog();
                         Uri uri = data.getData();
                         int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -168,43 +140,38 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
-        int index, value;
         switch (requestCode) {
             case DIALOG_REQUEST_READER_MODE:
-                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                mPreference.putInt(PreferenceManager.PREF_READER_MODE, index);
-                mReaderModeChoice = index;
+                mReaderMode.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));
                 break;
             case DIALOG_REQUEST_OTHER_LAUNCH:
-                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                mPreference.putInt(PreferenceManager.PREF_OTHER_LAUNCH, index);
-                mLaunchChoice = index;
+                mOtherLaunch.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));
                 break;
             case DIALOG_REQUEST_OTHER_THEME:
-                index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                if (mThemeChoice != index) {
-                    mPreference.putInt(PreferenceManager.PREF_OTHER_THEME, index);
-                    mThemeChoice = index;
+                int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                if (mOtherTheme.getValue() != index) {
+                    mOtherTheme.setValue(index);
                     int theme = ThemeUtils.getThemeById(index);
                     setTheme(theme);
                     int primary = ThemeUtils.getResourceId(this, R.attr.colorPrimary);
                     int accent = ThemeUtils.getResourceId(this, R.attr.colorAccent);
                     changeTheme(primary, accent);
-                    mPresenter.changeTheme(theme, primary, accent);
+                    mResultArray[0] = 1;
+                    mResultArray[1] = theme;
+                    mResultArray[2] = primary;
+                    mResultArray[3] = accent;
+                    mResultIntent.putExtra(Extra.EXTRA_RESULT, mResultArray);
+                    setResult(Activity.RESULT_OK, mResultIntent);
                 }
                 break;
             case DIALOG_REQUEST_DOWNLOAD_CONN:
-                value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
-                mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, value);
-                mConnectionValue = value;
+                mDownloadConnection.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
                 break;
             case DIALOG_REQUEST_OTHER_STORAGE:
                 showSnackbar(R.string.settings_other_storage_not_found);
                 break;
             case DIALOG_REQUEST_DOWNLOAD_THREAD:
-                value = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
-                mPreference.putInt(PreferenceManager.PREF_DOWNLOAD_THREAD, value);
-                mThreadValue = value;
+                mDownloadThread.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
                 break;
             case DIALOG_REQUEST_DOWNLOAD_SCAN:
                 showProgressDialog();
@@ -213,6 +180,17 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             case DIALOG_REQUEST_DOWNLOAD_DELETE:
                 showProgressDialog();
                 mPresenter.deleteTask();
+                break;
+            case DIALOG_REQUEST_OTHER_NIGHT_ALPHA:
+                int alpha = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
+                mOtherNightAlpha.setValue(alpha);
+                if (mNightMask != null) {
+                    mNightMask.setBackgroundColor(alpha << 24);
+                }
+                mResultArray[4] = 1;
+                mResultArray[5] = alpha;
+                mResultIntent.putExtra(Extra.EXTRA_RESULT, mResultArray);
+                setResult(Activity.RESULT_OK, mResultIntent);
                 break;
         }
     }
@@ -226,12 +204,14 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
         ColorStateList stateList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
-        mBrightBox.setSupportButtonTintList(stateList);
-        mHideBox.setSupportButtonTintList(stateList);
-        mCompleteBox.setSupportButtonTintList(stateList);
+        mReaderKeepBright.setColorStateList(stateList);
+        mReaderHideInfo.setColorStateList(stateList);
+        mReaderDisablePopup.setColorStateList(stateList);
+        mReaderHideNav.setColorStateList(stateList);
+        mSearchAutoComplete.setColorStateList(stateList);
     }
 
-    @OnClick(R.id.settings_other_storage_btn) void onOtherStorageClick() {
+    @OnClick(R.id.settings_other_storage) void onOtherStorageClick() {
         if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
             showSnackbar(R.string.download_ask_stop);
         } else {
@@ -241,31 +221,19 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         }
     }
 
-    @OnClick(R.id.settings_download_connection_btn) void onDownloadConnectionClick() {
-        SliderDialogFragment fragment =
-                SliderDialogFragment.newInstance(R.string.settings_download_connection, 0, 10, mConnectionValue, DIALOG_REQUEST_DOWNLOAD_CONN);
+    @OnClick(R.id.settings_download_scan) void onDownloadScanClick() {
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
         fragment.show(getFragmentManager(), null);
     }
 
-    @OnClick(R.id.settings_download_thread_btn) void onDownloadThreadClick() {
-        SliderDialogFragment fragment =
-                SliderDialogFragment.newInstance(R.string.settings_download_thread, 1, 10, mThreadValue, DIALOG_REQUEST_DOWNLOAD_THREAD);
+    @OnClick(R.id.settings_download_delete) void onDownloadDeleteClick() {
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
         fragment.show(getFragmentManager(), null);
     }
 
-    @OnClick(R.id.settings_download_scan_btn) void onDownloadScanClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.settings_download_scan_confirm,
-                true, null, DIALOG_REQUEST_DOWNLOAD_SCAN);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @OnClick(R.id.settings_download_delete_btn) void onDownloadDeleteClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm, R.string.settings_download_delete_confirm,
-                true, null, DIALOG_REQUEST_DOWNLOAD_DELETE);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @OnClick(R.id.settings_other_cache_btn) void onOtherCacheClick() {
+    @OnClick(R.id.settings_other_clear_cache) void onOtherCacheClick() {
         showProgressDialog();
         mPresenter.clearCache();
         showSnackbar(R.string.common_execute_success);
@@ -277,7 +245,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         hideProgressDialog();
         mPreference.putString(PreferenceManager.PREF_OTHER_STORAGE, mTempStorage);
         mStoragePath = mTempStorage;
-        ((CimocApplication) getApplication()).initRootDocumentFile();
+        ((App) getApplication()).initRootDocumentFile();
         showSnackbar(R.string.common_execute_success);
     }
 

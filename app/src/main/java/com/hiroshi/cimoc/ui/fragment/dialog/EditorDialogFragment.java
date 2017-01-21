@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.ui.view.DialogView;
+import com.hiroshi.cimoc.component.DialogCaller;
 
 import butterknife.ButterKnife;
 
@@ -25,9 +25,9 @@ public class EditorDialogFragment extends DialogFragment implements DialogInterf
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_editor, null);
         mEditText = ButterKnife.findById(view, R.id.dialog_editor_text);
-        mEditText.setText(getArguments().getString(DialogView.EXTRA_DIALOG_CONTENT));
+        mEditText.setText(getArguments().getString(DialogCaller.EXTRA_DIALOG_CONTENT));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
+        builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
                 .setView(view)
                 .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
@@ -35,27 +35,24 @@ public class EditorDialogFragment extends DialogFragment implements DialogInterf
 
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
-        int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
+        int requestCode = getArguments().getInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE);
         Bundle bundle = new Bundle();
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, getArguments().getBundle(DialogView.EXTRA_DIALOG_BUNDLE));
-        bundle.putString(DialogView.EXTRA_DIALOG_RESULT_VALUE, mEditText.getText().toString());
-        DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        bundle.putString(DialogCaller.EXTRA_DIALOG_RESULT_VALUE, mEditText.getText().toString());
+        DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
     }
 
-    public static EditorDialogFragment newInstance(int title, String content, Bundle extra, int requestCode) {
+    public static EditorDialogFragment newInstance(int title, String content, int requestCode) {
         EditorDialogFragment fragment = new EditorDialogFragment();
-        Bundle bundle = createBundle(title, content, requestCode);
-        bundle.putBundle(DialogView.EXTRA_DIALOG_BUNDLE, extra);
-        fragment.setArguments(bundle);
+        fragment.setArguments(createBundle(title, content, requestCode));
         return fragment;
     }
 
     protected static Bundle createBundle(int title, String content, int requestCode) {
         Bundle bundle = new Bundle();
-        bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
-        bundle.putString(DialogView.EXTRA_DIALOG_CONTENT, content);
-        bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
+        bundle.putString(DialogCaller.EXTRA_DIALOG_CONTENT, content);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         return bundle;
     }
 

@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.ui.activity.DirPickerActivity;
-import com.hiroshi.cimoc.ui.view.DialogView;
 
 /**
  * Created by Hiroshi on 2016/12/5.
@@ -26,13 +26,13 @@ public class StorageEditorDialogFragment extends EditorDialogFragment {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, title, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
-                int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
+                int requestCode = getArguments().getInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     try {
                         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                         getActivity().startActivityForResult(intent, requestCode);
                     } catch (ActivityNotFoundException e) {
-                        ((DialogView) getActivity()).onDialogResult(requestCode, null);
+                        ((DialogCaller) getActivity()).onDialogResult(requestCode, null);
                     }
                 } else {
                     Intent intent = new Intent(getActivity(), DirPickerActivity.class);

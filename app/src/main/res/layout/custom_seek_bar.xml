@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/reader_progress_layout"
@@ -15,11 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:dsb_min="1"
-        app:dsb_indicatorPopupEnabled="true"
         app:dsb_trackColor="@color/white"
         app:dsb_rippleColor="?attr/colorPrimary"
         app:dsb_progressColor="?attr/colorPrimary"
         app:dsb_indicatorColor="?attr/colorPrimary"
         app:dsb_trackHeight="4dp"
         app:dsb_thumbSize="12dp"/>
-</LinearLayout>
+</FrameLayout>

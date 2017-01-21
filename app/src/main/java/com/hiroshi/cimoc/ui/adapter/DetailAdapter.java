@@ -111,7 +111,9 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
             if (title != null) {
-                headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
+                if (cover != null) {
+                    headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
+                }
                 headerHolder.mComicTitle.setText(title);
                 headerHolder.mComicIntro.setText(intro);
                 if (finish != null) {

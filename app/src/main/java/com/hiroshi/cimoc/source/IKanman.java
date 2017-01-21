@@ -1,15 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaCategory;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
-import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -28,9 +28,16 @@ import okhttp3.Request;
  */
 public class IKanman extends MangaParser {
 
-    public IKanman() {
-        server = ImageServer.get(SourceManager.SOURCE_IKANMAN).split("\\s+");
-        category = new Category();
+    public static final int TYPE = 0;
+    public static final String DEFAULT_TITLE = "看漫画";
+    public static final String DEFAULT_SERVER = "http://p.yogajx.com http://idx0.hamreus.com:8080 http://ilt2.hamreus.com:8080";
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public IKanman(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -50,7 +57,7 @@ public class IKanman extends MangaParser {
                 String cover = node.attr("div > img", "data-src");
                 String update = node.text("dl:eq(5) > dd");
                 String author = node.text("dl:eq(2) > dd");
-                return new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, author);
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -155,11 +162,11 @@ public class IKanman extends MangaParser {
             String cid = node.hrefWithSplit("a", 1);
             String title = node.attr("a", "title");
             String cover = node.src("a > img");
-            if (cover == null) {
+            if (StringUtils.isEmpty(cover)) {
                 cover = node.attr("a > img", "data-src");
             }
             String update = node.textWithSubstring("span.updateon", 4, 14);
-            list.add(new Comic(SourceManager.SOURCE_IKANMAN, cid, title, cover, update, null));
+            list.add(new Comic(TYPE, cid, title, cover, update, null));
         }
         return list;
     }
@@ -173,10 +180,10 @@ public class IKanman extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            String path = args[1].concat(" ").concat(args[0]).concat(" ").concat(args[2])
-                    .concat(" ").concat(args[3]).concat(" ").concat(args[4]).trim();
+            String path = args[CATEGORY_AREA].concat(" ").concat(args[CATEGORY_SUBJECT]).concat(" ").concat(args[CATEGORY_READER])
+                    .concat(" ").concat(args[CATEGORY_YEAR]).concat(" ").concat(args[CATEGORY_PROGRESS]).trim();
             path = path.replaceAll("\\s+", "_");
-            return StringUtils.format("http://www.ikanman.com/list/%s/%s_p%%d.html", path, args[5]);
+            return StringUtils.format("http://www.ikanman.com/list/%s/%s_p%%d.html", path, args[CATEGORY_ORDER]);
         }
 
         @Override
@@ -311,6 +318,11 @@ public class IKanman extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.ikanman.com");
     }
 
 }

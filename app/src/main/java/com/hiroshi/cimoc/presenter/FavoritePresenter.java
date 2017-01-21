@@ -1,7 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.ComicManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Pair;
@@ -23,9 +24,12 @@ import rx.functions.Func1;
 public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     private ComicManager mComicManager;
+    private SourceManager mSourceManager;
 
-    public FavoritePresenter() {
-        mComicManager = ComicManager.getInstance();
+    @Override
+    protected void onViewAttach() {
+        mComicManager = ComicManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -54,10 +58,13 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                if ((boolean) rxEvent.getData(1)) {
-                    MiniComic comic = (MiniComic) rxEvent.getData();
-                    mBaseView.onComicRead(comic);
-                }
+                mBaseView.onComicRead((MiniComic) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.EVENT_COMIC_CANCEL_HIGHLIGHT, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onHighlightCancel((MiniComic) rxEvent.getData());
             }
         });
     }
@@ -89,7 +96,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 .flatMap(new Func1<List<Comic>, Observable<Pair<Comic, Pair<Integer, Integer>>>>() {
                     @Override
                     public Observable<Pair<Comic, Pair<Integer, Integer>>> call(List<Comic> list) {
-                        return Manga.checkUpdate(list);
+                        return Manga.checkUpdate(mSourceManager, list);
                     }
                 })
                 .doOnNext(new Action1<Pair<Comic, Pair<Integer, Integer>>>() {
