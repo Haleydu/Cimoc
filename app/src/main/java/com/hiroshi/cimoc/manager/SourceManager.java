@@ -115,19 +115,7 @@ public class SourceManager {
     }
 
     public void resetParse(Source source) {
-        Parser parser = mParserArray.get(source.getType());
-        switch (source.getType()) {
-            case IKanman.TYPE:
-                parser = new IKanman(source);
-                break;
-            case HHAAZZ.TYPE:
-                parser = new HHAAZZ(source);
-                break;
-            case MH57.TYPE:
-                parser = new MH57(source);
-                break;
-        }
-        mParserArray.put(source.getType(), parser);
+        mParserArray.remove(source.getType());
     }
 
     public class TitleGetter {
@@ -145,7 +133,6 @@ public class SourceManager {
         }
 
     }
-
 
     public static SourceManager getInstance(AppGetter getter) {
         if (mInstance == null) {

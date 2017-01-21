@@ -210,8 +210,8 @@ public class DM5 extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            String path = args[0].concat(" ").concat(args[1]).concat(" ").concat(args[4])
-                    .concat(" ").concat(args[5]).trim();
+            String path = args[CATEGORY_SUBJECT].concat(" ").concat(args[CATEGORY_AREA]).concat(" ").concat(args[CATEGORY_PROGRESS])
+                    .concat(" ").concat(args[CATEGORY_ORDER]).trim();
             path = path.replaceAll("\\s+", "-");
             return StringUtils.format("http://www.dm5.com/manhua-list-%s-size40-p%%d", path);
         }

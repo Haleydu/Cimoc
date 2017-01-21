@@ -170,7 +170,7 @@ public class MH57 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://www.57mh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
-                    args[1], args[0], args[3], args[4], args[5]);
+                    args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override

@@ -169,7 +169,7 @@ public class U17 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://www.u17.com/comic_list/%s_%s_ca99_%s_%s_ac0_as0_wm0_co99_ct99_p%%d.html",
-                    args[0], args[2], args[4], args[5]);
+                    args[CATEGORY_SUBJECT], args[CATEGORY_READER], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override

@@ -27,7 +27,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         super.initView();
         loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true);
         loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true);
-        int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 5);
+        int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 10);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
         ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);

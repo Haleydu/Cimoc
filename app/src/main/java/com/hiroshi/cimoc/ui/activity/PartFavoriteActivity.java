@@ -12,6 +12,7 @@ import android.view.View;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.PartFavoritePresenter;
@@ -57,6 +58,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
         mGridAdapter = new GridAdapter(this, new LinkedList<MiniComic>());
         mGridAdapter.setSymbol(true);
         mGridAdapter.setProvider(((App) getApplication()).getBuilderProvider());
+        mGridAdapter.setTitleGetter(SourceManager.getInstance(this).new TitleGetter());
         mGridAdapter.setOnItemClickListener(this);
         mGridAdapter.setOnItemLongClickListener(this);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));

@@ -49,7 +49,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
             case DIALOG_REQUEST_DELETE:
                 mPresenter.delete(mSavedComic);
                 mGridAdapter.remove(mSavedComic);
-                showSnackbar(R.string.common_execute_success);
+                HintUtils.showToast(getActivity(), R.string.common_execute_success);
                 break;
         }
     }

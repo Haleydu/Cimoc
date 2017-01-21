@@ -100,7 +100,7 @@
     <string name="category_reader">读者</string>
     <string name="category_year">年份</string>
     <string name="category_progress">进度</string>
-    <string name="category_order">顺序</string>
+    <string name="category_order">排序</string>
 
     <string name="settings_reader">阅读设置</string>
     <string name="settings_reader_mode">默认阅读模式</string>

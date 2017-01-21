@@ -17,7 +17,6 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.view.BaseView;
-import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import butterknife.BindView;
@@ -65,14 +64,6 @@ public abstract class BaseFragment extends Fragment implements BaseView {
             int resId = ThemeUtils.getResourceId(getActivity(), R.attr.colorAccent);
             mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(getActivity(), resId), PorterDuff.Mode.SRC_ATOP);
         }
-    }
-
-    public void showSnackbar(int resId) {
-        showSnackbar(getString(resId));
-    }
-
-    public void showSnackbar(String msg) {
-        HintUtils.showSnackbar(getView(), msg);
     }
 
     protected void initView() {}

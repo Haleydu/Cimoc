@@ -147,7 +147,8 @@ public class Chuiyao extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s", args[0], args[5]);
+            return StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
+                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
         }
 
         @Override

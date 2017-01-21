@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.RecyclerViewFragment;
 import com.hiroshi.cimoc.ui.view.GridView;
+import com.hiroshi.cimoc.utils.HintUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +70,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
 
     @Override
     public void onComicLoadFail() {
-        showSnackbar(R.string.common_data_load_fail);
+        HintUtils.showToast(getActivity(), R.string.common_data_load_fail);
         hideProgressBar();
     }
 

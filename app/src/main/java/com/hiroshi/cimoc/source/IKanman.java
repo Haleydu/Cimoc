@@ -180,10 +180,10 @@ public class IKanman extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            String path = args[1].concat(" ").concat(args[0]).concat(" ").concat(args[2])
-                    .concat(" ").concat(args[3]).concat(" ").concat(args[4]).trim();
+            String path = args[CATEGORY_AREA].concat(" ").concat(args[CATEGORY_SUBJECT]).concat(" ").concat(args[CATEGORY_READER])
+                    .concat(" ").concat(args[CATEGORY_YEAR]).concat(" ").concat(args[CATEGORY_PROGRESS]).trim();
             path = path.replaceAll("\\s+", "_");
-            return StringUtils.format("http://www.ikanman.com/list/%s/%s_p%%d.html", path, args[5]);
+            return StringUtils.format("http://www.ikanman.com/list/%s/%s_p%%d.html", path, args[CATEGORY_ORDER]);
         }
 
         @Override

@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.TagDao;
 import com.hiroshi.cimoc.model.TagRefDao;
@@ -55,9 +56,9 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
     private void updateSource(Database db) {
         db.beginTransaction();
         db.execSQL("ALTER TABLE \"SOURCE\" RENAME TO \"SOURCE2\"");
-        ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"SOURCE\" (\"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", \"SERVER\",)" +
-                " SELECT \"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", null");
+        SourceDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"SOURCE\" (\"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", \"SERVER\")" +
+                " SELECT \"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", null FROM \"SOURCE2\"");
         db.execSQL("DROP TABLE \"SOURCE2\"");
         db.setTransactionSuccessful();
         db.endTransaction();

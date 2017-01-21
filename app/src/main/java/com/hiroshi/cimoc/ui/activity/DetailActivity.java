@@ -57,10 +57,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     protected BaseAdapter initAdapter() {
-        int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         mDetailAdapter = new DetailAdapter(this, new ArrayList<Chapter>());
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader());
-        mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         return mDetailAdapter;
@@ -234,6 +231,9 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
+            mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader());
+            mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
+
             int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
             mActionButton.setImageResource(resId);
             mActionButton.setVisibility(View.VISIBLE);

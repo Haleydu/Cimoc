@@ -193,7 +193,7 @@ public class Dmzj extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://m.dmzj.com/classify/%s-%s-%s-%s-%s-%%d.json",
-                    args[0], args[2], args[4], args[1], args[5]);
+                    args[CATEGORY_SUBJECT], args[CATEGORY_READER], args[CATEGORY_PROGRESS], args[CATEGORY_AREA], args[CATEGORY_ORDER]);
         }
 
         @Override

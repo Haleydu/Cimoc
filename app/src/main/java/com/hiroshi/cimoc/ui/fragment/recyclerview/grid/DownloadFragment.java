@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.DownloadView;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ServiceUtils;
 
 /**
@@ -42,7 +43,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
                 if (ServiceUtils.isServiceRunning(getActivity(), DownloadService.class)) {
-                    showSnackbar(R.string.download_ask_stop);
+                    HintUtils.showToast(getActivity(), R.string.download_ask_stop);
                 } else {
                     showProgressDialog();
                     mPresenter.deleteComic(mSavedId);
@@ -83,13 +84,13 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onDownloadDeleteSuccess(long id) {
         hideProgressDialog();
         mGridAdapter.removeItemById(id);
-        showSnackbar(R.string.common_execute_success);
+        HintUtils.showToast(getActivity(), R.string.common_execute_success);
     }
 
     @Override
     public void onDownloadDeleteFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_execute_fail);
+        HintUtils.showToast(getActivity(), R.string.common_execute_fail);
     }
 
 }
