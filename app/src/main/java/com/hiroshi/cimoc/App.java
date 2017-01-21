@@ -6,11 +6,12 @@ import android.support.v7.widget.RecyclerView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.component.AppGetter;
-import com.hiroshi.cimoc.core.DBOpenHelper;
 import com.hiroshi.cimoc.core.Storage;
-import com.hiroshi.cimoc.core.UpdateHelper;
-import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.helper.DBOpenHelper;
+import com.hiroshi.cimoc.helper.UpdateHelper;
+import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
@@ -82,7 +83,7 @@ public class App extends Application implements AppGetter {
 
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
-            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext());
+            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(), SourceManager.getInstance(this).new HeaderGetter());
         }
         return mBuilderProvider;
     }

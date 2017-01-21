@@ -1,14 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.parser.JsonIterator;
-import com.hiroshi.cimoc.parser.MangaCategory;
-import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.JsonIterator;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -30,8 +31,16 @@ import okhttp3.Request;
  */
 public class Dmzj extends MangaParser {
 
-    public Dmzj() {
-        category = new Category();
+    public static final int TYPE = 1;
+    public static final String DEFAULT_TITLE = "动漫之家";
+    public static final String DEFAULT_SERVER = null;
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public Dmzj(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -59,7 +68,7 @@ public class Dmzj extends MangaParser {
                             String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                             String author = object.optString("authors");
                             // boolean status = object.getInt("status_tag_id") == 2310;
-                            return new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author);
+                            return new Comic(TYPE, cid, title, cover, update, author);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -162,7 +171,7 @@ public class Dmzj extends MangaParser {
                         Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
                         String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                         String author = object.optString("authors");
-                        list.add(new Comic(SourceManager.SOURCE_DMZJ, cid, title, cover, update, author));
+                        list.add(new Comic(TYPE, cid, title, cover, update, author));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -277,6 +286,11 @@ public class Dmzj extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.dmzj.com/");
     }
 
 }

@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
@@ -58,7 +59,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     protected BaseAdapter initAdapter() {
         int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         mDetailAdapter = new DetailAdapter(this, new ArrayList<Chapter>());
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader());
         mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);

@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.ui.activity.DirPickerActivity;
 import com.hiroshi.cimoc.component.DialogCaller;
+import com.hiroshi.cimoc.ui.activity.DirPickerActivity;
 
 /**
  * Created by Hiroshi on 2016/12/5.

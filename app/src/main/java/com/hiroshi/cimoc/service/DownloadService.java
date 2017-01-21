@@ -17,15 +17,14 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
-import com.hiroshi.cimoc.parser.Parser;
-import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
-import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.utils.DocumentUtils;
@@ -173,8 +172,6 @@ public class DownloadService extends Service implements AppGetter {
                 List<ImageUrl> list = onDownloadParse();
                 int size = list.size();
                 if (size != 0) {
-                    int source = mTask.getSource();
-                    Headers headers = ImagePipelineFactoryBuilder.getHeaders(source);
                     DocumentFile dir = Download.updateChapterIndex(mContentResolver, getAppInstance().getDocumentFile(), mTask);
                     if (dir != null) {
                         mTask.setMax(size);
@@ -188,7 +185,7 @@ public class DownloadService extends Service implements AppGetter {
                                 for (String url : image.getUrl()) {
                                     url = image.isLazy() ? Manga.getLazyUrl(mParse, url) : url;
                                     if (url != null) {
-                                        Request request = buildRequest(headers, url);
+                                        Request request = buildRequest(mParse.getHeader(), url);
                                         success = RequestAndWrite(dir, request, i + 1, url);
                                         if (success) {
                                             break;

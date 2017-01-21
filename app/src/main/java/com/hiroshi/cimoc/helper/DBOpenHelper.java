@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.helper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.parser;
 
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.List;
@@ -12,8 +13,17 @@ import okhttp3.Request;
  */
 public abstract class MangaParser implements Parser {
 
-    protected String[] server;
-    protected Category category;
+    protected String[] mServer;
+    private Category mCategory;
+    private String mTitle;
+
+    protected void init(Source source, Category category) {
+        if (source.getServer() != null) {
+            mServer = source.getServer().split(" ");
+        }
+        mTitle = source.getTitle();
+        mCategory = category;
+    }
 
     @Override
     public Request getChapterRequest(String html, String cid) {
@@ -42,7 +52,7 @@ public abstract class MangaParser implements Parser {
 
     @Override
     public Category getCategory() {
-        return category;
+        return mCategory;
     }
 
     @Override
@@ -56,15 +66,16 @@ public abstract class MangaParser implements Parser {
         return null;
     }
 
-    protected void buildServer(String str) {
-        server = str.split(" ");
+    @Override
+    public String getTitle() {
+        return mTitle;
     }
 
     protected String[] buildUrl(String path) {
-        if (server != null) {
-            String[] url = new String[server.length];
-            for (int i = 0; i != server.length; ++i) {
-                url[i] = server[i].concat(path);
+        if (mServer != null) {
+            String[] url = new String[mServer.length];
+            for (int i = 0; i != mServer.length; ++i) {
+                url[i] = mServer[i].concat(path);
             }
             return url;
         }

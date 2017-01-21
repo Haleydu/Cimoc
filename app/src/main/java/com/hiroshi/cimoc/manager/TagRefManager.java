@@ -30,19 +30,6 @@ public class TagRefManager {
         mRefDao.getSession().runInTx(runnable);
     }
 
-    public Observable<List<TagRef>> listByTagInRx(long id) {
-        return mRefDao.queryBuilder()
-                .where(TagRefDao.Properties.Tid.eq(id))
-                .rx()
-                .list();
-    }
-
-    public List<TagRef> listByTag(long id) {
-        return mRefDao.queryBuilder()
-                .where(TagRefDao.Properties.Tid.eq(id))
-                .list();
-    }
-
     public List<TagRef> listByComic(long cid) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Cid.eq(cid))
@@ -52,7 +39,6 @@ public class TagRefManager {
     public TagRef load(long tid, long cid) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Tid.eq(tid), TagRefDao.Properties.Cid.eq(cid))
-                .limit(1)
                 .unique();
     }
 

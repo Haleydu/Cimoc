@@ -7,6 +7,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -36,11 +37,13 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
+    private SourceManager mSourceManager;
 
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mTaskManager = TaskManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void clearCache() {
@@ -154,7 +157,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         for (Task task : mTaskManager.listValid()) {
             Comic comic = array.get(task.getKey());
             if (comic == null || Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(), comic,
-                    new Chapter(task.getTitle(), task.getPath())) == null) {
+                    new Chapter(task.getTitle(), task.getPath()), mSourceManager.getParser(comic.getSource()).getTitle()) == null) {
                 tList.add(task);
             } else {
                 set.add(task.getKey());

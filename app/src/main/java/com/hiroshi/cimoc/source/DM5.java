@@ -1,14 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.parser.JsonIterator;
-import com.hiroshi.cimoc.parser.MangaCategory;
-import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.JsonIterator;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -32,8 +33,16 @@ import okhttp3.RequestBody;
  */
 public class DM5 extends MangaParser {
 
-    public DM5() {
-        category = new Category();
+    public static final int TYPE = 5;
+    public static final String DEFAULT_TITLE = "动漫屋";
+    public static final String DEFAULT_SERVER = null;
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public DM5(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -63,7 +72,7 @@ public class DM5 extends MangaParser {
                         for (int i = 0; array != null && i != array.length(); ++i) {
                             author = author.concat(array.optString(i));
                         }
-                        return new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author);
+                        return new Comic(TYPE, cid, title, cover, update, author);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -187,7 +196,7 @@ public class DM5 extends MangaParser {
                 update = update.replaceAll("[年月日]", " ").trim().replaceAll(" ", "-");
             }
             String author = args == null ? null : args[0];
-            list.add(new Comic(SourceManager.SOURCE_DM5, cid, title, cover, update, author));
+            list.add(new Comic(TYPE, cid, title, cover, update, author));
         }
         return list;
     }
@@ -267,6 +276,11 @@ public class DM5 extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://www.dm5.com");
     }
 
 }

@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourceDetailPresenter;
 import com.hiroshi.cimoc.ui.custom.Option;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
-import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.ui.view.SourceDetailView;
 
 import butterknife.BindView;

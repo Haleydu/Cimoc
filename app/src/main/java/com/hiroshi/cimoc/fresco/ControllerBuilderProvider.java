@@ -7,6 +7,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.hiroshi.cimoc.manager.SourceManager;
 
 /**
  * Created by Hiroshi on 2016/9/5.
@@ -16,20 +17,22 @@ public class ControllerBuilderProvider {
     private Context mContext;
     private SparseArray<PipelineDraweeControllerBuilderSupplier> mSupplierArray;
     private SparseArray<ImagePipeline> mPipelineArray;
+    private SourceManager.HeaderGetter mHeaderGetter;
 
-    public ControllerBuilderProvider(Context context) {
+    public ControllerBuilderProvider(Context context, SourceManager.HeaderGetter getter) {
         mSupplierArray = new SparseArray<>();
         mPipelineArray = new SparseArray<>();
         mContext = context;
+        mHeaderGetter = getter;
     }
 
-    public PipelineDraweeControllerBuilder get(int source) {
-        PipelineDraweeControllerBuilderSupplier supplier = mSupplierArray.get(source);
+    public PipelineDraweeControllerBuilder get(int type) {
+        PipelineDraweeControllerBuilderSupplier supplier = mSupplierArray.get(type);
         if (supplier == null) {
-            ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(mContext, source);
+            ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(mContext, mHeaderGetter.getHeader(type));
             supplier = ControllerBuilderSupplierFactory.get(mContext, factory);
-            mSupplierArray.put(source, supplier);
-            mPipelineArray.put(source, factory.getImagePipeline());
+            mSupplierArray.put(type, supplier);
+            mPipelineArray.put(type, factory.getImagePipeline());
         }
         return supplier.get();
     }

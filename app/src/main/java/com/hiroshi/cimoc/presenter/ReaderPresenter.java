@@ -105,7 +105,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
-        return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(), mComic, chapter) :
+        return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
+                mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
                 Manga.getChapterImage(mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
     }
 

@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -29,12 +30,14 @@ public class TaskPresenter extends BasePresenter<TaskView> {
 
     private TaskManager mTaskManager;
     private ComicManager mComicManager;
+    private SourceManager mSourceManager;
     private Comic mComic;
 
     @Override
     protected void onViewAttach() {
         mTaskManager = TaskManager.getInstance(mBaseView);
         mComicManager = ComicManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -106,7 +109,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     public void call(List<Task> list) {
                         updateTaskList(list);
                         final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
-                                mBaseView.getAppInstance().getDocumentFile(), mComic);
+                                mBaseView.getAppInstance().getDocumentFile(), mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
                         if (sList != null) {
                             Collections.sort(list, new Comparator<Task>() {
                                 @Override
@@ -157,13 +160,15 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 .doOnNext(new Action1<List<String>>() {
                     @Override
                     public void call(List<String> strings) {
-                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic, buildChapterList(list));
+                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                buildChapterList(list), mSourceManager.getParser(mComic.getSource()).getTitle());
                         mTaskManager.deleteInTx(list);
                         if (isEmpty) {
                             long id = mComic.getId();
                             mComic.setDownload(null);
                             mComicManager.updateOrDelete(mComic);
-                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic);
+                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                    mSourceManager.getParser(mComic.getSource()).getTitle());
                             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
                         }
                     }

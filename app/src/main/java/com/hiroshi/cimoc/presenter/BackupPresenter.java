@@ -19,8 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -116,33 +114,22 @@ public class BackupPresenter extends BasePresenter<BackupView> {
     }
 
     public void saveTag(final long id, final String title) {
-        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Integer>() {
+        mCompositeSubscription.add(mComicManager.listFavoriteByTag(id)
+                .map(new Func1<List<Comic>, Integer>() {
                     @Override
-                    public void call(Subscriber<? super Integer> subscriber) {
-                        final List<TagRef> list = mTagRefManager.listByTag(id);
-                        List<Comic> result = mComicManager.callInTx(new Callable<List<Comic>>() {
-                            @Override
-                            public List<Comic> call() throws Exception {
-                                List<Comic> result = new LinkedList<>();
-                                for (TagRef ref : list) {
-                                    result.add(mComicManager.load(ref.getCid()));
-                                }
-                                return result;
-                            }
-                        });
-                        int size = Backup.saveTag(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), new Tag(id, title), result);
-                        if (size == -1) {
-                            subscriber.onError(new Exception());
-                        } else {
-                            subscriber.onNext(size);
-                        }
+                    public Integer call(List<Comic> list) {
+                        return Backup.saveTag(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), new Tag(id, title), list);
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Integer>() {
                     @Override
                     public void call(Integer size) {
-                        mBaseView.onBackupSaveSuccess(size);
+                        if (size == -1) {
+                            mBaseView.onBackupSaveFail();
+                        } else {
+                            mBaseView.onBackupSaveSuccess(size);
+                        }
                     }
                 }, new Action1<Throwable>() {
                     @Override

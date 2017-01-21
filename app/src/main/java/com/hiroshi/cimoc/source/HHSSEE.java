@@ -1,20 +1,21 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.parser.MangaCategory;
-import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.NodeIterator;
-import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -23,8 +24,16 @@ import okhttp3.Request;
 
 public class HHSSEE extends MangaParser {
 
-    public HHSSEE() {
-        category = new Category();
+    public static final int TYPE = 7;
+    public static final String DEFAULT_TITLE = "汗汗漫画";
+    public static final String DEFAULT_SERVER = null;
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public HHSSEE(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -45,7 +54,7 @@ public class HHSSEE extends MangaParser {
                 String cid = node.hrefWithSubString(7, -6);
                 String title = node.text();
                 String cover = node.src("img");
-                return new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, null, null);
+                return new Comic(TYPE, cid, title, cover, null, null);
             }
         };
     }
@@ -170,7 +179,7 @@ public class HHSSEE extends MangaParser {
             String cid = node.hrefWithSubString(7, -6);
             String title = node.attr("title");
             String cover = node.src("img");
-            list.add(new Comic(SourceManager.SOURCE_HHSSEE, cid, title, cover, null, null));
+            list.add(new Comic(TYPE, cid, title, cover, null, null));
         }
         return list;
     }
@@ -227,6 +236,11 @@ public class HHSSEE extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://www.hhssee.com");
     }
 
 }

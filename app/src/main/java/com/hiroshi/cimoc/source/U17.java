@@ -1,14 +1,14 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.parser.MangaCategory;
-import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.NodeIterator;
-import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -26,8 +27,16 @@ import okhttp3.Request;
  */
 public class U17 extends MangaParser {
 
-    public U17() {
-        category = new Category();
+    public static final int TYPE = 4;
+    public static final String DEFAULT_TITLE = "有妖气";
+    public static final String DEFAULT_SERVER = null;
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+    }
+
+    public U17(Source source) {
+        init(source, new Category());
     }
 
     @Override
@@ -47,7 +56,7 @@ public class U17 extends MangaParser {
                 String cover = node.src("div:eq(0) > a > img");
                 String update = node.textWithSubstring("div:eq(1) > h3 > span.fr", 7);
                 String author = node.text("div:eq(1) > h3 > a[title]");
-                return new Comic(SourceManager.SOURCE_U17, cid, title, cover, update, author);
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -145,7 +154,7 @@ public class U17 extends MangaParser {
                 cover = node.attr("div.cover > a > img", "xsrc");
             }
             String author = node.text("div.info > h3 > a[title]");
-            list.add(new Comic(SourceManager.SOURCE_U17, cid, title, cover, null, author));
+            list.add(new Comic(TYPE, cid, title, cover, null, author));
         }
         return list;
     }
@@ -225,6 +234,11 @@ public class U17 extends MangaParser {
             return list;
         }
 
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://www.u17.com");
     }
 
 }

@@ -1,11 +1,19 @@
-package com.hiroshi.cimoc.core;
+package com.hiroshi.cimoc.helper;
 
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
+import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.Chuiyao;
+import com.hiroshi.cimoc.source.DM5;
+import com.hiroshi.cimoc.source.Dmzj;
+import com.hiroshi.cimoc.source.HHAAZZ;
+import com.hiroshi.cimoc.source.HHSSEE;
+import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Webtoon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +51,14 @@ public class UpdateHelper {
             @Override
             public void run() {
                 SourceDao dao = session.getSourceDao();
-                Source source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(SourceManager.SOURCE_IKANMAN)).unique();
-                source.setServer(ImageServer.DEFAULT_SERVER_IKANMAN);
+                Source source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(IKanman.TYPE)).unique();
+                source.setServer(IKanman.DEFAULT_SERVER);
                 dao.update(source);
-                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(SourceManager.SOURCE_HHAAZZ)).unique();
-                source.setServer(ImageServer.DEFAULT_SERVER_HHAAZZ);
+                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(HHAAZZ.TYPE)).unique();
+                source.setServer(HHAAZZ.DEFAULT_SERVER);
                 dao.update(source);
-                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(SourceManager.SOURCE_57MH)).unique();
-                source.setServer(ImageServer.DEFAULT_SERVER_57MH);
+                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(MH57.TYPE)).unique();
+                source.setServer(MH57.DEFAULT_SERVER);
                 dao.update(source);
             }
         });
@@ -60,15 +68,17 @@ public class UpdateHelper {
      * 初始化图源
      */
     private static void initSource(DaoSession session) {
-        int[] type = {SourceManager.SOURCE_IKANMAN, SourceManager.SOURCE_DMZJ, SourceManager.SOURCE_HHAAZZ, SourceManager.SOURCE_CCTUKU,
-                SourceManager.SOURCE_U17, SourceManager.SOURCE_DM5, SourceManager.SOURCE_WEBTOON, SourceManager.SOURCE_HHSSEE,
-                SourceManager.SOURCE_57MH, SourceManager.SOURCE_CHUIYAO};
-        String[] server = {ImageServer.DEFAULT_SERVER_IKANMAN, null, ImageServer.DEFAULT_SERVER_HHAAZZ,
-                null, null, null, null, null, ImageServer.DEFAULT_SERVER_57MH, null};
-        List<Source> list = new ArrayList<>(type.length);
-        for (int i = 0; i != type.length; ++i) {
-            list.add(new Source(null, SourceManager.getTitle(type[i]), type[i], true, server[i]));
-        }
+        List<Source> list = new ArrayList<>(10);
+        list.add(IKanman.getDefaultSource());
+        list.add(Dmzj.getDefaultSource());
+        list.add(HHAAZZ.getDefaultSource());
+        list.add(CCTuku.getDefaultSource());
+        list.add(U17.getDefaultSource());
+        list.add(DM5.getDefaultSource());
+        list.add(Webtoon.getDefaultSource());
+        list.add(HHSSEE.getDefaultSource());
+        list.add(MH57.getDefaultSource());
+        list.add(Chuiyao.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

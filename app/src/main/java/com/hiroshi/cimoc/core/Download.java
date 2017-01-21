@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 
-import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -44,14 +43,14 @@ public class Download {
      *      cid: 漫画ID string
      *      title: 标题 string
      *      cover: 封面 string
-     *      type: 类型 string (comic)
+     *      type: 类型 string ("comic")
      *      version: 版本 string ("1")
      *  }
      *  chapter:
      *  {
      *      title: 章节名称 string
      *      path: 章节路径 string
-     *      type: 类型 string (chapter)
+     *      type: 类型 string ("chapter")
      *      version: 版本 string ("1")
      *  }
      *
@@ -179,16 +178,16 @@ public class Download {
      * @param comic
      * @return
      */
-    private static DocumentFile getComicDir(DocumentFile root, Comic comic) {
+    private static DocumentFile getComicDir(DocumentFile root, Comic comic, String title) {
         DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()), comic.getCid());
         if (result == null) {
-            result = DocumentUtils.findFile(root, DOWNLOAD, SourceManager.getTitle(comic.getSource()), comic.getTitle());
+            result = DocumentUtils.findFile(root, DOWNLOAD, title, comic.getTitle());
         }
         return result;
     }
 
-    public static List<String> getComicIndex(ContentResolver resolver, DocumentFile root, Comic comic) {
-        DocumentFile dir = getComicDir(root, comic);
+    public static List<String> getComicIndex(ContentResolver resolver, DocumentFile root, Comic comic, String title) {
+        DocumentFile dir = getComicDir(root, comic, title);
         DocumentFile file = dir.findFile(FILE_INDEX);
         if (file != null) {
             if (hasMagicNumber(resolver, file)) {
@@ -218,20 +217,20 @@ public class Download {
         return list;
     }
 
-    public static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter) {
+    public static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter, String title) {
         DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()),
                 comic.getCid(), DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-")));
         if (result == null) {
-            result = DocumentUtils.findFile(root, DOWNLOAD, SourceManager.getTitle(comic.getSource()), comic.getTitle(), chapter.getTitle());
+            result = DocumentUtils.findFile(root, DOWNLOAD, title, comic.getTitle(), chapter.getTitle());
         }
         return result;
     }
 
-    public static Observable<List<ImageUrl>> images(final DocumentFile root, final Comic comic, final Chapter chapter) {
+    public static Observable<List<ImageUrl>> images(final DocumentFile root, final Comic comic, final Chapter chapter, final String title) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                DocumentFile dir = getChapterDir(root, comic, chapter);
+                DocumentFile dir = getChapterDir(root, comic, chapter, title);
                 Uri[] uris = DocumentUtils.listUrisWithoutSuffix(dir, "cdif");
                 if (uris.length != 0) {
                     List<ImageUrl> list = new ArrayList<>(uris.length);
@@ -250,17 +249,17 @@ public class Download {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static void delete(DocumentFile root, Comic comic, List<Chapter> list) {
+    public static void delete(DocumentFile root, Comic comic, List<Chapter> list, String title) {
         for (Chapter chapter : list) {
-            DocumentFile dir = getChapterDir(root, comic, chapter);
+            DocumentFile dir = getChapterDir(root, comic, chapter, title);
             if (dir != null) {
                 DocumentUtils.deleteDir(dir);
             }
         }
     }
 
-    public static void delete(DocumentFile root, Comic comic) {
-        DocumentFile dir = getComicDir(root, comic);
+    public static void delete(DocumentFile root, Comic comic, String title) {
+        DocumentFile dir = getComicDir(root, comic, title);
         if (dir != null) {
             DocumentUtils.deleteDir(dir);
         }

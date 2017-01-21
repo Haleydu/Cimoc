@@ -8,10 +8,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.parser.Category;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.parser.Category;
 
 import java.util.List;
 

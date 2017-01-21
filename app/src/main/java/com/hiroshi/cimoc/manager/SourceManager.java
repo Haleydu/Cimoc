@@ -3,10 +3,10 @@ package com.hiroshi.cimoc.manager;
 import android.util.SparseArray;
 
 import com.hiroshi.cimoc.component.AppGetter;
-import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
+import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
@@ -20,23 +20,13 @@ import com.hiroshi.cimoc.source.Webtoon;
 
 import java.util.List;
 
+import okhttp3.Headers;
 import rx.Observable;
 
 /**
  * Created by Hiroshi on 2016/8/11.
  */
 public class SourceManager {
-
-    public static final int SOURCE_IKANMAN = 0;
-    public static final int SOURCE_DMZJ = 1;
-    public static final int SOURCE_HHAAZZ = 2;
-    public static final int SOURCE_CCTUKU = 3;
-    public static final int SOURCE_U17 = 4;
-    public static final int SOURCE_DM5 = 5;
-    public static final int SOURCE_WEBTOON = 6;
-    public static final int SOURCE_HHSSEE = 7;
-    public static final int SOURCE_57MH = 8;
-    public static final int SOURCE_CHUIYAO = 9;
 
     private static SourceManager mInstance;
 
@@ -83,69 +73,40 @@ public class SourceManager {
         mSourceDao.update(source);
     }
 
-    public static String getTitle(int id) {
-        switch (id) {
-            case SOURCE_IKANMAN:
-                return "看漫画";
-            case SOURCE_DMZJ:
-                return "动漫之家";
-            case SOURCE_HHAAZZ:
-                return "手机汗汗";
-            case SOURCE_CCTUKU:
-                return "CC图库";
-            case SOURCE_U17:
-                return "有妖气";
-            case SOURCE_DM5:
-                return "动漫屋";
-            case SOURCE_WEBTOON:
-                return "Webtoon";
-            case SOURCE_HHSSEE:
-                return "汗汗漫画";
-            case SOURCE_57MH:
-                return "57漫画";
-            case SOURCE_CHUIYAO:
-                return "吹妖漫画";
-        }
-        return "null";
-    }
-
     public Parser getParser(int type) {
         Parser parser = mParserArray.get(type);
         if (parser == null) {
-            Source source;
+            Source source = load(type);
             switch (type) {
-                case SOURCE_IKANMAN:
-                    source = load(type);
-                    parser = new IKanman(source.getServer());
+                case IKanman.TYPE:
+                    parser = new IKanman(source);
                     break;
-                case SOURCE_DMZJ:
-                    parser = new Dmzj();
+                case Dmzj.TYPE:
+                    parser = new Dmzj(source);
                     break;
-                case SOURCE_HHAAZZ:
-                    source = load(type);
-                    parser = new HHAAZZ(source.getServer());
+                case HHAAZZ.TYPE:
+                    parser = new HHAAZZ(source);
                     break;
-                case SOURCE_CCTUKU:
-                    parser = new CCTuku();
+                case CCTuku.TYPE:
+                    parser = new CCTuku(source);
                     break;
-                case SOURCE_U17:
-                    parser = new U17();
+                case U17.TYPE:
+                    parser = new U17(source);
                     break;
-                case SOURCE_DM5:
-                    parser = new DM5();
+                case DM5.TYPE:
+                    parser = new DM5(source);
                     break;
-                case SOURCE_WEBTOON:
-                    parser = new Webtoon();
+                case Webtoon.TYPE:
+                    parser = new Webtoon(source);
                     break;
-                case SOURCE_HHSSEE:
-                    parser = new HHSSEE();
+                case HHSSEE.TYPE:
+                    parser = new HHSSEE(source);
                     break;
-                case SOURCE_57MH:
-                    source = load(type);
-                    parser = new MH57(source.getServer());
+                case MH57.TYPE:
+                    parser = new MH57(source);
                     break;
-                case SOURCE_CHUIYAO:
-                    parser = new Chuiyao();
+                case Chuiyao.TYPE:
+                    parser = new Chuiyao(source);
                     break;
             }
             mParserArray.put(type, parser);
@@ -156,18 +117,35 @@ public class SourceManager {
     public void resetParse(Source source) {
         Parser parser = mParserArray.get(source.getType());
         switch (source.getType()) {
-            case SOURCE_IKANMAN:
-                parser = new IKanman(source.getServer());
+            case IKanman.TYPE:
+                parser = new IKanman(source);
                 break;
-            case SOURCE_HHAAZZ:
-                parser = new HHAAZZ(source.getServer());
+            case HHAAZZ.TYPE:
+                parser = new HHAAZZ(source);
                 break;
-            case SOURCE_57MH:
-                parser = new MH57(source.getServer());
+            case MH57.TYPE:
+                parser = new MH57(source);
                 break;
         }
         mParserArray.put(source.getType(), parser);
     }
+
+    public class TitleGetter {
+
+        public String getTitle(int type) {
+            return getParser(type).getTitle();
+        }
+
+    }
+
+    public class HeaderGetter {
+
+        public Headers getHeader(int type) {
+            return getParser(type).getHeader();
+        }
+
+    }
+
 
     public static SourceManager getInstance(AppGetter getter) {
         if (mInstance == null) {

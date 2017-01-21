@@ -6,6 +6,7 @@ import com.hiroshi.cimoc.model.ImageUrl;
 
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -42,5 +43,9 @@ public interface Parser {
     Request getCategoryRequest(String format, int page);
 
     List<Comic> parseCategory(String html, int page);
+
+    String getTitle();
+
+    Headers getHeader();
 
 }

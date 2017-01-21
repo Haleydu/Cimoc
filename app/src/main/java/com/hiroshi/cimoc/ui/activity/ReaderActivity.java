@@ -22,11 +22,12 @@ import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -305,7 +306,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source) {
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, source);
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader());
         mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mReaderAdapter.addAll(list);
         if (progress != 1) {

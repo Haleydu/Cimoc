@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
 import com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference;
 import com.hiroshi.cimoc.ui.custom.preference.ChoicePreference;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
-import com.hiroshi.cimoc.component.DialogCaller;
 
 import butterknife.BindView;
 import butterknife.OnClick;

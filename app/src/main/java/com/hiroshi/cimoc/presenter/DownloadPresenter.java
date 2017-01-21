@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -13,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -26,11 +26,13 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
+    private SourceManager mSourceManager;
 
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mTaskManager = TaskManager.getInstance(mBaseView);
+        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -73,7 +75,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                                 return comic;
                             }
                         });
-                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic);
+                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic, mSourceManager.getParser(comic.getSource()).getTitle());
                     }
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
