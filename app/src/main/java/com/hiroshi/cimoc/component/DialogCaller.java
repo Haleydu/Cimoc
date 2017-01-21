@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.view;
+package com.hiroshi.cimoc.component;
 
 import android.os.Bundle;
 
@@ -6,7 +6,7 @@ import android.os.Bundle;
  * Created by Hiroshi on 2016/12/4.
  */
 
-public interface DialogView {
+public interface DialogCaller {
 
     String EXTRA_DIALOG_RESULT_INDEX = "cimoc.intent.extra.EXTRA_DIALOG_RESULT_INDEX";
     String EXTRA_DIALOG_RESULT_VALUE = "cimoc.intent.extra.EXTRA_DIALOG_RESULT_VALUE";

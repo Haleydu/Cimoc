@@ -14,7 +14,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
-import com.hiroshi.cimoc.ui.view.DialogView;
+import com.hiroshi.cimoc.component.DialogCaller;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import butterknife.BindViews;
  * Created by Hiroshi on 2016/10/9.
  */
 
-public class EventSettingsActivity extends BaseActivity implements DialogView {
+public class EventSettingsActivity extends BaseActivity implements DialogCaller {
 
     @BindViews({ R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right })
     List<Button> mButtonList;

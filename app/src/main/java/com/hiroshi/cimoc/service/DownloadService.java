@@ -14,12 +14,13 @@ import android.support.v4.util.LongSparseArray;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
-import com.hiroshi.cimoc.core.parser.Parser;
+import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.manager.TaskManager;
+import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -27,7 +28,6 @@ import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
-import com.hiroshi.cimoc.ui.view.BaseView;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -49,7 +49,7 @@ import okhttp3.Response;
 /**
  * Created by Hiroshi on 2016/9/1.
  */
-public class DownloadService extends Service implements BaseView {
+public class DownloadService extends Service implements AppGetter {
 
     private LongSparseArray<Pair<Worker, Future>> mWorkerArray;
     private ExecutorService mExecutorService;

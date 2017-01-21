@@ -85,7 +85,22 @@ public class Backup {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static int saveFavorite(final ContentResolver resolver, final DocumentFile root, List<Comic> list) {
+    public static void saveFavoriteAuto(ContentResolver resolver, DocumentFile root, List<Comic> list) {
+        DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+        if (dir != null) {
+            try {
+                JSONObject result = new JSONObject();
+                result.put(JSON_KEY_VERSION, 1);
+                result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
+                DocumentFile file = DocumentUtils.createFile(dir, "automatic.".concat(SUFFIX_CFBF));
+                DocumentUtils.writeStringToFile(resolver, file, result.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static int saveFavorite(ContentResolver resolver, DocumentFile root, List<Comic> list) {
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
         if (dir != null) {
             try {
@@ -93,7 +108,7 @@ public class Backup {
                 result.put(JSON_KEY_VERSION, 1);
                 result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
                 String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CFBF);
-                DocumentFile file = dir.createFile("", filename);
+                DocumentFile file = DocumentUtils.createFile(dir, filename);
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
                 return list.size();
             } catch (Exception e) {

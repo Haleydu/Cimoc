@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator;
+package com.hiroshi.cimoc.ui.fragment.recyclerview;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.ui.adapter.TagAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.TagView;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
                     Tag tag = new Tag(null, text);
                     mPresenter.insert(tag);
                     mTagAdapter.add(tag);
-                    showSnackbar(R.string.common_execute_success);
+                    HintUtils.showToast(getActivity(), R.string.common_execute_success);
                 }
                 break;
         }
@@ -138,13 +139,13 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
     public void onTagDeleteSuccess(Tag tag) {
         hideProgressDialog();
         mTagAdapter.remove(tag);
-        showSnackbar(R.string.common_execute_success);
+        HintUtils.showToast(getActivity(), R.string.common_execute_success);
     }
 
     @Override
     public void onTagDeleteFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_execute_fail);
+        HintUtils.showToast(getActivity(), R.string.common_execute_fail);
     }
 
     @Override
@@ -156,7 +157,7 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
     @Override
     public void onTagLoadFail() {
         hideProgressBar();
-        showSnackbar(R.string.common_data_load_fail);
+        HintUtils.showToast(getActivity(), R.string.common_data_load_fail);
     }
 
     @Override

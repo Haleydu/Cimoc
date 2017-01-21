@@ -8,7 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Pair;

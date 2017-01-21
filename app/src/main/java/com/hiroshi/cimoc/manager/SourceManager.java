@@ -1,8 +1,9 @@
-package com.hiroshi.cimoc.core.manager;
+package com.hiroshi.cimoc.manager;
 
 import android.util.SparseArray;
 
-import com.hiroshi.cimoc.core.parser.Parser;
+import com.hiroshi.cimoc.component.AppGetter;
+import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
@@ -16,7 +17,6 @@ import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
-import com.hiroshi.cimoc.ui.view.BaseView;
 
 import java.util.List;
 
@@ -43,8 +43,8 @@ public class SourceManager {
     private SourceDao mSourceDao;
     private SparseArray<Parser> mParserArray = new SparseArray<>();
 
-    private SourceManager(BaseView view) {
-        mSourceDao = view.getAppInstance().getDaoSession().getSourceDao();
+    private SourceManager(AppGetter getter) {
+        mSourceDao = getter.getAppInstance().getDaoSession().getSourceDao();
     }
 
     public Observable<List<Source>> list() {
@@ -153,9 +153,25 @@ public class SourceManager {
         return parser;
     }
 
-    public static SourceManager getInstance(BaseView view) {
+    public void resetParse(Source source) {
+        Parser parser = mParserArray.get(source.getType());
+        switch (source.getType()) {
+            case SOURCE_IKANMAN:
+                parser = new IKanman(source.getServer());
+                break;
+            case SOURCE_HHAAZZ:
+                parser = new HHAAZZ(source.getServer());
+                break;
+            case SOURCE_57MH:
+                parser = new MH57(source.getServer());
+                break;
+        }
+        mParserArray.put(source.getType(), parser);
+    }
+
+    public static SourceManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new SourceManager(view);
+            mInstance = new SourceManager(getter);
         }
         return mInstance;
     }

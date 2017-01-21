@@ -2,25 +2,18 @@ package com.hiroshi.cimoc.presenter;
 
 import android.support.v4.util.LongSparseArray;
 
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TagManager;
-import com.hiroshi.cimoc.core.manager.TagRefManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.TagManager;
+import com.hiroshi.cimoc.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -35,13 +28,14 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
 
     private ComicManager mComicManager;
     private TagRefManager mTagRefManager;
-    private Tag mTag;
-    private LongSparseArray<MiniComic> mComicArray;
+    private long mTagId;
+    private LongSparseArray<Comic> mSavedComic;
 
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mTagRefManager = TagRefManager.getInstance(mBaseView);
+        mSavedComic = new LongSparseArray<>();
     }
 
     @SuppressWarnings("unchecked")
@@ -57,16 +51,12 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
             @Override
             public void call(RxEvent rxEvent) {
                 long id = (long) rxEvent.getData();
-                List<Long> dList = (List<Long>) rxEvent.getData(1);
-                List<Long> iList = (List<Long>) rxEvent.getData(2);
-                if (dList.contains(mTag.getId())) {
+                List<Long> list = (List<Long>) rxEvent.getData(1);
+                if (list.contains(mTagId)) {
                     MiniComic comic = new MiniComic(mComicManager.load(id));
-                    mComicArray.put(id, comic);
-                    mBaseView.onComicRemove(id);
-                } else if (iList.contains(mTag.getId())) {
-                    MiniComic comic = mComicArray.get(id);
-                    mComicArray.remove(id);
                     mBaseView.onComicAdd(comic);
+                } else {
+                    mBaseView.onComicRemove(id);
                 }
             }
         });
@@ -84,68 +74,25 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
         });
     }
 
-    private Observable<List<MiniComic>> getObservable(long id) {
+    private Observable<List<Comic>> getObservable(long id) {
         if (id == TagManager.TAG_CONTINUE) {
-            return mComicManager.listContinueInRx()
-                    .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
-                        @Override
-                        public MiniComic call(Comic comic) {
-                            return new MiniComic(comic);
-                        }
-                    }));
+            return mComicManager.listContinueInRx();
         } else if (id == TagManager.TAG_FINISH) {
-            return mComicManager.listFinishInRx()
-                    .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
-                        @Override
-                        public MiniComic call(Comic comic) {
-                            return new MiniComic(comic);
-                        }
-                    }));
+            return mComicManager.listFinishInRx();
         } else {
-            return mTagRefManager.listByTagInRx(id)
-                    .flatMap(new Func1<List<TagRef>, Observable<List<MiniComic>>>() {
-                        @Override
-                        public Observable<List<MiniComic>> call(final List<TagRef> tagRefs) {
-                            return mComicManager.callInRx(new Callable<List<MiniComic>>() {
-                                @Override
-                                public List<MiniComic> call() throws Exception {
-                                    List<MiniComic> list = new LinkedList<>();
-                                    for (TagRef ref : tagRefs) {
-                                        list.add(new MiniComic(mComicManager.load(ref.getCid())));
-                                    }
-                                    Collections.sort(list, new Comparator<MiniComic>() {
-                                        @Override
-                                        public int compare(MiniComic lhs, MiniComic rhs) {
-                                            if (lhs.isHighlight() == rhs.isHighlight()) {
-                                                return lhs.getFavorite() - rhs.getFavorite() > 0 ? -1 : 1;
-                                            }
-                                            return lhs.isHighlight() ? -1 : 1;
-                                        }
-                                    });
-                                    return list;
-                                }
-                            });
-                        }
-                    })
-                    .doOnNext(new Action1<List<MiniComic>>() {
-                        @Override
-                        public void call(List<MiniComic> list) {
-                            mComicArray = new LongSparseArray<>();
-                            Set<MiniComic> set = new HashSet<>(list);
-                            for (Comic comic : mComicManager.listFavorite()) {
-                                MiniComic mc = new MiniComic(comic);
-                                if (!set.contains(mc)) {
-                                    mComicArray.put(mc.getId(), mc);
-                                }
-                            }
-                        }
-                    });
+            return mComicManager.listFavoriteByTag(id);
         }
     }
 
-    public void load(long id, String title) {
-        mTag = new Tag(id, title);
+    public void load(long id) {
+        mTagId = id;
         mCompositeSubscription.add(getObservable(id)
+                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                    @Override
+                    public MiniComic call(Comic comic) {
+                        return new MiniComic(comic);
+                    }
+                }))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<MiniComic>>() {
                     @Override
@@ -160,27 +107,47 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                 }));
     }
 
-    public List<MiniComic> getComicList() {
-        List<MiniComic> list = new ArrayList<>();
-        int size = mComicArray.size();
-        for (int i = 0; i < size; ++i) {
-            list.add(mComicArray.valueAt(i));
+    private List<Long> buildIdList(List<MiniComic> list) {
+        List<Long> result = new ArrayList<>(list.size());
+        for (MiniComic comic : list) {
+            result.add(comic.getId());
         }
-        return list;
+        return result;
     }
 
-    public void insert(long[] idList, boolean[] checkList) {
-        if (idList != null && checkList != null && idList.length == checkList.length) {
+    public void loadComicTitle(List<MiniComic> list) {
+        mCompositeSubscription.add(mComicManager.listFavoriteNotIn(buildIdList(list))
+                .compose(new ToAnotherList<>(new Func1<Comic, String>() {
+                    @Override
+                    public String call(Comic comic) {
+                        mSavedComic.put(comic.getId(), comic);
+                        return comic.getTitle();
+                    }
+                }))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> list) {
+                        mBaseView.onComicTitleLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadFail();
+                    }
+                }));
+    }
+
+    public void insert(boolean[] check) {
+        // Todo 异步
+        if (check != null && mSavedComic != null && check.length == mSavedComic.size()) {
             List<TagRef> rList = new ArrayList<>();
             List<MiniComic> cList = new ArrayList<>();
-            for (int i = 0; i != idList.length; ++i) {
-                if (checkList[i]) {
-                    MiniComic comic = mComicArray.get(idList[i]);
-                    if (comic != null) {
-                        rList.add(new TagRef(null, mTag.getId(), comic.getId()));
-                        cList.add(comic);
-                        mComicArray.remove(comic.getId());
-                    }
+            for (int i = 0; i != check.length; ++i) {
+                if (check[i]) {
+                    MiniComic comic = new MiniComic(mSavedComic.valueAt(i));
+                    rList.add(new TagRef(null, mTagId, comic.getId()));
+                    cList.add(comic);
                 }
             }
             mTagRefManager.insertInTx(rList);
@@ -188,10 +155,11 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
         } else {
             mBaseView.onComicInsertFail();
         }
+        mSavedComic.clear();
     }
 
-    public void delete(long tid, long cid) {
-        mTagRefManager.delete(tid, cid);
+    public void delete(long id) {
+        mTagRefManager.delete(mTagId, id);
     }
 
 }

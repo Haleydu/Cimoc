@@ -203,10 +203,6 @@ public class Comic {
         return this.finish;
     }
 
-    public void setFinish(boolean finish) {
-        this.finish = finish;
-    }
-
     public void setFinish(Boolean finish) {
         this.finish = finish;
     }

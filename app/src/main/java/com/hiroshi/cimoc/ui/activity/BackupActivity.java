@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BackupPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
+import com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.BackupView;
 import com.hiroshi.cimoc.utils.PermissionUtils;
@@ -28,6 +30,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     private static final int DIALOG_REQUEST_SAVE_TAG = 2;
 
     @BindView(R.id.backup_layout) View mLayoutView;
+    @BindView(R.id.backup_save_favorite_auto) CheckBoxPreference mSaveFavoriteAuto;
 
     private BackupPresenter mPresenter;
 
@@ -40,7 +43,13 @@ public class BackupActivity extends BackActivity implements BackupView {
         return mPresenter;
     }
 
-    @OnClick(R.id.backup_save_favorite_btn) void onSaveFavoriteClick() {
+    @Override
+    protected void initView() {
+        super.initView();
+        mSaveFavoriteAuto.bindPreference(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, false);
+    }
+
+    @OnClick(R.id.backup_save_favorite) void onSaveFavoriteClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.saveFavorite();
@@ -49,7 +58,7 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_save_tag_btn) void onSaveTagClick() {
+    @OnClick(R.id.backup_save_tag) void onSaveTagClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadTag();
@@ -58,7 +67,7 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_restore_favorite_btn) void onRestoreFavoriteClick() {
+    @OnClick(R.id.backup_restore_favorite) void onRestoreFavoriteClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadFavoriteFile();
@@ -67,7 +76,7 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_restore_tag_btn) void onRestoreTagClick() {
+    @OnClick(R.id.backup_restore_tag) void onRestoreTagClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadTagFile();

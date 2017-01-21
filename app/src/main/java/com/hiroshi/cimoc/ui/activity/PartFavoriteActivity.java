@@ -20,6 +20,7 @@ import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.PartFavoriteView;
+import com.hiroshi.cimoc.utils.HintUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,13 +38,11 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     private static final int DIALOG_REQUEST_ADD = 1;
 
     @BindView(R.id.part_favorite_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.part_favorite_layout) View mLayoutView;
 
     private PartFavoritePresenter mPresenter;
     private GridAdapter mGridAdapter;
 
     private MiniComic mSavedComic;
-    private long[] mSavedId;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -70,8 +69,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     protected void initData() {
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        String title = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
-        mPresenter.load(id, title);
+        mPresenter.load(id);
     }
 
     @Override
@@ -86,17 +84,8 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.part_favorite_add:
-                List<MiniComic> list = mPresenter.getComicList();
-                int size = list.size();
-                String[] title = new String[size];
-                mSavedId = new long[size];
-                for (int i = 0; i < size; ++i) {
-                    MiniComic comic = list.get(i);
-                    title[i] = comic.getTitle();
-                    mSavedId[i] = comic.getId();
-                }
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select, title, null, DIALOG_REQUEST_ADD);
-                fragment.show(getFragmentManager(), null);
+                showProgressDialog();
+                mPresenter.loadComicTitle(mGridAdapter.getDateSet());
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -121,16 +110,15 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
-                long tid = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-                long cid = mSavedComic.getId();
-                mPresenter.delete(tid, cid);
+                long id = mSavedComic.getId();
+                mPresenter.delete(id);
                 mGridAdapter.remove(mSavedComic);
-                showSnackbar(R.string.common_execute_success);
+                HintUtils.showToast(this, R.string.common_execute_success);
                 break;
             case DIALOG_REQUEST_ADD:
                 showProgressDialog();
                 boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
-                mPresenter.insert(mSavedId, check);
+                mPresenter.insert(check);
                 break;
         }
     }
@@ -138,7 +126,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     public void onComicLoadFail() {
         hideProgressBar();
-        showSnackbar(R.string.common_data_load_fail);
+        HintUtils.showToast(this, R.string.common_data_load_fail);
     }
 
     @Override
@@ -148,16 +136,24 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     }
 
     @Override
+    public void onComicTitleLoadSuccess(List<String> list) {
+        hideProgressDialog();
+        MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select,
+                list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
     public void onComicInsertSuccess(List<MiniComic> list) {
         hideProgressDialog();
         mGridAdapter.addAll(list);
-        showSnackbar(R.string.common_execute_success);
+        HintUtils.showToast(this, R.string.common_execute_success);
     }
 
     @Override
     public void onComicInsertFail() {
         hideProgressDialog();
-        showSnackbar(R.string.common_execute_fail);
+        HintUtils.showToast(this, R.string.common_execute_fail);
     }
 
     @Override
@@ -177,7 +173,9 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
 
     @Override
     public void onComicAdd(MiniComic comic) {
-        mGridAdapter.add(0, comic);
+        if (!mGridAdapter.contains(comic)) {
+            mGridAdapter.add(0, comic);
+        }
     }
 
     @Override
@@ -188,11 +186,6 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_part_favorite;
-    }
-
-    @Override
-    protected View getLayoutView() {
-        return mLayoutView;
     }
 
     @Override

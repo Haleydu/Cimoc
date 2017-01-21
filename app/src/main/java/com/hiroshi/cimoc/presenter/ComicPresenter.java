@@ -2,9 +2,9 @@ package com.hiroshi.cimoc.presenter;
 
 import android.support.v4.util.LongSparseArray;
 
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TagManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.TagManager;
+import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.Task;

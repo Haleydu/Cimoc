@@ -43,9 +43,4 @@ public class ReaderConfigActivity extends BackActivity {
         return R.layout.activity_reader_config;
     }
 
-    @Override
-    protected boolean isNavTranslation() {
-        return true;
-    }
-
 }

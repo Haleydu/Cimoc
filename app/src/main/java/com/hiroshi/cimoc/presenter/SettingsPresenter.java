@@ -6,8 +6,8 @@ import android.support.v4.util.LongSparseArray;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Storage;
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -76,6 +76,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void scanTask() {
+        // Todo
         mCompositeSubscription.add(Download.scan(mBaseView.getAppInstance().getContentResolver(), mBaseView.getAppInstance().getDocumentFile())
                 .doOnNext(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
@@ -168,9 +169,9 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     private void deleteInvalid(final List<Comic> cList, final List<Task> tList) {
-        // Todo 暂时反过来吧
+        List<Long> list = new LinkedList<>();
         for (Comic comic : cList) {
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, comic.getId()));
+            list.add(comic.getId());
         }
         mComicManager.runInTx(new Runnable() {
             @Override
@@ -182,6 +183,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 mTaskManager.deleteInTx(tList);
             }
         });
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_CLEAR, list));
     }
 
     private LongSparseArray<Comic> buildComicMap() {

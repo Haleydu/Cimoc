@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 
 import butterknife.ButterKnife;
 

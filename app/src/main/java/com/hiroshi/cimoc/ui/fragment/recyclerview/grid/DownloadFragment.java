@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
+package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,7 +34,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     protected void initData() {
-        mPresenter.loadComic();
+        mPresenter.load();
     }
 
     @Override
@@ -65,10 +65,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                 R.string.download_delete_confirm, true, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
-    public void onComicLoadFail() {
     }
 
     @Override

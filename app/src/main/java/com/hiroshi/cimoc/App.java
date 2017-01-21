@@ -5,10 +5,11 @@ import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.RecyclerView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.core.DBOpenHelper;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.core.UpdateHelper;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
@@ -21,7 +22,7 @@ import okhttp3.OkHttpClient;
 /**
  * Created by Hiroshi on 2016/7/5.
  */
-public class App extends Application {
+public class App extends Application implements AppGetter {
 
     private static OkHttpClient mHttpClient;
 
@@ -38,6 +39,11 @@ public class App extends Application {
         mOpenHelper = new DBOpenHelper(this, "cimoc.db");
         UpdateHelper.update(getPreferenceManager(), getDaoSession());
         Fresco.initialize(this);
+    }
+
+    @Override
+    public App getAppInstance() {
+        return this;
     }
 
     public void initRootDocumentFile() {

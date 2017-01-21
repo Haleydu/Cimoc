@@ -1,6 +1,5 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
+package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -8,7 +7,6 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.HistoryPresenter;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.HistoryView;
 import com.hiroshi.cimoc.utils.HintUtils;
@@ -34,13 +32,6 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     @Override
     protected void initData() {
         mPresenter.load();
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
-        startActivity(intent);
     }
 
     @Override

@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.component.AppGetter;
 
 /**
  * Created by Hiroshi on 2016/8/21.
  */
-public interface BaseView {
-
-    App getAppInstance();
-
+public interface BaseView extends AppGetter {
 }

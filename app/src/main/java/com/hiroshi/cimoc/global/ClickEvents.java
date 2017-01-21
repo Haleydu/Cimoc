@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.global;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 
 /**
  * Created by Hiroshi on 2016/10/9.

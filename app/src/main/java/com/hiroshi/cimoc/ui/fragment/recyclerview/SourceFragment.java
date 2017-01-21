@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator;
+package com.hiroshi.cimoc.ui.fragment.recyclerview;
 
 import android.content.Intent;
 import android.support.annotation.ColorRes;
@@ -20,6 +20,7 @@ import com.hiroshi.cimoc.ui.activity.SourceDetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.SourceAdapter;
 import com.hiroshi.cimoc.ui.view.SourceView;
+import com.hiroshi.cimoc.utils.HintUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,8 @@ public class SourceFragment extends RecyclerViewFragment implements SourceView, 
 
     @Override
     public void onItemClick(View view, int position) {
-        Intent intent = CategoryActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getType());
+        Source source = mSourceAdapter.getItem(position);
+        Intent intent = CategoryActivity.createIntent(getActivity(), source.getType(), source.getTitle());
         startActivity(intent);
     }
 
@@ -106,7 +108,7 @@ public class SourceFragment extends RecyclerViewFragment implements SourceView, 
 
     @Override
     public void onSourceLoadFail() {
-        showSnackbar(R.string.common_data_load_fail);
+        HintUtils.showToast(getActivity(), R.string.common_data_load_fail);
         hideProgressBar();
     }
 

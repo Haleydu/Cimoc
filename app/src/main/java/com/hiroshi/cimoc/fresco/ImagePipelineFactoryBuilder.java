@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.App;
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;

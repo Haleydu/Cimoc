@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
@@ -116,7 +116,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             switch (requestCode) {
                 case DIALOG_REQUEST_OTHER_STORAGE:
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        // Todo release permission ?
                         showProgressDialog();
                         Uri uri = data.getData();
                         int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);

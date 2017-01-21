@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
-import com.hiroshi.cimoc.core.manager.TagManager;
-import com.hiroshi.cimoc.core.manager.TagRefManager;
+import com.hiroshi.cimoc.manager.TagManager;
+import com.hiroshi.cimoc.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.TagView;

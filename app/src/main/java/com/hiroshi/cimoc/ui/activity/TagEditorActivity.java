@@ -57,23 +57,13 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
     @Override
     public void onTagLoadSuccess(List<Pair<Tag, Boolean>> list) {
         hideProgressBar();
-        if (list.isEmpty()) {
-            showSnackbar(R.string.tag_editor_load_empty);
-        } else {
-            mTagAdapter.addAll(list);
-        }
+        mTagAdapter.addAll(list);
     }
 
     @Override
     public void onTagLoadFail() {
         hideProgressDialog();
-        showSnackbar(R.string.tag_editor_load_fail);
-    }
-
-    @Override
-    public void onTagUpdateInvalid() {
-        hideProgressDialog();
-        showSnackbar(R.string.tag_editor_update_invalid);
+        showSnackbar(R.string.common_data_load_fail);
     }
 
     @Override

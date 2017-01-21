@@ -26,17 +26,18 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.SourceFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.TagFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.SourceFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.TagFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
-import com.hiroshi.cimoc.ui.view.ThemeView;
+import com.hiroshi.cimoc.component.ThemeResponsive;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import butterknife.BindView;
@@ -187,7 +188,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else if (System.currentTimeMillis() - mExitTime > 2000) {
-            mCurrentFragment.showSnackbar(R.string.main_double_click);
+            HintUtils.showToast(this, R.string.main_double_click);
             mExitTime = System.currentTimeMillis();
         } else {
             finish();
@@ -268,9 +269,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             case 0:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     ((App) getApplication()).initRootDocumentFile();
-                    showSnackbar(R.string.main_permission_success);
+                    HintUtils.showToast(this, R.string.main_permission_success);
                 } else {
-                    showSnackbar(R.string.main_permission_fail);
+                    HintUtils.showToast(this, R.string.main_permission_fail);
                 }
                 break;
         }
@@ -283,7 +284,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     public void onLastLoadFail() {
-        showSnackbar(R.string.main_last_read_fail);
+        HintUtils.showToast(this, R.string.main_last_read_fail);
     }
 
     @Override
@@ -312,7 +313,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         }
 
         for (int i = 0; i < mFragmentArray.size(); ++i) {
-            ((ThemeView) mFragmentArray.valueAt(i)).onThemeChange(primary, accent);
+            ((ThemeResponsive) mFragmentArray.valueAt(i)).onThemeChange(primary, accent);
         }
     }
 

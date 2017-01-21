@@ -3,9 +3,9 @@ package com.hiroshi.cimoc.presenter;
 import android.content.ContentResolver;
 
 import com.hiroshi.cimoc.core.Backup;
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TagManager;
-import com.hiroshi.cimoc.core.manager.TagRefManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.TagManager;
+import com.hiroshi.cimoc.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Pair;

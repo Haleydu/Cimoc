@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.fresco;
+package com.hiroshi.cimoc.fresco.processor;
 
 import android.graphics.Bitmap;
 
@@ -126,7 +126,7 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
 
     /**
      * 二维扫描
-     * 10 * 10 方格 按 3:3:2:2 划分为四个区域 权值分别为 0 1 2 3
+     * 10 * 10 方格 按 2:3:3:2 划分为四个区域 权值分别为 0 1 2 3
      * @return 加权值 > 30 代表有效信息 即不裁剪
      */
     private boolean twoDimensionScan(int[] pixels, int length, boolean vertical, boolean reverse) {
@@ -136,7 +136,7 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
 
         int[] value = new int[10];
         int result = 0;
-        for (int i = 10; i < length - 10; ++i) {
+        for (int i = 0; i < length; ++i) {
             if (result > 30) {
                 return false;
             }
@@ -148,7 +148,6 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
             }
             result += value[i % 10];
         }
-
         return true;
     }
 
@@ -159,25 +158,14 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
         if (white) {
             return 0;
         }
-        if (reverse) {
-            if (pos < 2) {
-                return 3;
-            } else if (pos < 4) {
-                return 2;
-            } else if (pos < 7) {
-                return 1;
-            }
-            return 0;
-        } else {
-            if (pos < 3) {
-                return 0;
-            } else if (pos < 6) {
-                return 1;
-            } else if (pos < 8) {
-                return 2;
-            }
-            return 3;
+        if (pos < 2) {
+            return reverse ? 3 : 0;
+        } else if (pos < 5) {
+            return reverse ? 2 : 1;
+        } else if (pos < 8) {
+            return reverse ? 1 : 2;
         }
+        return reverse ? 0 : 3;
     }
 
     /**

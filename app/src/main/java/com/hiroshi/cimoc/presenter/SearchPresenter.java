@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.SearchView;
 

@@ -11,7 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.TagManager;
+import com.hiroshi.cimoc.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -20,10 +20,10 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.PartFavoriteActivity;
 import com.hiroshi.cimoc.ui.activity.SearchActivity;
 import com.hiroshi.cimoc.ui.adapter.TabPagerAdapter;
-import com.hiroshi.cimoc.ui.fragment.coordinator.grid.DownloadFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.grid.FavoriteFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.grid.GridFragment;
-import com.hiroshi.cimoc.ui.fragment.coordinator.grid.HistoryFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.DownloadFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.FavoriteFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.GridFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.HistoryFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.ItemDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.ComicView;
@@ -164,11 +164,6 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
-    public void showSnackbar(String msg) {
-        HintUtils.showSnackbar(mTabAdapter.getItem(mViewPager.getCurrentItem()).getView(), msg);
-    }
-
-    @Override
     public void onTagLoadSuccess(List<Tag> list) {
         hideProgressDialog();
         mTagList.add(new Tag(TagManager.TAG_FINISH, getString(R.string.comic_filter_finish)));
@@ -187,7 +182,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onTagLoadFail() {
         hideProgressDialog();
-        showSnackbar(R.string.comic_load_tag_fail);
+        HintUtils.showToast(getActivity(), R.string.comic_load_tag_fail);
     }
 
     @Override

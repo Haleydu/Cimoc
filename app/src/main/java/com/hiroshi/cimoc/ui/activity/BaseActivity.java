@@ -10,7 +10,7 @@ import android.view.WindowManager;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
 import com.hiroshi.cimoc.ui.view.BaseView;
@@ -35,7 +35,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPreference = ((App) getApplication()).getPreferenceManager();
+        mPreference = getAppInstance().getPreferenceManager();
         initTheme();
         setContentView(getLayoutRes());
         ButterKnife.bind(this);

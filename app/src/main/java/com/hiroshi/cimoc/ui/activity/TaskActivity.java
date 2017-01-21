@@ -11,10 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TaskPresenter;
@@ -87,9 +86,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        // Todo 从这里进去 如果改变了 last 会导致不一致 影响不大暂时不改
-        Comic comic = mPresenter.getComic();
-        Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null);
+        Intent intent = DetailActivity.createIntent(this, mPresenter.getComic().getId(), -1, null);
         startActivity(intent);
     }
 

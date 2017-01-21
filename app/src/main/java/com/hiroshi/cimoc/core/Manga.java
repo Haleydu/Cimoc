@@ -1,9 +1,9 @@
 package com.hiroshi.cimoc.core;
 
 import com.hiroshi.cimoc.App;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.Parser;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
+import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.parser.Parser;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;

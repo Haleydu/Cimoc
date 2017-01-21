@@ -1,10 +1,15 @@
-package com.hiroshi.cimoc.core.manager;
+package com.hiroshi.cimoc.manager;
 
+import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.ComicDao.Properties;
-import com.hiroshi.cimoc.ui.view.BaseView;
+import com.hiroshi.cimoc.model.TagRef;
+import com.hiroshi.cimoc.model.TagRefDao;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -19,14 +24,8 @@ public class ComicManager {
 
     private ComicDao mComicDao;
 
-    private ComicManager(BaseView view) {
-        mComicDao = view.getAppInstance().getDaoSession().getComicDao();
-    }
-
-    public <T> Observable<T> callInRx(Callable<T> callable) {
-        return mComicDao.getSession()
-                .rxTx()
-                .call(callable);
+    private ComicManager(AppGetter getter) {
+        mComicDao = getter.getAppInstance().getDaoSession().getComicDao();
     }
 
     public void runInTx(Runnable runnable) {
@@ -35,13 +34,6 @@ public class ComicManager {
 
     public <T> T callInTx(Callable<T> callable) {
         return mComicDao.getSession().callInTxNoException(callable);
-    }
-
-    public List<Comic> listFavorite() {
-        return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull())
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .list();
     }
 
     public List<Comic> listDownload() {
@@ -86,6 +78,21 @@ public class ComicManager {
         return mComicDao.queryBuilder()
                 .where(Properties.Download.isNotNull())
                 .orderDesc(Properties.Download)
+                .rx()
+                .list();
+    }
+
+    public Observable<List<Comic>> listFavoriteByTag(long id) {
+        QueryBuilder<Comic> queryBuilder = mComicDao.queryBuilder();
+        queryBuilder.join(TagRef.class, TagRefDao.Properties.Cid).where(TagRefDao.Properties.Tid.eq(id));
+        return queryBuilder.orderDesc(Properties.Highlight, Properties.Favorite)
+                .rx()
+                .list();
+    }
+
+    public Observable<List<Comic>> listFavoriteNotIn(Collection<Long> collections) {
+        return mComicDao.queryBuilder()
+                .where(Properties.Id.notIn(collections))
                 .rx()
                 .list();
     }
@@ -146,9 +153,9 @@ public class ComicManager {
         comic.setId(id);
     }
 
-    public static ComicManager getInstance(BaseView view) {
+    public static ComicManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new ComicManager(view);
+            mInstance = new ComicManager(getter);
         }
         return mInstance;
     }

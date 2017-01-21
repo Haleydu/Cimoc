@@ -1,9 +1,9 @@
-package com.hiroshi.cimoc.core.manager;
+package com.hiroshi.cimoc.manager;
 
+import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.model.TaskDao;
 import com.hiroshi.cimoc.model.TaskDao.Properties;
-import com.hiroshi.cimoc.ui.view.BaseView;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -20,8 +20,8 @@ public class TaskManager {
 
     private TaskDao mTaskDao;
 
-    private TaskManager(BaseView view) {
-        mTaskDao = view.getAppInstance().getDaoSession().getTaskDao();
+    private TaskManager(AppGetter getter) {
+        mTaskDao = getter.getAppInstance().getDaoSession().getTaskDao();
     }
 
     public List<Task> listValid() {
@@ -70,7 +70,7 @@ public class TaskManager {
         mTaskDao.deleteInTx(entities);
     }
 
-    public void deleteInTx(long key) {
+    public void delete(long key) {
         mTaskDao.queryBuilder()
                 .where(Properties.Key.eq(key))
                 .buildDelete()
@@ -92,9 +92,9 @@ public class TaskManager {
         });
     }
 
-    public static TaskManager getInstance(BaseView view) {
+    public static TaskManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new TaskManager(view);
+            mInstance = new TaskManager(getter);
         }
         return mInstance;
     }

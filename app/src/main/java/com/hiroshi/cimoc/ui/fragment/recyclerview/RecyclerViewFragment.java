@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator;
+package com.hiroshi.cimoc.ui.fragment.recyclerview;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

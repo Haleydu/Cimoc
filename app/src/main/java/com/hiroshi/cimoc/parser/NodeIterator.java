@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core.parser;
+package com.hiroshi.cimoc.parser;
 
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.soup.Node;

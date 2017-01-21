@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.fresco;
+package com.hiroshi.cimoc.fresco.processor;
 
 import android.graphics.Bitmap;
 

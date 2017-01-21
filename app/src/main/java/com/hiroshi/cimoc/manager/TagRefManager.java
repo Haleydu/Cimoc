@@ -1,8 +1,8 @@
-package com.hiroshi.cimoc.core.manager;
+package com.hiroshi.cimoc.manager;
 
+import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.model.TagRefDao;
-import com.hiroshi.cimoc.ui.view.BaseView;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ public class TagRefManager {
 
     private TagRefDao mRefDao;
 
-    private TagRefManager(BaseView view) {
-        mRefDao = view.getAppInstance().getDaoSession().getTagRefDao();
+    private TagRefManager(AppGetter getter) {
+        mRefDao = getter.getAppInstance().getDaoSession().getTagRefDao();
     }
 
     public Observable<Void> runInRx(Runnable runnable) {
@@ -89,9 +89,9 @@ public class TagRefManager {
                 .executeDeleteWithoutDetachingEntities();
     }
 
-    public static TagRefManager getInstance(BaseView view) {
+    public static TagRefManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new TagRefManager(view);
+            mInstance = new TagRefManager(getter);
         }
         return mInstance;
     }

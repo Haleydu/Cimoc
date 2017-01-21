@@ -1,8 +1,8 @@
-package com.hiroshi.cimoc.core.manager;
+package com.hiroshi.cimoc.manager;
 
+import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagDao;
-import com.hiroshi.cimoc.ui.view.BaseView;
 
 import java.util.List;
 
@@ -14,15 +14,15 @@ import rx.Observable;
 
 public class TagManager {
 
-    public static final long TAG_CONTINUE = -11;
-    public static final long TAG_FINISH = -10;
+    public static final long TAG_CONTINUE = -101;
+    public static final long TAG_FINISH = -100;
 
     private static TagManager mInstance;
 
     private TagDao mTagDao;
 
-    private TagManager(BaseView view) {
-        mTagDao = view.getAppInstance().getDaoSession().getTagDao();
+    private TagManager(AppGetter getter) {
+        mTagDao = getter.getAppInstance().getDaoSession().getTagDao();
     }
 
     public Observable<List<Tag>> listInRx() {
@@ -51,9 +51,9 @@ public class TagManager {
         mTagDao.delete(entity);
     }
 
-    public static TagManager getInstance(BaseView view) {
+    public static TagManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new TagManager(view);
+            mInstance = new TagManager(getter);
         }
         return mInstance;
     }

@@ -4,7 +4,7 @@ import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 

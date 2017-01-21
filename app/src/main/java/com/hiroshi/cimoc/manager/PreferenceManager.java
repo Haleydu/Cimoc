@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.core.manager;
+package com.hiroshi.cimoc.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -80,6 +80,9 @@ public class PreferenceManager {
     public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
     public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
+
+    public static final String PREF_BACKUP_SAVE_FAVORITE = "pref_backup_save_favorite";
+    public static final String PREF_BACKUP_SAVE_FAVORITE_COUNT = "pref_backup_save_favorite_count";
 
     public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
 

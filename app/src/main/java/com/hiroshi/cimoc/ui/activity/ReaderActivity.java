@@ -22,7 +22,7 @@ import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
 import com.hiroshi.cimoc.global.ClickEvents;
@@ -91,7 +91,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     @Override
     protected void initTheme() {
         super.initTheme();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        mHideNav = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        if (!mHideNav || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_BRIGHT, false)) {
@@ -114,7 +115,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     protected void initView() {
-        mHideNav = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mHideInfo = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mInfoLayout.setVisibility(mHideInfo ? View.INVISIBLE : View.VISIBLE);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
@@ -130,21 +130,21 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        int options = getWindow().getDecorView().getSystemUiVisibility();
-
         if (mHideNav) {
+            int options = getWindow().getDecorView().getSystemUiVisibility();
+
             options |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            options |= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                options |= View.SYSTEM_UI_FLAG_FULLSCREEN;
+            }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            options |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                options |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+            }
 
-        getWindow().getDecorView().setSystemUiVisibility(options);
+            getWindow().getDecorView().setSystemUiVisibility(options);
+        }
     }
 
     private void initSeekBar() {
@@ -244,7 +244,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             downAction.setDuration(300);
             mProgressLayout.startAnimation(downAction);
             mProgressLayout.setVisibility(View.INVISIBLE);
-            mInfoLayout.startAnimation(upAction);
+            mBackLayout.startAnimation(upAction);
             mBackLayout.setVisibility(View.INVISIBLE);
             if (mHideInfo) {
                 mInfoLayout.startAnimation(upAction);

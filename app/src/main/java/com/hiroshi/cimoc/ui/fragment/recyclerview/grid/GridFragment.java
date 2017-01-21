@@ -1,13 +1,16 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
+package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
+import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
-import com.hiroshi.cimoc.ui.fragment.coordinator.RecyclerViewFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.RecyclerViewFragment;
 import com.hiroshi.cimoc.ui.view.GridView;
 
 import java.util.LinkedList;
@@ -47,6 +50,13 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
         GridLayoutManager manager = new GridLayoutManager(getActivity(), 3);
         manager.setRecycleChildrenOnDetach(true);
         return manager;
+    }
+
+    @Override
+    public void onItemClick(View view, int position) {
+        MiniComic comic = mGridAdapter.getItem(position);
+        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
+        startActivity(intent);
     }
 
     @Override

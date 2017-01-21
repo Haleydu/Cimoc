@@ -44,9 +44,6 @@
     <string name="detail_search_empty">关键字为空</string>
 
     <string name="tag_editor">标签编辑</string>
-    <string name="tag_editor_load_empty">没有找到标签</string>
-    <string name="tag_editor_load_fail">读取标签失败</string>
-    <string name="tag_editor_update_invalid">标签未改变</string>
 
     <string name="chapter">章节列表</string>
     <string name="chapter_all">全选</string>
@@ -160,6 +157,8 @@
     <string name="settings_other_clear_cache_summary">清理在线漫画的缓存数据</string>
 
     <string name="backup_save">备份</string>
+    <string name="backup_save_favorite_auto">自动备份</string>
+    <string name="backup_save_favorite_auto_summary">自动备份收藏的漫画</string>
     <string name="backup_save_favorite">备份收藏</string>
     <string name="backup_save_favorite_summary">备份收藏的漫画</string>
     <string name="backup_save_tag">备份标签</string>

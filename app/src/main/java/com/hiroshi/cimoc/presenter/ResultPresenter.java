@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Manga;
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.Parser;
+import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.ui.view.ResultView;

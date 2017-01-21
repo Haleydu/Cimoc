@@ -1,10 +1,10 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
-import com.hiroshi.cimoc.core.parser.MangaCategory;
-import com.hiroshi.cimoc.core.parser.MangaParser;
-import com.hiroshi.cimoc.core.parser.NodeIterator;
-import com.hiroshi.cimoc.core.parser.SearchIterator;
+import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.parser.MangaCategory;
+import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;

@@ -10,7 +10,7 @@ import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourceDetailPresenter;
 import com.hiroshi.cimoc.ui.custom.Option;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
-import com.hiroshi.cimoc.ui.view.DialogView;
+import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.ui.view.SourceDetailView;
 
 import butterknife.BindView;
@@ -57,7 +57,7 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_EDITOR:
-                String value = bundle.getString(DialogView.EXTRA_DIALOG_RESULT_VALUE);
+                String value = bundle.getString(DialogCaller.EXTRA_DIALOG_RESULT_VALUE);
                 mPresenter.updateServer(value);
                 mSourceServer.setSummary(value);
                 break;

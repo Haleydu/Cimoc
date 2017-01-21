@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.core.Download;
-import com.hiroshi.cimoc.core.manager.ComicManager;
-import com.hiroshi.cimoc.core.manager.TaskManager;
+import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -77,7 +77,9 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         addSubscription(RxEvent.EVENT_COMIC_UPDATE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mComic = mComicManager.load(mComic.getId());
+                Comic comic = mComicManager.load(mComic.getId());
+                mComic.setPage(comic.getPage());
+                mComic.setLast(comic.getLast());
                 mBaseView.onLastChange(mComic.getLast());
             }
         });

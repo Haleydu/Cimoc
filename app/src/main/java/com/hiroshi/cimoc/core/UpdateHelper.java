@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.global.ImageServer;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;

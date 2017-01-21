@@ -4,7 +4,7 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;

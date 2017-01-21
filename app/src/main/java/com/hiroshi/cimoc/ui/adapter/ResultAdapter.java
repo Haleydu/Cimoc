@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.Comic;
 

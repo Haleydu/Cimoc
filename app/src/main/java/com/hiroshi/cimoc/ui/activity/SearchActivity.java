@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;

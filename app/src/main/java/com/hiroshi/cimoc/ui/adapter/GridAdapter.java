@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.manager.SourceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.model.MiniComic;
 
@@ -97,15 +97,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
                 break;
             }
         }
-    }
-
-    public MiniComic getItemById(long id) {
-        for (MiniComic comic : mDataSet) {
-            if (comic.getId() == id) {
-                return comic;
-            }
-        }
-        return null;
     }
 
     public int findFirstNotHighlight() {

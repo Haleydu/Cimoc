@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.ui.view.DialogView;
+import com.hiroshi.cimoc.component.DialogCaller;
 
 /**
  * Created by Hiroshi on 2016/10/12.
@@ -19,10 +19,10 @@ public class MessageDialogFragment extends DialogFragment implements DialogInter
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setCancelable(false);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getInt(DialogView.EXTRA_DIALOG_TITLE))
-                .setMessage(getArguments().getInt(DialogView.EXTRA_DIALOG_CONTENT))
+        builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
+                .setMessage(getArguments().getInt(DialogCaller.EXTRA_DIALOG_CONTENT))
                 .setPositiveButton(R.string.dialog_positive, this);
-        if (getArguments().getBoolean(DialogView.EXTRA_DIALOG_NEGATIVE, false)) {
+        if (getArguments().getBoolean(DialogCaller.EXTRA_DIALOG_NEGATIVE, false)) {
             builder.setNegativeButton(R.string.dialog_negative, null);
         }
         return builder.create();
@@ -30,18 +30,18 @@ public class MessageDialogFragment extends DialogFragment implements DialogInter
 
     @Override
     public void onClick(DialogInterface dialogInterface, int which) {
-        int requestCode = getArguments().getInt(DialogView.EXTRA_DIALOG_REQUEST_CODE);
-        DialogView target = (DialogView) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        int requestCode = getArguments().getInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE);
+        DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, null);
     }
 
     public static MessageDialogFragment newInstance(int title, int content, boolean negative, int requestCode) {
         MessageDialogFragment fragment = new MessageDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt(DialogView.EXTRA_DIALOG_TITLE, title);
-        bundle.putInt(DialogView.EXTRA_DIALOG_CONTENT, content);
-        bundle.putBoolean(DialogView.EXTRA_DIALOG_NEGATIVE, negative);
-        bundle.putInt(DialogView.EXTRA_DIALOG_REQUEST_CODE, requestCode);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_CONTENT, content);
+        bundle.putBoolean(DialogCaller.EXTRA_DIALOG_NEGATIVE, negative);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
     }

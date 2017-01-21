@@ -1,15 +1,12 @@
-package com.hiroshi.cimoc.ui.fragment.coordinator.grid;
+package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.Intent;
-import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
-import com.hiroshi.cimoc.ui.activity.DetailActivity;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
@@ -50,13 +47,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         if (mBuilder != null) {
             NotificationUtils.cancelNotification(0, mManager);
         }
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
-        startActivity(intent);
     }
 
     @Override
