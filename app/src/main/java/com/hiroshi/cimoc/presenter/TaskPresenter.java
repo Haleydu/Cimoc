@@ -80,10 +80,12 @@ public class TaskPresenter extends BasePresenter<TaskView> {
         addSubscription(RxEvent.EVENT_COMIC_UPDATE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                Comic comic = mComicManager.load(mComic.getId());
-                mComic.setPage(comic.getPage());
-                mComic.setLast(comic.getLast());
-                mBaseView.onLastChange(mComic.getLast());
+                if (mComic.getId() != null && mComic.getId() == (long) rxEvent.getData()) {
+                    Comic comic = mComicManager.load(mComic.getId());
+                    mComic.setPage(comic.getPage());
+                    mComic.setLast(comic.getLast());
+                    mBaseView.onLastChange(mComic.getLast());
+                }
             }
         });
     }
