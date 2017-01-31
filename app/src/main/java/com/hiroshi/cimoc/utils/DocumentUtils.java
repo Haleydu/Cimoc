@@ -4,6 +4,8 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -13,10 +15,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -166,31 +164,28 @@ public class DocumentUtils {
     }
 
     public static void writeBinaryToFile(ContentResolver resolver, DocumentFile file, InputStream input) throws IOException {
-        OutputStream output = resolver.openOutputStream(file.getUri());
+        BufferedInputStream inputStream = null;
+        BufferedOutputStream outputStream = null;
 
-        ReadableByteChannel inputChannel = null;
-        WritableByteChannel outputChannel = null;
         try {
-            if (input != null && output != null) {
-                inputChannel = Channels.newChannel(input);
-                outputChannel = Channels.newChannel(output);
+            OutputStream output = resolver.openOutputStream(file.getUri());
 
-                ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
-                while (inputChannel.read(buffer) != -1) {
-                    buffer.flip();
-                    outputChannel.write(buffer);
-                    buffer.compact();
-                }
+            if (output != null) {
+                inputStream = new BufferedInputStream(input, 8192);
+                outputStream = new BufferedOutputStream(output, 8192);
 
-                buffer.flip();
-                while (buffer.hasRemaining()) {
-                    outputChannel.write(buffer);
+                int length;
+                byte[] buffer = new byte[8192];
+                while ((length = inputStream.read(buffer)) != -1){
+                    outputStream.write(buffer, 0, length);
                 }
+                output.flush();
             } else {
+                closeStream(input);
                 throw new FileNotFoundException();
             }
         } finally {
-            closeStream(inputChannel, outputChannel);
+            closeStream(inputStream, outputStream);
         }
     }
 

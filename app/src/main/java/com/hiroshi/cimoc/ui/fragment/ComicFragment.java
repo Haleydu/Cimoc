@@ -88,19 +88,15 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
-    protected void initData() {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_comic, menu);
+        mDownloadItem = menu.findItem(R.id.comic_switch_download);
         if (ServiceUtils.isServiceRunning(getActivity(), DownloadService.class)) {
             onDownloadStart();
         } else {
             onDownloadStop();
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_comic, menu);
-        mDownloadItem = menu.findItem(R.id.comic_switch_download);
     }
 
     @Override
