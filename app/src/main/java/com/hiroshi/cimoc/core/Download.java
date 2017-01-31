@@ -188,15 +188,17 @@ public class Download {
 
     public static List<String> getComicIndex(ContentResolver resolver, DocumentFile root, Comic comic, String title) {
         DocumentFile dir = getComicDir(root, comic, title);
-        DocumentFile file = dir.findFile(FILE_INDEX);
-        if (file != null) {
-            if (hasMagicNumber(resolver, file)) {
-                String jsonString = DocumentUtils.readLineFromFile(resolver, file);
-                if (jsonString != null) {
-                    try {
-                        return readPathFromJson(jsonString.substring(5));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        if (dir != null) {
+            DocumentFile file = dir.findFile(FILE_INDEX);
+            if (file != null) {
+                if (hasMagicNumber(resolver, file)) {
+                    String jsonString = DocumentUtils.readLineFromFile(resolver, file);
+                    if (jsonString != null) {
+                        try {
+                            return readPathFromJson(jsonString.substring(5));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -253,7 +255,7 @@ public class Download {
         for (Chapter chapter : list) {
             DocumentFile dir = getChapterDir(root, comic, chapter, title);
             if (dir != null) {
-                DocumentUtils.deleteDir(dir);
+                dir.delete();
             }
         }
     }
@@ -261,7 +263,7 @@ public class Download {
     public static void delete(DocumentFile root, Comic comic, String title) {
         DocumentFile dir = getComicDir(root, comic, title);
         if (dir != null) {
-            DocumentUtils.deleteDir(dir);
+            dir.delete();
         }
     }
 

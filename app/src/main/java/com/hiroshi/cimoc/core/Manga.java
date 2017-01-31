@@ -234,7 +234,7 @@ public class Manga {
                         Request request = parser.getCheckRequest(comic.getCid());
                         try {
                             String update = parser.parseCheck(getResponseBody(client, request));
-                            if (comic.getUpdate() != null && !comic.getUpdate().equals(update)) {
+                            if (comic.getUpdate() != null && update != null && !comic.getUpdate().equals(update)) {
                                 comic.setFavorite(System.currentTimeMillis());
                                 comic.setUpdate(update);
                                 comic.setHighlight(true);
