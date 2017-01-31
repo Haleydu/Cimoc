@@ -52,12 +52,24 @@ public class Storage {
         return true;
     }
 
+    private static void deleteDir(DocumentFile parent, String name) {
+        DocumentFile file = parent.findFile(name);
+        if (file != null && file.isDirectory()) {
+            file.delete();
+        }
+    }
+
+    private static boolean isDirSame(DocumentFile root, DocumentFile dst) {
+        return root.getUri().getScheme().equals("file") && dst.getUri().getPath().endsWith("primary:Cimoc") ||
+                root.getUri().getPath().equals(dst.getUri().getPath());
+    }
+
     public static Observable<String> moveRootDir(final ContentResolver resolver, final DocumentFile root, final DocumentFile dst) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 if (dst.canWrite()) {
-                    if (!root.getUri().equals(dst.getUri())) {
+                    if (!isDirSame(root, dst)) {
                         subscriber.onNext("正在移动备份文件");
                         if (copyDir(resolver, root, dst, BACKUP)) {
                             subscriber.onNext("正在移动下载文件");
@@ -65,7 +77,9 @@ public class Storage {
                                 subscriber.onNext("正在移动截图文件");
                                 if (copyDir(resolver, root, dst, PICTURE)) {
                                     subscriber.onNext("正在删除原文件");
-                                    DocumentUtils.deleteDir(root);
+                                    deleteDir(root, BACKUP);
+                                    deleteDir(root, DOWNLOAD);
+                                    deleteDir(root, PICTURE);
                                     subscriber.onCompleted();
                                 }
                             }

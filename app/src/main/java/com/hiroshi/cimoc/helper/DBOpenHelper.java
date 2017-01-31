@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
-import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.TagDao;
 import com.hiroshi.cimoc.model.TagRefDao;

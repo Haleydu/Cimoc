@@ -13,6 +13,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -162,21 +166,31 @@ public class DocumentUtils {
     }
 
     public static void writeBinaryToFile(ContentResolver resolver, DocumentFile file, InputStream input) throws IOException {
-        OutputStream output = null;
+        OutputStream output = resolver.openOutputStream(file.getUri());
+
+        ReadableByteChannel inputChannel = null;
+        WritableByteChannel outputChannel = null;
         try {
-            output = resolver.openOutputStream(file.getUri());
-            if (output != null) {
-                int length;
-                byte[] buffer = new byte[1024];
-                while ((length = input.read(buffer)) != -1){
-                    output.write(buffer, 0, length);
+            if (input != null && output != null) {
+                inputChannel = Channels.newChannel(input);
+                outputChannel = Channels.newChannel(output);
+
+                ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
+                while (inputChannel.read(buffer) != -1) {
+                    buffer.flip();
+                    outputChannel.write(buffer);
+                    buffer.compact();
                 }
-                output.flush();
+
+                buffer.flip();
+                while (buffer.hasRemaining()) {
+                    outputChannel.write(buffer);
+                }
             } else {
                 throw new FileNotFoundException();
             }
         } finally {
-            closeStream(output, input);
+            closeStream(inputChannel, outputChannel);
         }
     }
 
@@ -185,24 +199,7 @@ public class DocumentUtils {
         writeBinaryToFile(resolver, dst, input);
     }
 
-    /**
-     * 删除目录，不关心是否成功
-     * @param dir
-     */
-    public static void deleteDir(DocumentFile dir) {
-        if (dir.isDirectory()) {
-            for (DocumentFile file : dir.listFiles()) {
-                if (file.isDirectory()) {
-                    deleteDir(file);
-                } else {
-                    file.delete();
-                }
-            }
-            dir.delete();
-        }
-    }
-
-    public static boolean copyFile(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
+    private static boolean copyFile(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
         if (src.isFile() && parent.isDirectory()) {
             DocumentFile old = parent.findFile(src.getName());
             if (old != null) {

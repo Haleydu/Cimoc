@@ -13,6 +13,7 @@ import android.widget.Button;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.global.ClickEvents;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.ui.activity.BaseActivity;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 
@@ -40,15 +41,15 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
-        int value = getIntent().getBooleanExtra(EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
+        int value = getIntent().getBooleanExtra(Extra.EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         setRequestedOrientation(value);
     }
 
     @Override
     protected void initView() {
-        boolean isStream = getIntent().getBooleanExtra(EXTRA_IS_STREAM, false);
-        isLong = getIntent().getBooleanExtra(EXTRA_IS_LONG, false);
+        boolean isStream = getIntent().getBooleanExtra(Extra.EXTRA_IS_STREAM, false);
+        isLong = getIntent().getBooleanExtra(Extra.EXTRA_IS_LONG, false);
         if (isStream) {
             mKeyArray = isLong ? ClickEvents.getStreamLongClickEvents() : ClickEvents.getStreamClickEvents();
             mChoiceArray = isLong ? ClickEvents.getStreamLongClickEventChoice(mPreference) :
@@ -107,15 +108,13 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         return R.layout.activity_event;
     }
 
-    private static final String EXTRA_IS_LONG = "a";
-    private static final String EXTRA_IS_PORTRAIT = "b";
-    private static final String EXTRA_IS_STREAM = "c";
+
 
     public static Intent createIntent(Context context, boolean isLong, boolean isPortrait, boolean isStream) {
         Intent intent = new Intent(context, EventSettingsActivity.class);
-        intent.putExtra(EXTRA_IS_LONG, isLong);
-        intent.putExtra(EXTRA_IS_PORTRAIT, isPortrait);
-        intent.putExtra(EXTRA_IS_STREAM, isStream);
+        intent.putExtra(Extra.EXTRA_IS_LONG, isLong);
+        intent.putExtra(Extra.EXTRA_IS_PORTRAIT, isPortrait);
+        intent.putExtra(Extra.EXTRA_IS_STREAM, isStream);
         return intent;
     }
 

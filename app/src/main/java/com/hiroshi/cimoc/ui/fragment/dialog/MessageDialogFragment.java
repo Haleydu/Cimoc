@@ -17,13 +17,15 @@ public class MessageDialogFragment extends DialogFragment implements DialogInter
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setCancelable(false);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
                 .setMessage(getArguments().getInt(DialogCaller.EXTRA_DIALOG_CONTENT))
                 .setPositiveButton(R.string.dialog_positive, this);
         if (getArguments().getBoolean(DialogCaller.EXTRA_DIALOG_NEGATIVE, false)) {
+            setCancelable(true);
             builder.setNegativeButton(R.string.dialog_negative, null);
+        } else {
+            setCancelable(false);
         }
         return builder.create();
     }

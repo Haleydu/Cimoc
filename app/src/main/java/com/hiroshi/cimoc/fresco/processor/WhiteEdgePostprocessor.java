@@ -26,9 +26,10 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
         int height = sourceBitmap.getHeight();
 
         int y1, y2, x1, x2;
-        int[] pixels = new int[(width > height ? width : height) * 10];
+        int[] pixels = new int[(width > height ? width : height) * 20];
+        int limit = height / 3;
 
-        for (y1 = 0; y1 < height; ++y1) {
+        for (y1 = 0; y1 < limit; ++y1) {
             // 确定上线 y1
             sourceBitmap.getPixels(pixels, 0, width, 0, y1, width, 1);
             if (!oneDimensionScan(pixels, width)) {
@@ -40,11 +41,9 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
             }
         }
 
-        if (y1 == height) {
-            return super.process(sourceBitmap, bitmapFactory);
-        }
+        limit = height * 2 / 3;
 
-        for (y2 = height - 1; y2 > y1; --y2) {
+        for (y2 = height - 1; y2 > limit; --y2) {
             // 确定下线 y2
             sourceBitmap.getPixels(pixels, 0, width, 0, y2, width, 1);
             if (!oneDimensionScan(pixels, width)) {
@@ -57,8 +56,9 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
         }
 
         int h = y2 - y1 + 1;
+        limit = width / 3;
 
-        for (x1 = 0; x1 < width; ++x1) {
+        for (x1 = 0; x1 < limit; ++x1) {
             // 确定左线 x1
             sourceBitmap.getPixels(pixels, 0, 1, x1, y1, 1, h);
             if (!oneDimensionScan(pixels, h)) {
@@ -70,7 +70,9 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
             }
         }
 
-        for (x2 = width - 1; x2 > x1; --x2) {
+        limit = width * 2 / 3;
+
+        for (x2 = width - 1; x2 > limit; --x2) {
             // 确定右线 x2
             sourceBitmap.getPixels(pixels, 0, 1, x2, y1, 1, h);
             if (!oneDimensionScan(pixels, h)) {
@@ -112,8 +114,8 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
     }
 
     /**
-     * 一维扫描
-     * @return false if contain a pixel whose color is black else true
+     * 线性扫描
+     * @return 全白返回 true
      */
     private boolean oneDimensionScan(int[] pixels, int length) {
         for (int i = 0; i < length; ++i) {
@@ -125,28 +127,28 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
     }
 
     /**
-     * 二维扫描
-     * 10 * 10 方格 按 2:3:3:2 划分为四个区域 权值分别为 0 1 2 3
-     * @return 加权值 > 30 代表有效信息 即不裁剪
+     * 平面扫描
+     * 10 * 20 方格 按 2:3:3:2 划分为四个区域 权值分别为 0 1 2 3
+     * @return 加权值 > 60 返回 false
      */
     private boolean twoDimensionScan(int[] pixels, int length, boolean vertical, boolean reverse) {
-        if (length < 10) {
+        if (length < 20) {
             return false;
         }
 
-        int[] value = new int[10];
+        int[] value = new int[20];
         int result = 0;
         for (int i = 0; i < length; ++i) {
-            if (result > 30) {
+            if (result > 60) {
                 return false;
             }
-            result -= value[i % 10];
-            value[i % 10] = 0;
+            result -= value[i % 20];
+            value[i % 20] = 0;
             for (int j = 0; j < 10; ++j) {
                 int k = vertical ? (i * 10 + j) : (j * length + i);
-                value[i % 10] += getValue(isWhite(pixels[k]), reverse, j);
+                value[i % 20] += getValue(isWhite(pixels[k]), reverse, j);
             }
-            result += value[i % 10];
+            result += value[i % 20];
         }
         return true;
     }

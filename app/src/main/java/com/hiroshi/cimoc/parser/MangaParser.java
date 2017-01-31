@@ -19,7 +19,11 @@ public abstract class MangaParser implements Parser {
 
     protected void init(Source source, Category category) {
         if (source.getServer() != null) {
-            mServer = source.getServer().split(" ");
+            if (source.getServer() != null) {
+                mServer = source.getServer().split(" ");
+            } else {
+                mServer = new String[]{""};
+            }
         }
         mTitle = source.getTitle();
         mCategory = category;
