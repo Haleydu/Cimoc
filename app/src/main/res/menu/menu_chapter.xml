@@ -7,7 +7,10 @@
         android:icon="@drawable/ic_done_all_white_24dp"
         app:showAsAction="ifRoom" />
     <item android:id="@+id/chapter_sort"
-        android:title="@string/task_sort"
+        android:title="@string/chapter_sort"
         android:icon="@drawable/ic_swap_vert_white_24dp"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/chapter_switch_view"
+        android:title="@string/chapter_switch_view"
+        app:showAsAction="never" />
 </menu>

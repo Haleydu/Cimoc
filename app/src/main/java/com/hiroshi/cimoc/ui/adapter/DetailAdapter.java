@@ -34,10 +34,10 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
     private String last;
 
-    public class ChapterHolder extends BaseViewHolder {
+    static class ChapterHolder extends BaseViewHolder {
         @BindView(R.id.item_chapter_button) ChapterButton chapterButton;
 
-        public ChapterHolder(View view) {
+        ChapterHolder(View view) {
             super(view);
         }
     }

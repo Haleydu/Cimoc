@@ -78,13 +78,15 @@ public class PreferenceManager {
     public static final String PREF_OTHER_NIGHT_ALPHA = "pref_other_night_alpha";
 
     public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
-    public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
 
     public static final String PREF_BACKUP_SAVE_FAVORITE = "pref_backup_save_favorite";
     public static final String PREF_BACKUP_SAVE_FAVORITE_COUNT = "pref_backup_save_favorite_count";
 
     public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
+
+    public static final String PREF_CHAPTER_BUTTON_MODE = "pref_chapter_button_mode";
+    public static final String PREF_CHAPTER_ASCEND_MODE = "pref_chapter_ascend_mode";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

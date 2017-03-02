@@ -47,6 +47,8 @@
 
     <string name="chapter">章节列表</string>
     <string name="chapter_all">全选</string>
+    <string name="chapter_sort">排序</string>
+    <string name="chapter_switch_view">切换视图</string>
     <string name="chapter_download_perm_fail">获取权限失败</string>
     <string name="chapter_download_empty">未选择章节</string>
 
@@ -224,6 +226,7 @@
     <string name="task_load_task_fail">读取任务失败</string>
     <string name="task_delete">删除任务</string>
     <string name="task_sort">排序</string>
+    <string name="task_empty">未选择任务</string>
 
     <string name="dir_picker">目录选择</string>
     <string name="dir_picker_parent">&lt; 返回上层目录 &gt;</string>

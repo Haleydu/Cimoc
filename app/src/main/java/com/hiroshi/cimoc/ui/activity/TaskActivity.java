@@ -66,7 +66,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     protected void initData() {
         long key = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
+        mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, false);
         mPresenter.load(key, mTaskOrder);
     }
 
@@ -142,7 +142,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 case R.id.task_sort:
                     mTaskAdapter.reverse();
                     mTaskOrder = !mTaskOrder;
-                    mPreference.putBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, mTaskOrder);
+                    mPreference.putBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, mTaskOrder);
                     break;
             }
         }
@@ -180,7 +180,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                         }
                         mPresenter.deleteTask(list, mTaskAdapter.getItemCount() == list.size());
                     } else {
-                        showSnackbar("未选择任务");
+                        showSnackbar(R.string.task_empty);
                     }
                     break;
             }

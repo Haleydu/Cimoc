@@ -317,7 +317,7 @@ public class RecyclerViewPager extends RecyclerView {
         }
     }
 
-    public void refreshBeforePosition() {
+    public void refreshPosition() {
         int pos = getCurrentPosition();
         if (mPositionBeforeScroll != -1) {
             mPositionBeforeScroll = pos;

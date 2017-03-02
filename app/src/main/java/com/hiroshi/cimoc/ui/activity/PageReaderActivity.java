@@ -69,7 +69,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     public void onPrevLoadSuccess(List<ImageUrl> list) {
         mReaderAdapter.addAll(0, list);
-        ((RecyclerViewPager) mRecyclerView).refreshBeforePosition();
+        ((RecyclerViewPager) mRecyclerView).refreshPosition();
         HintUtils.showToast(this, R.string.reader_load_success);
     }
 
