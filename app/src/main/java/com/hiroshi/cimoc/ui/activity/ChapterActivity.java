@@ -37,13 +37,6 @@ public class ChapterActivity extends CoordinatorActivity {
         return mChapterAdapter;
     }
 
-    @Override
-    protected void initActionButton() {
-        mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.show();
-        hideProgressBar();
-    }
-
     private List<Pair<Chapter, Boolean>> getAdapterList() {
         mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
         List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
@@ -93,7 +86,6 @@ public class ChapterActivity extends CoordinatorActivity {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        showProgressDialog();
         ArrayList<Chapter> list = new ArrayList<>();
         for (Pair<Chapter, Boolean> pair : mChapterAdapter.getDateSet()) {
             if (!pair.first.isDownload() && pair.second) {
@@ -111,7 +103,11 @@ public class ChapterActivity extends CoordinatorActivity {
         } else {
             showSnackbar(R.string.chapter_download_perm_fail);
         }
-        hideProgressBar();
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_chapter;
     }
 
     @Override

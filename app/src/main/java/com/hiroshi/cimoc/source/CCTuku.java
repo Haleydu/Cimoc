@@ -87,7 +87,7 @@ public class CCTuku extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("ul.list-body > li > a")) {
             String title = node.text();
-            String path = node.hrefWithSplit(2);
+            String path = StringUtils.split(node.href(), "/", 3);
             list.add(new Chapter(title, path));
         }
         return list;

@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.support.v4.provider.DocumentFile;
 
 import com.hiroshi.cimoc.utils.DocumentUtils;
-import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,25 +90,15 @@ public class Storage {
         }).subscribeOn(Schedulers.io());
     }
 
-    private static String buildFileName(String filename) {
-        String suffix = StringUtils.split(filename, "\\.", -1);
-        if (suffix == null) {
-            suffix = "jpg";
-        } else {
-            suffix = suffix.split("\\?")[0];
-        }
-        return StringUtils.getDateStringWithSuffix(suffix);
-    }
-
     public static Observable<String> savePicture(final ContentResolver resolver, final DocumentFile root,
-                                                 final InputStream stream, final String url) {
+                                                 final InputStream stream, final String filename) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 try {
                     DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
                     if (dir != null) {
-                        DocumentFile file = dir.createFile("", buildFileName(url));
+                        DocumentFile file = dir.createFile("", filename);
                         DocumentUtils.writeBinaryToFile(resolver, file, stream);
                         subscriber.onNext(file.getUri().toString());
                         subscriber.onCompleted();

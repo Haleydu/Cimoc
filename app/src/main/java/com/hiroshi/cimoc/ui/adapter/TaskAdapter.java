@@ -14,7 +14,10 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 
@@ -109,8 +112,16 @@ public class TaskAdapter extends BaseAdapter<Task> {
         return -1;
     }
 
-    public void notifyItemChanged(Task task) {
-        super.notifyItemChanged(mDataSet.indexOf(task));
+    public void removeById(List<Long> list) {
+        Set<Long> set = new HashSet<>(list);
+        Iterator<Task> it = mDataSet.iterator();
+        while (it.hasNext()) {
+            Task task = it.next();
+            if (set.contains(task.getId())) {
+                it.remove();
+            }
+        }
+        notifyDataSetChanged();
     }
 
     private int getState(Task task) {

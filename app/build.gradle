@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.4.5"
+        versionName "1.4.6"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -33,11 +33,11 @@ dependencies {
     compile "com.android.support:appcompat-v7:${SUPPORT_LIB_VERSION}"
     compile "com.android.support:recyclerview-v7:${SUPPORT_LIB_VERSION}"
     compile "com.android.support:design:${SUPPORT_LIB_VERSION}"
-    compile 'com.jakewharton:butterknife:8.4.0'
-    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    apt 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'org.greenrobot:greendao:3.2.0'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
-    compile 'com.facebook.fresco:fresco:1.0.0'
+    compile 'com.facebook.fresco:fresco:1.1.0'
     compile 'org.jsoup:jsoup:1.10.2'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile 'io.reactivex:rxjava:1.2.4'

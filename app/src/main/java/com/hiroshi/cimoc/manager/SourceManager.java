@@ -121,7 +121,11 @@ public class SourceManager {
     public class TitleGetter {
 
         public String getTitle(int type) {
-            return getParser(type).getTitle();
+            Parser parser = getParser(type);
+            if (parser != null) {
+                return parser.getTitle();
+            }
+            return null;
         }
 
     }

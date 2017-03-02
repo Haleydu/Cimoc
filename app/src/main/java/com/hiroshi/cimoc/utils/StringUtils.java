@@ -11,6 +11,13 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
+    public static String filter(String str) {
+        if (str == null) {
+            return null;
+        }
+        return str.replaceAll("\\|\\\\\\?\\*<\":\\+\\[\\]/'", " ");
+    }
+
     public static boolean isEmpty(String... args) {
         for (String arg : args) {
             if (arg == null || arg.isEmpty()) {

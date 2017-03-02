@@ -219,7 +219,7 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     /**
-     * getComicIndex item position in center of viewpager
+     * get item position in center of viewpager
      */
     public int getCurrentPosition() {
         int curPosition;
@@ -317,10 +317,13 @@ public class RecyclerViewPager extends RecyclerView {
         }
     }
 
-    public void refreshBeforePosition(int offset) {
+    public void refreshBeforePosition() {
+        int pos = getCurrentPosition();
         if (mPositionBeforeScroll != -1) {
-            mPositionBeforeScroll = getCurrentPosition();
+            mPositionBeforeScroll = pos;
         }
+        mPositionOnTouchDown = pos;
+        mSmoothScrollTargetPosition = pos;
     }
 
     private boolean isScaling = false;

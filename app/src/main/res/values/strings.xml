@@ -57,10 +57,6 @@
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
-    <string name="comic_clear_history">清除历史</string>
-    <string name="comic_start_download">开始下载</string>
-    <string name="comic_stop_download">停止下载</string>
-    <string name="comic_check_update">检查更新</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_filter_continue">连载</string>
     <string name="comic_filter_finish">完结</string>
@@ -173,7 +169,7 @@
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
-    <string name="about_version">version: 1.4.5</string>
+    <string name="about_version">version: 1.4.6</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

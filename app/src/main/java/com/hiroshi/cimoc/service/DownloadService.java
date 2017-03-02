@@ -176,12 +176,13 @@ public class DownloadService extends Service implements AppGetter {
                     if (dir != null) {
                         mTask.setMax(size);
                         mTask.setState(Task.STATE_DOING);
+                        boolean success = false;
                         for (int i = mTask.getProgress(); i < size; ++i) {
+                            onDownloadProgress(i);
+                            ImageUrl image = list.get(i);
                             int count = 0;  // 单页下载错误次数
-                            boolean success = false; // 是否下载成功
+                            success = false; // 是否下载成功
                             while (count++ <= mConnectTimes && !success) {
-                                onDownloadProgress(i);
-                                ImageUrl image = list.get(i);
                                 for (String url : image.getUrl()) {
                                     url = image.isLazy() ? Manga.getLazyUrl(mParse, url) : url;
                                     if (url != null) {
@@ -196,9 +197,10 @@ public class DownloadService extends Service implements AppGetter {
                             if (count == mConnectTimes + 1) {     // 单页下载错误
                                 RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, mTask.getId()));
                                 break;
-                            } else if (success && i + 1 == size) {
-                                onDownloadProgress(size);
                             }
+                        }
+                        if (success) {
+                            onDownloadProgress(size);
                         }
                     } else {
                         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, mTask.getId()));
@@ -218,7 +220,6 @@ public class DownloadService extends Service implements AppGetter {
             try {
                 response = mHttpClient.newCall(request).execute();
                 if (response.isSuccessful()) {
-                    //String mimeType = response.header("Content-Type", "image/jpeg");
                     String displayName = buildFileName(num, url);
                     DocumentFile file = DocumentUtils.createFile(parent, displayName);
                     DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());

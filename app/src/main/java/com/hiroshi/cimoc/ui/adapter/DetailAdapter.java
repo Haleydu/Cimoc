@@ -34,10 +34,10 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
     private String last;
 
-    public class ViewHolder extends BaseViewHolder {
+    public class ChapterHolder extends BaseViewHolder {
         @BindView(R.id.item_chapter_button) ChapterButton chapterButton;
 
-        public ViewHolder(View view) {
+        public ChapterHolder(View view) {
             super(view);
         }
     }
@@ -92,7 +92,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             return new HeaderHolder(view);
         }
         View view = mInflater.inflate(R.layout.item_chapter, parent, false);
-        return new ViewHolder(view);
+        return new ChapterHolder(view);
     }
 
     public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last) {
@@ -126,7 +126,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             }
         } else {
             Chapter chapter = mDataSet.get(position - 1);
-            ViewHolder viewHolder = (ViewHolder) holder;
+            ChapterHolder viewHolder = (ChapterHolder) holder;
             viewHolder.chapterButton.setText(chapter.getTitle());
             viewHolder.chapterButton.setDownload(chapter.isComplete());
             if (chapter.getPath().equals(last)) {

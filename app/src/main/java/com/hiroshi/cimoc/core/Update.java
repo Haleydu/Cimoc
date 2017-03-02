@@ -34,6 +34,7 @@ public class Update {
                         JSONObject object = new JSONObject(json).getJSONArray(LIST).getJSONObject(0);
                         String version = object.getString(SERVER_FILENAME);
                         subscriber.onNext(version);
+                        subscriber.onCompleted();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

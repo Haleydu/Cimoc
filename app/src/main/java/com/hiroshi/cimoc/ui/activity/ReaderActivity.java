@@ -470,17 +470,18 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
         String[] urls = mReaderAdapter.getItem(position).getUrl();
         try {
+            String title = mChapterTitle.getText().toString();
             for (String url : urls) {
                 if (url.startsWith("file")) {
-                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url);
+                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url, title, progress);
                     break;
                 } else if (url.startsWith("content")) {
-                    mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url);
+                    mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url, title, progress);
                     break;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {
-                        mPresenter.savePicture(resource.openStream(), url);
+                        mPresenter.savePicture(resource.openStream(), url, title, progress);
                         break;
                     }
                 }
