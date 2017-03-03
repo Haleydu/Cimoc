@@ -160,8 +160,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setSingleTapListener(this);
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
-        mReaderAdapter.setTurn(turn);
-        mReaderAdapter.setSplitPageEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
+        mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
         mReaderAdapter.setCutWhiteEdgeEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
     }
 

@@ -8,7 +8,6 @@ import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -16,11 +15,13 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.processor.SplitPostprocessor;
+import com.hiroshi.cimoc.fresco.WrapControllerListener;
+import com.hiroshi.cimoc.fresco.processor.PagingPostprocessor;
 import com.hiroshi.cimoc.fresco.processor.WhiteEdgePostprocessor;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
 
@@ -50,20 +51,19 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private OnLongPressListener mLongPressListener;
     private OnLazyLoadListener mLazyLoadListener;
     private @ReaderMode int reader;
-    private int turn;
-    private boolean mSplitPage;
+    private boolean isVertical;
+    private boolean isPaging;
     private boolean mCutWhiteEdge;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
     }
 
-    class ImageHolder extends BaseViewHolder {
+    static class ImageHolder extends BaseViewHolder {
         @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
+
         ImageHolder(View view) {
             super(view);
-            photoView.setOnSingleTapListener(mSingleTapListener);
-            photoView.setOnLongPressListener(mLongPressListener);
         }
     }
 
@@ -89,12 +89,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             }
             return;
         }
+
         final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
-        if (turn == PreferenceManager.READER_TURN_ATB) {
-            draweeView.setVerticalMode();
-        } else {
-            draweeView.setHorizontalMode();
-        }
+        draweeView.setOnSingleTapListener(mSingleTapListener);
+        draweeView.setOnLongPressListener(mLongPressListener);
+        draweeView.setScrollMode(isVertical ? PhotoDraweeViewController.MODE_VERTICAL : PhotoDraweeViewController.MODE_HORIZONTAL);
+
         PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
@@ -108,45 +108,20 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 });
                 break;
             case READER_STREAM:
-                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
-                    @Override
-                    public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
-                        if (imageInfo != null) {
-                            if (turn == PreferenceManager.READER_TURN_ATB) {
-                                draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                            } else {
-                                draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                            }
-                            draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
-                        }
-                    }
-
-                    @Override
-                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-                        if (imageInfo != null) {
-                            if (turn == PreferenceManager.READER_TURN_ATB) {
-                                draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                            } else {
-                                draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                            }
-                            draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
-                            draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
-                        }
-                    }
-                });
+                builder.setControllerListener(new WrapControllerListener(draweeView, isVertical));
                 break;
         }
+
         String[] url = imageUrl.getUrl();
         ImageRequest[] request = new ImageRequest[url.length];
         for (int i = 0; i != url.length; ++i) {
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url[i]));
-            if (reader == READER_STREAM && turn == PreferenceManager.READER_TURN_ATB && mSplitPage) {
-                imageRequestBuilder.setPostprocessor(new SplitPostprocessor(url[i]));
+            if (reader == READER_STREAM && isVertical && isPaging) {
+                imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], PagingPostprocessor.MODE_STREAM));
             } else if (reader == READER_PAGE && mCutWhiteEdge) {
                 imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(url[i]));
             }
-            //imageRequestBuilder.setPostprocessor(new BinaryPostprocessor(url[i]));
             request[i] = imageRequestBuilder.build();
         }
         builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
@@ -154,23 +129,27 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     }
 
     public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {
-        this.mControllerSupplier = supplier;
+        mControllerSupplier = supplier;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {
-        this.mSingleTapListener = listener;
+        mSingleTapListener = listener;
     }
 
     public void setLongPressListener(OnLongPressListener listener) {
-        this.mLongPressListener = listener;
+        mLongPressListener = listener;
     }
 
     public void setLazyLoadListener(OnLazyLoadListener listener) {
-        this.mLazyLoadListener = listener;
+        mLazyLoadListener = listener;
     }
 
-    public void setSplitPageEnabled(boolean enabled) {
-        mSplitPage = enabled;
+    public void setVertical(boolean vertical) {
+        isVertical = vertical;
+    }
+
+    public void setPaging(boolean paging) {
+        isPaging = paging;
     }
 
     public void setCutWhiteEdgeEnabled(boolean enabled) {
@@ -179,10 +158,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setReaderMode(@ReaderMode int reader) {
         this.reader = reader;
-    }
-
-    public void setTurn(int turn) {
-        this.turn = turn;
     }
 
     @Override
@@ -200,7 +175,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 return new RecyclerView.ItemDecoration() {
                     @Override
                     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                        if (turn == PreferenceManager.READER_TURN_ATB) {
+                        if (isVertical) {
                             outRect.set(0, 10, 0, 10);
                         } else {
                             outRect.set(10, 0, 10, 0);

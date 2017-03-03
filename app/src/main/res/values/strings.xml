@@ -132,7 +132,6 @@
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
     <string name="settings_download">下载设置</string>
-    <string name="settings_download_connection">下载错误重试次数</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_delete">删除无效漫画</string>
     <string name="settings_download_delete_summary">扫描并删除已下载的无效漫画</string>
@@ -171,7 +170,6 @@
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
-    <string name="about_version">version: 1.4.6</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>

@@ -33,6 +33,7 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -59,8 +60,6 @@ public class DownloadService extends Service implements AppGetter {
     private SourceManager mSourceManager;
     private ContentResolver mContentResolver;
 
-    private int mConnectTimes;
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -72,7 +71,6 @@ public class DownloadService extends Service implements AppGetter {
         super.onCreate();
         PreferenceManager manager = ((App) getApplication()).getPreferenceManager();
         int num = manager.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
-        mConnectTimes = manager.getInt(PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0);
         mWorkerArray = new LongSparseArray<>();
         mExecutorService = Executors.newFixedThreadPool(num);
         mHttpClient = App.getHttpClient();
@@ -182,19 +180,15 @@ public class DownloadService extends Service implements AppGetter {
                             ImageUrl image = list.get(i);
                             int count = 0;  // 单页下载错误次数
                             success = false; // 是否下载成功
-                            while (count++ <= mConnectTimes && !success) {
-                                for (String url : image.getUrl()) {
-                                    url = image.isLazy() ? Manga.getLazyUrl(mParse, url) : url;
-                                    if (url != null) {
-                                        Request request = buildRequest(mParse.getHeader(), url);
-                                        success = RequestAndWrite(dir, request, i + 1, url);
-                                        if (success) {
-                                            break;
-                                        }
-                                    }
+                            while (count++ < 20 && !success) {
+                                String[] urls = image.getUrl();
+                                for (int j = 0; !success && j < urls.length; ++j) {
+                                    String url = image.isLazy() ? Manga.getLazyUrl(mParse, urls[j]) : urls[j];
+                                    Request request = buildRequest(mParse.getHeader(), url);
+                                    success = RequestAndWrite(dir, request, i + 1, url);
                                 }
                             }
-                            if (count == mConnectTimes + 1) {     // 单页下载错误
+                            if (!success) {     // 单页下载错误
                                 RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_ERROR, mTask.getId()));
                                 break;
                             }
@@ -216,29 +210,37 @@ public class DownloadService extends Service implements AppGetter {
         }
 
         private boolean RequestAndWrite(DocumentFile parent, Request request, int num, String url) throws InterruptedIOException {
-            Response response = null;
-            try {
-                response = mHttpClient.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    String displayName = buildFileName(num, url);
-                    DocumentFile file = DocumentUtils.createFile(parent, displayName);
-                    DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
-                    return true;
-                }
-            } catch (InterruptedIOException e) {
-                // 由暂停下载引发，需要抛出以便退出外层循环，结束任务
-                throw e;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (response != null) {
-                    response.close();
+            if (request != null) {
+                Response response = null;
+                try {
+                    response = mHttpClient.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        String displayName = buildFileName(num, url);
+                        DocumentFile file = DocumentUtils.createFile(parent, displayName);
+                        DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
+                        return true;
+                    }
+                } catch (SocketTimeoutException e) {
+                    e.printStackTrace();
+                } catch (InterruptedIOException e) {
+                    // 由暂停下载引发，需要抛出以便退出外层循环，结束任务
+                    throw e;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (response != null) {
+                        response.close();
+                    }
                 }
             }
             return false;
         }
 
         private Request buildRequest(Headers headers, String url) {
+            if (StringUtils.isEmpty(url)) {
+                return null;
+            }
+
             return new Request.Builder()
                     .cacheControl(new CacheControl.Builder().noStore().build())
                     .headers(headers)

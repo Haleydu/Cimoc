@@ -12,17 +12,27 @@ public class ImageUrl {
     private String[] url;
     private boolean lazy;
     private boolean loading;
+    private boolean first;
 
     public ImageUrl(int num, String url, boolean lazy) {
         this(num, new String[]{ url }, lazy);
     }
 
     public ImageUrl(int num, String[] url, boolean lazy) {
+        this(num, url, lazy, true);
+    }
+
+    public ImageUrl(int num, String[] url, boolean lazy, boolean first) {
         this.id = ++count;
         this.num = num;
         this.url = url;
         this.lazy = lazy;
+        this.first = first;
         this.loading = false;
+    }
+
+    public void setFirst(boolean first) {
+        this.first = first;
     }
 
     public void setLoading(boolean loading) {
@@ -59,6 +69,10 @@ public class ImageUrl {
 
     public boolean isLoading() {
         return loading;
+    }
+
+    public boolean isFirst() {
+        return first;
     }
 
     @Override

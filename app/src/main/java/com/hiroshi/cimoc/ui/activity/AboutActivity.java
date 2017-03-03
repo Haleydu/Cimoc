@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.view.AboutView;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -24,6 +25,7 @@ import butterknife.OnClick;
 public class AboutActivity extends BackActivity implements AboutView {
 
     @BindView(R.id.about_update_summary) TextView mUpdateText;
+    @BindView(R.id.about_version_name) TextView mVersionName;
     @BindView(R.id.about_layout) View mLayoutView;
 
     private AboutPresenter mPresenter;
@@ -35,6 +37,16 @@ public class AboutActivity extends BackActivity implements AboutView {
         mPresenter = new AboutPresenter();
         mPresenter.attachView(this);
         return mPresenter;
+    }
+
+    @Override
+    protected void initView() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            mVersionName.setText(StringUtils.format("version: %s", info.versionName));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.about_support_btn) void onSupportClick() {
