@@ -320,10 +320,10 @@ public class RecyclerViewPager extends RecyclerView {
     public void refreshPosition() {
         int pos = getCurrentPosition();
         if (mPositionBeforeScroll != -1) {
-            mPositionBeforeScroll = pos;
+            mPositionBeforeScroll += pos;
         }
-        mPositionOnTouchDown = pos;
-        mSmoothScrollTargetPosition = pos;
+        mPositionOnTouchDown += pos;
+        mSmoothScrollTargetPosition += pos;
     }
 
     private boolean isScaling = false;

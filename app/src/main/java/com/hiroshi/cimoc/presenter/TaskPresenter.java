@@ -144,7 +144,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     public void deleteTask(List<Chapter> list, final boolean isEmpty) {
         final long id = mComic.getId();
         mCompositeSubscription.add(Observable.just(list)
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .doOnNext(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
@@ -189,12 +189,10 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     mTaskManager.delete(chapter.getTid());
                 }
                 if (isEmpty) {
-                    long id = mComic.getId();
                     mComic.setDownload(null);
                     mComicManager.updateOrDelete(mComic);
                     Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
                             mSourceManager.getParser(mComic.getSource()).getTitle());
-                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
                 }
             }
         });
