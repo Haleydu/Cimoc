@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.utils;
 
 import android.content.ContentResolver;
-import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 
 import java.io.BufferedInputStream;
@@ -16,7 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -49,23 +48,23 @@ public class DocumentUtils {
         return parent;
     }
 
-    public static Uri[] listUrisWithoutSuffix(DocumentFile dir, String suffix) {
-        List<Uri> list = new ArrayList<>();
+    public static List<String> listUrisWithoutSuffix(DocumentFile dir, String suffix) {
+        List<String> list = new ArrayList<>();
         if (dir.isDirectory()) {
-            DocumentFile[] files = dir.listFiles();
-            Arrays.sort(files, new Comparator<DocumentFile>() {
-                @Override
-                public int compare(DocumentFile lhs, DocumentFile rhs) {
-                    return lhs.getName().compareTo(rhs.getName());
-                }
-            });
-            for (DocumentFile file : files) {
-                if (file.isFile() && !file.getName().endsWith(suffix)) {
-                    list.add(file.getUri());
+            for (DocumentFile file : dir.listFiles()) {
+                // file.isFile() 好慢 file.getName() 也好慢
+                if (!file.getUri().toString().endsWith(suffix)) {
+                    list.add(file.getUri().toString());
                 }
             }
         }
-        return list.toArray(new Uri[list.size()]);
+        Collections.sort(list, new Comparator<String>() {
+            @Override
+            public int compare(String lhs, String rhs) {
+                return lhs.compareTo(rhs);
+            }
+        });
+        return list;
     }
 
     public static int countWithoutSuffix(DocumentFile dir, String suffix) {

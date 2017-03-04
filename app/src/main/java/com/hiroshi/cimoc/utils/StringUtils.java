@@ -15,7 +15,7 @@ public class StringUtils {
         if (str == null) {
             return null;
         }
-        return str.replaceAll("\\|\\\\\\?\\*<\":\\+\\[\\]/'", " ");
+        return str.replaceAll("\\|\\\\\\?\\*<\":\\+\\[\\]/'", "");
     }
 
     public static boolean isEmpty(String... args) {

@@ -120,8 +120,6 @@
     <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
     <string name="settings_reader_disable_popup">禁用进度指示</string>
     <string name="settings_reader_disable_popup_summary">阅读状态禁用进度指示</string>
-    <string name="settings_reader_split">自动切割长图</string>
-    <string name="settings_reader_split_summary">阅读状态自动切割长图</string>
     <string name="settings_reader_keep_bright">保持屏幕常亮</string>
     <string name="settings_reader_keep_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
@@ -131,6 +129,8 @@
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
+    <string name="settings_reader_paging">自动切割大图</string>
+    <string name="settings_reader_paging_summary">阅读状态自动切割大图</string>
     <string name="settings_download">下载设置</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_delete">删除无效漫画</string>

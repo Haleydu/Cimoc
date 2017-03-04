@@ -31,6 +31,7 @@ public class PreferenceManager {
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
     public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
     public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
+    public static final String PREF_READER_PAGING = "pref_reader_paging";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
     public static final String PREF_READER_PAGE_ORIENTATION = "pref_reader_page_orientation";
@@ -67,7 +68,6 @@ public class PreferenceManager {
     public static final String PREF_READER_STREAM_LONG_CLICK_RIGHT = "pref_reader_stream_long_click_right";
     public static final String PREF_READER_STREAM_LOAD_PREV = "pref_reader_stream_load_prev";
     public static final String PREF_READER_STREAM_LOAD_NEXT = "pref_reader_stream_load_next";
-    public static final String PREF_READER_STREAM_SPLIT = "pref_reader_stream_split";
     public static final String PREF_READER_STREAM_INTERVAL = "pref_reader_stream_interval";
 
     public static final String PREF_NIGHT = "pref_night";

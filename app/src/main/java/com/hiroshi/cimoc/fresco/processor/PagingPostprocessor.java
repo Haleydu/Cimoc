@@ -7,6 +7,8 @@ import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 
 /**
  * Created by Hiroshi on 2017/3/3.
@@ -19,18 +21,13 @@ public class PagingPostprocessor extends BasePostprocessor {
     public static final int MODE_PAGE_2 = 2;
 
     private int mode;
+    private int id;
     private String url;
-    private PagingCaller caller;
 
-    public PagingPostprocessor(String url, int mode) {
+    public PagingPostprocessor(String url, int id, int mode) {
         this.url = url;
+        this.id = id;
         this.mode = mode;
-    }
-
-    public PagingPostprocessor(String url, PagingCaller caller) {
-        this.url = url;
-        this.caller = caller;
-        this.mode = MODE_PAGE_1;
     }
 
     @Override
@@ -55,7 +52,9 @@ public class PagingPostprocessor extends BasePostprocessor {
                 streamPaging(src, dst, width, height);
                 break;
             case MODE_PAGE_1:
-                caller.call();
+                if (id != -1) {
+                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, id));
+                }
             case MODE_PAGE_2:
                 pagePaging(src, dst, width, height);
                 break;
@@ -113,10 +112,6 @@ public class PagingPostprocessor extends BasePostprocessor {
             case MODE_PAGE_2:
                 return new SimpleCacheKey(url.concat("paging2"));
         }
-    }
-
-    public interface PagingCaller {
-        void call();
     }
 
 }

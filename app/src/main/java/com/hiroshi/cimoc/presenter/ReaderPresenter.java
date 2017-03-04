@@ -47,6 +47,16 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.EVENT_PICTURE_PAGING, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onPicturePaging((int) rxEvent.getData());
+            }
+        });
+    }
+
     public void lazyLoad(final ImageUrl imageUrl) {
         mCompositeSubscription.add(Manga.loadLazyUrl(mSourceManager.getParser(mComic.getSource()), imageUrl.getFirstUrl())
                 .observeOn(AndroidSchedulers.mainThread())

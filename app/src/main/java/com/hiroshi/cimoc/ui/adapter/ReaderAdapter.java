@@ -8,6 +8,7 @@ import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -18,8 +19,8 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.WrapControllerListener;
 import com.hiroshi.cimoc.fresco.processor.PagingPostprocessor;
 import com.hiroshi.cimoc.fresco.processor.WhiteEdgePostprocessor;
-import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
@@ -81,7 +82,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ImageUrl imageUrl = mDataSet.get(position);
+        final ImageUrl imageUrl = mDataSet.get(position);
         if (imageUrl.isLazy()) {
             if (!imageUrl.isLoading() && mLazyLoadListener != null) {
                 imageUrl.setLoading(true);
@@ -118,10 +119,26 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url[i]));
             if (reader == READER_STREAM && isVertical && isPaging) {
-                imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], PagingPostprocessor.MODE_STREAM));
+                imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_STREAM));
             } else if (reader == READER_PAGE && mCutWhiteEdge) {
                 imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(url[i]));
+ /*               if (isPaging) {
+                    if (imageUrl.getState() == ImageUrl.STATE_NULL) {
+                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], imageUrl.getId(), PagingPostprocessor.MODE_PAGE_1));
+                        imageRequestBuilder.setRequestListener(new BaseRequestListener() {
+                            @Override
+                            public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
+                                imageUrl.setState(ImageUrl.STATE_PAGE_1);
+                            }
+                        });
+                    } else if (imageUrl.getState() == ImageUrl.STATE_PAGE_1) {
+                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_PAGE_1));
+                    } else {
+                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_PAGE_2));
+                    }
+                }   */
             }
+
             request[i] = imageRequestBuilder.build();
         }
         builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
@@ -185,8 +202,28 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         }
     }
 
+    /**
+     * 假设一定找得到
+     */
+    public int getPositionByNum(int current, int num, boolean reverse) {
+        while (mDataSet.get(current).getNum() != num) {
+            current = reverse ? current - 1 : current + 1;
+        }
+        return current;
+    }
+
+    public Pair<Integer, ImageUrl> getImageUrlById(int id) {
+        int size = mDataSet.size();
+        for (int i = 0; i < size; ++i) {
+            if (mDataSet.get(i).getId() == id) {
+                return Pair.create(i, mDataSet.get(i));
+            }
+        }
+        return null;
+    }
+
     public void update(int id, String url) {
-        for (int i = 0; i != mDataSet.size(); ++i) {
+        for (int i = 0; i < mDataSet.size(); ++i) {
             ImageUrl imageUrl = mDataSet.get(i);
             if (imageUrl.getId() == id && imageUrl.isLoading()) {
                 if (url == null) {

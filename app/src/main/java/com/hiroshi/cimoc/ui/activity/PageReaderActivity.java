@@ -76,7 +76,9 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress);
+            int current = ((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress;
+            int pos = mReaderAdapter.getPositionByNum(current, value, value < progress);
+            mRecyclerView.scrollToPosition(pos);
         }
     }
 
