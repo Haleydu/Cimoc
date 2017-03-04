@@ -1,10 +1,10 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +21,6 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
-import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
@@ -37,7 +36,7 @@ import butterknife.OnClick;
  */
 public class TaskActivity extends CoordinatorActivity implements TaskView {
 
-    private static final int DIALOG_REQUEST_DELETE = 0;
+    public static final int REQUEST_CODE_DELETE = 0;
 
     private TaskAdapter mTaskAdapter;
     private TaskPresenter mPresenter;
@@ -67,7 +66,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     protected void initData() {
         long key = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
+        mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, false);
         mPresenter.load(key, mTaskOrder);
     }
 
@@ -123,30 +122,29 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.task_history:
-                String path = mPresenter.getComic().getLast();
-                if (path == null) {
-                    path = mTaskAdapter.getItem(mTaskOrder ? 0 : mTaskAdapter.getDateSet().size() - 1).getPath();
-                }
-                startReader(path);
-                break;
-            case R.id.task_delete:
-                int size = mTaskAdapter.getItemCount();
-                String[] arr1 = new String[size];
-                boolean[] arr2 = new boolean[size];
-                for (int i = 0; i < size; ++i) {
-                    arr1[i] = mTaskAdapter.getItem(i).getTitle();
-                    arr2[i] = false;
-                }
-                MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.task_delete, arr1, arr2, DIALOG_REQUEST_DELETE);
-                fragment.show(getFragmentManager(), null);
-                break;
-            case R.id.task_sort:
-                mTaskAdapter.reverse();
-                mTaskOrder = !mTaskOrder;
-                mPreference.putBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, mTaskOrder);
-                break;
+        if (!mTaskAdapter.getDateSet().isEmpty()) {
+            switch (item.getItemId()) {
+                case R.id.task_history:
+                    String path = mPresenter.getComic().getLast();
+                    if (path == null) {
+                        path = mTaskAdapter.getItem(mTaskOrder ? 0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                    }
+                    startReader(path);
+                    break;
+                case R.id.task_delete:
+                    ArrayList<Chapter> list = new ArrayList<>(mTaskAdapter.getItemCount());
+                    for (Task task : mTaskAdapter.getDateSet()) {
+                        list.add(new Chapter(task.getTitle(), task.getPath(), task.getId()));
+                    }
+                    Intent intent = ChapterActivity.createIntent(this, list);
+                    startActivityForResult(intent, REQUEST_CODE_DELETE);
+                    break;
+                case R.id.task_sort:
+                    mTaskAdapter.reverse();
+                    mTaskOrder = !mTaskOrder;
+                    mPreference.putBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, mTaskOrder);
+                    break;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -155,7 +153,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         List<Chapter> list = new ArrayList<>();
         for (Task t : mTaskAdapter.getDateSet()) {
             if (t.getState() == Task.STATE_FINISH) {
-                list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true));
+                list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true, t.getId()));
             }
         }
         if (mTaskOrder) {
@@ -169,36 +167,30 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
-    public void onDialogResult(int requestCode, Bundle bundle) {
-        switch (requestCode) {
-            case DIALOG_REQUEST_DELETE:
-                boolean[] check = bundle.getBooleanArray(EXTRA_DIALOG_RESULT_VALUE);
-                if (check != null) {
-                    int size = mTaskAdapter.getItemCount();
-                    List<Task> result = new ArrayList<>();
-                    for (int i = 0; i < size; ++i) {
-                        if (check[i]) {
-                            result.add(mTaskAdapter.getItem(i));
-                        }
-                    }
-                    if (!result.isEmpty()) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_CODE_DELETE:
+                    List<Chapter> list = data.getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
+                    if (!list.isEmpty()) {
                         showProgressDialog();
-                        for (Task task : result) {
-                            mBinder.getService().removeDownload(task.getId());
+                        for (Chapter chapter : list) {
+                            mBinder.getService().removeDownload(chapter.getTid());
                         }
-                        mPresenter.deleteTask(result, mTaskAdapter.getItemCount() == result.size());
+                        mPresenter.deleteTask(list, mTaskAdapter.getItemCount() == list.size());
+                    } else {
+                        showSnackbar(R.string.task_empty);
                     }
                     break;
-                }
-                showSnackbar("未选择任务");
-                break;
+            }
         }
     }
 
     @Override
-    public void onTaskDeleteSuccess(List<Task> list) {
+    public void onTaskDeleteSuccess(List<Long> list) {
         hideProgressDialog();
-        mTaskAdapter.removeAll(list);
+        mTaskAdapter.removeById(list);
         showSnackbar(R.string.common_execute_success);
     }
 

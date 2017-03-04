@@ -69,14 +69,16 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     public void onPrevLoadSuccess(List<ImageUrl> list) {
         mReaderAdapter.addAll(0, list);
-        ((RecyclerViewPager) mRecyclerView).refreshBeforePosition(list.size());
+        ((RecyclerViewPager) mRecyclerView).refreshPosition();
         HintUtils.showToast(this, R.string.reader_load_success);
     }
 
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            mRecyclerView.scrollToPosition(((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress);
+            int current = ((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress;
+            int pos = mReaderAdapter.getPositionByNum(current, value, value < progress);
+            mRecyclerView.scrollToPosition(pos);
         }
     }
 

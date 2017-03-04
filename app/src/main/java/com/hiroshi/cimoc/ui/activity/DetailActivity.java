@@ -70,7 +70,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     protected void initData() {
-        mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, false);
+        mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, true);
         mBackupCount = mPreference.getInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, 0);
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
         int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);

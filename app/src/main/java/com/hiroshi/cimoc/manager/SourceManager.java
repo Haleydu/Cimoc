@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
+import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
@@ -108,6 +109,9 @@ public class SourceManager {
                 case Chuiyao.TYPE:
                     parser = new Chuiyao(source);
                     break;
+                case Dmzjv2.TYPE:
+                    parser = new Dmzjv2(source);
+                    break;
             }
             mParserArray.put(type, parser);
         }
@@ -121,7 +125,11 @@ public class SourceManager {
     public class TitleGetter {
 
         public String getTitle(int type) {
-            return getParser(type).getTitle();
+            Parser parser = getParser(type);
+            if (parser != null) {
+                return parser.getTitle();
+            }
+            return null;
         }
 
     }

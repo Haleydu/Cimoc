@@ -7,21 +7,31 @@ public class ImageUrl {
 
     private static int count = 0;
 
+    public static final int STATE_NULL = 0;
+    public static final int STATE_PAGE_1 = 1;
+    public static final int STATE_PAGE_2 = 2;
+
     private int id;
     private int num;
     private String[] url;
     private boolean lazy;
     private boolean loading;
+    private int state;
 
     public ImageUrl(int num, String url, boolean lazy) {
         this(num, new String[]{ url }, lazy);
     }
 
     public ImageUrl(int num, String[] url, boolean lazy) {
+        this(num, url, lazy, STATE_NULL);
+    }
+
+    public ImageUrl(int num, String[] url, boolean lazy, int state) {
         this.id = ++count;
         this.num = num;
         this.url = url;
         this.lazy = lazy;
+        this.state = state;
         this.loading = false;
     }
 
@@ -35,6 +45,10 @@ public class ImageUrl {
 
     public void setUrl(String url) {
         this.url = new String[]{ url };
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 
     public int getId() {
@@ -51,6 +65,10 @@ public class ImageUrl {
 
     public String getFirstUrl() {
         return url[0];
+    }
+
+    public int getState() {
+        return state;
     }
 
     public boolean isLazy() {

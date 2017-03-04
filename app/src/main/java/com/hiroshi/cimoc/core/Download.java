@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
-import android.net.Uri;
 import android.support.v4.provider.DocumentFile;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -233,11 +232,11 @@ public class Download {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
                 DocumentFile dir = getChapterDir(root, comic, chapter, title);
-                Uri[] uris = DocumentUtils.listUrisWithoutSuffix(dir, "cdif");
-                if (uris.length != 0) {
-                    List<ImageUrl> list = new ArrayList<>(uris.length);
-                    for (int i = 0; i < uris.length; ++i) {
-                        String uri = uris[i].toString();
+                List<String> uris = DocumentUtils.listUrisWithoutSuffix(dir, "cdif");
+                if (uris.size() != 0) {
+                    List<ImageUrl> list = new ArrayList<>(uris.size());
+                    for (int i = 0; i < uris.size(); ++i) {
+                        String uri = uris.get(i);
                         if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
                             uri = DecryptionUtils.urlDecrypt(uri);
                         }

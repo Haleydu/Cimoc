@@ -30,8 +30,8 @@ import okhttp3.Request;
  */
 public class Dmzjv2 extends MangaParser {
 
-    public static final int TYPE = 1;
-    public static final String DEFAULT_TITLE = "动漫之家";
+    public static final int TYPE = 10;
+    public static final String DEFAULT_TITLE = "动漫之家v2";
     public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {

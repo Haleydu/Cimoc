@@ -47,6 +47,8 @@
 
     <string name="chapter">章节列表</string>
     <string name="chapter_all">全选</string>
+    <string name="chapter_sort">排序</string>
+    <string name="chapter_switch_view">切换视图</string>
     <string name="chapter_download_perm_fail">获取权限失败</string>
     <string name="chapter_download_empty">未选择章节</string>
 
@@ -57,10 +59,6 @@
     <string name="comic_tab_download">下载</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
-    <string name="comic_clear_history">清除历史</string>
-    <string name="comic_start_download">开始下载</string>
-    <string name="comic_stop_download">停止下载</string>
-    <string name="comic_check_update">检查更新</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_filter_continue">连载</string>
     <string name="comic_filter_finish">完结</string>
@@ -122,8 +120,6 @@
     <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
     <string name="settings_reader_disable_popup">禁用进度指示</string>
     <string name="settings_reader_disable_popup_summary">阅读状态禁用进度指示</string>
-    <string name="settings_reader_split">自动切割长图</string>
-    <string name="settings_reader_split_summary">阅读状态自动切割长图</string>
     <string name="settings_reader_keep_bright">保持屏幕常亮</string>
     <string name="settings_reader_keep_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
@@ -133,8 +129,9 @@
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
+    <string name="settings_reader_paging">自动切割大图</string>
+    <string name="settings_reader_paging_summary">阅读状态自动切割大图</string>
     <string name="settings_download">下载设置</string>
-    <string name="settings_download_connection">下载错误重试次数</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_delete">删除无效漫画</string>
     <string name="settings_download_delete_summary">扫描并删除已下载的无效漫画</string>
@@ -173,7 +170,6 @@
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
-    <string name="about_version">version: 1.4.5</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
     <string name="about_support">支持作者</string>
@@ -228,6 +224,7 @@
     <string name="task_load_task_fail">读取任务失败</string>
     <string name="task_delete">删除任务</string>
     <string name="task_sort">排序</string>
+    <string name="task_empty">未选择任务</string>
 
     <string name="dir_picker">目录选择</string>
     <string name="dir_picker_parent">&lt; 返回上层目录 &gt;</string>

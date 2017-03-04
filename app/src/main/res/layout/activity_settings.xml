@@ -76,13 +76,6 @@
                     android:textSize="14sp"
                     android:text="@string/settings_download"/>
                 <com.hiroshi.cimoc.ui.custom.preference.SliderPreference
-                    android:id="@+id/settings_download_connection"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="@string/settings_download_connection"
-                    app:min="0"
-                    app:max="10"/>
-                <com.hiroshi.cimoc.ui.custom.preference.SliderPreference
                     android:id="@+id/settings_download_thread"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

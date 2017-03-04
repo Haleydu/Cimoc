@@ -72,7 +72,7 @@ public class TaskManager {
 
     public void delete(long key) {
         mTaskDao.queryBuilder()
-                .where(Properties.Key.eq(key))
+                .where(Properties.Id.eq(key))
                 .buildDelete()
                 .executeDeleteWithoutDetachingEntities();
     }

@@ -24,19 +24,19 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
     private static final int DIALOG_REQUEST_ORIENTATION = 0;
     private static final int DIALOG_REQUEST_TURN = 1;
 
-    @BindView(R.id.settings_reader_split) CheckBoxPreference mReaderSplit;
     @BindView(R.id.settings_reader_interval) CheckBoxPreference mReaderInterval;
     @BindView(R.id.settings_reader_load_prev) CheckBoxPreference mReaderLoadPrev;
     @BindView(R.id.settings_reader_load_next) CheckBoxPreference mReaderLoadNext;
+    @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_reader_orientation) ChoicePreference mReaderOrientation;
     @BindView(R.id.settings_reader_turn) ChoicePreference mReaderTurn;
 
     @Override
     protected void initView() {
-        mReaderSplit.bindPreference(PreferenceManager.PREF_READER_STREAM_SPLIT, false);
         mReaderInterval.bindPreference(PreferenceManager.PREF_READER_STREAM_INTERVAL, false);
         mReaderLoadPrev.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
         mReaderLoadNext.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
+        mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mReaderOrientation.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_ORIENTATION,
                 PreferenceManager.READER_ORIENTATION_PORTRAIT, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
         mReaderTurn.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_TURN,

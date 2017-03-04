@@ -3,8 +3,13 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -15,43 +20,66 @@ import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
 import com.hiroshi.cimoc.utils.PermissionUtils;
+import com.hiroshi.cimoc.utils.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
  * Created by Hiroshi on 2016/11/14.
  */
 
-public class ChapterActivity extends CoordinatorActivity {
+public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemClickListener {
+
+    @BindView(R.id.chapter_recycler_view) RecyclerView mRecyclerView;
 
     private ChapterAdapter mChapterAdapter;
-    private boolean mTaskOrder;
+    private boolean isAscendMode;
+    private boolean isButtonMode;
+    private Handler mHandler = new Handler();
+    private RecyclerView.OnItemTouchListener mListener = new CustomTouchListener();
+    private RecyclerView.ItemDecoration mDecoration;
 
     @Override
-    protected BaseAdapter initAdapter() {
+    protected void initView() {
+        isButtonMode = mPreference.getBoolean(PreferenceManager.PREF_CHAPTER_BUTTON_MODE, false);
         mChapterAdapter = new ChapterAdapter(this, getAdapterList());
-        return mChapterAdapter;
+        mDecoration = mChapterAdapter.getItemDecoration();
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(null);
+        mRecyclerView.setAdapter(mChapterAdapter);
+        switchMode();
     }
 
-    @Override
-    protected void initActionButton() {
-        mActionButton.setImageResource(R.drawable.ic_done_white_24dp);
-        mActionButton.show();
-        hideProgressBar();
+    private void switchMode() {
+        mChapterAdapter.setButtonMode(isButtonMode);
+        if (isButtonMode) {
+            mChapterAdapter.setOnItemClickListener(null);
+            mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+            mRecyclerView.addItemDecoration(mDecoration);
+            mRecyclerView.addOnItemTouchListener(mListener);
+            mRecyclerView.setPadding((int) ViewUtils.dpToPixel(4, this), (int) ViewUtils.dpToPixel(10, this), (int) ViewUtils.dpToPixel(4, this), 0);
+        } else {
+            mChapterAdapter.setOnItemClickListener(this);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            mRecyclerView.removeItemDecoration(mDecoration);
+            mRecyclerView.removeOnItemTouchListener(mListener);
+            mRecyclerView.setPadding(0, 0, 0, 0);
+        }
     }
 
     private List<Pair<Chapter, Boolean>> getAdapterList() {
-        mTaskOrder = mPreference.getBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, false);
+        isAscendMode = mPreference.getBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, false);
         List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
         List<Pair<Chapter, Boolean>> result = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); ++i) {
             result.add(Pair.create(list.get(i), list.get(i).isDownload()));
         }
-        if (mTaskOrder) {
+        if (isAscendMode) {
             Collections.reverse(result);
         }
         return result;
@@ -75,8 +103,13 @@ public class ChapterActivity extends CoordinatorActivity {
                     break;
                 case R.id.chapter_sort:
                     mChapterAdapter.reverse();
-                    mTaskOrder = !mTaskOrder;
-                    mPreference.putBoolean(PreferenceManager.PREF_DOWNLOAD_ORDER, mTaskOrder);
+                    isAscendMode = !isAscendMode;
+                    mPreference.putBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, isAscendMode);
+                    break;
+                case R.id.chapter_switch_view:
+                    isButtonMode = !isButtonMode;
+                    switchMode();
+                    mPreference.putBoolean(PreferenceManager.PREF_CHAPTER_BUTTON_MODE, isButtonMode);
                     break;
             }
         }
@@ -92,8 +125,7 @@ public class ChapterActivity extends CoordinatorActivity {
         }
     }
 
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        showProgressDialog();
+    @OnClick(R.id.chapter_action_button) void onActionButtonClick() {
         ArrayList<Chapter> list = new ArrayList<>();
         for (Pair<Chapter, Boolean> pair : mChapterAdapter.getDateSet()) {
             if (!pair.first.isDownload() && pair.second) {
@@ -111,7 +143,11 @@ public class ChapterActivity extends CoordinatorActivity {
         } else {
             showSnackbar(R.string.chapter_download_perm_fail);
         }
-        hideProgressBar();
+    }
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_chapter;
     }
 
     @Override
@@ -123,6 +159,71 @@ public class ChapterActivity extends CoordinatorActivity {
         Intent intent = new Intent(context, ChapterActivity.class);
         intent.putExtra(Extra.EXTRA_CHAPTER, list);
         return intent;
+    }
+
+    class CustomTouchListener implements RecyclerView.OnItemTouchListener {
+        private int mLastPosition = -1;
+        private boolean isLongPress = false;
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+            if (isLongPress) {
+                return true;
+            }
+
+            int pos = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
+            switch (e.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mLastPosition = pos;
+                    if (mLastPosition != -1) {
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                isLongPress = true;
+                                update(mLastPosition);
+                            }
+                        }, 500);
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (mLastPosition != pos) {
+                        mHandler.removeCallbacksAndMessages(null);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mHandler.removeCallbacksAndMessages(null);
+                    if (pos != -1 && mLastPosition == pos) {
+                        update(pos);
+                    }
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+            int pos = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
+            switch (e.getAction()){
+                case MotionEvent.ACTION_MOVE:
+                    if (pos != -1 && mLastPosition != pos) {
+                        update(pos);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    isLongPress = false;
+                    break;
+            }
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+        }
+
+        private void update(int pos) {
+            mLastPosition = pos;
+            mChapterAdapter.getItem(pos).second = !mChapterAdapter.getItem(pos).second;
+            mChapterAdapter.notifyItemChanged(pos);
+        }
     }
 
 }

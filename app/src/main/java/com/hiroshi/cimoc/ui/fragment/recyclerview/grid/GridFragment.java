@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,11 +19,16 @@ import com.hiroshi.cimoc.utils.HintUtils;
 import java.util.LinkedList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+
 /**
  * Created by Hiroshi on 2016/9/22.
  */
 
 public abstract class GridFragment extends RecyclerViewFragment implements GridView {
+
+    @BindView(R.id.grid_action_button) FloatingActionButton mActionButton;
 
     protected GridAdapter mGridAdapter;
 
@@ -45,6 +51,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
                 }
             }
         });
+        mActionButton.setImageResource(getActionButtonRes());
         return mGridAdapter;
     }
 
@@ -53,6 +60,12 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
         GridLayoutManager manager = new GridLayoutManager(getActivity(), 3);
         manager.setRecycleChildrenOnDetach(true);
         return manager;
+    }
+
+    @OnClick(R.id.grid_action_button) void onActionButtonClick() {
+        if (!mGridAdapter.getDateSet().isEmpty()) {
+            performActionButtonClick();
+        }
     }
 
     @Override
@@ -65,13 +78,20 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     @Override
     public void onComicLoadSuccess(List<MiniComic> list) {
         mGridAdapter.addAll(list);
-        hideProgressBar();
     }
 
     @Override
     public void onComicLoadFail() {
         HintUtils.showToast(getActivity(), R.string.common_data_load_fail);
-        hideProgressBar();
+    }
+
+    protected abstract void performActionButtonClick();
+
+    protected abstract int getActionButtonRes();
+
+    @Override
+    protected int getLayoutRes() {
+        return R.layout.fragment_grid;
     }
 
 }

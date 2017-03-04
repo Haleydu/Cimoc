@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.DownloadPresenter;
 import com.hiroshi.cimoc.service.DownloadService;
@@ -15,22 +16,32 @@ import com.hiroshi.cimoc.ui.view.DownloadView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ServiceUtils;
 
+import java.util.ArrayList;
+
 /**
  * Created by Hiroshi on 2016/9/1.
  */
 public class DownloadFragment extends GridFragment implements DownloadView {
 
     private static final int DIALOG_REQUEST_DELETE = 0;
+    private static final int DIALOG_REQUEST_SWITCH = 1;
 
     private DownloadPresenter mPresenter;
 
     private long mSavedId = -1;
+    private boolean isDownload;
 
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new DownloadPresenter();
         mPresenter.attachView(this);
         return mPresenter;
+    }
+
+    @Override
+    protected void initView() {
+        isDownload = ServiceUtils.isServiceRunning(getActivity(), DownloadService.class);
+        super.initView();
     }
 
     @Override
@@ -42,14 +53,30 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_DELETE:
-                if (ServiceUtils.isServiceRunning(getActivity(), DownloadService.class)) {
+                if (isDownload) {
                     HintUtils.showToast(getActivity(), R.string.download_ask_stop);
                 } else {
                     showProgressDialog();
                     mPresenter.deleteComic(mSavedId);
                 }
                 break;
+            case DIALOG_REQUEST_SWITCH:
+                if (isDownload) {
+                    ServiceUtils.stopService(getActivity(), DownloadService.class);
+                    HintUtils.showToast(getActivity(), R.string.download_stop_success);
+                } else {
+                    showProgressDialog();
+                    mPresenter.loadTask();
+                }
         }
+    }
+
+    @Override
+    protected void performActionButtonClick() {
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                R.string.download_action_confirm, true, DIALOG_REQUEST_SWITCH);
+        fragment.setTargetFragment(this, 0);
+        fragment.show(getFragmentManager(), null);
     }
 
     @Override
@@ -91,6 +118,45 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     public void onDownloadDeleteFail() {
         hideProgressDialog();
         HintUtils.showToast(getActivity(), R.string.common_execute_fail);
+    }
+
+    @Override
+    public void onDownloadStart() {
+        if (!isDownload) {
+            isDownload = true;
+            mActionButton.setImageResource(R.drawable.ic_pause_white_24dp);
+        }
+    }
+
+    @Override
+    public void onDownloadStop() {
+        if (isDownload) {
+            isDownload = false;
+            mActionButton.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        }
+    }
+
+    @Override
+    public void onTaskLoadFail() {
+        hideProgressDialog();
+        HintUtils.showToast(getActivity(), R.string.download_task_fail);
+    }
+
+    @Override
+    public void onTaskLoadSuccess(ArrayList<Task> list) {
+        if (list.isEmpty()) {
+            HintUtils.showToast(getActivity(), R.string.download_task_empty);
+        } else {
+            Intent intent = DownloadService.createIntent(getActivity(), list);
+            getActivity().startService(intent);
+            HintUtils.showToast(getActivity(), R.string.download_start_success);
+        }
+        hideProgressDialog();
+    }
+
+    @Override
+    protected int getActionButtonRes() {
+        return isDownload ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp;
     }
 
 }

@@ -115,13 +115,14 @@ public class IKanman extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String str = StringUtils.match("decryptDES\\(\"(.*?)\"\\)", html, 1);
-        if (str != null) {
+        String packed = StringUtils.match("\\(function\\(p,a,c,k,e,d\\).*?0,\\{\\}\\)\\)", html, 0);
+        if (packed != null) {
             try {
-                String cipherStr = str.substring(8);
-                String keyStr = str.substring(0, 8);
-                String packed = DecryptionUtils.desDecrypt(keyStr, cipherStr);
-                String result = DecryptionUtils.evalDecrypt(packed.substring(4));
+                String replaceable = StringUtils.split(packed, ",", -3);
+                String fake = StringUtils.split(replaceable, "'", 1);
+                String real = DecryptionUtils.LZ64Decrypt(fake);
+                packed = packed.replace(replaceable, StringUtils.format("'%s'.split('|')", real));
+                String result = DecryptionUtils.evalDecrypt(packed);
 
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONArray array = new JSONObject(jsonString).getJSONArray("images");

@@ -45,12 +45,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_OTHER_LAUNCH = 0;
     private static final int DIALOG_REQUEST_READER_MODE = 1;
     private static final int DIALOG_REQUEST_OTHER_THEME = 2;
-    private static final int DIALOG_REQUEST_DOWNLOAD_CONN = 3;
-    private static final int DIALOG_REQUEST_OTHER_STORAGE = 4;
-    private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 5;
-    private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 6;
-    private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 7;
-    private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 8;
+    private static final int DIALOG_REQUEST_OTHER_STORAGE = 3;
+    private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 4;
+    private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 5;
+    private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 6;
+    private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 7;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
@@ -59,12 +58,12 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_hide_info) CheckBoxPreference mReaderHideInfo;
     @BindView(R.id.settings_reader_disable_popup) CheckBoxPreference mReaderDisablePopup;
     @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
+//    @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
     @BindView(R.id.settings_other_theme) ChoicePreference mOtherTheme;
     @BindView(R.id.settings_other_night_alpha) SliderPreference mOtherNightAlpha;
-    @BindView(R.id.settings_download_connection) SliderPreference mDownloadConnection;
     @BindView(R.id.settings_download_thread) SliderPreference mDownloadThread;
 
     private SettingsPresenter mPresenter;
@@ -90,6 +89,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mReaderDisablePopup.bindPreference(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
+//        mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -99,8 +99,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
                 R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
-        mDownloadConnection.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_CONNECTION, 0,
-                R.string.settings_download_connection, DIALOG_REQUEST_DOWNLOAD_CONN);
         mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
                 R.string.settings_download_thread, DIALOG_REQUEST_DOWNLOAD_THREAD);
     }
@@ -164,9 +162,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                     setResult(Activity.RESULT_OK, mResultIntent);
                 }
                 break;
-            case DIALOG_REQUEST_DOWNLOAD_CONN:
-                mDownloadConnection.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
-                break;
             case DIALOG_REQUEST_OTHER_STORAGE:
                 showSnackbar(R.string.settings_other_storage_not_found);
                 break;
@@ -208,6 +203,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideInfo.setColorStateList(stateList);
         mReaderDisablePopup.setColorStateList(stateList);
         mReaderHideNav.setColorStateList(stateList);
+//        mReaderPaging.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
     }
 

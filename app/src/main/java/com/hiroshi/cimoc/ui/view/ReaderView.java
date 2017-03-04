@@ -12,8 +12,6 @@ public interface ReaderView extends BaseView {
 
     void onParseError();
 
-    void onNetworkError();
-
     void onNextLoadNone();
 
     void onPrevLoadNone();
@@ -37,5 +35,7 @@ public interface ReaderView extends BaseView {
     void onPictureSaveSuccess(String path);
 
     void onPictureSaveFail();
+
+    void onPicturePaging(int id);
 
 }

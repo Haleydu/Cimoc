@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.adapter.PreloadAdapter;
 import com.hiroshi.cimoc.ui.view.ReaderView;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.InputStream;
 import java.util.List;
@@ -44,6 +45,16 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mSourceManager = SourceManager.getInstance(mBaseView);
+    }
+
+    @Override
+    protected void initSubscription() {
+        addSubscription(RxEvent.EVENT_PICTURE_PAGING, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onPicturePaging((int) rxEvent.getData());
+            }
+        });
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
@@ -132,9 +143,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE, mComic.getId()));
     }
 
-    public void savePicture(InputStream inputStream, String url) {
+    public void savePicture(InputStream inputStream, String url, String title, int page) {
         mCompositeSubscription.add(Storage.savePicture(mBaseView.getAppInstance().getContentResolver(),
-                mBaseView.getAppInstance().getDocumentFile(), inputStream, url)
+                mBaseView.getAppInstance().getDocumentFile(), inputStream, buildPictureName(title, page, url))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override
@@ -147,6 +158,16 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                         mBaseView.onPictureSaveFail();
                     }
                 }));
+    }
+
+    private String buildPictureName(String title, int page, String url) {
+        String suffix = StringUtils.split(url, "\\.", -1);
+        if (suffix == null) {
+            suffix = "jpg";
+        } else {
+            suffix = suffix.split("\\?")[0];
+        }
+        return StringUtils.format("%s_%s_%03d.%s", StringUtils.filter(mComic.getTitle()), StringUtils.filter(title), page, suffix);
     }
 
     public void updateComic(int page) {

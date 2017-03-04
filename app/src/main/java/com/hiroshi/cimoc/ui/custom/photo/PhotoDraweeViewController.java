@@ -50,8 +50,8 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
     private static final int EDGE_BOTTOM = 1;
     private static final int EDGE_BOTH = 2;
 
-    private static final int MODE_VERTICAL = 0;
-    private static final int MODE_HORIZONTAL = 1;
+    public static final int MODE_VERTICAL = 0;
+    public static final int MODE_HORIZONTAL = 1;
 
     private final float[] mMatrixValues = new float[9];
     private final RectF mDisplayRect = new RectF();
@@ -118,12 +118,8 @@ public class PhotoDraweeViewController implements OnTouchListener, OnScaleDragGe
         }
     }
 
-    public void setHorizontalMode() {
-        mScrollMode = MODE_HORIZONTAL;
-    }
-
-    public void setVerticalMode() {
-        mScrollMode = MODE_VERTICAL;
+    public void setScrollMode(int mode) {
+        mScrollMode = mode;
     }
 
     public void setZoomTransitionDuration(long duration) {

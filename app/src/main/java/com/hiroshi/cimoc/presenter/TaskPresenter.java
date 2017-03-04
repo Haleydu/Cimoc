@@ -10,11 +10,11 @@ import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.TaskView;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 import rx.Observable;
@@ -141,44 +141,36 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 }));
     }
 
-    private List<Chapter> buildChapterList(List<Task> list) {
-        List<Chapter> result = new LinkedList<>();
-        for (Task task : list) {
-            result.add(new Chapter(task.getTitle(), task.getPath()));
-        }
-        return result;
-    }
-
-    public void deleteTask(final List<Task> list, final boolean isEmpty) {
-        mCompositeSubscription.add(Observable.from(list)
-                .observeOn(Schedulers.io())
-                .map(new Func1<Task, String>() {
+    public void deleteTask(List<Chapter> list, final boolean isEmpty) {
+        final long id = mComic.getId();
+        mCompositeSubscription.add(Observable.just(list)
+                .subscribeOn(Schedulers.io())
+                .doOnNext(new Action1<List<Chapter>>() {
                     @Override
-                    public String call(Task task) {
-                        return task.getTitle();
-                    }
-                })
-                .toList()
-                .doOnNext(new Action1<List<String>>() {
-                    @Override
-                    public void call(List<String> strings) {
-                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                                buildChapterList(list), mSourceManager.getParser(mComic.getSource()).getTitle());
-                        mTaskManager.deleteInTx(list);
+                    public void call(List<Chapter> list) {
+                        deleteFromDatabase(list, isEmpty);
                         if (isEmpty) {
-                            long id = mComic.getId();
-                            mComic.setDownload(null);
-                            mComicManager.updateOrDelete(mComic);
                             Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
                                     mSourceManager.getParser(mComic.getSource()).getTitle());
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
+                        } else {
+                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                    list, mSourceManager.getParser(mComic.getSource()).getTitle());
                         }
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<String>>() {
+                .compose(new ToAnotherList<>(new Func1<Chapter, Long>() {
                     @Override
-                    public void call(List<String> strings) {
+                    public Long call(Chapter chapter) {
+                        return chapter.getTid();
+                    }
+                }))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Long>>() {
+                    @Override
+                    public void call(List<Long> list) {
+                        if (isEmpty) {
+                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
+                        }
                         mBaseView.onTaskDeleteSuccess(list);
                     }
                 }, new Action1<Throwable>() {
@@ -187,6 +179,23 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                         mBaseView.onTaskDeleteFail();
                     }
                 }));
+    }
+
+    private void deleteFromDatabase(final List<Chapter> list, final boolean isEmpty) {
+        mComicManager.runInTx(new Runnable() {
+            @Override
+            public void run() {
+                for (Chapter chapter : list) {
+                    mTaskManager.delete(chapter.getTid());
+                }
+                if (isEmpty) {
+                    mComic.setDownload(null);
+                    mComicManager.updateOrDelete(mComic);
+                    Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                            mSourceManager.getParser(mComic.getSource()).getTitle());
+                }
+            }
+        });
     }
 
     public long updateLast(String path) {

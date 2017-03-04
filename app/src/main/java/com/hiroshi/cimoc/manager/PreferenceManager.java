@@ -31,6 +31,7 @@ public class PreferenceManager {
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
     public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
     public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
+    public static final String PREF_READER_PAGING = "pref_reader_paging";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
     public static final String PREF_READER_PAGE_ORIENTATION = "pref_reader_page_orientation";
@@ -67,7 +68,6 @@ public class PreferenceManager {
     public static final String PREF_READER_STREAM_LONG_CLICK_RIGHT = "pref_reader_stream_long_click_right";
     public static final String PREF_READER_STREAM_LOAD_PREV = "pref_reader_stream_load_prev";
     public static final String PREF_READER_STREAM_LOAD_NEXT = "pref_reader_stream_load_next";
-    public static final String PREF_READER_STREAM_SPLIT = "pref_reader_stream_split";
     public static final String PREF_READER_STREAM_INTERVAL = "pref_reader_stream_interval";
 
     public static final String PREF_NIGHT = "pref_night";
@@ -77,14 +77,15 @@ public class PreferenceManager {
     public static final String PREF_OTHER_LAUNCH = "pref_other_launch";
     public static final String PREF_OTHER_NIGHT_ALPHA = "pref_other_night_alpha";
 
-    public static final String PREF_DOWNLOAD_CONNECTION = "pref_download_connection";
-    public static final String PREF_DOWNLOAD_ORDER = "pref_download_order";
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
 
     public static final String PREF_BACKUP_SAVE_FAVORITE = "pref_backup_save_favorite";
     public static final String PREF_BACKUP_SAVE_FAVORITE_COUNT = "pref_backup_save_favorite_count";
 
     public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
+
+    public static final String PREF_CHAPTER_BUTTON_MODE = "pref_chapter_button_mode";
+    public static final String PREF_CHAPTER_ASCEND_MODE = "pref_chapter_ascend_mode";
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 

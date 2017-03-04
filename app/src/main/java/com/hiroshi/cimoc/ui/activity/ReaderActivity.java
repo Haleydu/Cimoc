@@ -30,6 +30,7 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
@@ -160,8 +161,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setSingleTapListener(this);
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
-        mReaderAdapter.setTurn(turn);
-        mReaderAdapter.setSplitPageEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_SPLIT, false));
+        mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
+        mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
         mReaderAdapter.setCutWhiteEdgeEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
     }
 
@@ -288,8 +289,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onNetworkError() {
-        HintUtils.showToast(this, R.string.common_network_error);
+    public void onPicturePaging(int id) {
+        Pair<Integer, ImageUrl> pair = mReaderAdapter.getImageUrlById(id);
+        if (pair != null) {
+            ImageUrl image = pair.second;
+            mReaderAdapter.add(pair.first + 1, new ImageUrl(image.getNum(), image.getUrl(), false, ImageUrl.STATE_PAGE_2));
+        }
     }
 
     @Override
@@ -470,17 +475,18 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         }
         String[] urls = mReaderAdapter.getItem(position).getUrl();
         try {
+            String title = mChapterTitle.getText().toString();
             for (String url : urls) {
                 if (url.startsWith("file")) {
-                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url);
+                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url, title, progress);
                     break;
                 } else if (url.startsWith("content")) {
-                    mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url);
+                    mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url, title, progress);
                     break;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {
-                        mPresenter.savePicture(resource.openStream(), url);
+                        mPresenter.savePicture(resource.openStream(), url, title, progress);
                         break;
                     }
                 }

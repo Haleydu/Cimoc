@@ -13,7 +13,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 /**
  * https://github.com/ongakuer/PhotoDraweeView
  */
-public class PhotoDraweeView extends SimpleDraweeView  {
+public class PhotoDraweeView extends SimpleDraweeView {
 
     private PhotoDraweeViewController mPhotoDraweeViewController;
 
@@ -77,12 +77,8 @@ public class PhotoDraweeView extends SimpleDraweeView  {
         mPhotoDraweeViewController.setOnLongPressListener(listener);
     }
 
-    public void setHorizontalMode() {
-        mPhotoDraweeViewController.setHorizontalMode();
-    }
-
-    public void setVerticalMode() {
-        mPhotoDraweeViewController.setVerticalMode();
+    public void setScrollMode(int mode) {
+        mPhotoDraweeViewController.setScrollMode(mode);
     }
 
     public void update(int imageInfoWidth, int imageInfoHeight) {

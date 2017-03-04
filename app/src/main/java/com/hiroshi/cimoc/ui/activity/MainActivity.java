@@ -354,9 +354,4 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         return mDrawerLayout;
     }
 
-    @Override
-    protected boolean isNavTranslation() {
-        return true;
-    }
-
 }

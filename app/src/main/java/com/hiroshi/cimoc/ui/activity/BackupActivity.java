@@ -46,7 +46,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     protected void initView() {
         super.initView();
-        mSaveFavoriteAuto.bindPreference(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, false);
+        mSaveFavoriteAuto.bindPreference(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, true);
     }
 
     @OnClick(R.id.backup_save_favorite) void onSaveFavoriteClick() {

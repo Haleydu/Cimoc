@@ -24,11 +24,11 @@
                 android:textColor="@color/white"
                 android:textSize="54sp"/>
             <TextView
+                android:id="@+id/about_version_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/about_app_name"
                 android:layout_centerHorizontal="true"
-                android:text="@string/about_version"
                 android:textColor="@color/white"
                 android:textSize="14sp"/>
         </RelativeLayout>

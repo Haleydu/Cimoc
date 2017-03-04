@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.model.Task;
 
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.List;
 /**
  * Created by Hiroshi on 2016/9/7.
  */
-public interface TaskView extends BaseView, DialogCaller {
+public interface TaskView extends BaseView {
 
     void onTaskLoadSuccess(List<Task> list);
 
@@ -26,7 +25,7 @@ public interface TaskView extends BaseView, DialogCaller {
 
     void onTaskError(long id);
 
-    void onTaskDeleteSuccess(List<Task> list);
+    void onTaskDeleteSuccess(List<Long> list);
 
     void onTaskDeleteFail();
 
