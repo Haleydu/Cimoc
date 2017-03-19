@@ -38,8 +38,8 @@ import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
 import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -128,6 +128,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+        mRecyclerView.setItemViewCacheSize(2);
     }
 
     @Override

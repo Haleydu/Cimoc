@@ -24,6 +24,7 @@ import com.hiroshi.cimoc.ui.adapter.AutoCompleteAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
 import com.hiroshi.cimoc.utils.CollectionUtils;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                 }
             }
             if (list.isEmpty()) {
-                showSnackbar(R.string.search_source_none);
+                HintUtils.showToast(this, R.string.search_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(this, keyword,
                         CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
@@ -186,7 +187,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     @Override
     public void onSourceLoadFail() {
         hideProgressBar();
-        showSnackbar(R.string.search_source_load_fail);
+        HintUtils.showToast(this, R.string.search_source_load_fail);
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.ThemeResponsive;
 import com.hiroshi.cimoc.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -128,6 +129,9 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
         mTabLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
+        for (int i = 0; i < 3; ++i) {
+            ((ThemeResponsive) mTabAdapter.getItem(i)).onThemeChange(primary, accent);
+        }
     }
 
     @Override

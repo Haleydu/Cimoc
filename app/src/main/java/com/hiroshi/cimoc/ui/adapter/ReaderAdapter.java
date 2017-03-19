@@ -22,9 +22,8 @@ import com.hiroshi.cimoc.fresco.processor.WhiteEdgePostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -94,7 +93,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
         draweeView.setOnSingleTapListener(mSingleTapListener);
         draweeView.setOnLongPressListener(mLongPressListener);
-        draweeView.setScrollMode(isVertical ? PhotoDraweeViewController.MODE_VERTICAL : PhotoDraweeViewController.MODE_HORIZONTAL);
+        draweeView.setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
 
         PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
         switch (reader) {
@@ -103,13 +102,13 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (imageInfo != null) {
-                            draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
+                            draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
                         }
                     }
                 });
                 break;
             case READER_STREAM:
-                builder.setControllerListener(new WrapControllerListener(draweeView, isVertical));
+                builder.setControllerListener(new WrapControllerListener(draweeView, isVertical, imageUrl.getId()));
                 break;
         }
 

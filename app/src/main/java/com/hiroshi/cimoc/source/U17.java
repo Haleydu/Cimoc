@@ -13,6 +13,8 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -94,29 +96,31 @@ public class U17 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        //String url = StringUtils.format("http://m.u17.com/image/list?comicId=%s&chapterId=%s", cid, path);
-        String url = StringUtils.format("http://www.u17.com/chapter/%s.html", path);
+        // String url = StringUtils.format("http://www.u17.com/chapter/%s.html", path);
+        String url = "http://www.u17.com/comic/ajax.php?mod=chapter&act=get_chapter_v5&chapter_id=".concat(path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        /*try {
-            JSONArray array = new JSONObject(html).getJSONObject("data").getJSONArray("list");
-            for (int i = 0; i != array.length(); ++i) {
-                JSONObject object = array.getJSONObject(i);
-                list.add(new ImageUrl(i + 1, object.getString("location"), false));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
+        /*
         String result = StringUtils.match("image_list: .*?\\('(.*?)'\\)", html, 1);
         try {
             JSONObject object = new JSONObject(result);
             for (int i = 1; i <= object.length(); ++i) {
                 String str = object.getJSONObject(String.valueOf(i)).getString("src");
                 list.add(new ImageUrl(i, DecryptionUtils.base64Decrypt(str), false));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        try {
+            JSONObject object = new JSONObject(html);
+            JSONArray array = object.getJSONArray("image_list");
+            for (int i = 0; i < array.length(); ++i) {
+                String url = array.getJSONObject(i).getString("src");
+                list.add(new ImageUrl(i, url, false));
             }
         } catch (Exception e) {
             e.printStackTrace();

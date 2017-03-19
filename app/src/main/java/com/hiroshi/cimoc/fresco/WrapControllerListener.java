@@ -14,23 +14,13 @@ import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 public class WrapControllerListener extends BaseControllerListener<ImageInfo> {
 
     private PhotoDraweeView mDraweeView;
+    private int mImageId;
     private boolean isVertical;
 
-    public WrapControllerListener(PhotoDraweeView draweeView, boolean vertical) {
+    public WrapControllerListener(PhotoDraweeView draweeView, boolean vertical, int id) {
         mDraweeView = draweeView;
+        mImageId = id;
         isVertical = vertical;
-    }
-
-    @Override
-    public void onIntermediateImageSet(String id, ImageInfo imageInfo) {
-        if (imageInfo != null) {
-            if (isVertical) {
-                mDraweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            } else {
-                mDraweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
-            }
-            mDraweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
-        }
     }
 
     @Override
@@ -42,7 +32,7 @@ public class WrapControllerListener extends BaseControllerListener<ImageInfo> {
                 mDraweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
             }
             mDraweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
-            mDraweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
+            mDraweeView.update(mImageId, imageInfo.getWidth(), imageInfo.getHeight());
         }
     }
 
