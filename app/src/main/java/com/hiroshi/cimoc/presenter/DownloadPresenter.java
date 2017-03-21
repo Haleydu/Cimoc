@@ -85,7 +85,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                             @Override
                             public Comic call() throws Exception {
                                 Comic comic = mComicManager.load(id);
-                                mTaskManager.delete(id);
+                                mTaskManager.deleteByComicId(id);
                                 comic.setDownload(null);
                                 mComicManager.updateOrDelete(comic);
                                 return comic;

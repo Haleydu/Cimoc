@@ -52,13 +52,13 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         addSubscription(RxEvent.EVENT_PICTURE_PAGING, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onPicturePaging((int) rxEvent.getData());
+                mBaseView.onPicturePaging((ImageUrl) rxEvent.getData());
             }
         });
     }
 
     public void lazyLoad(final ImageUrl imageUrl) {
-        mCompositeSubscription.add(Manga.loadLazyUrl(mSourceManager.getParser(mComic.getSource()), imageUrl.getFirstUrl())
+        mCompositeSubscription.add(Manga.loadLazyUrl(mSourceManager.getParser(mComic.getSource()), imageUrl.getUrl())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<String>() {
                     @Override

@@ -181,7 +181,7 @@ public class DownloadService extends Service implements AppGetter {
                             int count = 0;  // 单页下载错误次数
                             success = false; // 是否下载成功
                             while (count++ < 20 && !success) {
-                                String[] urls = image.getUrl();
+                                String[] urls = image.getUrls();
                                 for (int j = 0; !success && j < urls.length; ++j) {
                                     String url = image.isLazy() ? Manga.getLazyUrl(mParse, urls[j]) : urls[j];
                                     Request request = buildRequest(mParse.getHeader(), url);

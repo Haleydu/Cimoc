@@ -16,6 +16,7 @@ import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -112,6 +113,9 @@ public class SourceManager {
                 case Dmzjv2.TYPE:
                     parser = new Dmzjv2(source);
                     break;
+                default:
+                    parser = new Null();
+                    break;
             }
             mParserArray.put(type, parser);
         }
@@ -125,11 +129,7 @@ public class SourceManager {
     public class TitleGetter {
 
         public String getTitle(int type) {
-            Parser parser = getParser(type);
-            if (parser != null) {
-                return parser.getTitle();
-            }
-            return null;
+            return getParser(type).getTitle();
         }
 
     }
@@ -144,7 +144,11 @@ public class SourceManager {
 
     public static SourceManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new SourceManager(getter);
+            synchronized (SourceManager.class) {
+                if (mInstance == null) {
+                    mInstance = new SourceManager(getter);
+                }
+            }
         }
         return mInstance;
     }

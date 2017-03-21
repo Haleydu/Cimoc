@@ -35,9 +35,9 @@ public class Manga {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
-                Request request = parser.getSearchRequest(keyword, page);
-                Random random = new Random();
                 try {
+                    Request request = parser.getSearchRequest(keyword, page);
+                    Random random = new Random();
                     String html = getResponseBody(App.getHttpClient(), request);
                     SearchIterator iterator = parser.getSearchIterator(html, page);
                     if (iterator == null || iterator.empty()) {
@@ -62,8 +62,8 @@ public class Manga {
         return Observable.create(new Observable.OnSubscribe<List<Chapter>>() {
             @Override
             public void call(Subscriber<? super List<Chapter>> subscriber) {
-                Request request = parser.getInfoRequest(comic.getCid());
                 try {
+                    Request request = parser.getInfoRequest(comic.getCid());
                     String html = getResponseBody(App.getHttpClient(), request);
                     parser.parseInfo(html, comic);
                     request = parser.getChapterRequest(html, comic.getCid());
@@ -88,8 +88,8 @@ public class Manga {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
-                Request request = parser.getCategoryRequest(format, page);
                 try {
+                    Request request = parser.getCategoryRequest(format, page);
                     String html = getResponseBody(App.getHttpClient(), request);
                     List<Comic> list = parser.parseCategory(html, page);
                     if (!list.isEmpty()) {
@@ -151,9 +151,9 @@ public class Manga {
     }
 
     public static String getLazyUrl(Parser parser, String url) throws InterruptedIOException {
-        Request request = parser.getLazyRequest(url);
         Response response = null;
         try {
+            Request request = parser.getLazyRequest(url);
             response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
                 return parser.parseLazy(response.body().string(), url);

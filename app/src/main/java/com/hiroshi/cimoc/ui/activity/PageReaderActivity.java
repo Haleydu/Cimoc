@@ -22,6 +22,9 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     private boolean loadNext = true;
     private boolean loadPrev = true;
 
+    private int mLastDx = 0;
+    private int mLastDy = 0;
+
     @Override
     protected void initView() {
         super.initView();
@@ -39,6 +42,12 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
                         hideControl();
                         break;
                 }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                mLastDx = dx;
+                mLastDy = dy;
             }
         });
     }
@@ -64,6 +73,25 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         }
         progress = mReaderAdapter.getItem(newPosition).getNum();
         updateProgress();
+    }
+
+    @Override
+    public void onPicturePaging(ImageUrl image) {
+        int pos = mReaderAdapter.getPositionById(image.getId());
+        int cur = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
+        if (pos > cur) {
+            image.setState(ImageUrl.STATE_PAGE_1);
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_2));
+        } else if (pos < cur) {
+            image.setState(ImageUrl.STATE_PAGE_2);
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_1));
+        } else if (mLastDx > 0 || mLastDy > 0) {
+            image.setState(ImageUrl.STATE_PAGE_2);
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_1));
+        } else {
+            image.setState(ImageUrl.STATE_PAGE_1);
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_2));
+        }
     }
 
     @Override

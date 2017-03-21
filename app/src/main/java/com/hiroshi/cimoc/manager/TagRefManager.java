@@ -77,7 +77,11 @@ public class TagRefManager {
 
     public static TagRefManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new TagRefManager(getter);
+            synchronized (TagRefManager.class) {
+                if (mInstance == null) {
+                    mInstance = new TagRefManager(getter);
+                }
+            }
         }
         return mInstance;
     }

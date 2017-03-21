@@ -7,6 +7,8 @@ import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 /**
  * Created by Hiroshi on 2017/1/7.
@@ -14,10 +16,10 @@ import com.facebook.imagepipeline.request.BasePostprocessor;
 
 public class WhiteEdgePostprocessor extends BasePostprocessor {
 
-    private String url;
+    private ImageUrl image;
 
-    public WhiteEdgePostprocessor(String url) {
-        this.url = url;
+    public WhiteEdgePostprocessor(ImageUrl image) {
+        this.image = image;
     }
 
     @Override
@@ -110,7 +112,7 @@ public class WhiteEdgePostprocessor extends BasePostprocessor {
 
     @Override
     public CacheKey getPostprocessorCacheKey() {
-        return new SimpleCacheKey(url.concat("cut"));
+        return new SimpleCacheKey(StringUtils.format("%s-white-edge-%d", image.getUrl(), image.getId()));
     }
 
     /**

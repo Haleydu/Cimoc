@@ -64,6 +64,12 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_hide_nav"
                     app:summary="@string/settings_reader_hide_nav_summary"/>
+                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_paging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_reader_paging"
+                    app:summary="@string/settings_reader_paging_summary"/>
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"

@@ -13,14 +13,14 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.WrapControllerListener;
 import com.hiroshi.cimoc.fresco.processor.PagingPostprocessor;
+import com.hiroshi.cimoc.fresco.processor.StreamPagingPostprocessor;
 import com.hiroshi.cimoc.fresco.processor.WhiteEdgePostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
@@ -108,36 +108,44 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 });
                 break;
             case READER_STREAM:
-                builder.setControllerListener(new WrapControllerListener(draweeView, isVertical, imageUrl.getId()));
+                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                    @Override
+                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                        if (imageInfo != null) {
+                            if (isVertical) {
+                                draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            } else {
+                                draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            }
+                            draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
+                            draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
+                        }
+                    }
+                });
                 break;
         }
 
-        String[] url = imageUrl.getUrl();
-        ImageRequest[] request = new ImageRequest[url.length];
-        for (int i = 0; i != url.length; ++i) {
+        String[] urls = imageUrl.getUrls();
+        ImageRequest[] request = new ImageRequest[urls.length];
+        for (int i = 0; i != urls.length; ++i) {
+            final String url = urls[i];
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(url[i]));
-            if (reader == READER_STREAM && isVertical && isPaging) {
-                imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_STREAM));
+                    .newBuilderWithSource(Uri.parse(url));
+            if (isPaging) {
+                if (reader == READER_STREAM && isVertical) {
+                    imageRequestBuilder.setPostprocessor(new StreamPagingPostprocessor(imageUrl));
+                } else if (reader == READER_PAGE) {
+                    imageRequestBuilder.setPostprocessor(new PagingPostprocessor(imageUrl));
+                }
             } else if (reader == READER_PAGE && mCutWhiteEdge) {
-                imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(url[i]));
- /*               if (isPaging) {
-                    if (imageUrl.getState() == ImageUrl.STATE_NULL) {
-                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], imageUrl.getId(), PagingPostprocessor.MODE_PAGE_1));
-                        imageRequestBuilder.setRequestListener(new BaseRequestListener() {
-                            @Override
-                            public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
-                                imageUrl.setState(ImageUrl.STATE_PAGE_1);
-                            }
-                        });
-                    } else if (imageUrl.getState() == ImageUrl.STATE_PAGE_1) {
-                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_PAGE_1));
-                    } else {
-                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_PAGE_2));
-                    }
-                }   */
+                imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(imageUrl));
             }
-
+            imageRequestBuilder.setRequestListener(new BaseRequestListener() {
+                @Override
+                public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
+                    imageUrl.setUrl(url);
+                }
+            });
             request[i] = imageRequestBuilder.build();
         }
         builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
@@ -211,14 +219,14 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         return current;
     }
 
-    public Pair<Integer, ImageUrl> getImageUrlById(int id) {
+    public int getPositionById(int id) {
         int size = mDataSet.size();
         for (int i = 0; i < size; ++i) {
             if (mDataSet.get(i).getId() == id) {
-                return Pair.create(i, mDataSet.get(i));
+                return i;
             }
         }
-        return null;
+        return -1;
     }
 
     public void update(int id, String url) {

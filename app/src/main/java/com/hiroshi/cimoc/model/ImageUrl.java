@@ -10,6 +10,7 @@ public class ImageUrl {
     public static final int STATE_NULL = 0;
     public static final int STATE_PAGE_1 = 1;
     public static final int STATE_PAGE_2 = 2;
+    public static final int STATE_DONE = 3;
 
     private int id;
     private int num;
@@ -59,11 +60,11 @@ public class ImageUrl {
         return num;
     }
 
-    public String[] getUrl() {
+    public String[] getUrls() {
         return url;
     }
 
-    public String getFirstUrl() {
+    public String getUrl() {
         return url[0];
     }
 

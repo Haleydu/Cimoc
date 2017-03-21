@@ -53,7 +53,11 @@ public class TagManager {
 
     public static TagManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new TagManager(getter);
+            synchronized (TagManager.class) {
+                if (mInstance == null) {
+                    mInstance = new TagManager(getter);
+                }
+            }
         }
         return mInstance;
     }
