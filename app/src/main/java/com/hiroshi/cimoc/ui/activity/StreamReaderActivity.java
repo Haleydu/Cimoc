@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
+import com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -103,7 +104,9 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            mLayoutManager.scrollToPositionWithOffset(position + value - progress, 0);
+            int current = position + value - progress;
+            int pos = mReaderAdapter.getPositionByNum(current, value, value < progress);
+            mLayoutManager.scrollToPositionWithOffset(pos, 0);
         }
     }
 
@@ -141,6 +144,11 @@ public class StreamReaderActivity extends ReaderActivity {
         if (position == 0) {
             position = list.size();
         }
+    }
+
+    @Override
+    protected int getCurPosition() {
+        return position;
     }
 
     @Override

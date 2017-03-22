@@ -70,6 +70,12 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_paging"
                     app:summary="@string/settings_reader_paging_summary"/>
+                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_white_edge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_reader_white_edge"
+                    app:summary="@string/settings_reader_white_edge_summary"/>
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"

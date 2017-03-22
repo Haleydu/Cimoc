@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -39,6 +40,7 @@ import com.hiroshi.cimoc.ui.fragment.recyclerview.TagFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.PermissionUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,6 +91,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
+        checkUpdate();
         if (!showAuthorNotice()) {
             showPermission();
         }
@@ -278,6 +281,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
+    public void onUpdateReady() {
+        HintUtils.showToast(this, R.string.main_ready_update);
+    }
+
+    @Override
     public void onLastLoadSuccess(int source, String cid, String title, String cover) {
         onLastChange(source, cid, title,cover);
     }
@@ -332,6 +340,15 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission,
                     R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
             fragment.show(getFragmentManager(), null);
+        }
+    }
+
+    private void checkUpdate() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            mPresenter.checkUpdate(info.versionName);
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 

@@ -78,6 +78,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected ImagePipelineFactory mImagePipelineFactory;
 
     protected ReaderPresenter mPresenter;
+    protected int mLastDx = 0;
+    protected int mLastDy = 0;
     protected int progress = 1;
     protected int max = 1;
     protected int turn;
@@ -128,6 +130,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
         mRecyclerView.setItemViewCacheSize(2);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                mLastDx = dx;
+                mLastDy = dy;
+            }
+        });
     }
 
     @Override
@@ -165,7 +174,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
             mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
         }
-        mReaderAdapter.setCutWhiteEdgeEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
+        mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
     }
 
     private void initLayoutManager() {
@@ -286,12 +295,28 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onParseError() {
-        HintUtils.showToast(this, R.string.common_parse_error);
+    public void onPicturePaging(ImageUrl image) {
+        int pos = mReaderAdapter.getPositionById(image.getId());
+        int cur = getCurPosition();
+        if (pos > cur) {
+            image.setState(ImageUrl.STATE_PAGE_1);
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_2));
+        } else if (pos < cur) {
+            image.setState(ImageUrl.STATE_PAGE_2);
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_1));
+        } else if (mLastDx > 0 || mLastDy > 0) {
+            image.setState(ImageUrl.STATE_PAGE_2);
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_1));
+        } else {
+            image.setState(ImageUrl.STATE_PAGE_1);
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_2));
+        }
     }
 
     @Override
-    public void onPicturePaging(ImageUrl image) {}
+    public void onParseError() {
+        HintUtils.showToast(this, R.string.common_parse_error);
+    }
 
     @Override
     public void onNextLoadSuccess(List<ImageUrl> list) {
@@ -459,6 +484,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                 break;
         }
     }
+
+    protected abstract int getCurPosition();
 
     protected abstract void prevPage();
 

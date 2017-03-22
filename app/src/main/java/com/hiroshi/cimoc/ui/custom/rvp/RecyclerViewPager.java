@@ -31,7 +31,7 @@ public class RecyclerViewPager extends RecyclerView {
 
     private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
     private float mTouchSpan;
-    private List<OnPageChangedListener> mOnPageChangedListeners;
+    private OnPageChangedListener mOnPageChangedListeners;
     private int mSmoothScrollTargetPosition = -1;
     private int mPositionBeforeScroll = -1;
     private float mTriggerOffset = 0.05f;
@@ -124,65 +124,85 @@ public class RecyclerViewPager extends RecyclerView {
         return flinging;
     }
 
+    private void smoothScroll(int position) {
+        mSmoothScrollTargetPosition = position;
+        // exclude item decoration
+        LinearSmoothScroller linearSmoothScroller =
+                new LinearSmoothScroller(getContext()) {
+                    @Override
+                    public PointF computeScrollVectorForPosition(int targetPosition) {
+                        if (getLayoutManager() == null) {
+                            return null;
+                        }
+                        return ((LinearLayoutManager) getLayoutManager())
+                                .computeScrollVectorForPosition(targetPosition);
+                    }
+
+                    @Override
+                    protected void onTargetFound(View targetView, State state, Action action) {
+                        if (getLayoutManager() == null) {
+                            return;
+                        }
+                        int dx = calculateDxToMakeVisible(targetView,
+                                getHorizontalSnapPreference());
+                        int dy = calculateDyToMakeVisible(targetView,
+                                getVerticalSnapPreference());
+                        if (dx > 0) {
+                            dx = dx - getLayoutManager()
+                                    .getLeftDecorationWidth(targetView);
+                        } else {
+                            dx = dx + getLayoutManager()
+                                    .getRightDecorationWidth(targetView);
+                        }
+                        if (dy > 0) {
+                            dy = dy - getLayoutManager()
+                                    .getTopDecorationHeight(targetView);
+                        } else {
+                            dy = dy + getLayoutManager()
+                                    .getBottomDecorationHeight(targetView);
+                        }
+                        final int distance = (int) Math.sqrt(dx * dx + dy * dy);
+                        final int time = calculateTimeForDeceleration(distance);
+                        if (time > 0) {
+                            action.update(-dx, -dy, time, mDecelerateInterpolator);
+                        }
+                    }
+
+                    @Override
+                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                        return 0.14f;
+                    }
+                };
+        linearSmoothScroller.setTargetPosition(position);
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
+        getLayoutManager().startSmoothScroll(linearSmoothScroller);
+    }
+
     @Override
     public void smoothScrollToPosition(int position) {
+        mPositionBeforeScroll = getCurrentPosition();
         mSmoothScrollTargetPosition = position;
-        if (getLayoutManager() != null && getLayoutManager() instanceof LinearLayoutManager) {
-            // exclude item decoration
-            LinearSmoothScroller linearSmoothScroller =
-                    new LinearSmoothScroller(getContext()) {
-                        @Override
-                        public PointF computeScrollVectorForPosition(int targetPosition) {
-                            if (getLayoutManager() == null) {
-                                return null;
-                            }
-                            return ((LinearLayoutManager) getLayoutManager())
-                                    .computeScrollVectorForPosition(targetPosition);
-                        }
+        super.smoothScrollToPosition(position);
 
-                        @Override
-                        protected void onTargetFound(View targetView, State state, Action action) {
-                            if (getLayoutManager() == null) {
-                                return;
-                            }
-                            int dx = calculateDxToMakeVisible(targetView,
-                                    getHorizontalSnapPreference());
-                            int dy = calculateDyToMakeVisible(targetView,
-                                    getVerticalSnapPreference());
-                            if (dx > 0) {
-                                dx = dx - getLayoutManager()
-                                        .getLeftDecorationWidth(targetView);
-                            } else {
-                                dx = dx + getLayoutManager()
-                                        .getRightDecorationWidth(targetView);
-                            }
-                            if (dy > 0) {
-                                dy = dy - getLayoutManager()
-                                        .getTopDecorationHeight(targetView);
-                            } else {
-                                dy = dy + getLayoutManager()
-                                        .getBottomDecorationHeight(targetView);
-                            }
-                            final int distance = (int) Math.sqrt(dx * dx + dy * dy);
-                            final int time = calculateTimeForDeceleration(distance);
-                            if (time > 0) {
-                                action.update(-dx, -dy, time, mDecelerateInterpolator);
-                            }
-                        }
+        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT < 16) {
+                    getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                } else {
+                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
 
-                        @Override
-                        protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                            return 0.14f;
-                        }
-                    };
-            linearSmoothScroller.setTargetPosition(position);
-            if (position == RecyclerView.NO_POSITION) {
-                return;
+                if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount()) {
+                    if (mOnPageChangedListeners != null) {
+                        mOnPageChangedListeners.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
+                    }
+                }
             }
-            getLayoutManager().startSmoothScroll(linearSmoothScroller);
-        } else {
-            super.smoothScrollToPosition(position);
-        }
+        });
     }
 
     @Override
@@ -203,11 +223,7 @@ public class RecyclerViewPager extends RecyclerView {
 
                 if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount()) {
                     if (mOnPageChangedListeners != null) {
-                        for (OnPageChangedListener onPageChangedListener : mOnPageChangedListeners) {
-                            if (onPageChangedListener != null) {
-                                onPageChangedListener.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
-                            }
-                        }
+                        mOnPageChangedListeners.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
                     }
                 }
             }
@@ -260,7 +276,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
+            smoothScroll(safeTargetPosition(targetPosition, getItemCount()));
         }
     }
 
@@ -290,7 +306,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
+            smoothScroll(safeTargetPosition(targetPosition, getItemCount()));
         }
     }
 
@@ -298,23 +314,8 @@ public class RecyclerViewPager extends RecyclerView {
         mTriggerOffset = offset;
     }
 
-    public void addOnPageChangedListener(OnPageChangedListener listener) {
-        if (mOnPageChangedListeners == null) {
-            mOnPageChangedListeners = new ArrayList<>();
-        }
-        mOnPageChangedListeners.add(listener);
-    }
-
-    public void removeOnPageChangedListener(OnPageChangedListener listener) {
-        if (mOnPageChangedListeners != null) {
-            mOnPageChangedListeners.remove(listener);
-        }
-    }
-
-    public void clearOnPageChangedListeners() {
-        if (mOnPageChangedListeners != null) {
-            mOnPageChangedListeners.clear();
-        }
+    public void setOnPageChangedListener(OnPageChangedListener listener) {
+        mOnPageChangedListeners = listener;
     }
 
     public void refreshPosition() {
@@ -422,15 +423,11 @@ public class RecyclerViewPager extends RecyclerView {
                         }
                     }
                 }
-                smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
+                smoothScroll(safeTargetPosition(targetPosition, getItemCount()));
                 mCurView = null;
             } else if (mSmoothScrollTargetPosition != mPositionBeforeScroll) {
                 if (mOnPageChangedListeners != null) {
-                    for (OnPageChangedListener onPageChangedListener : mOnPageChangedListeners) {
-                        if (onPageChangedListener != null) {
-                            onPageChangedListener.OnPageChanged(mPositionBeforeScroll, mSmoothScrollTargetPosition);
-                        }
-                    }
+                    mOnPageChangedListeners.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
                 }
                 mHasCalledOnPageChanged = true;
                 mPositionBeforeScroll = mSmoothScrollTargetPosition;
@@ -449,7 +446,6 @@ public class RecyclerViewPager extends RecyclerView {
         return (adapter instanceof RecyclerViewPagerAdapter)
                 ? (RecyclerViewPagerAdapter) adapter
                 : new RecyclerViewPagerAdapter(this, adapter);
-
     }
 
     private int getFlingCount(int velocity, int cellSize) {

@@ -17,9 +17,7 @@ import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.processor.PagingPostprocessor;
-import com.hiroshi.cimoc.fresco.processor.StreamPagingPostprocessor;
-import com.hiroshi.cimoc.fresco.processor.WhiteEdgePostprocessor;
+import com.hiroshi.cimoc.fresco.processor.MangaPostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
@@ -53,7 +51,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private @ReaderMode int reader;
     private boolean isVertical;
     private boolean isPaging;
-    private boolean mCutWhiteEdge;
+    private boolean isWhiteEdge;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -131,15 +129,11 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             final String url = urls[i];
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url));
-            if (isPaging) {
-                if (reader == READER_STREAM && isVertical) {
-                    imageRequestBuilder.setPostprocessor(new StreamPagingPostprocessor(imageUrl));
-                } else if (reader == READER_PAGE) {
-                    imageRequestBuilder.setPostprocessor(new PagingPostprocessor(imageUrl));
-                }
-            } else if (reader == READER_PAGE && mCutWhiteEdge) {
-                imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(imageUrl));
-            }
+
+            MangaPostprocessor processor = new MangaPostprocessor(imageUrl);
+            processor.setPaging(isPaging);
+            processor.setWhiteEdge(isWhiteEdge);
+            imageRequestBuilder.setPostprocessor(processor);
             imageRequestBuilder.setRequestListener(new BaseRequestListener() {
                 @Override
                 public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
@@ -176,8 +170,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         isPaging = paging;
     }
 
-    public void setCutWhiteEdgeEnabled(boolean enabled) {
-        mCutWhiteEdge = enabled;
+    public void setWhiteEdge(boolean whiteEdge) {
+        isWhiteEdge = whiteEdge;
     }
 
     public void setReaderMode(@ReaderMode int reader) {

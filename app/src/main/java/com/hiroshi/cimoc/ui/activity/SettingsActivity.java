@@ -59,6 +59,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_disable_popup) CheckBoxPreference mReaderDisablePopup;
     @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
     @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
+    @BindView(R.id.settings_reader_white_edge) CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
@@ -90,6 +91,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderDisablePopup.bindPreference(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
+        mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -203,7 +205,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideInfo.setColorStateList(stateList);
         mReaderDisablePopup.setColorStateList(stateList);
         mReaderHideNav.setColorStateList(stateList);
-//        mReaderPaging.setColorStateList(stateList);
+        mReaderPaging.setColorStateList(stateList);
+        mReaderWhiteEdge.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
     }
 
