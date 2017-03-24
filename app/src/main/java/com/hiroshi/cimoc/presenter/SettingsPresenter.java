@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.LongSparseArray;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -16,6 +15,7 @@ import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.SettingsView;
 
 import java.util.HashSet;
@@ -62,6 +62,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        throwable.printStackTrace();
                         mBaseView.onExecuteFail();
                     }
                 }, new Action0() {

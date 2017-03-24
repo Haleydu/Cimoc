@@ -40,7 +40,6 @@ import com.hiroshi.cimoc.ui.fragment.recyclerview.TagFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.PermissionUtils;
-import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -131,10 +130,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initFragment() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
         switch (home) {
             default:
-            case PreferenceManager.HOME_COMIC:
+            case PreferenceManager.HOME_FAVORITE:
+            case PreferenceManager.HOME_HISTORY:
+            case PreferenceManager.HOME_DOWNLOAD:
                 mCheckItem = R.id.drawer_comic;
                 break;
             case PreferenceManager.HOME_SOURCE:
@@ -354,11 +355,18 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected String getDefaultTitle() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
-        if (home < 0 || home > 2) {
-            home = PreferenceManager.HOME_COMIC;
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
+        switch (home) {
+            default:
+            case PreferenceManager.HOME_FAVORITE:
+            case PreferenceManager.HOME_HISTORY:
+            case PreferenceManager.HOME_DOWNLOAD:
+                return getString(R.string.drawer_comic);
+            case PreferenceManager.HOME_SOURCE:
+                return getString(R.string.drawer_source);
+            case PreferenceManager.HOME_TAG:
+                return getString(R.string.drawer_tag);
         }
-        return getResources().getStringArray(R.array.launch_items)[home];
     }
 
     @Override

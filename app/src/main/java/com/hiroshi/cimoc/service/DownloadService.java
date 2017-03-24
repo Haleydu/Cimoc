@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.provider.DocumentFile;
 import android.support.v4.util.LongSparseArray;
 
 import com.hiroshi.cimoc.App;
@@ -27,6 +26,7 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -216,7 +216,7 @@ public class DownloadService extends Service implements AppGetter {
                     response = mHttpClient.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String displayName = buildFileName(num, url);
-                        DocumentFile file = DocumentUtils.createFile(parent, displayName);
+                        DocumentFile file = DocumentUtils.getOrCreateFile(parent, displayName);
                         DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
                         return true;
                     }

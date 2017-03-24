@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.provider.DocumentFile;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,6 +16,7 @@ import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SettingsPresenter;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
 import com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference;
@@ -96,7 +96,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
         mOtherLaunch.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_LAUNCH,
-                PreferenceManager.HOME_COMIC, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
+                PreferenceManager.HOME_FAVORITE, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
         mOtherTheme.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_THEME,
                 ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,

@@ -15,8 +15,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * RecyclerViewPager
@@ -31,7 +29,8 @@ public class RecyclerViewPager extends RecyclerView {
 
     private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
     private float mTouchSpan;
-    private OnPageChangedListener mOnPageChangedListeners;
+    private OnPageChangedListener mOnPageChangedListener;
+    private GlobalLayoutListener mGlobalLayoutListener = new GlobalLayoutListener();
     private int mSmoothScrollTargetPosition = -1;
     private int mPositionBeforeScroll = -1;
     private float mTriggerOffset = 0.05f;
@@ -124,9 +123,8 @@ public class RecyclerViewPager extends RecyclerView {
         return flinging;
     }
 
-    private void smoothScroll(int position) {
+    public void smoothScrollToPosition(int position, final float speed) {
         mSmoothScrollTargetPosition = position;
-        // exclude item decoration
         LinearSmoothScroller linearSmoothScroller =
                 new LinearSmoothScroller(getContext()) {
                     @Override
@@ -143,23 +141,17 @@ public class RecyclerViewPager extends RecyclerView {
                         if (getLayoutManager() == null) {
                             return;
                         }
-                        int dx = calculateDxToMakeVisible(targetView,
-                                getHorizontalSnapPreference());
-                        int dy = calculateDyToMakeVisible(targetView,
-                                getVerticalSnapPreference());
+                        int dx = calculateDxToMakeVisible(targetView, getHorizontalSnapPreference());
+                        int dy = calculateDyToMakeVisible(targetView, getVerticalSnapPreference());
                         if (dx > 0) {
-                            dx = dx - getLayoutManager()
-                                    .getLeftDecorationWidth(targetView);
+                            dx = dx - getLayoutManager().getLeftDecorationWidth(targetView);
                         } else {
-                            dx = dx + getLayoutManager()
-                                    .getRightDecorationWidth(targetView);
+                            dx = dx + getLayoutManager().getRightDecorationWidth(targetView);
                         }
                         if (dy > 0) {
-                            dy = dy - getLayoutManager()
-                                    .getTopDecorationHeight(targetView);
+                            dy = dy - getLayoutManager().getTopDecorationHeight(targetView);
                         } else {
-                            dy = dy + getLayoutManager()
-                                    .getBottomDecorationHeight(targetView);
+                            dy = dy + getLayoutManager().getBottomDecorationHeight(targetView);
                         }
                         final int distance = (int) Math.sqrt(dx * dx + dy * dy);
                         final int time = calculateTimeForDeceleration(distance);
@@ -170,7 +162,7 @@ public class RecyclerViewPager extends RecyclerView {
 
                     @Override
                     protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                        return 0.14f;
+                        return speed * getContext().getResources().getDisplayMetrics().density / displayMetrics.density;
                     }
                 };
         linearSmoothScroller.setTargetPosition(position);
@@ -184,25 +176,12 @@ public class RecyclerViewPager extends RecyclerView {
     public void smoothScrollToPosition(int position) {
         mPositionBeforeScroll = getCurrentPosition();
         mSmoothScrollTargetPosition = position;
-        super.smoothScrollToPosition(position);
+        smoothScrollToPosition(position, 0.14f);
 
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @SuppressWarnings("deprecation")
-            @Override
-            public void onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < 16) {
-                    getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                } else {
-                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-
-                if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount()) {
-                    if (mOnPageChangedListeners != null) {
-                        mOnPageChangedListeners.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
-                    }
-                }
-            }
-        });
+        if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
+                mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
+            getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
     }
 
     @Override
@@ -211,23 +190,10 @@ public class RecyclerViewPager extends RecyclerView {
         mSmoothScrollTargetPosition = position;
         super.scrollToPosition(position);
 
-        getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @SuppressWarnings("deprecation")
-            @Override
-            public void onGlobalLayout() {
-                if (Build.VERSION.SDK_INT < 16) {
-                    getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                } else {
-                    getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-
-                if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount()) {
-                    if (mOnPageChangedListeners != null) {
-                        mOnPageChangedListeners.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
-                    }
-                }
-            }
-        });
+        if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
+                mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
+            getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
     }
 
     private int getItemCount() {
@@ -276,7 +242,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScroll(safeTargetPosition(targetPosition, getItemCount()));
+            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
         }
     }
 
@@ -306,7 +272,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScroll(safeTargetPosition(targetPosition, getItemCount()));
+            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
         }
     }
 
@@ -315,7 +281,7 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     public void setOnPageChangedListener(OnPageChangedListener listener) {
-        mOnPageChangedListeners = listener;
+        mOnPageChangedListener = listener;
     }
 
     public void refreshPosition() {
@@ -423,11 +389,11 @@ public class RecyclerViewPager extends RecyclerView {
                         }
                     }
                 }
-                smoothScroll(safeTargetPosition(targetPosition, getItemCount()));
+                smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
                 mCurView = null;
             } else if (mSmoothScrollTargetPosition != mPositionBeforeScroll) {
-                if (mOnPageChangedListeners != null) {
-                    mOnPageChangedListeners.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
+                if (mOnPageChangedListener != null) {
+                    mOnPageChangedListener.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
                 }
                 mHasCalledOnPageChanged = true;
                 mPositionBeforeScroll = mSmoothScrollTargetPosition;
@@ -469,6 +435,23 @@ public class RecyclerViewPager extends RecyclerView {
 
     public interface OnPageChangedListener {
         void OnPageChanged(int oldPosition, int newPosition);
+    }
+
+    private class GlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
+        @Override
+        public void onGlobalLayout() {
+            if (Build.VERSION.SDK_INT < 16) {
+                getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            } else {
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+
+            if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount()) {
+                if (mOnPageChangedListener != null) {
+                    mOnPageChangedListener.OnPageChanged(mPositionBeforeScroll, getCurrentPosition());
+                }
+            }
+        }
     }
 
 }

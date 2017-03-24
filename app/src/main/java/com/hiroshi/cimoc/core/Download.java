@@ -1,13 +1,13 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
-import android.support.v4.provider.DocumentFile;
 
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Task;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 
@@ -95,7 +95,7 @@ public class Download {
 
     private static void createNoMedia(DocumentFile root) {
         DocumentFile home = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
-        DocumentUtils.createFile(home, NO_MEDIA);
+        DocumentUtils.getOrCreateFile(home, NO_MEDIA);
     }
 
     private static DocumentFile createComicIndex(DocumentFile root, Comic comic) {
@@ -103,7 +103,7 @@ public class Download {
         DocumentFile source = DocumentUtils.getOrCreateSubDirectory(home, String.valueOf(comic.getSource()));
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(source, comic.getCid());
         if (dir != null) {
-            return DocumentUtils.createFile(dir, FILE_INDEX);
+            return DocumentUtils.getOrCreateFile(dir, FILE_INDEX);
         }
         return null;
     }
@@ -151,7 +151,7 @@ public class Download {
             DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getCid());
             DocumentFile dir4 = DocumentUtils.getOrCreateSubDirectory(dir3, DecryptionUtils.urlDecrypt(task.getPath().replaceAll("/|\\?", "-")));
             if (dir4 != null) {
-                DocumentFile file = DocumentUtils.createFile(dir4, FILE_INDEX);
+                DocumentFile file = DocumentUtils.getOrCreateFile(dir4, FILE_INDEX);
                 DocumentUtils.writeStringToFile(resolver, file, "cimoc".concat(jsonString));
                 return dir4;
             }

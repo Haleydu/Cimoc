@@ -4,8 +4,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.provider.DocumentFile;
 
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 
 import java.io.File;
@@ -98,7 +98,7 @@ public class Storage {
                 try {
                     DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
                     if (dir != null) {
-                        DocumentFile file = dir.createFile("", filename);
+                        DocumentFile file = dir.createFile(filename);
                         DocumentUtils.writeBinaryToFile(resolver, file, stream);
                         subscriber.onNext(file.getUri().toString());
                         subscriber.onCompleted();

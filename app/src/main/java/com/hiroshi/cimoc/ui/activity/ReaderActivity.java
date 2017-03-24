@@ -181,7 +181,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mLayoutManager = new PreCacheLayoutManager(this);
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setReverseLayout(turn == PreferenceManager.READER_TURN_RTL);
-        mLayoutManager.setExtraSpace(2);
+        mLayoutManager.setExtraSpace(3);
     }
 
     @Override

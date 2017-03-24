@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.TagManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -65,7 +66,19 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download) });
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mTabAdapter);
-        mViewPager.setCurrentItem(1);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
+        switch (home) {
+            default:
+            case PreferenceManager.HOME_FAVORITE:
+                mViewPager.setCurrentItem(1);
+                break;
+            case PreferenceManager.HOME_HISTORY:
+                mViewPager.setCurrentItem(0);
+                break;
+            case PreferenceManager.HOME_DOWNLOAD:
+                mViewPager.setCurrentItem(2);
+                break;
+        }
         mTabLayout.setupWithViewPager(mViewPager);
         mTagList = new ArrayList<>();
         hideProgressBar();

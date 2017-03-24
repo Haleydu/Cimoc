@@ -90,7 +90,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         if (position == 0) {
             mPresenter.loadPrev();
         } else {
-            mRecyclerView.smoothScrollToPosition(position - 1);
+            ((RecyclerViewPager) mRecyclerView).smoothScrollToPosition(position - 1, 0.08f);
         }
     }
 
@@ -101,7 +101,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         if (position == mReaderAdapter.getItemCount() - 1) {
             mPresenter.loadNext();
         } else {
-            mRecyclerView.smoothScrollToPosition(position + 1);
+            ((RecyclerViewPager) mRecyclerView).smoothScrollToPosition(position + 1, 0.08f);
         }
     }
 
