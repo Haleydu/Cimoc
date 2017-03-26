@@ -240,7 +240,9 @@ public class Download {
                         if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
                             uri = DecryptionUtils.urlDecrypt(uri);
                         }
-                        list.add(new ImageUrl(i + 1, uri, false));
+                        ImageUrl image = new ImageUrl(i + 1, uri, false);
+                        image.setChapter(chapter.getPath());
+                        list.add(image);
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();
@@ -327,6 +329,7 @@ public class Download {
         return Observable.create(new Observable.OnSubscribe<Pair<Comic, List<Task>>>() {
             @Override
             public void call(Subscriber<? super Pair<Comic, List<Task>>> subscriber) {
+                root.refresh();
                 DocumentFile downloadDir = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
                 if (downloadDir != null) {
                     for (DocumentFile sourceDir : downloadDir.listFiles()) {

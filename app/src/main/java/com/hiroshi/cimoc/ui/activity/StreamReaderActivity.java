@@ -17,15 +17,13 @@ import java.util.List;
  */
 public class StreamReaderActivity extends ReaderActivity {
 
-    private int position = 0;
-    private boolean loadNext = true;
-    private boolean loadPrev = false;
+    private int mLastPosition = 0;
 
     @Override
     protected void initView() {
         super.initView();
-        loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
-        loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
+        mLoadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
+        mLoadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_STREAM);
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
@@ -39,13 +37,13 @@ public class StreamReaderActivity extends ReaderActivity {
                         break;
                     case RecyclerView.SCROLL_STATE_IDLE:
                     case RecyclerView.SCROLL_STATE_SETTLING:
-                        if (loadPrev) {
+                        if (mLoadPrev) {
                             int item = mLayoutManager.findFirstVisibleItemPosition();
                             if (item == 0) {
                                 mPresenter.loadPrev();
                             }
                         }
-                        if (loadNext) {
+                        if (mLoadNext) {
                             int item = mLayoutManager.findLastVisibleItemPosition();
                             if (item == mReaderAdapter.getItemCount() - 1) {
                                 mPresenter.loadNext();
@@ -57,43 +55,20 @@ public class StreamReaderActivity extends ReaderActivity {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int item;
-                switch(turn) {
-                    default:
-                    case PreferenceManager.READER_TURN_LTR:
-                        item = mLayoutManager.findFirstVisibleItemPosition();
-                        if (item != position) {
-                            if (dx > 0 && progress == max) {
-                                mPresenter.toNextChapter();
-                            } else if (dx < 0 && progress == 1) {
-                                mPresenter.toPrevChapter();
-                            }
+                int target = mLayoutManager.findFirstVisibleItemPosition();
+                if (target != mLastPosition) {
+                    ImageUrl newImage = mReaderAdapter.getItem(target);
+                    ImageUrl oldImage = mReaderAdapter.getItem(mLastPosition);
+
+                    if (!oldImage.getChapter().equals(newImage.getChapter())) {
+                        if (dx > 0 || dy > 0) {
+                            mPresenter.toNextChapter();
+                        } else if (dx < 0 || dy < 0) {
+                            mPresenter.toPrevChapter();
                         }
-                        break;
-                    case PreferenceManager.READER_TURN_RTL:
-                        item = mLayoutManager.findFirstVisibleItemPosition();
-                        if (item != position) {
-                            if (dx < 0 && progress == max) {
-                                mPresenter.toNextChapter();
-                            } else if (dx > 0 && progress == 1) {
-                                mPresenter.toPrevChapter();
-                            }
-                        }
-                        break;
-                    case PreferenceManager.READER_TURN_ATB:
-                        item = mLayoutManager.findFirstVisibleItemPosition();
-                        if (item != position) {
-                            if (dy > 0 && progress == max) {
-                                mPresenter.toNextChapter();
-                            } else if (dy < 0 && progress == 1) {
-                                mPresenter.toPrevChapter();
-                            }
-                        }
-                        break;
-                }
-                if (item != position) {
-                    progress = mReaderAdapter.getItem(item).getNum();
-                    position = item;
+                    }
+                    progress = mReaderAdapter.getItem(target).getNum();
+                    mLastPosition = target;
                     updateProgress();
                 }
             }
@@ -103,7 +78,7 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            int current = position + value - progress;
+            int current = mLastPosition + value - progress;
             int pos = mReaderAdapter.getPositionByNum(current, value, value < progress);
             mLayoutManager.scrollToPositionWithOffset(pos, 0);
         }
@@ -140,14 +115,14 @@ public class StreamReaderActivity extends ReaderActivity {
     @Override
     public void onPrevLoadSuccess(List<ImageUrl> list) {
         super.onPrevLoadSuccess(list);
-        if (position == 0) {
-            position = list.size();
+        if (mLastPosition == 0) {
+            mLastPosition = list.size();
         }
     }
 
     @Override
     protected int getCurPosition() {
-        return position;
+        return mLastPosition;
     }
 
     @Override

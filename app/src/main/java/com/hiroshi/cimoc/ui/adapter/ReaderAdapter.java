@@ -100,6 +100,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (imageInfo != null) {
+                            imageUrl.setSuccess(true);
                             draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
                         }
                     }
@@ -110,6 +111,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (imageInfo != null) {
+                            imageUrl.setSuccess(true);
                             if (isVertical) {
                                 draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                             } else {

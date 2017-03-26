@@ -61,9 +61,6 @@
 }
 
 # fresco
--keepclassmembers class * {
-    native <methods>;
-}
 -keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
 -keep @com.facebook.common.internal.DoNotStrip class *
 -keepclassmembers class * {
@@ -71,6 +68,7 @@
 }
 -dontwarn okio.**
 -dontwarn javax.annotation.**
+-dontwarn com.facebook.infer.**
 
 # greenDAO
 -keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {

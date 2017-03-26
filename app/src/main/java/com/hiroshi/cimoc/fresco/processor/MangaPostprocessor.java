@@ -12,6 +12,8 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.util.concurrent.Semaphore;
+
 /**
  * Created by Hiroshi on 2017/3/3.
  */
@@ -66,8 +68,13 @@ public class MangaPostprocessor extends BasePostprocessor {
     private void preparePaging() {
         mWidth = mWidth / 2;
         if (mImage.getState() == ImageUrl.STATE_NULL) {
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage));
-            while (mImage.getState() == ImageUrl.STATE_NULL); // 有种自旋锁的感觉 不知有没问题
+            Semaphore sem = new Semaphore(0);
+            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage, sem));
+            try {
+                sem.acquire();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         mPosX = mImage.getState() == ImageUrl.STATE_PAGE_1 ? mWidth : 0;
         mPosY = 0;

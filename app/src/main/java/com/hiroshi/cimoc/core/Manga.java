@@ -117,6 +117,9 @@ public class Manga {
                     if (list.isEmpty()) {
                         throw new Exception();
                     } else {
+                        for (ImageUrl imageUrl : list) {
+                            imageUrl.setChapter(path);
+                        }
                         subscriber.onNext(list);
                         subscriber.onCompleted();
                     }

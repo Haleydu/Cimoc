@@ -174,9 +174,10 @@ public class RecyclerViewPager extends RecyclerView {
 
     @Override
     public void smoothScrollToPosition(int position) {
-        mPositionBeforeScroll = getCurrentPosition();
-        mSmoothScrollTargetPosition = position;
-        smoothScrollToPosition(position, 0.14f);
+        if (mPositionBeforeScroll < 0) {
+            mPositionBeforeScroll = getCurrentPosition();
+        }
+        smoothScrollToPosition(position, 0.08f);
 
         if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
                 mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
@@ -242,7 +243,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
+            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()), 0.14f);
         }
     }
 
@@ -272,7 +273,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
+            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()), 0.14f);
         }
     }
 
@@ -389,7 +390,7 @@ public class RecyclerViewPager extends RecyclerView {
                         }
                     }
                 }
-                smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()));
+                smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()), 0.14f);
                 mCurView = null;
             } else if (mSmoothScrollTargetPosition != mPositionBeforeScroll) {
                 if (mOnPageChangedListener != null) {

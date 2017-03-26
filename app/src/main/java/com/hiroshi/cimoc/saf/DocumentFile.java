@@ -62,6 +62,8 @@ public abstract class DocumentFile {
 
     public abstract DocumentFile[] listFiles();
 
+    public void refresh() {}
+
     public DocumentFile findFile(String displayName) {
         for (DocumentFile doc : listFiles()) {
             if (displayName.equals(doc.getName())) {

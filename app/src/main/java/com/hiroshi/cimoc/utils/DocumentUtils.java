@@ -193,35 +193,6 @@ public class DocumentUtils {
         writeBinaryToFile(resolver, dst, input);
     }
 
-    private static boolean copyFile(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
-        DocumentFile file = getOrCreateFile(parent, src.getName());
-        if (file != null) {
-            try {
-                writeBinaryToFile(resolver, src, file);
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    public static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
-        if (src.isDirectory()) {
-            DocumentFile dir = getOrCreateSubDirectory(parent, src.getName());
-            for (DocumentFile file : src.listFiles()) {
-                if (file.isDirectory()) {
-                    if (!copyDir(resolver, file, dir)) {
-                        return false;
-                    }
-                } else if (!copyFile(resolver, file, dir)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     private static void closeStream(Closeable... stream) {
         for (Closeable closeable : stream) {
             if (closeable != null) {

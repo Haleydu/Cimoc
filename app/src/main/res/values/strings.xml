@@ -243,6 +243,7 @@
     <string name="event_switch_screen">切换屏幕方向</string>
     <string name="event_switch_mode">切换阅读模式</string>
     <string name="event_switch_control">显示/隐藏进度条</string>
+    <string name="event_reload_image">重新加载图片</string>
 
     <string name="common_data_load_fail">读取数据失败</string>
     <string name="common_network_error">网络错误</string>

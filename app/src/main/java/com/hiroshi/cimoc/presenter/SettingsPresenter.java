@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.SettingsView;
+import com.hiroshi.cimoc.utils.ComicUtils;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -62,7 +63,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onExecuteFail();
                     }
                 }, new Action0() {
@@ -90,22 +90,22 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                             mComicManager.insert(pair.first);
                             updateKey(pair.first.getId(), pair.second);
                             mTaskManager.insertInTx(pair.second);
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(pair.first)));
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, pair.first.getTitle()));
+                            comic = pair.first;
                         } else {
                             comic.setDownload(System.currentTimeMillis());
                             mComicManager.update(comic);
                             updateKey(comic.getId(), pair.second);
                             mTaskManager.insertIfNotExist(pair.second);
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(comic)));
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, comic.getTitle()));
                         }
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(comic)));
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, comic.getTitle()));
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
-                    public void call(Pair<Comic, List<Task>> pair) {}
+                    public void call(Pair<Comic, List<Task>> pair) {
+                    }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
@@ -123,11 +123,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
         mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                subscriber.onNext("正在读取漫画");
-                LongSparseArray<Comic> array = buildComicMap();
-                subscriber.onNext("正在搜索无效任务");
-                Pair<List<Comic>, List<Task>> pair = findInvalid(array);
-                subscriber.onNext("正在删除无效任务");
+                mBaseView.getAppInstance().getDocumentFile().refresh();
+                Pair<List<Comic>, List<Task>> pair = findInvalid(ComicUtils.buildDownloadComicMap(mComicManager));
                 deleteInvalid(pair.first, pair.second);
                 subscriber.onCompleted();
             }
@@ -136,7 +133,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String msg) {
-                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DIALOG_PROGRESS, msg));
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -188,14 +184,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             }
         });
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_CLEAR, list));
-    }
-
-    private LongSparseArray<Comic> buildComicMap() {
-        LongSparseArray<Comic> array = new LongSparseArray<>();
-        for (Comic comic : mComicManager.listDownload()) {
-            array.put(comic.getId(), comic);
-        }
-        return array;
     }
 
 }

@@ -41,6 +41,7 @@
         <item>切换屏幕方向</item>
         <item>切换阅读模式</item>
         <item>显示/隐藏进度条</item>
+        <item>重新加载图片</item>
     </string-array>
     <string-array name="category_items">
         <item>题材</item>

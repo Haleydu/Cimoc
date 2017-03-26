@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -85,6 +86,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected int turn;
     protected int orientation;
     protected int mode;
+
+    protected boolean mLoadPrev;
+    protected boolean mLoadNext;
 
     private boolean mHideInfo;
     private boolean mHideNav;
@@ -295,22 +299,27 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onPicturePaging(ImageUrl image) {
+    public void onPicturePaging(ImageUrl image, Semaphore sem) {
         int pos = mReaderAdapter.getPositionById(image.getId());
         int cur = getCurPosition();
         if (pos > cur) {
             image.setState(ImageUrl.STATE_PAGE_1);
-            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_2));
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_2, false));
         } else if (pos < cur) {
             image.setState(ImageUrl.STATE_PAGE_2);
-            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_1));
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_1, false));
         } else if (mLastDx > 0 || mLastDy > 0) {
             image.setState(ImageUrl.STATE_PAGE_2);
-            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_1));
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_1, false));
         } else {
             image.setState(ImageUrl.STATE_PAGE_1);
-            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(), false, ImageUrl.STATE_PAGE_2));
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_2, false));
         }
+        sem.release();
     }
 
     @Override
@@ -482,6 +491,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             case ClickEvents.EVENT_SWITCH_CONTROL:
                 switchControl();
                 break;
+            case ClickEvents.EVENT_RELOAD_IMAGE:
+                reloadImage();
+                break;
         }
     }
 
@@ -491,8 +503,21 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     protected abstract void nextPage();
 
+    protected void reloadImage() {
+        int position = getCurPosition();
+        if (position == -1) {
+            position = mLayoutManager.findFirstVisibleItemPosition();
+        }
+        ImageUrl image = mReaderAdapter.getItem(position);
+        String rawUrl = image.getUrl();
+        String postUrl = StringUtils.format("%s-post-%d", image.getUrl(), image.getId());
+        mImagePipelineFactory.getImagePipeline().evictFromCache(Uri.parse(rawUrl));
+        mImagePipelineFactory.getImagePipeline().evictFromCache(Uri.parse(postUrl));
+        mReaderAdapter.notifyItemChanged(position);
+    }
+
     protected void savePicture() {
-        int position = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        int position = getCurPosition();
         if (position == -1) {
             position = mLayoutManager.findFirstVisibleItemPosition();
         }

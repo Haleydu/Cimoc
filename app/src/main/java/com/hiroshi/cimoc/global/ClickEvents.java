@@ -21,6 +21,7 @@ public class ClickEvents {
     public static final int EVENT_SWITCH_SCREEN = 9;
     public static final int EVENT_SWITCH_MODE = 10;
     public static final int EVENT_SWITCH_CONTROL = 11;
+    public static final int EVENT_RELOAD_IMAGE = 12;
 
     public static String[] getPageClickEvents() {
         return new String[] { PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
@@ -116,6 +117,8 @@ public class ClickEvents {
                 return R.string.event_switch_mode;
             case EVENT_SWITCH_CONTROL:
                 return R.string.event_switch_control;
+            case EVENT_RELOAD_IMAGE:
+                return R.string.event_reload_image;
             default:
                 return R.string.event_null;
         }

@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import static okhttp3.internal.Util.closeQuietly;
-
 /**
  * Created by Hiroshi on 2017/3/24.
  */
@@ -169,7 +167,12 @@ class TreeDocumentFile extends DocumentFile {
 
     @Override
     public boolean delete() {
-        return DocumentsContract.deleteDocument(mContext.getContentResolver(), mUri);
+        if (DocumentsContract.deleteDocument(mContext.getContentResolver(), mUri)) {
+            // 为求方便，就这样吧
+            ((TreeDocumentFile) getParentFile()).mSubFiles.remove(mDisplayName);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -206,6 +209,14 @@ class TreeDocumentFile extends DocumentFile {
     }
 
     @Override
+    public void refresh() {
+        if (mSubFiles != null) {
+            mSubFiles.clear();
+            list();
+        }
+    }
+
+    @Override
     public DocumentFile findFile(String displayName) {
         if (!isDirectory()) {
             return null;
@@ -226,6 +237,17 @@ class TreeDocumentFile extends DocumentFile {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private static void closeQuietly(AutoCloseable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (RuntimeException rethrown) {
+                throw rethrown;
+            } catch (Exception ignored) {
+            }
         }
     }
 
