@@ -13,18 +13,15 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.fresco.WrapControllerListener;
-import com.hiroshi.cimoc.fresco.processor.PagingPostprocessor;
-import com.hiroshi.cimoc.fresco.processor.WhiteEdgePostprocessor;
+import com.hiroshi.cimoc.fresco.processor.MangaPostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,7 +51,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private @ReaderMode int reader;
     private boolean isVertical;
     private boolean isPaging;
-    private boolean mCutWhiteEdge;
+    private boolean isWhiteEdge;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -94,7 +91,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
         draweeView.setOnSingleTapListener(mSingleTapListener);
         draweeView.setOnLongPressListener(mLongPressListener);
-        draweeView.setScrollMode(isVertical ? PhotoDraweeViewController.MODE_VERTICAL : PhotoDraweeViewController.MODE_HORIZONTAL);
+        draweeView.setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
 
         PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
         switch (reader) {
@@ -103,42 +100,48 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (imageInfo != null) {
-                            draweeView.update(imageInfo.getWidth(), imageInfo.getHeight());
+                            imageUrl.setSuccess(true);
+                            draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
                         }
                     }
                 });
                 break;
             case READER_STREAM:
-                builder.setControllerListener(new WrapControllerListener(draweeView, isVertical));
+                builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
+                    @Override
+                    public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+                        if (imageInfo != null) {
+                            imageUrl.setSuccess(true);
+                            if (isVertical) {
+                                draweeView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            } else {
+                                draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                            }
+                            draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
+                            draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
+                        }
+                    }
+                });
                 break;
         }
 
-        String[] url = imageUrl.getUrl();
-        ImageRequest[] request = new ImageRequest[url.length];
-        for (int i = 0; i != url.length; ++i) {
+        String[] urls = imageUrl.getUrls();
+        ImageRequest[] request = new ImageRequest[urls.length];
+        for (int i = 0; i != urls.length; ++i) {
+            final String url = urls[i];
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(url[i]));
-            if (reader == READER_STREAM && isVertical && isPaging) {
-                imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_STREAM));
-            } else if (reader == READER_PAGE && mCutWhiteEdge) {
-                imageRequestBuilder.setPostprocessor(new WhiteEdgePostprocessor(url[i]));
- /*               if (isPaging) {
-                    if (imageUrl.getState() == ImageUrl.STATE_NULL) {
-                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], imageUrl.getId(), PagingPostprocessor.MODE_PAGE_1));
-                        imageRequestBuilder.setRequestListener(new BaseRequestListener() {
-                            @Override
-                            public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
-                                imageUrl.setState(ImageUrl.STATE_PAGE_1);
-                            }
-                        });
-                    } else if (imageUrl.getState() == ImageUrl.STATE_PAGE_1) {
-                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_PAGE_1));
-                    } else {
-                        imageRequestBuilder.setPostprocessor(new PagingPostprocessor(url[i], -1, PagingPostprocessor.MODE_PAGE_2));
-                    }
-                }   */
-            }
+                    .newBuilderWithSource(Uri.parse(url));
 
+            MangaPostprocessor processor = new MangaPostprocessor(imageUrl);
+            processor.setPaging(isPaging);
+            processor.setWhiteEdge(isWhiteEdge);
+            imageRequestBuilder.setPostprocessor(processor);
+            imageRequestBuilder.setRequestListener(new BaseRequestListener() {
+                @Override
+                public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
+                    imageUrl.setUrl(url);
+                }
+            });
             request[i] = imageRequestBuilder.build();
         }
         builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
@@ -169,8 +172,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         isPaging = paging;
     }
 
-    public void setCutWhiteEdgeEnabled(boolean enabled) {
-        mCutWhiteEdge = enabled;
+    public void setWhiteEdge(boolean whiteEdge) {
+        isWhiteEdge = whiteEdge;
     }
 
     public void setReaderMode(@ReaderMode int reader) {
@@ -212,14 +215,14 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         return current;
     }
 
-    public Pair<Integer, ImageUrl> getImageUrlById(int id) {
+    public int getPositionById(int id) {
         int size = mDataSet.size();
         for (int i = 0; i < size; ++i) {
             if (mDataSet.get(i).getId() == id) {
-                return Pair.create(i, mDataSet.get(i));
+                return i;
             }
         }
-        return null;
+        return -1;
     }
 
     public void update(int id, String url) {

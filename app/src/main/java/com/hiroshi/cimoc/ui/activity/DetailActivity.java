@@ -137,7 +137,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     }
                     break;
                 case R.id.detail_search_author:
-                    if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {

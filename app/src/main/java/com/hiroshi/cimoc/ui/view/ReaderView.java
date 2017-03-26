@@ -4,6 +4,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by Hiroshi on 2016/8/21.
@@ -36,6 +37,6 @@ public interface ReaderView extends BaseView {
 
     void onPictureSaveFail();
 
-    void onPicturePaging(int id);
+    void onPicturePaging(ImageUrl image, Semaphore sem);
 
 }

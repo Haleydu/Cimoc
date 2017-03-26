@@ -66,13 +66,17 @@ public class TaskManager {
         mTaskDao.delete(task);
     }
 
+    public void delete(long id) {
+        mTaskDao.deleteByKey(id);
+    }
+
     public void deleteInTx(Iterable<Task> entities) {
         mTaskDao.deleteInTx(entities);
     }
 
-    public void delete(long key) {
+    public void deleteByComicId(long id) {
         mTaskDao.queryBuilder()
-                .where(Properties.Id.eq(key))
+                .where(Properties.Key.eq(id))
                 .buildDelete()
                 .executeDeleteWithoutDetachingEntities();
     }
@@ -94,7 +98,11 @@ public class TaskManager {
 
     public static TaskManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new TaskManager(getter);
+            synchronized (TaskManager.class) {
+                if (mInstance == null) {
+                    mInstance = new TaskManager(getter);
+                }
+            }
         }
         return mInstance;
     }

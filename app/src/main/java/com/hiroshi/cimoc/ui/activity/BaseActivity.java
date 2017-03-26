@@ -127,7 +127,8 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     }
 
     public void hideProgressDialog() {
-        mProgressDialog.dismiss();
+        // 可能 onSaveInstanceState 后任务结束，需要取消对话框，直接 dismiss 会抛异常
+        mProgressDialog.dismissAllowingStateLoss();
     }
 
 }

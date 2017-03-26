@@ -1,7 +1,8 @@
 package com.hiroshi.cimoc.utils;
 
 import android.content.ContentResolver;
-import android.support.v4.provider.DocumentFile;
+
+import com.hiroshi.cimoc.saf.DocumentFile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,15 +26,15 @@ import java.util.List;
 
 public class DocumentUtils {
 
-    public static DocumentFile createFile(DocumentFile parent, String displayName) {
-        if (parent.isDirectory()) {
-            DocumentFile file = parent.findFile(displayName);
-            if (file == null) {
-                return parent.createFile(null, displayName);
+    public static DocumentFile getOrCreateFile(DocumentFile parent, String displayName) {
+        DocumentFile file = parent.findFile(displayName);
+        if (file != null) {
+            if (file.isFile()) {
+                return file;
             }
-            return file;
+            return null;
         }
-        return null;
+        return parent.createFile(displayName);
     }
 
     public static DocumentFile findFile(DocumentFile parent, String... filenames) {
@@ -52,8 +53,7 @@ public class DocumentUtils {
         List<String> list = new ArrayList<>();
         if (dir.isDirectory()) {
             for (DocumentFile file : dir.listFiles()) {
-                // file.isFile() 好慢 file.getName() 也好慢
-                if (!file.getUri().toString().endsWith(suffix)) {
+                if (!file.getName().endsWith(suffix)) {
                     list.add(file.getUri().toString());
                 }
             }
@@ -98,14 +98,14 @@ public class DocumentUtils {
     }
 
     public static DocumentFile getOrCreateSubDirectory(DocumentFile parent, String displayName) {
-        if (parent.isDirectory()) {
-            DocumentFile file = parent.findFile(displayName);
-            if (file != null && file.isDirectory()) {
+        DocumentFile file = parent.findFile(displayName);
+        if (file != null) {
+            if (file.isDirectory()) {
                 return file;
             }
-            return parent.createDirectory(displayName);
+            return null;
         }
-        return null;
+        return parent.createDirectory(displayName);
     }
 
     public static String readLineFromFile(ContentResolver resolver, DocumentFile file) {
@@ -191,41 +191,6 @@ public class DocumentUtils {
     public static void writeBinaryToFile(ContentResolver resolver, DocumentFile src, DocumentFile dst) throws IOException {
         InputStream input = resolver.openInputStream(src.getUri());
         writeBinaryToFile(resolver, dst, input);
-    }
-
-    private static boolean copyFile(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
-        if (src.isFile() && parent.isDirectory()) {
-            DocumentFile old = parent.findFile(src.getName());
-            if (old != null) {
-                old.delete();
-            }
-            DocumentFile file = createFile(parent, src.getName());
-            if (file != null) {
-                try {
-                    writeBinaryToFile(resolver, src, file);
-                    return true;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile parent) {
-        if (src.isDirectory()) {
-            DocumentFile dir = getOrCreateSubDirectory(parent, src.getName());
-            for (DocumentFile file : src.listFiles()) {
-                if (file.isDirectory()) {
-                    if (!copyDir(resolver, file, dir)) {
-                        return false;
-                    }
-                } else if (!copyFile(resolver, file, dir)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private static void closeStream(Closeable... stream) {

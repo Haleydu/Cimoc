@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.DownloadView;
+import com.hiroshi.cimoc.utils.ComicUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                             @Override
                             public Comic call() throws Exception {
                                 Comic comic = mComicManager.load(id);
-                                mTaskManager.delete(id);
+                                mTaskManager.deleteByComicId(id);
                                 comic.setDownload(null);
                                 mComicManager.updateOrDelete(comic);
                                 return comic;
@@ -148,10 +149,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 .doOnNext(new Action1<List<Task>>() {
                     @Override
                     public void call(List<Task> list) {
-                        LongSparseArray<Comic> array = new LongSparseArray<>();
-                        for (Comic comic : mComicManager.listDownload()) {
-                            array.put(comic.getId(), comic);
-                        }
+                        LongSparseArray<Comic> array = ComicUtils.buildDownloadComicMap(mComicManager);
                         for (Task task : list) {
                             Comic comic = array.get(task.getKey());
                             if (comic != null) {

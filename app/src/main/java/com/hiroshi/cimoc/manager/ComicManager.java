@@ -155,7 +155,11 @@ public class ComicManager {
 
     public static ComicManager getInstance(AppGetter getter) {
         if (mInstance == null) {
-            mInstance = new ComicManager(getter);
+            synchronized (ComicManager.class) {
+                if (mInstance == null) {
+                    mInstance = new ComicManager(getter);
+                }
+            }
         }
         return mInstance;
     }

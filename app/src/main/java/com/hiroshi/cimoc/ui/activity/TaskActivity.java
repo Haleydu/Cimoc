@@ -85,7 +85,8 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
-        Intent intent = DetailActivity.createIntent(this, mPresenter.getComic().getId(), -1, null);
+        Intent intent = DetailActivity.createIntent(this, mPresenter.getComic().getId(),
+                mPresenter.getComic().getSource(), mPresenter.getComic().getCid());
         startActivity(intent);
     }
 

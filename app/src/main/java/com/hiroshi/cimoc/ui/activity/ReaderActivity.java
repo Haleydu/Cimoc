@@ -30,7 +30,6 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
@@ -38,8 +37,8 @@ import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
 import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
 import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
 import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnLongPressListener;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeViewController.OnSingleTapListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
+import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -53,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -79,11 +79,16 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected ImagePipelineFactory mImagePipelineFactory;
 
     protected ReaderPresenter mPresenter;
+    protected int mLastDx = 0;
+    protected int mLastDy = 0;
     protected int progress = 1;
     protected int max = 1;
     protected int turn;
     protected int orientation;
     protected int mode;
+
+    protected boolean mLoadPrev;
+    protected boolean mLoadNext;
 
     private boolean mHideInfo;
     private boolean mHideNav;
@@ -128,6 +133,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+        mRecyclerView.setItemViewCacheSize(2);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                mLastDx = dx;
+                mLastDy = dy;
+            }
+        });
     }
 
     @Override
@@ -162,15 +175,17 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mReaderAdapter.setLongPressListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
-        mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
-        mReaderAdapter.setCutWhiteEdgeEnabled(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
+        if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
+            mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
+        }
+        mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
     }
 
     private void initLayoutManager() {
         mLayoutManager = new PreCacheLayoutManager(this);
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setReverseLayout(turn == PreferenceManager.READER_TURN_RTL);
-        mLayoutManager.setExtraSpace(2);
+        mLayoutManager.setExtraSpace(3);
     }
 
     @Override
@@ -284,17 +299,32 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onParseError() {
-        HintUtils.showToast(this, R.string.common_parse_error);
+    public void onPicturePaging(ImageUrl image, Semaphore sem) {
+        int pos = mReaderAdapter.getPositionById(image.getId());
+        int cur = getCurPosition();
+        if (pos > cur) {
+            image.setState(ImageUrl.STATE_PAGE_1);
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_2, false));
+        } else if (pos < cur) {
+            image.setState(ImageUrl.STATE_PAGE_2);
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_1, false));
+        } else if (mLastDx > 0 || mLastDy > 0) {
+            image.setState(ImageUrl.STATE_PAGE_2);
+            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_1, false));
+        } else {
+            image.setState(ImageUrl.STATE_PAGE_1);
+            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
+                    image.getChapter(), ImageUrl.STATE_PAGE_2, false));
+        }
+        sem.release();
     }
 
     @Override
-    public void onPicturePaging(int id) {
-        Pair<Integer, ImageUrl> pair = mReaderAdapter.getImageUrlById(id);
-        if (pair != null) {
-            ImageUrl image = pair.second;
-            mReaderAdapter.add(pair.first + 1, new ImageUrl(image.getNum(), image.getUrl(), false, ImageUrl.STATE_PAGE_2));
-        }
+    public void onParseError() {
+        HintUtils.showToast(this, R.string.common_parse_error);
     }
 
     @Override
@@ -461,19 +491,37 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             case ClickEvents.EVENT_SWITCH_CONTROL:
                 switchControl();
                 break;
+            case ClickEvents.EVENT_RELOAD_IMAGE:
+                reloadImage();
+                break;
         }
     }
+
+    protected abstract int getCurPosition();
 
     protected abstract void prevPage();
 
     protected abstract void nextPage();
 
-    protected void savePicture() {
-        int position = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+    protected void reloadImage() {
+        int position = getCurPosition();
         if (position == -1) {
             position = mLayoutManager.findFirstVisibleItemPosition();
         }
-        String[] urls = mReaderAdapter.getItem(position).getUrl();
+        ImageUrl image = mReaderAdapter.getItem(position);
+        String rawUrl = image.getUrl();
+        String postUrl = StringUtils.format("%s-post-%d", image.getUrl(), image.getId());
+        mImagePipelineFactory.getImagePipeline().evictFromCache(Uri.parse(rawUrl));
+        mImagePipelineFactory.getImagePipeline().evictFromCache(Uri.parse(postUrl));
+        mReaderAdapter.notifyItemChanged(position);
+    }
+
+    protected void savePicture() {
+        int position = getCurPosition();
+        if (position == -1) {
+            position = mLayoutManager.findFirstVisibleItemPosition();
+        }
+        String[] urls = mReaderAdapter.getItem(position).getUrls();
         try {
             String title = mChapterTitle.getText().toString();
             for (String url : urls) {

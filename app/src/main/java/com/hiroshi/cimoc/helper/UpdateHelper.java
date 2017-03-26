@@ -26,7 +26,7 @@ import java.util.List;
 public class UpdateHelper {
 
     // 1.04.06.000
-    private static final int VERSION = 10406000;
+    private static final int VERSION = 10407000;
 
     public static void update(PreferenceManager manager, DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);

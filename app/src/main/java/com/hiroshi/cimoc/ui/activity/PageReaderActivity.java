@@ -19,18 +19,16 @@ import java.util.List;
  */
 public class PageReaderActivity extends ReaderActivity implements OnPageChangedListener {
 
-    private boolean loadNext = true;
-    private boolean loadPrev = true;
-
     @Override
     protected void initView() {
         super.initView();
-        loadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true);
-        loadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true);
+        mLoadPrev = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true);
+        mLoadNext = mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true);
         int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 10);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
-        ((RecyclerViewPager) mRecyclerView).addOnPageChangedListener(this);
+        ((RecyclerViewPager) mRecyclerView).setOnPageChangedListener(this);
+        mRecyclerView.setItemAnimator(null);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -45,24 +43,29 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
 
     @Override
     public void OnPageChanged(int oldPosition, int newPosition) {
-        if (oldPosition == newPosition) {
+        if (oldPosition < 0 || newPosition < 0) {
             return;
         }
 
-        if (loadPrev && newPosition == 0) {
+        if (mLoadPrev && newPosition == 0) {
             mPresenter.loadPrev();
         }
-        if (loadNext && newPosition == mReaderAdapter.getItemCount() - 1) {
+        if (mLoadNext && newPosition == mReaderAdapter.getItemCount() - 1) {
             mPresenter.loadNext();
         }
 
-        int offset = newPosition - oldPosition;
-        if (oldPosition != -1 && offset > 0 && offset > max - progress) {
-            mPresenter.toNextChapter();
-        } else if (oldPosition != -1 && offset < 0 && -offset > progress - 1) {
-            mPresenter.toPrevChapter();
+        ImageUrl newImage = mReaderAdapter.getItem(newPosition);
+        ImageUrl oldImage = mReaderAdapter.getItem(oldPosition);
+
+        if (!oldImage.getChapter().equals(newImage.getChapter())) {
+            if (newPosition > oldPosition) {
+                mPresenter.toNextChapter();
+            } else if (newPosition < oldPosition) {
+                mPresenter.toPrevChapter();
+            }
         }
-        progress = mReaderAdapter.getItem(newPosition).getNum();
+
+        progress = newImage.getNum();
         updateProgress();
     }
 
@@ -76,7 +79,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
         if (fromUser) {
-            int current = ((RecyclerViewPager) mRecyclerView).getCurrentPosition() + value - progress;
+            int current = getCurPosition() + value - progress;
             int pos = mReaderAdapter.getPositionByNum(current, value, value < progress);
             mRecyclerView.scrollToPosition(pos);
         }
@@ -85,23 +88,28 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
     @Override
     protected void prevPage() {
         hideControl();
-        int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
+        int position = getCurPosition();
         if (position == 0) {
             mPresenter.loadPrev();
         } else {
-            mRecyclerView.scrollToPosition(position - 1);
+            mRecyclerView.smoothScrollToPosition(position - 1);
         }
     }
 
     @Override
     protected void nextPage() {
         hideControl();
-        int position = ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
+        int position = getCurPosition();
         if (position == mReaderAdapter.getItemCount() - 1) {
             mPresenter.loadNext();
         } else {
-            mRecyclerView.scrollToPosition(position + 1);
+            mRecyclerView.smoothScrollToPosition(position + 1);
         }
+    }
+
+    @Override
+    protected int getCurPosition() {
+        return ((RecyclerViewPager) mRecyclerView).getCurrentPosition();
     }
 
     @Override

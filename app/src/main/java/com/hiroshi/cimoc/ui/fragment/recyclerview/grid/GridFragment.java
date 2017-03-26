@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
 import android.content.Intent;
+import android.support.annotation.ColorRes;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -83,6 +85,11 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     @Override
     public void onComicLoadFail() {
         HintUtils.showToast(getActivity(), R.string.common_data_load_fail);
+    }
+
+    @Override
+    public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
+        mActionButton.setBackgroundTintList(ContextCompat.getColorStateList(getActivity(), accent));
     }
 
     protected abstract void performActionButtonClick();

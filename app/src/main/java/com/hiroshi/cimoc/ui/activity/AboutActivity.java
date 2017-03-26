@@ -60,7 +60,6 @@ public class AboutActivity extends BackActivity implements AboutView {
         try {
             startActivity(intent);
         } catch (Exception e) {
-            e.printStackTrace();
             showSnackbar(R.string.about_resource_fail);
         }
     }
@@ -68,7 +67,11 @@ public class AboutActivity extends BackActivity implements AboutView {
     @OnClick(R.id.about_update_btn) void onUpdateClick() {
         if (update) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
-            startActivity(intent);
+            try {
+                startActivity(intent);
+            } catch (Exception e) {
+                showSnackbar(R.string.about_resource_fail);
+            }
         } else if (!checking) {
             try {
                 PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);

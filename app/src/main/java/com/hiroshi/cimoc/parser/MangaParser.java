@@ -14,8 +14,8 @@ import okhttp3.Request;
 public abstract class MangaParser implements Parser {
 
     protected String[] mServer;
+    protected String mTitle;
     private Category mCategory;
-    private String mTitle;
 
     protected void init(Source source, Category category) {
         if (source.getServer() != null) {

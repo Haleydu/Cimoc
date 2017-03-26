@@ -18,6 +18,7 @@
     <string name="main_permission_content">下载、备份还原与保存图片功能需要访问SD卡的权限！\n请在之后的弹出框中确定授予权限！</string>
     <string name="main_permission_success">授权成功</string>
     <string name="main_permission_fail">授权失败</string>
+    <string name="main_ready_update">检测到新版本</string>
     
     <string name="search_menu_source">图源</string>
     <string name="search_keyword_empty">关键字为空</string>
@@ -130,7 +131,7 @@
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
     <string name="settings_reader_paging">自动切割大图</string>
-    <string name="settings_reader_paging_summary">阅读状态自动切割大图</string>
+    <string name="settings_reader_paging_summary">阅读状态下自动切割大图</string>
     <string name="settings_download">下载设置</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_delete">删除无效漫画</string>
@@ -242,6 +243,7 @@
     <string name="event_switch_screen">切换屏幕方向</string>
     <string name="event_switch_mode">切换阅读模式</string>
     <string name="event_switch_control">显示/隐藏进度条</string>
+    <string name="event_reload_image">重新加载图片</string>
 
     <string name="common_data_load_fail">读取数据失败</string>
     <string name="common_network_error">网络错误</string>

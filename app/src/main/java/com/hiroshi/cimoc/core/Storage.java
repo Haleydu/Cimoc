@@ -4,9 +4,10 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.provider.DocumentFile;
 
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DocumentUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,17 +44,51 @@ public class Storage {
         }
     }
 
-    private static boolean copyDir(ContentResolver resolver, DocumentFile src, DocumentFile dst, String name) {
-        DocumentFile file = src.findFile(name);
-        if (file != null && file.isDirectory()) {
-            return DocumentUtils.copyDir(resolver, file, dst);
+    private static boolean copyFile(ContentResolver resolver, DocumentFile src,
+                                    DocumentFile parent, Subscriber<? super String> subscriber) {
+        DocumentFile file = DocumentUtils.getOrCreateFile(parent, src.getName());
+        if (file != null) {
+            subscriber.onNext(StringUtils.format("正在移动 %s...", src.getUri().getLastPathSegment()));
+            try {
+                DocumentUtils.writeBinaryToFile(resolver, src, file);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private static boolean copyDir(ContentResolver resolver, DocumentFile src,
+                                   DocumentFile parent, Subscriber<? super String> subscriber) {
+        if (src.isDirectory()) {
+            DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(parent, src.getName());
+            for (DocumentFile file : src.listFiles()) {
+                if (file.isDirectory()) {
+                    if (!copyDir(resolver, file, dir, subscriber)) {
+                        return false;
+                    }
+                } else if (!copyFile(resolver, file, dir, subscriber)) {
+                    return false;
+                }
+            }
         }
         return true;
     }
 
-    private static void deleteDir(DocumentFile parent, String name) {
+    private static boolean copyDir(ContentResolver resolver, DocumentFile src,
+                                   DocumentFile dst, String name, Subscriber<? super String> subscriber) {
+        DocumentFile file = src.findFile(name);
+        if (file != null && file.isDirectory()) {
+            return copyDir(resolver, file, dst, subscriber);
+        }
+        return true;
+    }
+
+    private static void deleteDir(DocumentFile parent, String name, Subscriber<? super String> subscriber) {
         DocumentFile file = parent.findFile(name);
         if (file != null && file.isDirectory()) {
+            subscriber.onNext(StringUtils.format("正在删除 %s", file.getUri().getLastPathSegment()));
             file.delete();
         }
     }
@@ -67,22 +102,15 @@ public class Storage {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                if (dst.canWrite()) {
-                    if (!isDirSame(root, dst)) {
-                        subscriber.onNext("正在移动备份文件");
-                        if (copyDir(resolver, root, dst, BACKUP)) {
-                            subscriber.onNext("正在移动下载文件");
-                            if (copyDir(resolver, root, dst, DOWNLOAD)) {
-                                subscriber.onNext("正在移动截图文件");
-                                if (copyDir(resolver, root, dst, PICTURE)) {
-                                    subscriber.onNext("正在删除原文件");
-                                    deleteDir(root, BACKUP);
-                                    deleteDir(root, DOWNLOAD);
-                                    deleteDir(root, PICTURE);
-                                    subscriber.onCompleted();
-                                }
-                            }
-                        }
+                if (dst.canRead() && !isDirSame(root, dst)) {
+                    root.refresh();
+                    if (copyDir(resolver, root, dst, BACKUP, subscriber) &&
+                            copyDir(resolver, root, dst, DOWNLOAD, subscriber) &&
+                            copyDir(resolver, root, dst, PICTURE, subscriber)) {
+                        deleteDir(root, BACKUP, subscriber);
+                        deleteDir(root, DOWNLOAD, subscriber);
+                        deleteDir(root, PICTURE, subscriber);
+                        subscriber.onCompleted();
                     }
                 }
                 subscriber.onError(new Exception());
@@ -98,7 +126,7 @@ public class Storage {
                 try {
                     DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
                     if (dir != null) {
-                        DocumentFile file = dir.createFile("", filename);
+                        DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
                         DocumentUtils.writeBinaryToFile(resolver, file, stream);
                         subscriber.onNext(file.getUri().toString());
                         subscriber.onCompleted();

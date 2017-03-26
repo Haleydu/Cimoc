@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -89,6 +90,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
+        checkUpdate();
         if (!showAuthorNotice()) {
             showPermission();
         }
@@ -128,10 +130,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void initFragment() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
         switch (home) {
             default:
-            case PreferenceManager.HOME_COMIC:
+            case PreferenceManager.HOME_FAVORITE:
+            case PreferenceManager.HOME_HISTORY:
+            case PreferenceManager.HOME_DOWNLOAD:
                 mCheckItem = R.id.drawer_comic;
                 break;
             case PreferenceManager.HOME_SOURCE:
@@ -278,6 +282,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
+    public void onUpdateReady() {
+        HintUtils.showToast(this, R.string.main_ready_update);
+    }
+
+    @Override
     public void onLastLoadSuccess(int source, String cid, String title, String cover) {
         onLastChange(source, cid, title,cover);
     }
@@ -335,13 +344,29 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         }
     }
 
+    private void checkUpdate() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            mPresenter.checkUpdate(info.versionName);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected String getDefaultTitle() {
-        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_COMIC);
-        if (home < 0 || home > 2) {
-            home = PreferenceManager.HOME_COMIC;
+        int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
+        switch (home) {
+            default:
+            case PreferenceManager.HOME_FAVORITE:
+            case PreferenceManager.HOME_HISTORY:
+            case PreferenceManager.HOME_DOWNLOAD:
+                return getString(R.string.drawer_comic);
+            case PreferenceManager.HOME_SOURCE:
+                return getString(R.string.drawer_source);
+            case PreferenceManager.HOME_TAG:
+                return getString(R.string.drawer_tag);
         }
-        return getResources().getStringArray(R.array.launch_items)[home];
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
-import android.support.v4.provider.DocumentFile;
 import android.support.v7.widget.RecyclerView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -14,6 +13,7 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;

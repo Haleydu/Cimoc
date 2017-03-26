@@ -1,11 +1,11 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
-import android.support.v4.provider.DocumentFile;
 
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Tag;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -92,7 +92,7 @@ public class Backup {
                 JSONObject result = new JSONObject();
                 result.put(JSON_KEY_VERSION, 1);
                 result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
-                DocumentFile file = DocumentUtils.createFile(dir, "automatic.".concat(SUFFIX_CFBF));
+                DocumentFile file = DocumentUtils.getOrCreateFile(dir, "automatic.".concat(SUFFIX_CFBF));
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -108,7 +108,7 @@ public class Backup {
                 result.put(JSON_KEY_VERSION, 1);
                 result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
                 String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CFBF);
-                DocumentFile file = DocumentUtils.createFile(dir, filename);
+                DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
                 return list.size();
             } catch (Exception e) {
@@ -127,7 +127,7 @@ public class Backup {
                 result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
                 result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
                 String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
-                DocumentFile file = DocumentUtils.createFile(dir, filename);
+                DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
                 return list.size();
             } catch (Exception e) {

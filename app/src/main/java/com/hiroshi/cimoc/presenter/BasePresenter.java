@@ -27,7 +27,12 @@ public abstract class BasePresenter<T extends BaseView> {
     protected void initSubscription() {}
 
     protected void addSubscription(@RxEvent.EventType int type, Action1<RxEvent> action) {
-        mCompositeSubscription.add(RxBus.getInstance().toObservable(type).subscribe(action));
+        mCompositeSubscription.add(RxBus.getInstance().toObservable(type).subscribe(action, new Action1<Throwable>() {
+            @Override
+            public void call(Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }));
     }
 
     public void detachView() {

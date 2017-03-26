@@ -12,7 +12,6 @@ public class MiniComic {
     private String cover;
     private Boolean finish;
     private boolean highlight;
-    private Long favorite;
 
     public MiniComic(Comic comic) {
         this.id = comic.getId();
@@ -22,7 +21,6 @@ public class MiniComic {
         this.cover = comic.getCover();
         this.finish = comic.getFinish();
         this.highlight = comic.getHighlight();
-        this.favorite = comic.getFavorite();
     }
 
     @Override
@@ -33,17 +31,6 @@ public class MiniComic {
     @Override
     public int hashCode() {
         return id == null ? super.hashCode() : id.hashCode();
-    }
-
-    public Long getFavorite() {
-        if (favorite == null) {
-            return 0L;
-        }
-        return favorite;
-    }
-
-    public void setFavorite(long favorite) {
-        this.favorite = favorite;
     }
 
     public Boolean isFinish() {
