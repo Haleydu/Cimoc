@@ -4,6 +4,8 @@
     <string name="drawer_comic">漫画</string>
     <string name="drawer_source">图源</string>
     <string name="drawer_tag">标签</string>
+    <string name="drawer_local">本地</string>
+    <string name="drawer_picture">截图</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
     <string name="drawer_light">日间模式</string>
@@ -195,6 +197,9 @@
     <string name="dialog_negative">取消</string>
     <string name="dialog_doing">正在执行中</string>
 
+    <string name="local_add">添加目录</string>
+    <string name="local_delete_confirm">是否删除目录（不会删除文件）</string>
+
     <string name="tag_add">添加标签</string>
     <string name="tag_add_empty">标签名称不能为空</string>
     <string name="tag_delete_confirm">是否删除标签</string>
@@ -231,19 +236,6 @@
     <string name="dir_picker_parent">&lt; 返回上层目录 &gt;</string>
 
     <string name="event_select">事件选择</string>
-    <string name="event_null">无</string>
-    <string name="event_prev_page">上一页</string>
-    <string name="event_next_page">下一页</string>
-    <string name="event_save_picture">保存图片</string>
-    <string name="event_load_prev">加载上一章</string>
-    <string name="event_load_next">加载下一章</string>
-    <string name="event_exit_reader">退出阅读器</string>
-    <string name="event_to_first">跳到第一页</string>
-    <string name="event_to_last">跳到最后一页</string>
-    <string name="event_switch_screen">切换屏幕方向</string>
-    <string name="event_switch_mode">切换阅读模式</string>
-    <string name="event_switch_control">显示/隐藏进度条</string>
-    <string name="event_reload_image">重新加载图片</string>
 
     <string name="common_data_load_fail">读取数据失败</string>
     <string name="common_network_error">网络错误</string>

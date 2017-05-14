@@ -8,7 +8,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Tag;
 
 import java.util.List;

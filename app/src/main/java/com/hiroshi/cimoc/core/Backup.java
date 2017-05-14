@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.core;
 import android.content.ContentResolver;
 
 import com.hiroshi.cimoc.model.Comic;
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DocumentUtils;

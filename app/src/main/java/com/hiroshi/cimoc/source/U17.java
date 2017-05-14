@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.source;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -118,7 +118,7 @@ public class U17 extends MangaParser {
             JSONArray array = object.getJSONArray("image_list");
             for (int i = 0; i < array.length(); ++i) {
                 String url = array.getJSONObject(i).getString("src");
-                list.add(new ImageUrl(i, url, false));
+                list.add(new ImageUrl(i + 1, url, false));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -384,7 +384,6 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
         if (mImageInfoWidth == -1 && mImageInfoHeight == -1) {
             return null;
         }
-        mDisplayRect.set(0.0F, 0.0F, mImageInfoWidth, mImageInfoHeight);
         getHierarchy().getActualImageBounds(mDisplayRect);
         matrix.mapRect(mDisplayRect);
         return mDisplayRect;

@@ -61,10 +61,28 @@ public class StreamReaderActivity extends ReaderActivity {
                     ImageUrl oldImage = mReaderAdapter.getItem(mLastPosition);
 
                     if (!oldImage.getChapter().equals(newImage.getChapter())) {
-                        if (dx > 0 || dy > 0) {
-                            mPresenter.toNextChapter();
-                        } else if (dx < 0 || dy < 0) {
-                            mPresenter.toPrevChapter();
+                        switch (turn) {
+                            case PreferenceManager.READER_TURN_ATB:
+                                if (dy > 0) {
+                                    mPresenter.toNextChapter();
+                                } else if (dy < 0) {
+                                    mPresenter.toPrevChapter();
+                                }
+                                break;
+                            case PreferenceManager.READER_TURN_LTR:
+                                if (dx > 0) {
+                                    mPresenter.toNextChapter();
+                                } else if (dx < 0) {
+                                    mPresenter.toPrevChapter();
+                                }
+                                break;
+                            case PreferenceManager.READER_TURN_RTL:
+                                if (dx > 0) {
+                                    mPresenter.toPrevChapter();
+                                } else if (dx < 0) {
+                                    mPresenter.toNextChapter();
+                                }
+                                break;
                         }
                     }
                     progress = mReaderAdapter.getItem(target).getNum();

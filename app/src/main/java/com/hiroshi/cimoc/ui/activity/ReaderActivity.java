@@ -90,6 +90,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected boolean mLoadPrev;
     protected boolean mLoadNext;
 
+    private boolean isSavingPicture = false;
+
     private boolean mHideInfo;
     private boolean mHideNav;
     private int[] mClickArray;
@@ -375,11 +377,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                     @Override
                     public void onScanCompleted(String path, Uri uri) {}
                 });
+        isSavingPicture = false;
         HintUtils.showToast(this, R.string.reader_picture_save_success);
     }
 
     @Override
     public void onPictureSaveFail() {
+        isSavingPicture = false;
         HintUtils.showToast(this, R.string.reader_picture_save_fail);
     }
 
@@ -494,6 +498,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             case ClickEvents.EVENT_RELOAD_IMAGE:
                 reloadImage();
                 break;
+            case ClickEvents.EVENT_SWITCH_NIGHT:
+                switchNight();
+                break;
         }
     }
 
@@ -502,6 +509,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected abstract void prevPage();
 
     protected abstract void nextPage();
+
+    protected void switchNight() {
+        boolean night = !mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
+        mPreference.putBoolean(PreferenceManager.PREF_NIGHT, night);
+        if (mNightMask != null) {
+            mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
 
     protected void reloadImage() {
         int position = getCurPosition();
@@ -517,6 +532,11 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     protected void savePicture() {
+        if (isSavingPicture) {
+            return;
+        }
+        isSavingPicture = true;
+
         int position = getCurPosition();
         if (position == -1) {
             position = mLayoutManager.findFirstVisibleItemPosition();
@@ -527,22 +547,22 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             for (String url : urls) {
                 if (url.startsWith("file")) {
                     mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url, title, progress);
-                    break;
+                    return;
                 } else if (url.startsWith("content")) {
                     mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url, title, progress);
-                    break;
+                    return;
                 } else {
                     BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {
                         mPresenter.savePicture(resource.openStream(), url, title, progress);
-                        break;
+                        return;
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            HintUtils.showToast(this, R.string.reader_picture_save_fail);
         }
+        onPictureSaveFail();
     }
 
     protected void loadPrev() {

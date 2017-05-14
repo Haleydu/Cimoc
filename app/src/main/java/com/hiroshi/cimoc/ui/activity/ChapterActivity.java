@@ -16,7 +16,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
 import com.hiroshi.cimoc.utils.PermissionUtils;

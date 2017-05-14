@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.model;
+package com.hiroshi.cimoc.misc;
 
 /**
  * Created by Hiroshi on 2016/12/1.

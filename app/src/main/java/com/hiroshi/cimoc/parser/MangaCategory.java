@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.parser;
 
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 
 import java.util.List;
 
