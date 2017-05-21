@@ -25,6 +25,7 @@ import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.GridFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.HistoryFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.LocalFragment;
 import com.hiroshi.cimoc.ui.view.ComicView;
 import com.hiroshi.cimoc.utils.HintUtils;
 
@@ -61,10 +62,11 @@ public class ComicFragment extends BaseFragment implements ComicView {
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_history));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_favorite));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_download));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_local));
         mTabAdapter = new TabPagerAdapter(getFragmentManager(),
-                new GridFragment[]{ new HistoryFragment(), new FavoriteFragment(), new DownloadFragment() },
-                new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download) });
-        mViewPager.setOffscreenPageLimit(3);
+                new GridFragment[]{ new HistoryFragment(), new FavoriteFragment(), new DownloadFragment(), new LocalFragment() },
+                new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download), getString(R.string.comic_tab_local) });
+        mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(mTabAdapter);
         int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
         switch (home) {
@@ -77,6 +79,9 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 break;
             case PreferenceManager.HOME_DOWNLOAD:
                 mViewPager.setCurrentItem(2);
+                break;
+            case PreferenceManager.HOME_LOCAL:
+                mViewPager.setCurrentItem(3);
                 break;
         }
         mTabLayout.setupWithViewPager(mViewPager);

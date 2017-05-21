@@ -4,7 +4,6 @@
     <string name="drawer_comic">漫画</string>
     <string name="drawer_source">图源</string>
     <string name="drawer_tag">标签</string>
-    <string name="drawer_local">本地</string>
     <string name="drawer_picture">截图</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
@@ -60,6 +59,7 @@
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>
+    <string name="comic_tab_local">本地</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
     <string name="comic_load_tag_fail">读取标签失败</string>

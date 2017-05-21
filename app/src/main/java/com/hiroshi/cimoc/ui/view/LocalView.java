@@ -1,7 +1,7 @@
 package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.component.DialogCaller;
-import com.hiroshi.cimoc.model.Local;
+import com.hiroshi.cimoc.model.Comic;
 
 import java.util.List;
 
@@ -9,16 +9,14 @@ import java.util.List;
  * Created by Hiroshi on 2017/5/14.
  */
 
-public interface LocalView extends BaseView, DialogCaller {
+public interface LocalView extends GridView, DialogCaller {
 
-    void onDataLoadSuccess(List<Local> list);
+    void onLocalDeleteSuccess(long id);
 
-    void onDataLoadFail();
+    void onLocalDeleteFail();
 
-    void onDataDeleteSuccess();
+    void onLocalAddSuccess(List<Comic> list);
 
-    void onDataDeleteFail();
-
-    void onLocalAddSuccess();
+    void onLocalAddFail();
 
 }

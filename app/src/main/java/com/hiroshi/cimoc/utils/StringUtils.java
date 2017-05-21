@@ -11,6 +11,17 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
+    public static boolean endWith(String str, String... args) {
+        if (str != null) {
+            for (String arg : args) {
+                if (str.endsWith(arg)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static String filter(String str) {
         if (str == null) {
             return null;

@@ -115,15 +115,14 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case DIALOG_REQUEST_OTHER_STORAGE:
+                    showProgressDialog();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        showProgressDialog();
                         Uri uri = data.getData();
                         int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         getContentResolver().takePersistableUriPermission(uri, flags);
                         mTempStorage = uri.toString();
                         mPresenter.moveFiles(DocumentFile.fromTreeUri(this, uri));
                     } else {
-                        showProgressDialog();
                         String path = data.getStringExtra(Extra.EXTRA_PICKER_PATH);
                         if (!StringUtils.isEmpty(path)) {
                             DocumentFile file = DocumentFile.fromFile(new File(path));

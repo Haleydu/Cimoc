@@ -23,6 +23,7 @@ public class PreferenceManager {
     public static final int HOME_TAG = 2;
     public static final int HOME_HISTORY = 3;
     public static final int HOME_DOWNLOAD = 4;
+    public static final int HOME_LOCAL = 5;
 
     public static final String PREF_APP_VERSION = "pref_app_version";
 

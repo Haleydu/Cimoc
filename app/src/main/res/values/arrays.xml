@@ -6,6 +6,7 @@
         <item>标签</item>
         <item>历史</item>
         <item>下载</item>
+        <item>本地</item>
     </string-array>
     <string-array name="reader_mode_items">
         <item>翻页模式</item>
