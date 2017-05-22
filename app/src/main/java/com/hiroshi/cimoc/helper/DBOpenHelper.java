@@ -49,7 +49,20 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 TagRefDao.createTable(db, false);
             case 7:
                 updateSource(db);
+            case 8:
+                updateLocal(db);
         }
+    }
+
+    private void updateLocal(Database db) {
+        db.beginTransaction();
+        db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
+        ComicDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("DROP TABLE \"COMIC2\"");
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     private void updateSource(Database db) {

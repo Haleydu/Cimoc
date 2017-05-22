@@ -6,28 +6,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.LocalPresenter;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.activity.DirPickerActivity;
 import com.hiroshi.cimoc.ui.activity.TaskActivity;
-import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
-import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.LocalView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +32,7 @@ import java.util.List;
 public class LocalFragment extends GridFragment implements LocalView {
 
     private static final int DIALOG_REQUEST_DELETE = 0;
-    private static final int DIALOG_REQUEST_ADD = 1;
+    private static final int DIALOG_REQUEST_SCAN = 1;
 
     private LocalPresenter mPresenter;
     private long mSavedId = -1;
@@ -59,21 +54,22 @@ public class LocalFragment extends GridFragment implements LocalView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                getActivity().startActivityForResult(intent, DIALOG_REQUEST_ADD);
+                getActivity().startActivityForResult(intent, DIALOG_REQUEST_SCAN);
             } catch (ActivityNotFoundException e) {
                 HintUtils.showToast(getActivity(), R.string.settings_other_storage_not_found);
             }
         } else {
             Intent intent = new Intent(getActivity(), DirPickerActivity.class);
-            getActivity().startActivityForResult(intent, DIALOG_REQUEST_ADD);
+            startActivityForResult(intent, DIALOG_REQUEST_SCAN);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-                case DIALOG_REQUEST_ADD:
+                case DIALOG_REQUEST_SCAN:
                     showProgressDialog();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Uri uri = data.getData();
@@ -85,7 +81,7 @@ public class LocalFragment extends GridFragment implements LocalView {
                         if (!StringUtils.isEmpty(path)) {
                             mPresenter.scan(DocumentFile.fromFile(new File(path)));
                         } else {
-                            // onExecuteFail();
+                            onExecuteFail();
                         }
                     }
                     break;
@@ -125,18 +121,13 @@ public class LocalFragment extends GridFragment implements LocalView {
     }
 
     @Override
-    public void onLocalDeleteFail() {
+    public void onLocalScanSuccess(List<MiniComic> list) {
         hideProgressDialog();
-        HintUtils.showToast(getActivity(), R.string.common_execute_fail);
+        mGridAdapter.addAll(list);
     }
 
     @Override
-    public void onLocalAddSuccess(List<Comic> list) {
-        hideProgressDialog();
-    }
-
-    @Override
-    public void onLocalAddFail() {
+    public void onExecuteFail() {
         hideProgressDialog();
         HintUtils.showToast(getActivity(), R.string.common_execute_fail);
     }

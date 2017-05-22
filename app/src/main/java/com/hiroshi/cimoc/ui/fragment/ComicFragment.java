@@ -112,6 +112,13 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        for (int i = 0; i < mTabAdapter.getCount(); ++i) {
+            mTabAdapter.getItem(i).onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_FILTER:
@@ -147,7 +154,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
         mTabLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < mTabAdapter.getCount(); ++i) {
             ((ThemeResponsive) mTabAdapter.getItem(i)).onThemeChange(primary, accent);
         }
     }

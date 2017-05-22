@@ -343,7 +343,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     @Override
     public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source) {
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader());
+        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader(), false);
         mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
         mReaderAdapter.addAll(list);
         if (progress != 1) {

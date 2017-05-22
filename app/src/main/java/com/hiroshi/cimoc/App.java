@@ -83,7 +83,7 @@ public class App extends Application implements AppGetter {
 
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
-            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(), SourceManager.getInstance(this).new HeaderGetter());
+            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(), SourceManager.getInstance(this).new HeaderGetter(), true);
         }
         return mBuilderProvider;
     }

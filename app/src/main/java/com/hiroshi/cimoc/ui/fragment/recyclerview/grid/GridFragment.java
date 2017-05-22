@@ -65,7 +65,8 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     }
 
     @OnClick(R.id.grid_action_button) void onActionButtonClick() {
-        if (!mGridAdapter.getDateSet().isEmpty()) {
+        if (getActionButtonRes() == R.drawable.ic_add_white_24dp ||
+                !mGridAdapter.getDateSet().isEmpty()) {
             performActionButtonClick();
         }
     }
@@ -85,6 +86,12 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     @Override
     public void onComicLoadFail() {
         HintUtils.showToast(getActivity(), R.string.common_data_load_fail);
+    }
+
+    @Override
+    public void onExecuteFail() {
+        hideProgressDialog();
+        HintUtils.showToast(getActivity(), R.string.common_execute_fail);
     }
 
     @Override

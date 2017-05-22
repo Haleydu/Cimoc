@@ -23,6 +23,16 @@ import rx.schedulers.Schedulers;
 
 public class Local {
 
+    private static class ScanInfo {
+        DocumentFile dir = null;
+        String cover = null;
+        int count = 0;
+
+        ScanInfo(DocumentFile dir) {
+            this.dir = dir;
+        }
+    }
+
     private static Pattern chapterPattern = null;
 
     public static Observable<List<Pair<Comic, ArrayList<Task>>>> scan(final DocumentFile root) {
@@ -31,10 +41,11 @@ public class Local {
             public void call(Subscriber<? super List<Pair<Comic, ArrayList<Task>>>> subscriber) {
                 List<Pair<Comic, ArrayList<Task>>> result = new ArrayList<>();
 
-                int count = countPicture(root.listFiles());
-                if (count > 5) {
-                    Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(root), new ArrayList<Task>());
-                    pair.second.add(buildTask(root, count, true));
+                ScanInfo info = new ScanInfo(root);
+                countPicture(info);
+                if (info.count > 5) {
+                    Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(info.dir, info.cover), new ArrayList<Task>());
+                    pair.second.add(buildTask(info.dir, info.count, true));
                     result.add(pair);
                 } else {
                     List<DocumentFile> list = new LinkedList<>();
@@ -42,22 +53,20 @@ public class Local {
 
                     while (!list.isEmpty()) {
                         DocumentFile dir = list.get(0);
-                        DocumentFile[] files = dir.listFiles();
 
-                        List<Pair<DocumentFile, Integer>> guessChapter = new LinkedList<>();
-                        List<Pair<DocumentFile, Integer>> guessComic = new LinkedList<>();
-                        List<DocumentFile> guessOther = classify(guessChapter, guessComic, files);
+                        List<ScanInfo> guessChapter = new LinkedList<>();
+                        List<ScanInfo> guessComic = new LinkedList<>();
+                        List<DocumentFile> guessOther = classify(guessChapter, guessComic, dir);
 
-                        if (guessChapter.size() + guessComic.size() > files.length / 2) {   // 章节 或 单章节漫画
-                            if (guessChapter.size() > 2 * guessComic.size()) {  // 章节
-                                result.add(merge(dir, guessChapter, guessComic));
-                                continue;
-                            } else {    // 单章节漫画
-                                split(guessChapter, result);
-                                split(guessComic, result);
-                            }
+                        if (guessChapter.size() > 2 * guessComic.size()) {  // 章节
+                            result.add(merge(dir, guessChapter, guessComic));
+                        } else {    // 单章节漫画
+                            split(guessChapter, result);
+                            split(guessComic, result);
+                            list.addAll(guessOther);
                         }
-                        list.addAll(guessOther);
+
+                        list.remove(0);
                     }
                 }
                 subscriber.onNext(result);
@@ -66,34 +75,39 @@ public class Local {
         }).subscribeOn(Schedulers.io());
     }
 
-    private static int countPicture(DocumentFile[] files) {
-        int count = 0;
+    private static void countPicture(ScanInfo info) {
+        String name = null;
         int other = 0;
-        for (DocumentFile file : files) {
+        for (DocumentFile file : info.dir.listFiles()) {
             if (file.isFile() && StringUtils.endWith(file.getName(), "png", "jpg", "jpeg", "bmp")) {
-                ++count;
+                ++info.count;
             } else {
                 ++other;
             }
+            if (name == null || file.getName().compareTo(name) < 0) {
+                name = file.getName();
+                info.cover = file.getUri().toString();
+            }
             if (other > 5) {
-                return 0;
+                info.count = 0;
+                break;
             }
         }
-        return count;
     }
 
-    private static List<DocumentFile> classify(List<Pair<DocumentFile, Integer>> chapter,
-                                              List<Pair<DocumentFile, Integer>> comic,
-                                              DocumentFile[] files) {
+    private static List<DocumentFile> classify(List<ScanInfo> chapter,
+                                              List<ScanInfo> comic,
+                                              DocumentFile dir) {
         List<DocumentFile> other = new LinkedList<>();
-        for (DocumentFile file : files) {
+        for (DocumentFile file : dir.listFiles()) {
             if (file.isDirectory()) {
-                int count = countPicture(files);
-                if (count > 5) {
+                ScanInfo info = new ScanInfo(file);
+                countPicture(info);
+                if (info.count > 5) {
                     if (isNameChapter(file)) {
-                        chapter.add(Pair.create(file, count));
+                        chapter.add(info);
                     } else {
-                        comic.add(Pair.create(file, count));
+                        comic.add(info);
                     }
                 } else {
                     other.add(file);
@@ -103,42 +117,39 @@ public class Local {
         return other;
     }
 
-    private static boolean isNameChapter(DocumentFile file) {   // '第01话 章节标题' 这种判定为假
+    private static boolean isNameChapter(DocumentFile file) {
         if (chapterPattern == null) {
-            chapterPattern = Pattern.compile("^第?\\s*[0-9零一二三四五六七八九十]+\\s*[章话卷回]?");
+            chapterPattern = Pattern.compile("^.{0,5}[0-9]+|[0-9]+.{0,5}$");
         }
         Matcher matcher = chapterPattern.matcher(file.getName());
         return matcher.find() && ((float) matcher.group().length() / file.getName().length() > 0.8);
     }
 
-    private static Comic buildComic(DocumentFile dir) {
-        return new Comic(null, Locality.TYPE, dir.getUri().toString(), dir.getName(), "",
+    private static Comic buildComic(DocumentFile dir, String cover) {
+        return new Comic(null, Locality.TYPE, dir.getUri().toString(), dir.getName(), cover,
                 false, true, null, null, null, null, System.currentTimeMillis(), null, null);
     }
 
     private static Task buildTask(DocumentFile dir, int count, boolean single) {
-        return single ? new Task(null, -1, dir.getUri().toString(), "第一话", count, count) :
+        return single ? new Task(null, -1, dir.getUri().toString(), "第01话", count, count) :
                 new Task(null, -1, dir.getUri().toString(), dir.getName(), count, count);
     }
 
-    private static Pair<Comic, ArrayList<Task>> merge(DocumentFile dir,
-                                                               List<Pair<DocumentFile, Integer>> list1,
-                                                               List<Pair<DocumentFile, Integer>> list2) {
-        Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(dir), new ArrayList<Task>());
-        for (Pair<DocumentFile, Integer> pr : list1) {
-            pair.second.add(buildTask(pr.first, pr.second, false));
+    private static Pair<Comic, ArrayList<Task>> merge(DocumentFile dir, List<ScanInfo> list1, List<ScanInfo> list2) {
+        Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(dir, list1.get(0).cover), new ArrayList<Task>());
+        for (ScanInfo info : list1) {
+            pair.second.add(buildTask(info.dir, info.count, false));
         }
-        for (Pair<DocumentFile, Integer> pr : list2) {
-            pair.second.add(buildTask(pr.first, pr.second, false));
+        for (ScanInfo info : list2) {
+            pair.second.add(buildTask(info.dir, info.count, false));
         }
         return pair;
     }
 
-    private static void split(List<Pair<DocumentFile, Integer>> list,
-                                   List<Pair<Comic, ArrayList<Task>>> result) {
-        for (Pair<DocumentFile, Integer> pr : list) {
-            Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(pr.first), new ArrayList<Task>());
-            pair.second.add(buildTask(pr.first, pr.second, true));
+    private static void split(List<ScanInfo> list, List<Pair<Comic, ArrayList<Task>>> result) {
+        for (ScanInfo info : list) {
+            Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(info.dir, info.cover), new ArrayList<Task>());
+            pair.second.add(buildTask(info.dir, info.count, true));
             result.add(pair);
         }
     }

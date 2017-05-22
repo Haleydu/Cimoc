@@ -231,7 +231,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
-            mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader());
+            mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader(), false);
             mDetailAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
 
             int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;

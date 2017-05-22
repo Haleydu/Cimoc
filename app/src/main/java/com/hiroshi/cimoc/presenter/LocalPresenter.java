@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.TaskManager;
@@ -13,6 +15,7 @@ import com.hiroshi.cimoc.ui.view.LocalView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -57,19 +60,50 @@ public class LocalPresenter extends BasePresenter<LocalView> {
                 }));
     }
 
+    private List<Comic> processScanResult(final List<Pair<Comic, ArrayList<Task>>> pairs) {
+        // TODO 检查重复
+        return mComicManager.callInTx(new Callable<List<Comic>>() {
+            @Override
+            public List<Comic> call() throws Exception {
+                List<Comic> result = new ArrayList<>();
+                for (Pair<Comic, ArrayList<Task>> pr : pairs) {
+                    mComicManager.insert(pr.first);
+
+                    for (Task task : pr.second) {
+                        task.setKey(pr.first.getId());
+                        mTaskManager.insert(task);
+                    }
+                    result.add(pr.first);
+                }
+                return result;
+            }
+        });
+    }
+
     public void scan(DocumentFile doc) {
         mCompositeSubscription.add(Local.scan(doc)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Pair<Comic, ArrayList<Task>>>>() {
+                .map(new Func1<List<Pair<Comic,ArrayList<Task>>>, List<Comic>>() {
                     @Override
-                    public void call(List<Pair<Comic, ArrayList<Task>>> list) {
-                    //    ComicManager.insert(list);
-                    //    mBaseView.onLocalAddSuccess(list);
+                    public List<Comic> call(List<Pair<Comic, ArrayList<Task>>> pairs) {
+                        return processScanResult(pairs);
+                    }
+                })
+                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                    @Override
+                    public MiniComic call(Comic comic) {
+                        return new MiniComic(comic);
+                    }
+                }))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<MiniComic>>() {
+                    @Override
+                    public void call(List<MiniComic> list) {
+                        mBaseView.onLocalScanSuccess(list);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onComicLoadFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
     }
@@ -97,7 +131,7 @@ public class LocalPresenter extends BasePresenter<LocalView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onLocalDeleteFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
     }

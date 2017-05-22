@@ -115,12 +115,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     }
 
     @Override
-    public void onDownloadDeleteFail() {
-        hideProgressDialog();
-        HintUtils.showToast(getActivity(), R.string.common_execute_fail);
-    }
-
-    @Override
     public void onDownloadStart() {
         if (!isDownload) {
             isDownload = true;
@@ -134,12 +128,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             isDownload = false;
             mActionButton.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         }
-    }
-
-    @Override
-    public void onTaskLoadFail() {
-        hideProgressDialog();
-        HintUtils.showToast(getActivity(), R.string.download_task_fail);
     }
 
     @Override

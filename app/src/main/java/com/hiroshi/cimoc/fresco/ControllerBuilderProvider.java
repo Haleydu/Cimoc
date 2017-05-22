@@ -18,18 +18,21 @@ public class ControllerBuilderProvider {
     private SparseArray<PipelineDraweeControllerBuilderSupplier> mSupplierArray;
     private SparseArray<ImagePipeline> mPipelineArray;
     private SourceManager.HeaderGetter mHeaderGetter;
+    private boolean mCover;
 
-    public ControllerBuilderProvider(Context context, SourceManager.HeaderGetter getter) {
+    public ControllerBuilderProvider(Context context, SourceManager.HeaderGetter getter, boolean cover) {
         mSupplierArray = new SparseArray<>();
         mPipelineArray = new SparseArray<>();
         mContext = context;
         mHeaderGetter = getter;
+        mCover = cover;
     }
 
     public PipelineDraweeControllerBuilder get(int type) {
         PipelineDraweeControllerBuilderSupplier supplier = mSupplierArray.get(type);
         if (supplier == null) {
-            ImagePipelineFactory factory = ImagePipelineFactoryBuilder.build(mContext, mHeaderGetter.getHeader(type));
+            ImagePipelineFactory factory = type < 0 ? ImagePipelineFactoryBuilder.build(mContext, mCover) :
+                    ImagePipelineFactoryBuilder.build(mContext, mHeaderGetter.getHeader(type), mCover);
             supplier = ControllerBuilderSupplierFactory.get(mContext, factory);
             mSupplierArray.put(type, supplier);
             mPipelineArray.put(type, factory.getImagePipeline());

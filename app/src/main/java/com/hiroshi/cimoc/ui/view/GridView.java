@@ -16,4 +16,6 @@ public interface GridView extends BaseView, DialogCaller, ThemeResponsive {
 
     void onComicLoadFail();
 
+    void onExecuteFail();
+
 }

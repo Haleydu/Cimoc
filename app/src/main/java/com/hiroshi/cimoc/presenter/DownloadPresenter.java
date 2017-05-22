@@ -104,7 +104,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onDownloadDeleteFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
     }
@@ -169,7 +169,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onTaskLoadFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
     }

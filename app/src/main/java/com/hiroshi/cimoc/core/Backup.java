@@ -222,7 +222,7 @@ public class Backup {
                     Boolean finish = object.has(JSON_CIMOC_KEY_COMIC_FINISH) ? object.getBoolean(JSON_CIMOC_KEY_COMIC_FINISH) : null;
                     String last = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_CIMOC_KEY_COMIC_PAGE) ? object.getInt(JSON_CIMOC_KEY_COMIC_PAGE) : null;
-                    list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
+                    list.add(new Comic(null, source, cid, title, cover, false, false, update, finish, null, null, null, last, page));
                 }
                 break;
             case SUFFIX_CFBF:
@@ -237,7 +237,7 @@ public class Backup {
                     Boolean finish = object.has(JSON_KEY_COMIC_FINISH) ? object.getBoolean(JSON_KEY_COMIC_FINISH) : null;
                     String last = object.optString(JSON_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_KEY_COMIC_PAGE) ? object.getInt(JSON_KEY_COMIC_PAGE) : null;
-                    list.add(new Comic(null, source, cid, title, cover, false, update, finish, null, null, null, last, page));
+                    list.add(new Comic(null, source, cid, title, cover, false, false, update, finish, null, null, null, last, page));
                 }
                 break;
         }

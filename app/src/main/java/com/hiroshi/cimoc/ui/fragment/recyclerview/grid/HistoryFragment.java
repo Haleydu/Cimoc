@@ -75,12 +75,6 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     @Override
-    public void onHistoryClearFail() {
-        hideProgressDialog();
-        HintUtils.showToast(getActivity(), R.string.common_execute_fail);
-    }
-
-    @Override
     public void onItemUpdate(MiniComic comic) {
         mGridAdapter.remove(comic);
         mGridAdapter.add(0, comic);

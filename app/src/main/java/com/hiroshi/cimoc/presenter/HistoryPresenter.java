@@ -89,7 +89,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onHistoryClearFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
     }

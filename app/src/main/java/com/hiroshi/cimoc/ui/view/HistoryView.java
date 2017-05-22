@@ -11,6 +11,4 @@ public interface HistoryView extends GridView {
 
     void onHistoryClearSuccess();
 
-    void onHistoryClearFail();
-
 }

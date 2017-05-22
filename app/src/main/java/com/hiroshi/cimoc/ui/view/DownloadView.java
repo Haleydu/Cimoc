@@ -16,14 +16,10 @@ public interface DownloadView extends GridView {
 
     void onDownloadDeleteSuccess(long id);
 
-    void onDownloadDeleteFail();
-
     void onDownloadStart();
 
     void onDownloadStop();
 
     void onTaskLoadSuccess(ArrayList<Task> list);
-
-    void onTaskLoadFail();
 
 }

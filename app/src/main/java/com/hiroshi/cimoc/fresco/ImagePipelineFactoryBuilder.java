@@ -15,13 +15,22 @@ import okhttp3.OkHttpClient;
  */
 public class ImagePipelineFactoryBuilder {
 
-    public static ImagePipelineFactory build(Context context, Headers header) {
+    public static ImagePipelineFactory build(Context context, Headers header, boolean down) {
         OkHttpClient client = App.getHttpClient();
         ImagePipelineConfig config =
                 OkHttpImagePipelineConfigFactory.newBuilder(context.getApplicationContext(), client, header)
+                        .setDownsampleEnabled(down)
                         .setBitmapsConfig(Bitmap.Config.RGB_565)
                         .build();
         return new ImagePipelineFactory(config);
+    }
+
+    public static ImagePipelineFactory build(Context context, boolean down) {
+        return new ImagePipelineFactory(ImagePipelineConfig
+                .newBuilder(context.getApplicationContext())
+                .setDownsampleEnabled(down)
+                .setBitmapsConfig(Bitmap.Config.RGB_565)
+                .build());
     }
 
 }

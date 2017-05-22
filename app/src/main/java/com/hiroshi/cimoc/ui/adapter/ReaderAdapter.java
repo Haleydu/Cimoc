@@ -77,8 +77,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         return new ImageHolder(view);
     }
 
-    private boolean a = false;
-
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final ImageUrl imageUrl = mDataSet.get(position);
