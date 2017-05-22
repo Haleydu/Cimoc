@@ -1,6 +1,10 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.net.Uri;
+import android.os.Build;
+
 import com.hiroshi.cimoc.core.Download;
+import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.manager.ComicManager;
@@ -10,9 +14,11 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -116,6 +122,12 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
+        if (mComic.getLocal()) {
+            DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
+                    DocumentFile.fromTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
+                    DocumentFile.fromFile(new File(chapter.getPath()));
+            return Local.images(dir, chapter);
+        }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
                 Manga.getChapterImage(mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());

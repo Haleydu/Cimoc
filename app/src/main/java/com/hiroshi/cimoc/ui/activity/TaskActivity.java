@@ -202,27 +202,33 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
-    public void onTaskLoadSuccess(final List<Task> list) {
+    public void onTaskLoadSuccess(final List<Task> list, boolean local) {
         mTaskAdapter.setColorId(ThemeUtils.getResourceId(this, R.attr.colorAccent));
         mTaskAdapter.setLast(mPresenter.getComic().getLast());
         mTaskAdapter.addAll(list);
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mBinder = (DownloadServiceBinder) service;
-                mBinder.getService().initTask(mTaskAdapter.getDateSet());
-                hideProgressBar();
-            }
+        if (!local) {
+            mConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    mBinder = (DownloadServiceBinder) service;
+                    mBinder.getService().initTask(mTaskAdapter.getDateSet());
+                    hideProgressBar();
+                }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {}
-        };
-        bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
+                @Override
+                public void onServiceDisconnected(ComponentName name) {}
+            };
+            bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
+        } else {
+            hideProgressBar();
+            mLayoutView.removeView(mActionButton);
+        }
     }
 
     @Override
     public void onTaskLoadFail() {
         hideProgressBar();
+        mLayoutView.removeView(mActionButton);
         showSnackbar(R.string.task_load_task_fail);
     }
 

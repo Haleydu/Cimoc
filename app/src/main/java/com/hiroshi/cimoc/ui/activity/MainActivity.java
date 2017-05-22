@@ -66,6 +66,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private MainPresenter mPresenter;
     private ActionBarDrawerToggle mDrawerToggle;
     private long mExitTime = 0;
+    private long mLastId = -1;
     private int mLastSource = -1;
     private String mLastCid;
 
@@ -122,7 +123,14 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLastSource != -1 && mLastCid != null) {
+                if (mLastId != -1) {
+                    if (mPresenter.checkLocal(mLastId)) {
+                        Intent intent = TaskActivity.createIntent(MainActivity.this, mLastId);
+                        startActivity(intent);
+                    } else {
+                        HintUtils.showToast(MainActivity.this, R.string.common_execute_fail);
+                    }
+                } else if (mLastSource != -1 && mLastCid != null) {
                     Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
                     startActivity(intent);
                 }
@@ -289,8 +297,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onLastLoadSuccess(int source, String cid, String title, String cover) {
-        onLastChange(source, cid, title,cover);
+    public void onLastLoadSuccess(long id, int source, String cid, String title, String cover) {
+        onLastChange(id, source, cid, title,cover);
     }
 
     @Override
@@ -299,7 +307,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onLastChange(int source, String cid, String title, String cover) {
+    public void onLastChange(long id, int source, String cid, String title, String cover) {
+        mLastId = id;
         mLastSource = source;
         mLastCid = cid;
         mLastText.setText(title);

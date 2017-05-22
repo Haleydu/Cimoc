@@ -1,10 +1,16 @@
 package com.hiroshi.cimoc.core;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.source.Locality;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
+import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -75,6 +81,31 @@ public class Local {
         }).subscribeOn(Schedulers.io());
     }
 
+    public static Observable<List<ImageUrl>> images(final DocumentFile dir, final Chapter chapter) {
+        return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
+            @Override
+            public void call(Subscriber<? super List<ImageUrl>> subscriber) {
+                Log.e("--------------", dir.getName());
+                List<String> uris = DocumentUtils.listUrisWithSuffix(dir, "jpg", "png", "jpeg", "bmp");
+                if (uris.size() != 0) {
+                    List<ImageUrl> list = new ArrayList<>(uris.size());
+                    for (int i = 0; i < uris.size(); ++i) {
+                        String uri = uris.get(i);
+                        if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
+                            uri = DecryptionUtils.urlDecrypt(uri);
+                        }
+                        ImageUrl image = new ImageUrl(i + 1, uri, false);
+                        image.setChapter(chapter.getPath());
+                        list.add(image);
+                    }
+                    subscriber.onNext(list);
+                    subscriber.onCompleted();
+                }
+                subscriber.onError(new Exception());
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
     private static void countPicture(ScanInfo info) {
         String name = null;
         int other = 0;
@@ -119,7 +150,7 @@ public class Local {
 
     private static boolean isNameChapter(DocumentFile file) {
         if (chapterPattern == null) {
-            chapterPattern = Pattern.compile("^.{0,5}[0-9]+|[0-9]+.{0,5}$");
+            chapterPattern = Pattern.compile("^[^(\\[]{0,5}[0-9]+|[0-9]+.{0,5}$");
         }
         Matcher matcher = chapterPattern.matcher(file.getName());
         return matcher.find() && ((float) matcher.group().length() / file.getName().length() > 0.8);

@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.ui.activity.DetailActivity;
+import com.hiroshi.cimoc.ui.activity.TaskActivity;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.RecyclerViewFragment;
@@ -74,7 +75,8 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     @Override
     public void onItemClick(View view, int position) {
         MiniComic comic = mGridAdapter.getItem(position);
-        Intent intent = DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
+        Intent intent = comic.isLocal() ? TaskActivity.createIntent(getActivity(), comic.getId()) :
+                DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
         startActivity(intent);
     }
 

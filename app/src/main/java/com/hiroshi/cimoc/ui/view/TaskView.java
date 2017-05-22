@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface TaskView extends BaseView {
 
-    void onTaskLoadSuccess(List<Task> list);
+    void onTaskLoadSuccess(List<Task> list, boolean local);
 
     void onTaskLoadFail();
 

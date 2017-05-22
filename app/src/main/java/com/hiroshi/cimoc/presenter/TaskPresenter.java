@@ -110,17 +110,24 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     @Override
                     public void call(List<Task> list) {
                         updateTaskList(list);
-                        final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
-                                mBaseView.getAppInstance().getDocumentFile(), mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
-                        if (sList != null) {
+                        if (!mComic.getLocal()) {
+                            final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
+                                    mBaseView.getAppInstance().getDocumentFile(), mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
+                            if (sList != null) {
+                                Collections.sort(list, new Comparator<Task>() {
+                                    @Override
+                                    public int compare(Task lhs, Task rhs) {
+                                        return asc ? sList.indexOf(rhs.getPath()) - sList.indexOf(lhs.getPath()) :
+                                                sList.indexOf(lhs.getPath()) - sList.indexOf(rhs.getPath());
+                                    }
+                                });
+                            }
+                        } else {
                             Collections.sort(list, new Comparator<Task>() {
                                 @Override
                                 public int compare(Task lhs, Task rhs) {
-                                    if (asc) {
-                                        return sList.indexOf(rhs.getPath()) - sList.indexOf(lhs.getPath());
-                                    } else {
-                                        return sList.indexOf(lhs.getPath()) - sList.indexOf(rhs.getPath());
-                                    }
+                                    return asc ? lhs.getTitle().compareTo(rhs.getTitle()) :
+                                            rhs.getTitle().compareTo(lhs.getTitle());
                                 }
                             });
                         }
@@ -130,12 +137,11 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                 .subscribe(new Action1<List<Task>>() {
                     @Override
                     public void call(List<Task> list) {
-                        mBaseView.onTaskLoadSuccess(list);
+                        mBaseView.onTaskLoadSuccess(list, mComic.getLocal());
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
                         mBaseView.onTaskLoadFail();
                     }
                 }));
@@ -149,12 +155,14 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     @Override
                     public void call(List<Chapter> list) {
                         deleteFromDatabase(list, isEmpty);
-                        if (isEmpty) {
-                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                                    mSourceManager.getParser(mComic.getSource()).getTitle());
-                        } else {
-                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                                    list, mSourceManager.getParser(mComic.getSource()).getTitle());
+                        if (!mComic.getLocal()) {
+                            if (isEmpty) {
+                                Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                        mSourceManager.getParser(mComic.getSource()).getTitle());
+                            } else {
+                                Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                        list, mSourceManager.getParser(mComic.getSource()).getTitle());
+                            }
                         }
                     }
                 })
