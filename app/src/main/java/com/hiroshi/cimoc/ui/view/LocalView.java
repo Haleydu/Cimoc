@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.view;
 
 import com.hiroshi.cimoc.component.DialogCaller;
-import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;

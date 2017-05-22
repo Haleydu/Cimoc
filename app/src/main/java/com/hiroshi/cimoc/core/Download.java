@@ -2,10 +2,10 @@ package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
 
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DecryptionUtils;

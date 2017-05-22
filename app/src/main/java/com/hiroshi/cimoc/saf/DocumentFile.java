@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.saf;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.DocumentsContract;
 
 import java.io.File;
 
@@ -27,9 +26,13 @@ public abstract class DocumentFile {
 
     public static DocumentFile fromTreeUri(Context context, Uri treeUri) {
         if (Build.VERSION.SDK_INT >= 21) {
-            // 
-            //Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri,
-            //        DocumentsContract.getTreeDocumentId(treeUri));
+            /*
+             * https://stackoverflow.com/questions/27759915/bug-when-listing-files-with-android-storage-access-framework-on-lollipop
+             * 如果使用 buildDocumentUriUsingTree 会获取到授权的那个 DocumentFile
+             *
+             * Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri,
+             *         DocumentsContract.getTreeDocumentId(treeUri));
+             */
             return new TreeDocumentFile(null, context, treeUri);
         }
         return null;

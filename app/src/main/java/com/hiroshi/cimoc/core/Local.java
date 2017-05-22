@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -85,7 +83,6 @@ public class Local {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                Log.e("--------------", dir.getName());
                 List<String> uris = DocumentUtils.listUrisWithSuffix(dir, "jpg", "png", "jpeg", "bmp");
                 if (uris.size() != 0) {
                     List<ImageUrl> list = new ArrayList<>(uris.size());

@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.TaskManager;
