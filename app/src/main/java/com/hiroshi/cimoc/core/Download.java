@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -232,22 +233,25 @@ public class Download {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
                 DocumentFile dir = getChapterDir(root, comic, chapter, title);
-                List<String> uris = DocumentUtils.listUrisWithoutSuffix(dir, "cdif");
-                if (uris.size() != 0) {
-                    List<ImageUrl> list = new ArrayList<>(uris.size());
-                    for (int i = 0; i < uris.size(); ++i) {
-                        String uri = uris.get(i);
-                        if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
-                            uri = DecryptionUtils.urlDecrypt(uri);
-                        }
-                        ImageUrl image = new ImageUrl(i + 1, uri, false);
-                        image.setChapter(chapter.getPath());
-                        list.add(image);
+                List<DocumentFile> files = dir.listFiles(new DocumentFile.DocumentFileFilter() {
+                    @Override
+                    public boolean call(DocumentFile file) {
+                        return !file.getName().endsWith("cdif");
                     }
+                }, new Comparator<DocumentFile>() {
+                    @Override
+                    public int compare(DocumentFile lhs, DocumentFile rhs) {
+                        return lhs.getName().compareTo(rhs.getName());
+                    }
+                });
+
+                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter.getPath());
+                if (list.size() != 0) {
                     subscriber.onNext(list);
                     subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new Exception());
                 }
-                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }

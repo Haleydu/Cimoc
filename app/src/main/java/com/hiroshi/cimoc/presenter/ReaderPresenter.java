@@ -124,9 +124,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
         if (mComic.getLocal()) {
             DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-                    DocumentFile.fromTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
+                    DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
                     DocumentFile.fromFile(new File(chapter.getPath()));
-            return Local.images(dir, chapter);
+            return Local.images(dir, chapter.getPath());
         }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
@@ -199,7 +199,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                                 chapter = mChapterManger.moveNext();
                                 chapter.setCount(list.size());
                                 mBaseView.onChapterChange(chapter);
-                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource());
+                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
                                 break;
                             case LOAD_PREV:
                                 chapter = mChapterManger.movePrev();

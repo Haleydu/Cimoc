@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
 import com.hiroshi.cimoc.ui.view.TaskView;
+import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.ArrayList;
@@ -139,6 +140,22 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     }
                     Intent intent = ChapterActivity.createIntent(this, list);
                     startActivityForResult(intent, REQUEST_CODE_DELETE);
+                    break;
+                case R.id.detail_search_title:
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null, ResultActivity.LAUNCH_MODE_SEARCH);
+                        startActivity(intent);
+                    } else {
+                        showSnackbar(R.string.common_keyword_empty);
+                    }
+                    break;
+                case R.id.detail_search_author:
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_MODE_SEARCH);
+                        startActivity(intent);
+                    } else {
+                        showSnackbar(R.string.common_keyword_empty);
+                    }
                     break;
                 case R.id.task_sort:
                     mTaskAdapter.reverse();

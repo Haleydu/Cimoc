@@ -10,8 +10,14 @@ import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.support.annotation.RequiresApi;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,12 +87,8 @@ class TreeDocumentFile extends DocumentFile {
 
     @Override
     public DocumentFile createFile(String displayName) {
-        if (!isDirectory()) {
+        if (!checkSubFiles()) {
             return null;
-        }
-
-        if (mSubFiles == null) {
-            list();
         }
 
         DocumentFile doc = findFile(displayName);
@@ -105,12 +107,8 @@ class TreeDocumentFile extends DocumentFile {
 
     @Override
     public DocumentFile createDirectory(String displayName) {
-        if (!isDirectory()) {
+        if (!checkSubFiles()) {
             return null;
-        }
-
-        if (mSubFiles == null) {
-            list();
         }
 
         DocumentFile doc = findFile(displayName);
@@ -154,6 +152,25 @@ class TreeDocumentFile extends DocumentFile {
     }
 
     @Override
+    public long length() {
+        Cursor c = null;
+        try {
+            c = mContext.getContentResolver().query(mUri,
+                    new String[] { DocumentsContract.Document.COLUMN_SIZE }, null, null, null);
+            if (c.moveToFirst() && !c.isNull(0)) {
+                return c.getLong(0);
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        } finally {
+            closeQuietly(c);
+        }
+    }
+
+    @Override
     public boolean canRead() {
         return mContext.checkCallingOrSelfUriPermission(mUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 == PackageManager.PERMISSION_GRANTED;
@@ -189,13 +206,35 @@ class TreeDocumentFile extends DocumentFile {
     }
 
     @Override
-    public DocumentFile[] listFiles() {
-        if (!isDirectory()) {
-            return new DocumentFile[0];
+    public InputStream openInputStream() throws FileNotFoundException {
+        return mContext.getContentResolver().openInputStream(mUri);
+    }
+
+    @Override
+    public List<DocumentFile> listFiles(DocumentFileFilter filter, Comparator<? super DocumentFile> comp) {
+        if (!checkSubFiles()) {
+            return new ArrayList<>();
         }
 
-        if (mSubFiles == null) {
-            list();
+        Iterator<Map.Entry<String, DocumentFile>> iterator = mSubFiles.entrySet().iterator();
+        List<DocumentFile> list = new ArrayList<>(mSubFiles.size());
+        while (iterator.hasNext()) {
+            DocumentFile file = iterator.next().getValue();
+            if (filter == null || filter.call(file)) {
+                list.add(file);
+            }
+        }
+
+        if (comp != null) {
+            Collections.sort(list, comp);
+        }
+        return list;
+    }
+
+    @Override
+    public DocumentFile[] listFiles() {
+        if (!checkSubFiles()) {
+            return new DocumentFile[0];
         }
 
         int size = mSubFiles.size();
@@ -218,14 +257,9 @@ class TreeDocumentFile extends DocumentFile {
 
     @Override
     public DocumentFile findFile(String displayName) {
-        if (!isDirectory()) {
+        if (!checkSubFiles()) {
             return null;
         }
-
-        if (mSubFiles == null) {
-            list();
-        }
-
         return mSubFiles.get(displayName);
     }
 
@@ -238,6 +272,16 @@ class TreeDocumentFile extends DocumentFile {
         } else {
             return false;
         }
+    }
+
+    private boolean checkSubFiles() {
+        if (!isDirectory()) {
+            return false;
+        }
+        if (mSubFiles == null) {
+            list();
+        }
+        return true;
     }
 
     private static void closeQuietly(AutoCloseable closeable) {

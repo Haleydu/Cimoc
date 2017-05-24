@@ -1,17 +1,15 @@
 package com.hiroshi.cimoc.core;
 
 import com.hiroshi.cimoc.misc.Pair;
-import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.source.Locality;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
-import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -79,26 +77,29 @@ public class Local {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<ImageUrl>> images(final DocumentFile dir, final Chapter chapter) {
+    public static Observable<List<ImageUrl>> images(final DocumentFile dir, final String chapter) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
-                List<String> uris = DocumentUtils.listUrisWithSuffix(dir, "jpg", "png", "jpeg", "bmp");
-                if (uris.size() != 0) {
-                    List<ImageUrl> list = new ArrayList<>(uris.size());
-                    for (int i = 0; i < uris.size(); ++i) {
-                        String uri = uris.get(i);
-                        if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
-                            uri = DecryptionUtils.urlDecrypt(uri);
-                        }
-                        ImageUrl image = new ImageUrl(i + 1, uri, false);
-                        image.setChapter(chapter.getPath());
-                        list.add(image);
+                List<DocumentFile> files = dir.listFiles(new DocumentFile.DocumentFileFilter() {
+                    @Override
+                    public boolean call(DocumentFile file) {
+                        return file.isFile() && StringUtils.endWith(file.getName(), "jpg", "png", "jpeg");
                     }
+                }, new Comparator<DocumentFile>() {
+                    @Override
+                    public int compare(DocumentFile lhs, DocumentFile rhs) {
+                        return lhs.getName().compareTo(rhs.getName());
+                    }
+                });
+                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter);
+
+                if (list.size() != 0) {
                     subscriber.onNext(list);
                     subscriber.onCompleted();
+                } else {
+                    subscriber.onError(new Exception());
                 }
-                subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
     }
@@ -107,7 +108,7 @@ public class Local {
         String name = null;
         int other = 0;
         for (DocumentFile file : info.dir.listFiles()) {
-            if (file.isFile() && StringUtils.endWith(file.getName(), "png", "jpg", "jpeg", "bmp")) {
+            if (file.isFile() && StringUtils.endWith(file.getName(), "png", "jpg", "jpeg")) {
                 ++info.count;
             } else {
                 ++other;

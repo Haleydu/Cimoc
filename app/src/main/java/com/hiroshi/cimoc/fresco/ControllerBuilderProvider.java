@@ -31,8 +31,8 @@ public class ControllerBuilderProvider {
     public PipelineDraweeControllerBuilder get(int type) {
         PipelineDraweeControllerBuilderSupplier supplier = mSupplierArray.get(type);
         if (supplier == null) {
-            ImagePipelineFactory factory = type < 0 ? ImagePipelineFactoryBuilder.build(mContext, mCover) :
-                    ImagePipelineFactoryBuilder.build(mContext, mHeaderGetter.getHeader(type), mCover);
+            ImagePipelineFactory factory = ImagePipelineFactoryBuilder
+                    .build(mContext, type < 0 ? null : mHeaderGetter.getHeader(type), mCover);
             supplier = ControllerBuilderSupplierFactory.get(mContext, factory);
             mSupplierArray.put(type, supplier);
             mPipelineArray.put(type, factory.getImagePipeline());

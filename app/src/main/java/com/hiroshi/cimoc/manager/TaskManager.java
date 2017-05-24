@@ -24,6 +24,10 @@ public class TaskManager {
         mTaskDao = getter.getAppInstance().getDaoSession().getTaskDao();
     }
 
+    public List<Task> list() {
+        return mTaskDao.queryBuilder().list();
+    }
+
     public List<Task> listValid() {
         return mTaskDao.queryBuilder()
                 .where(Properties.Max.notEq(0))

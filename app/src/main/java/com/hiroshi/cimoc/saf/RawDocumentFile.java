@@ -1,12 +1,18 @@
 package com.hiroshi.cimoc.saf;
 
 import android.net.Uri;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by Hiroshi on 2017/3/24.
@@ -74,6 +80,11 @@ class RawDocumentFile extends DocumentFile {
     }
 
     @Override
+    public long length() {
+        return mFile.length();
+    }
+
+    @Override
     public boolean canRead() {
         return mFile.canRead();
     }
@@ -95,15 +106,49 @@ class RawDocumentFile extends DocumentFile {
     }
 
     @Override
-    public DocumentFile[] listFiles() {
+    public InputStream openInputStream() throws FileNotFoundException {
+        return new BufferedInputStream(new FileInputStream(mFile));
+    }
+
+    @Override
+    public List<DocumentFile> listFiles(DocumentFileFilter filter, Comparator<? super DocumentFile> comp) {
         final ArrayList<DocumentFile> results = new ArrayList<>();
         final File[] files = mFile.listFiles();
         if (files != null) {
             for (File file : files) {
-                results.add(new RawDocumentFile(this, file));
+                DocumentFile doc = new RawDocumentFile(this, file);
+                if (filter == null || filter.call(doc)) {
+                    results.add(doc);
+                }
             }
         }
-        return results.toArray(new DocumentFile[results.size()]);
+        if (comp != null) {
+            Collections.sort(results, comp);
+        }
+        return results;
+    }
+
+    @Override
+    public DocumentFile[] listFiles() {
+        final File[] files = mFile.listFiles();
+        final DocumentFile[] results = new DocumentFile[files.length];
+        for (int i = 0; i < files.length; ++i) {
+            results[i] = new RawDocumentFile(this, files[i]);
+        }
+        return results;
+    }
+
+    @Override
+    public void refresh() {}
+
+    @Override
+    public DocumentFile findFile(String displayName) {
+        for (DocumentFile file : listFiles()) {
+            if (displayName.equals(file.getName())) {
+                return file;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -139,7 +184,6 @@ class RawDocumentFile extends DocumentFile {
                     success &= deleteContents(file);
                 }
                 if (!file.delete()) {
-                    Log.w(TAG, "Failed to delete " + file);
                     success = false;
                 }
             }

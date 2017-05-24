@@ -133,7 +133,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(), null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
-                        showSnackbar(R.string.detail_search_empty);
+                        showSnackbar(R.string.common_keyword_empty);
                     }
                     break;
                 case R.id.detail_search_author:
@@ -141,7 +141,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(), null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
-                        showSnackbar(R.string.detail_search_empty);
+                        showSnackbar(R.string.common_keyword_empty);
                     }
                     break;
             }

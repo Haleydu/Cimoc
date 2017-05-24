@@ -25,7 +25,7 @@ public interface ReaderView extends BaseView {
 
     void onPrevLoadSuccess(List<ImageUrl> list);
 
-    void onInitLoadSuccess(List<ImageUrl> list, int progress, int source);
+    void onInitLoadSuccess(List<ImageUrl> list, int progress, int source, boolean local);
 
     void onChapterChange(Chapter chapter);
 

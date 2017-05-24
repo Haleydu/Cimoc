@@ -2,16 +2,21 @@ package com.hiroshi.cimoc.core;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 
+import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.saf.DocumentFile;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -137,6 +142,29 @@ public class Storage {
                 subscriber.onError(new Exception());
             }
         }).subscribeOn(Schedulers.io());
+    }
+
+    public static List<ImageUrl> buildImageUrlFromDocumentFile(List<DocumentFile> list, String chapter) {
+        int count = 0;
+        List<ImageUrl> result = new ArrayList<>(list.size());
+        for (DocumentFile file : list) {
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inJustDecodeBounds = true;
+            try {
+                BitmapFactory.decodeStream(file.openInputStream(), null, opts);
+                String uri = file.getUri().toString();
+                if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
+                    uri = DecryptionUtils.urlDecrypt(uri);
+                }
+                ImageUrl image = new ImageUrl(++count, uri, false);
+                image.setSize(opts.outWidth * opts.outHeight);
+                image.setChapter(chapter);
+                result.add(image);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
 }

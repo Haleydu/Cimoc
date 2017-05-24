@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -77,6 +78,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected PreCacheLayoutManager mLayoutManager;
     protected ReaderAdapter mReaderAdapter;
     protected ImagePipelineFactory mImagePipelineFactory;
+    protected ImagePipelineFactory mLargeImagePipelineFactory;
 
     protected ReaderPresenter mPresenter;
     protected int mLastDx = 0;
@@ -91,6 +93,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected boolean mLoadNext;
 
     private boolean isSavingPicture = false;
+
+    private long mLargePixels;
 
     private boolean mHideInfo;
     private boolean mHideNav;
@@ -181,13 +185,21 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
         }
         mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
+        initPixels();
     }
 
     private void initLayoutManager() {
         mLayoutManager = new PreCacheLayoutManager(this);
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setReverseLayout(turn == PreferenceManager.READER_TURN_RTL);
-        mLayoutManager.setExtraSpace(3);
+        mLayoutManager.setExtraSpace(2);
+    }
+
+    private void initPixels() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mLargePixels = 2 * metrics.widthPixels * metrics.heightPixels;
+        mReaderAdapter.setPixels(metrics.widthPixels, metrics.heightPixels, mLargePixels);
     }
 
     @Override
@@ -221,6 +233,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         super.onDestroy();
         if (mImagePipelineFactory != null) {
             mImagePipelineFactory.getImagePipeline().clearMemoryCaches();
+        }
+        if (mLargeImagePipelineFactory != null) {
+            mLargeImagePipelineFactory.getImagePipeline().clearMemoryCaches();
         }
     }
 
@@ -342,9 +357,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source) {
-        mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(source).getHeader(), false);
-        mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory));
+    public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source, boolean local) {
+        mImagePipelineFactory = ImagePipelineFactoryBuilder
+                .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(), false);
+        mLargeImagePipelineFactory = ImagePipelineFactoryBuilder
+                .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(), true);
+        mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory),
+                ControllerBuilderSupplierFactory.get(this, mLargeImagePipelineFactory));
         mReaderAdapter.addAll(list);
         if (progress != 1) {
             mRecyclerView.scrollToPosition(progress - 1);
@@ -526,8 +545,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         ImageUrl image = mReaderAdapter.getItem(position);
         String rawUrl = image.getUrl();
         String postUrl = StringUtils.format("%s-post-%d", image.getUrl(), image.getId());
-        mImagePipelineFactory.getImagePipeline().evictFromCache(Uri.parse(rawUrl));
-        mImagePipelineFactory.getImagePipeline().evictFromCache(Uri.parse(postUrl));
+        ImagePipelineFactory factory = image.getSize() > mLargePixels ?
+                mLargeImagePipelineFactory : mImagePipelineFactory;
+        factory.getImagePipeline().evictFromCache(Uri.parse(rawUrl));
+        factory.getImagePipeline().evictFromCache(Uri.parse(postUrl));
         mReaderAdapter.notifyItemChanged(position);
     }
 
@@ -541,7 +562,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (position == -1) {
             position = mLayoutManager.findFirstVisibleItemPosition();
         }
-        String[] urls = mReaderAdapter.getItem(position).getUrls();
+        ImageUrl imageUrl = mReaderAdapter.getItem(position);
+        String[] urls = imageUrl.getUrls();
         try {
             String title = mChapterTitle.getText().toString();
             for (String url : urls) {
@@ -552,7 +574,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                     mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url, title, progress);
                     return;
                 } else {
-                    BinaryResource resource = mImagePipelineFactory.getMainFileCache().getResource(new SimpleCacheKey(url));
+                    ImagePipelineFactory factory = imageUrl.getSize() > mLargePixels ?
+                            mLargeImagePipelineFactory : mImagePipelineFactory;
+                    BinaryResource resource = factory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {
                         mPresenter.savePicture(resource.openStream(), url, title, progress);
                         return;

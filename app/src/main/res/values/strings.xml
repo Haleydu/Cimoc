@@ -43,7 +43,6 @@
     <string name="detail_tag">编辑标签</string>
     <string name="detail_search_title">搜索标题</string>
     <string name="detail_search_author">搜索作者</string>
-    <string name="detail_search_empty">关键字为空</string>
 
     <string name="tag_editor">标签编辑</string>
 
@@ -238,6 +237,7 @@
     <string name="event_select">事件选择</string>
 
     <string name="common_data_load_fail">读取数据失败</string>
+    <string name="common_keyword_empty">关键字为空</string>
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>
     <string name="common_execute_success">操作成功</string>

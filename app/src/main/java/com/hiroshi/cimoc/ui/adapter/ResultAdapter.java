@@ -57,6 +57,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         viewHolder.comicUpdate.setText(comic.getUpdate());
+        // TODO resize
         viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
     }
 

@@ -63,6 +63,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         gridHolder.comicTitle.setText(comic.getTitle());
         gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         if (mProvider != null) {
+            // TODO resize
             DraweeController controller = mProvider.get(comic.getSource())
                     .setOldController(gridHolder.comicImage.getController())
                     .setUri(comic.getCover())

@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.support.v4.util.LongSparseArray;
+
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.TaskManager;
@@ -12,7 +14,11 @@ import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.LocalView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
@@ -58,20 +64,48 @@ public class LocalPresenter extends BasePresenter<LocalView> {
                 }));
     }
 
+    private Pair<Map<String, Comic>, Set<String>> buildHash() {
+        LongSparseArray<List<String>> array = new LongSparseArray<>();
+        Map<String, Comic> map = new HashMap<>();
+        Set<String> set = new HashSet<>();
+        for (Task task : mTaskManager.list()) {
+            List<String> list = array.get(task.getKey());
+            if (list == null) {
+                list = new ArrayList<>();
+                array.put(task.getKey(), list);
+            }
+            list.add(task.getPath());
+        }
+        for (Comic comic : mComicManager.listLocal()) {
+            map.put(comic.getCid(), comic);
+            set.addAll(array.get(comic.getId(), new ArrayList<String>()));
+        }
+        return Pair.create(map, set);
+    }
+
     private List<Comic> processScanResult(final List<Pair<Comic, ArrayList<Task>>> pairs) {
-        // TODO 检查重复
         return mComicManager.callInTx(new Callable<List<Comic>>() {
             @Override
             public List<Comic> call() throws Exception {
+                Pair<Map<String, Comic>, Set<String>> hash = buildHash();
                 List<Comic> result = new ArrayList<>();
                 for (Pair<Comic, ArrayList<Task>> pr : pairs) {
-                    mComicManager.insert(pr.first);
-
-                    for (Task task : pr.second) {
-                        task.setKey(pr.first.getId());
-                        mTaskManager.insert(task);
+                    Comic comic = hash.first.get(pr.first.getCid());
+                    if (comic != null) {
+                        for (Task task : pr.second) {
+                            task.setKey(comic.getId());
+                            if (!hash.second.contains(task.getPath())) {
+                                mTaskManager.insert(task);
+                            }
+                        }
+                    } else {
+                        mComicManager.insert(pr.first);
+                        for (Task task : pr.second) {
+                            task.setKey(pr.first.getId());
+                            mTaskManager.insert(task);
+                        }
+                        result.add(pr.first);
                     }
-                    result.add(pr.first);
                 }
                 return result;
             }

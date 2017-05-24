@@ -42,6 +42,12 @@ public class ComicManager {
                 .list();
     }
 
+    public List<Comic> listLocal() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Local.eq(true))
+                .list();
+    }
+
     public Observable<List<Comic>> listLocalInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Local.eq(true))

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
@@ -45,6 +46,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     @interface ReaderMode {}
 
     private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
+    private PipelineDraweeControllerBuilderSupplier mLargeControllerSupplier;
     private OnSingleTapListener mSingleTapListener;
     private OnLongPressListener mLongPressListener;
     private OnLazyLoadListener mLazyLoadListener;
@@ -52,6 +54,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isVertical;
     private boolean isPaging;
     private boolean isWhiteEdge;
+
+    private int mWidthPixels;
+    private int mHeightPixels;
+    private long mLargePixels;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -136,6 +142,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             processor.setPaging(isPaging);
             processor.setWhiteEdge(isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
+            if (imageUrl.getSize() > mLargePixels) {
+                imageRequestBuilder.setResizeOptions(new ResizeOptions(mWidthPixels, mHeightPixels));
+            }
             imageRequestBuilder.setRequestListener(new BaseRequestListener() {
                 @Override
                 public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
@@ -148,8 +157,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         draweeView.setController(builder.setFirstAvailableImageRequests(request).build());
     }
 
-    public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier supplier) {
-        mControllerSupplier = supplier;
+    public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier normal,
+                                      PipelineDraweeControllerBuilderSupplier large) {
+        mControllerSupplier = normal;
+        mControllerSupplier = large;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {
@@ -178,6 +189,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setReaderMode(@ReaderMode int reader) {
         this.reader = reader;
+    }
+
+    public void setPixels(int width, int height, long large) {
+        mWidthPixels = width;
+        mHeightPixels = height;
+        mLargePixels = large;
     }
 
     @Override

@@ -16,8 +16,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -47,42 +45,6 @@ public class DocumentUtils {
             }
         }
         return parent;
-    }
-
-    public static List<String> listUrisWithSuffix(DocumentFile dir, String... suffix) {
-        List<String> list = new ArrayList<>();
-        if (dir.isDirectory()) {
-            for (DocumentFile file : dir.listFiles()) {
-                if (StringUtils.endWith(file.getName(), suffix)) {
-                    list.add(file.getUri().toString());
-                }
-            }
-        }
-        Collections.sort(list, new Comparator<String>() {
-            @Override
-            public int compare(String lhs, String rhs) {
-                return lhs.compareTo(rhs);
-            }
-        });
-        return list;
-    }
-
-    public static List<String> listUrisWithoutSuffix(DocumentFile dir, String suffix) {
-        List<String> list = new ArrayList<>();
-        if (dir.isDirectory()) {
-            for (DocumentFile file : dir.listFiles()) {
-                if (!file.getName().endsWith(suffix)) {
-                    list.add(file.getUri().toString());
-                }
-            }
-        }
-        Collections.sort(list, new Comparator<String>() {
-            @Override
-            public int compare(String lhs, String rhs) {
-                return lhs.compareTo(rhs);
-            }
-        });
-        return list;
     }
 
     public static int countWithoutSuffix(DocumentFile dir, String suffix) {
