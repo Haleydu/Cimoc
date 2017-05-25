@@ -158,8 +158,6 @@ public class DM5 extends MangaParser {
     public Request getLazyRequest(String url) {
         return new Request.Builder().url(url)
                 .addHeader("Referer", "http://www.dm5.com")
-                .addHeader("Accept-Language", "en-us,en")
-                .addHeader("X-Forwarded-For", "003.000.000.000")
                 .build();
     }
 

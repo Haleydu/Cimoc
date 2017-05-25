@@ -2,6 +2,8 @@ package com.hiroshi.cimoc;
 
 import android.app.Application;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.component.AppGetter;
@@ -25,6 +27,12 @@ import okhttp3.OkHttpClient;
  */
 public class App extends Application implements AppGetter {
 
+    public static int mWidthPixels;
+    public static int mHeightPixels;
+    public static int mCoverWidthPixels;
+    public static int mCoverHeightPixels;
+    public static int mLargePixels;
+
     private static OkHttpClient mHttpClient;
 
     private DocumentFile mDocumentFile;
@@ -40,11 +48,22 @@ public class App extends Application implements AppGetter {
         mOpenHelper = new DBOpenHelper(this, "cimoc.db");
         UpdateHelper.update(getPreferenceManager(), getDaoSession());
         Fresco.initialize(this);
+        initPixels();
     }
 
     @Override
     public App getAppInstance() {
         return this;
+    }
+
+    private void initPixels() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
+        mWidthPixels = metrics.widthPixels;
+        mHeightPixels = metrics.heightPixels;
+        mCoverWidthPixels = mWidthPixels / 3;
+        mCoverHeightPixels = mHeightPixels * mCoverWidthPixels / mWidthPixels;
+        mLargePixels = 2 * metrics.widthPixels * metrics.heightPixels;
     }
 
     public void initRootDocumentFile() {
@@ -83,7 +102,8 @@ public class App extends Application implements AppGetter {
 
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
-            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(), SourceManager.getInstance(this).new HeaderGetter(), true);
+            mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(),
+                    SourceManager.getInstance(this).new HeaderGetter(), true);
         }
         return mBuilderProvider;
     }

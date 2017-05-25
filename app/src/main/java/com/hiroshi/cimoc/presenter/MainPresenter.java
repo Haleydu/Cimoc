@@ -29,8 +29,8 @@ public class MainPresenter extends BasePresenter<MainView> {
             @Override
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();
-                mBaseView.onLastChange(comic.isLocal() ? comic.getId() : -1,
-                        comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
+                mBaseView.onLastChange(comic.getId(), comic.getSource(), comic.getCid(),
+                        comic.getTitle(), comic.getCover());
             }
         });
     }
