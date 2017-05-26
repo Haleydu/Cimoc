@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 import com.facebook.binaryresource.BinaryResource;
 import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.imagepipeline.core.ImagePipelineFactory;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderSupplierFactory;
 import com.hiroshi.cimoc.fresco.ImagePipelineFactoryBuilder;
@@ -93,8 +93,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     protected boolean mLoadNext;
 
     private boolean isSavingPicture = false;
-
-    private long mLargePixels;
 
     private boolean mHideInfo;
     private boolean mHideNav;
@@ -171,8 +169,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     private void initSeekBar() {
         mSeekBar.setReverse(turn == PreferenceManager.READER_TURN_RTL);
         mSeekBar.setOnProgressChangeListener(this);
-        boolean popup = mPreference.getBoolean(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
-        mSeekBar.setIndicatorPopupEnabled(!popup);
     }
 
     private void initReaderAdapter() {
@@ -185,7 +181,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
             mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
         }
         mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
-        initPixels();
     }
 
     private void initLayoutManager() {
@@ -193,13 +188,6 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setReverseLayout(turn == PreferenceManager.READER_TURN_RTL);
         mLayoutManager.setExtraSpace(2);
-    }
-
-    private void initPixels() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        mLargePixels = 2 * metrics.widthPixels * metrics.heightPixels;
-        mReaderAdapter.setPixels(metrics.widthPixels, metrics.heightPixels, mLargePixels);
     }
 
     @Override
@@ -545,7 +533,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         ImageUrl image = mReaderAdapter.getItem(position);
         String rawUrl = image.getUrl();
         String postUrl = StringUtils.format("%s-post-%d", image.getUrl(), image.getId());
-        ImagePipelineFactory factory = image.getSize() > mLargePixels ?
+        ImagePipelineFactory factory = image.getSize() > App.mLargePixels ?
                 mLargeImagePipelineFactory : mImagePipelineFactory;
         factory.getImagePipeline().evictFromCache(Uri.parse(rawUrl));
         factory.getImagePipeline().evictFromCache(Uri.parse(postUrl));
@@ -574,7 +562,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
                     mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url, title, progress);
                     return;
                 } else {
-                    ImagePipelineFactory factory = imageUrl.getSize() > mLargePixels ?
+                    ImagePipelineFactory factory = imageUrl.getSize() > App.mLargePixels ?
                             mLargeImagePipelineFactory : mImagePipelineFactory;
                     BinaryResource resource = factory.getMainFileCache().getResource(new SimpleCacheKey(url));
                     if (resource != null) {

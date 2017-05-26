@@ -58,8 +58,11 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         db.beginTransaction();
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", " +
+                "\"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"LAST\", " +
+                "\"PAGE\", \"CHAPTER\") SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", " +
+                "\"COVER\", \"UPDATE\", \"HIGHLIGHT\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", " +
+                "\"PAGE\", null FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -80,8 +83,11 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         db.beginTransaction();
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"HIGHLIGHT\", \"UPDATE\", null, \"FAVORITE\", \"HISTORY\", null, \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", " +
+                "\"HIGHLIGHT\", \"UPDATE\", \"FINISH\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", " +
+                "\"LAST\", \"PAGE\")  SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", " +
+                "\"HIGHLIGHT\", \"UPDATE\", null, \"FAVORITE\", \"HISTORY\", null, \"LAST\", " +
+                "\"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -91,10 +97,13 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         db.beginTransaction();
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
-                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", " +
+                "\"UPDATE\", \"HIGHLIGHT\", \"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\")" +
+                " SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", \"UPDATE\", 0, " +
+                "\"FAVORITE\", \"HISTORY\", \"LAST\", \"PAGE\" FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
-        db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " + System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
+        db.execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 1, \"FAVORITE\" = " +
+                System.currentTimeMillis() + " WHERE \"FAVORITE\" = " + 0xFFFFFFFFFFFL);
         db.setTransactionSuccessful();
         db.endTransaction();
     }

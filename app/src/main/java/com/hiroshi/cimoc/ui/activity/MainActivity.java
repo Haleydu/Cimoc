@@ -32,10 +32,8 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
-import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
@@ -67,7 +65,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
     private TextView mLastText;
     private SimpleDraweeView mDraweeView;
-    private ControllerBuilderProvider mPreviewProvider;
 
     private MainPresenter mPresenter;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -140,8 +137,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 }
             }
         });
-        mPreviewProvider = new ControllerBuilderProvider(this,
-                SourceManager.getInstance(this).new HeaderGetter(), false);
     }
 
     private void initFragment() {
@@ -189,7 +184,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPreviewProvider.clear();
         ((App) getApplication()).getBuilderProvider().clear();
         ((App) getApplication()).getGridRecycledPool().clear();
     }
@@ -323,7 +317,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 .newBuilderWithSource(Uri.parse(cover))
                 .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
                 .build();
-        DraweeController controller = mPreviewProvider.get(source)
+        DraweeController controller = ((App) getApplication()).getBuilderProvider().get(source)
                 .setOldController(mDraweeView.getController())
                 .setImageRequest(request)
                 .build();
@@ -332,10 +326,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
-        ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+        ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked },
+                { android.R.attr.state_checked }},
                 new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemTextColor(itemList);
-        ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+        ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked },
+                { android.R.attr.state_checked }},
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemIconTintList(iconList);
         mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));

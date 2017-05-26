@@ -23,12 +23,15 @@ import java.util.ArrayList;
  */
 public class DownloadFragment extends GridFragment implements DownloadView {
 
-    private static final int DIALOG_REQUEST_DELETE = 0;
     private static final int DIALOG_REQUEST_SWITCH = 1;
+    private static final int DIALOG_REQUEST_INFO = 2;
+    private static final int DIALOG_REQUEST_DELETE = 3;
+
+    private static final int OPERATION_INFO = 0;
+    private static final int OPERATION_DELETE = 1;
 
     private DownloadPresenter mPresenter;
 
-    private long mSavedId = -1;
     private boolean isDownload;
 
     @Override
@@ -52,12 +55,18 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
-            case DIALOG_REQUEST_DELETE:
-                if (isDownload) {
-                    HintUtils.showToast(getActivity(), R.string.download_ask_stop);
-                } else {
-                    showProgressDialog();
-                    mPresenter.deleteComic(mSavedId);
+            case DIALOG_REQUEST_OPERATION:
+                int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                switch (index) {
+                    case OPERATION_INFO:
+                        showComicInfo(mPresenter.load(mSavedId), DIALOG_REQUEST_INFO);
+                        break;
+                    case OPERATION_DELETE:
+                        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                                R.string.download_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                        fragment.setTargetFragment(this, 0);
+                        fragment.show(getFragmentManager(), null);
+                        break;
                 }
                 break;
             case DIALOG_REQUEST_SWITCH:
@@ -68,6 +77,15 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                     showProgressDialog();
                     mPresenter.loadTask();
                 }
+                break;
+            case DIALOG_REQUEST_DELETE:
+                if (isDownload) {
+                    HintUtils.showToast(getActivity(), R.string.download_ask_stop);
+                } else {
+                    showProgressDialog();
+                    mPresenter.deleteComic(mSavedId);
+                }
+                break;
         }
     }
 
@@ -84,15 +102,6 @@ public class DownloadFragment extends GridFragment implements DownloadView {
         MiniComic comic = mGridAdapter.getItem(position);
         Intent intent = TaskActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
-    }
-
-    @Override
-    public void onItemLongClick(View view, int position) {
-        mSavedId = mGridAdapter.getItem(position).getId();
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.download_delete_confirm, true, DIALOG_REQUEST_DELETE);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
     }
 
     @Override
@@ -145,6 +154,11 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     @Override
     protected int getActionButtonRes() {
         return isDownload ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp;
+    }
+
+    @Override
+    protected String[] getOperationItems() {
+        return new String[]{ getString(R.string.comic_info), getString(R.string.download_delete) };
     }
 
 }

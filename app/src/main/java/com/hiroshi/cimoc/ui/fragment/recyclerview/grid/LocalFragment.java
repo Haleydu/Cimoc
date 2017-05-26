@@ -30,8 +30,10 @@ import java.util.List;
 
 public class LocalFragment extends GridFragment implements LocalView {
 
-    private static final int DIALOG_REQUEST_DELETE = 0;
     private static final int DIALOG_REQUEST_SCAN = 1;
+    private static final int DIALOG_REQUEST_DELETE = 2;
+
+    private static final int OPERATION_DELETE = 0;
 
     private LocalPresenter mPresenter;
     private long mSavedId = -1;
@@ -95,17 +97,18 @@ public class LocalFragment extends GridFragment implements LocalView {
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
-        mSavedId = mGridAdapter.getItem(position).getId();
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
+            case DIALOG_REQUEST_OPERATION:
+                int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                switch (index) {
+                    case OPERATION_DELETE:
+                        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                                R.string.history_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                        fragment.setTargetFragment(this, 0);
+                        fragment.show(getFragmentManager(), null);
+                }
+                break;
             case DIALOG_REQUEST_DELETE:
                 showProgressDialog();
                 mPresenter.deleteComic(mSavedId);
@@ -115,6 +118,8 @@ public class LocalFragment extends GridFragment implements LocalView {
 
     @Override
     public void onLocalDeleteSuccess(long id) {
+        hideProgressDialog();
+        mGridAdapter.removeItemById(id);
         HintUtils.showToast(getActivity(), R.string.common_execute_success);
     }
 
@@ -133,6 +138,11 @@ public class LocalFragment extends GridFragment implements LocalView {
     @Override
     protected int getActionButtonRes() {
         return R.drawable.ic_add_white_24dp;
+    }
+
+    @Override
+    protected String[] getOperationItems() {
+        return new String[]{ getString(R.string.local_delete) };
     }
 
 }

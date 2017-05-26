@@ -88,7 +88,7 @@ public class Dmzjv2 extends MangaParser {
             String title = object.getString("title");
             String cover = object.getString("cover");
             Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
-            String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+            String update = time == null ? null : StringUtils.getFormatTime("yyyy-MM-dd", time);
             String intro = object.optString("description");
             StringBuilder sb = new StringBuilder();
             JSONArray array = object.getJSONArray("authors");

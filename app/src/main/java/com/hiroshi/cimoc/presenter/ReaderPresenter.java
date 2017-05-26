@@ -126,7 +126,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
             DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
                     DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
                     DocumentFile.fromFile(new File(chapter.getPath()));
-            return Local.images(dir, chapter.getPath());
+            return Local.images(dir, chapter);
         }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
@@ -150,6 +150,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private void updateChapter(Chapter chapter, boolean isNext) {
         mBaseView.onChapterChange(chapter);
         mComic.setLast(chapter.getPath());
+        mComic.setChapter(chapter.getTitle());
         mComic.setPage(isNext ? 1 : chapter.getCount());
         mComicManager.update(mComic);
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE, mComic.getId()));

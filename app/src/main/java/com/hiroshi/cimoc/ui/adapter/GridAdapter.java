@@ -17,7 +17,6 @@ import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.MiniComic;
 
 import java.util.List;

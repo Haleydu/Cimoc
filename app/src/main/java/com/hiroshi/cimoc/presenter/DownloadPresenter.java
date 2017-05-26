@@ -109,6 +109,10 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 }));
     }
 
+    public Comic load(long id) {
+        return mComicManager.load(id);
+    }
+
     public void load() {
         mCompositeSubscription.add(mComicManager.listDownloadInRx()
                 .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {

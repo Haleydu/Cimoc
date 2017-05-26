@@ -17,6 +17,7 @@ import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.processor.MangaPostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -54,10 +55,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isVertical;
     private boolean isPaging;
     private boolean isWhiteEdge;
-
-    private int mWidthPixels;
-    private int mHeightPixels;
-    private long mLargePixels;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -99,7 +96,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         draweeView.setOnLongPressListener(mLongPressListener);
         draweeView.setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
 
-        PipelineDraweeControllerBuilder builder = mControllerSupplier.get();
+        PipelineDraweeControllerBuilder builder = imageUrl.getSize() > App.mLargePixels ?
+                mLargeControllerSupplier.get() : mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
@@ -142,8 +140,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             processor.setPaging(isPaging);
             processor.setWhiteEdge(isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
-            if (imageUrl.getSize() > mLargePixels) {
-                imageRequestBuilder.setResizeOptions(new ResizeOptions(mWidthPixels, mHeightPixels));
+            if (imageUrl.getSize() > App.mLargePixels) {
+                ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
+                        new ResizeOptions(App.mHeightPixels, App.mWidthPixels);
+                imageRequestBuilder.setResizeOptions(options);
             }
             imageRequestBuilder.setRequestListener(new BaseRequestListener() {
                 @Override
@@ -160,7 +160,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     public void setControllerSupplier(PipelineDraweeControllerBuilderSupplier normal,
                                       PipelineDraweeControllerBuilderSupplier large) {
         mControllerSupplier = normal;
-        mControllerSupplier = large;
+        mLargeControllerSupplier = large;
     }
 
     public void setSingleTapListener(OnSingleTapListener listener) {
@@ -189,12 +189,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setReaderMode(@ReaderMode int reader) {
         this.reader = reader;
-    }
-
-    public void setPixels(int width, int height, long large) {
-        mWidthPixels = width;
-        mHeightPixels = height;
-        mLargePixels = large;
     }
 
     @Override

@@ -123,7 +123,8 @@ public class ComicFragment extends BaseFragment implements ComicView {
         switch (requestCode) {
             case DIALOG_REQUEST_FILTER:
                 int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                Intent intent = PartFavoriteActivity.createIntent(getActivity(), mTagList.get(index).getId(), mTagList.get(index).getTitle());
+                Intent intent = PartFavoriteActivity.createIntent(getActivity(),
+                        mTagList.get(index).getId(), mTagList.get(index).getTitle());
                 startActivity(intent);
                 break;
         }
@@ -132,8 +133,8 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onTagLoadSuccess(List<Tag> list) {
         hideProgressDialog();
-        mTagList.add(new Tag(TagManager.TAG_FINISH, getString(R.string.comic_filter_finish)));
-        mTagList.add(new Tag(TagManager.TAG_CONTINUE, getString(R.string.comic_filter_continue)));
+        mTagList.add(new Tag(TagManager.TAG_FINISH, getString(R.string.comic_status_finish)));
+        mTagList.add(new Tag(TagManager.TAG_CONTINUE, getString(R.string.comic_status_continue)));
         mTagList.addAll(list);
         int size = mTagList.size();
         String[] item = new String[size];

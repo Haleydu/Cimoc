@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.core;
 
 import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Task;
@@ -77,7 +78,7 @@ public class Local {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<ImageUrl>> images(final DocumentFile dir, final String chapter) {
+    public static Observable<List<ImageUrl>> images(final DocumentFile dir, final Chapter chapter) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
@@ -92,7 +93,7 @@ public class Local {
                         return lhs.getName().compareTo(rhs.getName());
                     }
                 });
-                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter);
+                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter.getTitle(), chapter.getCount());
 
                 if (list.size() != 0) {
                     subscriber.onNext(list);
@@ -156,7 +157,7 @@ public class Local {
 
     private static Comic buildComic(DocumentFile dir, String cover) {
         return new Comic(null, Locality.TYPE, dir.getUri().toString(), dir.getName(), cover,
-                false, true, null, null, null, null, System.currentTimeMillis(), null, null);
+                false, true, null, null, null, null, System.currentTimeMillis(), null, null, null);
     }
 
     private static Task buildTask(DocumentFile dir, int count, boolean single) {

@@ -53,12 +53,6 @@
                     app:title="@string/settings_reader_hide_info"
                     app:summary="@string/settings_reader_hide_info_summary"/>
                 <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
-                    android:id="@+id/settings_reader_disable_popup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_disable_popup"
-                    app:summary="@string/settings_reader_disable_popup_summary"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_nav"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -144,7 +144,7 @@ public class Storage {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static List<ImageUrl> buildImageUrlFromDocumentFile(List<DocumentFile> list, String chapter) {
+    public static List<ImageUrl> buildImageUrlFromDocumentFile(List<DocumentFile> list, String chapter, int max) {
         int count = 0;
         List<ImageUrl> result = new ArrayList<>(list.size());
         for (DocumentFile file : list) {
@@ -162,6 +162,9 @@ public class Storage {
                 result.add(image);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+            if (count >= max) {
+                break;
             }
         }
         return result;

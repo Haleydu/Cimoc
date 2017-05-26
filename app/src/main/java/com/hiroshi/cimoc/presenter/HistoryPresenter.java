@@ -36,6 +36,10 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
         });
     }
 
+    public Comic load(long id) {
+        return mComicManager.load(id);
+    }
+
     public void load() {
         mCompositeSubscription.add(mComicManager.listHistoryInRx()
                 .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
@@ -58,10 +62,11 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
                 }));
     }
 
-    public void delete(MiniComic history) {
-        Comic comic = mComicManager.load(history.getId());
+    public void delete(long id) {
+        Comic comic = mComicManager.load(id);
         comic.setHistory(null);
         mComicManager.updateOrDelete(comic);
+        mBaseView.onHistoryDelete(id);
     }
 
     public void clear() {

@@ -56,7 +56,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_layout) View mSettingsLayout;
     @BindView(R.id.settings_reader_keep_bright) CheckBoxPreference mReaderKeepBright;
     @BindView(R.id.settings_reader_hide_info) CheckBoxPreference mReaderHideInfo;
-    @BindView(R.id.settings_reader_disable_popup) CheckBoxPreference mReaderDisablePopup;
     @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
     @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_reader_white_edge) CheckBoxPreference mReaderWhiteEdge;
@@ -88,7 +87,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mStoragePath = getAppInstance().getDocumentFile().getUri().toString();
         mReaderKeepBright.bindPreference(PreferenceManager.PREF_READER_KEEP_BRIGHT, false);
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
-        mReaderDisablePopup.bindPreference(PreferenceManager.PREF_READER_DISABLE_POPUP, false);
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false);
@@ -202,7 +200,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mReaderKeepBright.setColorStateList(stateList);
         mReaderHideInfo.setColorStateList(stateList);
-        mReaderDisablePopup.setColorStateList(stateList);
         mReaderHideNav.setColorStateList(stateList);
         mReaderPaging.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);

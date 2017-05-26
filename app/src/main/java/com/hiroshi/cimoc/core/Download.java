@@ -245,7 +245,7 @@ public class Download {
                     }
                 });
 
-                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter.getPath());
+                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter.getPath(), chapter.getCount());
                 if (list.size() != 0) {
                     subscriber.onNext(list);
                     subscriber.onCompleted();

@@ -32,7 +32,6 @@ public class PreferenceManager {
     public static final String PREF_READER_MODE = "pref_reader_mode";
     public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
-    public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
     public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
     public static final String PREF_READER_PAGING = "pref_reader_paging";
 
