@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.ui.custom.ChapterButton;
+import com.hiroshi.cimoc.ui.widget.ChapterButton;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.custom.preference;
+package com.hiroshi.cimoc.ui.widget.preference;
 
 import android.content.Context;
 import android.content.res.ColorStateList;

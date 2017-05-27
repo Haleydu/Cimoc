@@ -127,7 +127,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
             return;
         }
         String content =
-                StringUtils.format("%s  %s\n%s  %s\n%s  %s\n%s  %s\n%s  %s\n%s  %s\n%s  %s\n",
+                StringUtils.format("%s  %s\n%s  %s\n%s  %s\n%s  %s\n%s  %s",
                 getString(R.string.comic_info_title),
                 comic.getTitle(),
                 getString(R.string.comic_info_source),
@@ -135,19 +135,13 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
                 getString(R.string.comic_info_status),
                 comic.getFinish() == null ? getString(R.string.comic_status_finish) :
                         getString(R.string.comic_status_continue),
-                getString(R.string.comic_info_favorite),
-                comic.getFavorite() == null ? getString(R.string.common_null) :
-                        StringUtils.getFormatTime("yyyy-MM-dd HH:mm:ss", comic.getFavorite()),
-                getString(R.string.comic_info_history),
-                comic.getHistory() == null ? getString(R.string.common_null) :
-                        StringUtils.getFormatTime("yyyy-MM-dd HH:mm:ss", comic.getHistory()),
-                getString(R.string.comic_info_download),
-                comic.getDownload() == null ? getString(R.string.common_null) :
-                        StringUtils.getFormatTime("yyyy-MM-dd HH:mm:ss", comic.getDownload()),
                 getString(R.string.comic_info_chapter),
-                comic.getChapter() == null ? getString(R.string.common_null) : comic.getChapter());
+                comic.getChapter() == null ? getString(R.string.common_null) : comic.getChapter(),
+                getString(R.string.comic_info_time),
+                comic.getHistory() == null ? getString(R.string.common_null) :
+                        StringUtils.getFormatTime("yyyy-MM-dd HH:mm:ss", comic.getHistory()));
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.comic_info,
-                content, false, request);
+                content, true, request);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }

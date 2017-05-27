@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.view.DraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.listener.BaseRequestListener;
@@ -21,9 +22,9 @@ import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.processor.MangaPostprocessor;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
+import com.hiroshi.cimoc.ui.widget.OnTapGestureListener;
+import com.hiroshi.cimoc.ui.widget.PhotoDraweeView;
+import com.hiroshi.cimoc.ui.widget.RetryDraweeView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,8 +49,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
     private PipelineDraweeControllerBuilderSupplier mLargeControllerSupplier;
-    private OnSingleTapListener mSingleTapListener;
-    private OnLongPressListener mLongPressListener;
+    private OnTapGestureListener mTapGestureListener;
     private OnLazyLoadListener mLazyLoadListener;
     private @ReaderMode int reader;
     private boolean isVertical;
@@ -60,8 +60,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         super(context, list);
     }
 
-    static class ImageHolder extends BaseViewHolder {
-        @BindView(R.id.reader_image_view) PhotoDraweeView photoView;
+    public static class ImageHolder extends BaseViewHolder {
+        public @BindView(R.id.reader_image_view) RetryDraweeView draweeView;
 
         ImageHolder(View view) {
             super(view);
@@ -75,7 +75,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        int resId = viewType == TYPE_IMAGE ? R.layout.item_picture : R.layout.item_loading;
+        int resId = viewType == TYPE_IMAGE ? (reader == READER_PAGE ?
+                R.layout.item_picture : R.layout.item_picture_stream) : R.layout.item_loading;
         View view = mInflater.inflate(resId, parent, false);
         return new ImageHolder(view);
     }
@@ -91,21 +92,20 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             return;
         }
 
-        final PhotoDraweeView draweeView = ((ImageHolder) holder).photoView;
-        draweeView.setOnSingleTapListener(mSingleTapListener);
-        draweeView.setOnLongPressListener(mLongPressListener);
-        draweeView.setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
+        final DraweeView draweeView = ((ImageHolder) holder).draweeView;
 
         PipelineDraweeControllerBuilder builder = imageUrl.getSize() > App.mLargePixels ?
                 mLargeControllerSupplier.get() : mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
+                ((PhotoDraweeView) draweeView).setTapListenerListener(mTapGestureListener);
+                ((PhotoDraweeView) draweeView).setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
                         if (imageInfo != null) {
                             imageUrl.setSuccess(true);
-                            draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
+                            ((PhotoDraweeView) draweeView).update(imageUrl.getId());
                         }
                     }
                 });
@@ -122,7 +122,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                                 draweeView.getLayoutParams().width = ViewGroup.LayoutParams.WRAP_CONTENT;
                             }
                             draweeView.setAspectRatio((float) imageInfo.getWidth() / imageInfo.getHeight());
-                            draweeView.update(imageUrl.getId(), imageInfo.getWidth(), imageInfo.getHeight());
                         }
                     }
                 });
@@ -163,12 +162,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         mLargeControllerSupplier = large;
     }
 
-    public void setSingleTapListener(OnSingleTapListener listener) {
-        mSingleTapListener = listener;
-    }
-
-    public void setLongPressListener(OnLongPressListener listener) {
-        mLongPressListener = listener;
+    public void setTapGestureListener(OnTapGestureListener listener) {
+        mTapGestureListener = listener;
     }
 
     public void setLazyLoadListener(OnLazyLoadListener listener) {

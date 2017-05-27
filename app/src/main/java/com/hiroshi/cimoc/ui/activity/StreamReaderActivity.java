@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
+import com.hiroshi.cimoc.ui.widget.ZoomableRecyclerView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -28,6 +29,8 @@ public class StreamReaderActivity extends ReaderActivity {
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
         }
+        ((ZoomableRecyclerView) mRecyclerView).setVertical(turn == PreferenceManager.READER_TURN_ATB);
+        ((ZoomableRecyclerView) mRecyclerView).setTapListenerListener(this);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

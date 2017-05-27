@@ -59,6 +59,9 @@ public abstract class BaseFragment extends Fragment implements BaseView {
         return (App) getActivity().getApplication();
     }
 
+    @Override
+    public void onNightSwitch() {}
+
     private void initProgressBar() {
         if (mProgressBar != null) {
             int resId = ThemeUtils.getResourceId(getActivity(), R.attr.colorAccent);

@@ -15,10 +15,16 @@ public abstract class BasePresenter<T extends BaseView> {
     protected T mBaseView;
     protected CompositeSubscription mCompositeSubscription;
 
-    public void attachView(T mBaseView) {
-        this.mBaseView = mBaseView;
+    public void attachView(T view) {
+        this.mBaseView = view;
         onViewAttach();
         mCompositeSubscription = new CompositeSubscription();
+        addSubscription(RxEvent.EVENT_SWITCH_NIGHT, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.onNightSwitch();
+            }
+        });
         initSubscription();
     }
 

@@ -73,7 +73,7 @@ public class LocalFragment extends GridFragment implements LocalView {
                     showProgressDialog();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Uri uri = data.getData();
-                        int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         getActivity().getContentResolver().takePersistableUriPermission(uri, flags);
                         mPresenter.scan(DocumentFile.fromTreeUri(getActivity(), uri));
                     } else {
@@ -104,7 +104,7 @@ public class LocalFragment extends GridFragment implements LocalView {
                 switch (index) {
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                                R.string.history_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                                R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
                 }

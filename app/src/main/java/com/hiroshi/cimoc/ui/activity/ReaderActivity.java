@@ -35,12 +35,11 @@ import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
-import com.hiroshi.cimoc.ui.custom.PreCacheLayoutManager;
-import com.hiroshi.cimoc.ui.custom.ReverseSeekBar;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnLongPressListener;
-import com.hiroshi.cimoc.ui.custom.photo.PhotoDraweeView.OnSingleTapListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
+import com.hiroshi.cimoc.ui.widget.OnTapGestureListener;
+import com.hiroshi.cimoc.ui.widget.PreCacheLayoutManager;
+import com.hiroshi.cimoc.ui.widget.RetryDraweeView;
+import com.hiroshi.cimoc.ui.widget.ReverseSeekBar;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -61,8 +60,8 @@ import butterknife.OnClick;
 /**
  * Created by Hiroshi on 2016/8/6.
  */
-public abstract class ReaderActivity extends BaseActivity implements OnSingleTapListener,
-        OnProgressChangeListener, OnLongPressListener, OnLazyLoadListener, ReaderView {
+public abstract class ReaderActivity extends BaseActivity implements OnTapGestureListener,
+        OnProgressChangeListener, OnLazyLoadListener, ReaderView {
 
     @BindView(R.id.reader_chapter_title) TextView mChapterTitle;
     @BindView(R.id.reader_chapter_page) TextView mChapterPage;
@@ -173,8 +172,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
 
     private void initReaderAdapter() {
         mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
-        mReaderAdapter.setSingleTapListener(this);
-        mReaderAdapter.setLongPressListener(this);
+        mReaderAdapter.setTapGestureListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
         if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
@@ -439,18 +437,24 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
     }
 
     @Override
-    public void onSingleTap(PhotoDraweeView draweeView, float x, float y) {
-        doClickEvent(getValue(draweeView, x, y, false));
+    public void onSingleTap(float x, float y) {
+        doClickEvent(getValue(x, y, false));
     }
 
     @Override
-    public void onLongPress(PhotoDraweeView draweeView, float x, float y) {
-        doClickEvent(getValue(draweeView, x, y, true));
+    public void onLongPress(float x, float y) {
+        doClickEvent(getValue(x, y, true));
     }
 
-    private int getValue(PhotoDraweeView draweeView, float x, float y, boolean isLong) {
+    private int getValue(float x, float y, boolean isLong) {
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
+        int position = getCurPosition();
+        if (position == -1) {
+            position = mLayoutManager.findFirstVisibleItemPosition();
+        }
+        RetryDraweeView draweeView = ((ReaderAdapter.ImageHolder)
+                mRecyclerView.findViewHolderForAdapterPosition(position)).draweeView;
         float limitX = point.x / 3.0f;
         float limitY = point.y / 3.0f;
         if (x < limitX) {
@@ -523,6 +527,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnSingleTap
         if (mNightMask != null) {
             mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
         }
+        mPresenter.switchNight();
     }
 
     protected void reloadImage() {

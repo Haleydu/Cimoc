@@ -29,42 +29,42 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:text="@string/settings_reader"/>
-                <com.hiroshi.cimoc.ui.custom.preference.ChoicePreference
+                <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_reader_mode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_mode"/>
-                <com.hiroshi.cimoc.ui.custom.Option
+                <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_reader_config"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_config"
                     app:summary="@string/settings_reader_config_summary"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_keep_bright"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_keep_bright"
                     app:summary="@string/settings_reader_keep_bright_summary"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_hide_info"
                     app:summary="@string/settings_reader_hide_info_summary"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_nav"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_hide_nav"
                     app:summary="@string/settings_reader_hide_nav_summary"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_paging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_paging"
                     app:summary="@string/settings_reader_paging_summary"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_white_edge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -81,20 +81,20 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:text="@string/settings_download"/>
-                <com.hiroshi.cimoc.ui.custom.preference.SliderPreference
+                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_download_thread"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_download_thread"
                     app:min="1"
                     app:max="10"/>
-                <com.hiroshi.cimoc.ui.custom.Option
+                <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_download_scan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_download_scan"
                     app:summary="@string/settings_download_scan_summary"/>
-                <com.hiroshi.cimoc.ui.custom.Option
+                <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_download_delete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:text="@string/settings_search"/>
-                <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_search_auto_complete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -128,30 +128,30 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:text="@string/settings_other"/>
-                <com.hiroshi.cimoc.ui.custom.preference.ChoicePreference
+                <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_launch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_launch"/>
-                <com.hiroshi.cimoc.ui.custom.preference.ChoicePreference
+                <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_theme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_theme"/>
-                <com.hiroshi.cimoc.ui.custom.preference.SliderPreference
+                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_other_night_alpha"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_night_alpha"
                     app:min="100"
                     app:max="200"/>
-                <com.hiroshi.cimoc.ui.custom.Option
+                <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_other_storage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_storage"
                     app:summary="@string/settings_other_storage_summary"/>
-                <com.hiroshi.cimoc.ui.custom.Option
+                <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_other_clear_cache"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

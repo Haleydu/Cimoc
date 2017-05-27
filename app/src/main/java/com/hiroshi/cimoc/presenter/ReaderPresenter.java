@@ -188,6 +188,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         }
     }
 
+    public void switchNight() {
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_SWITCH_NIGHT));
+    }
+
     private void images(Observable<List<ImageUrl>> observable) {
         mCompositeSubscription.add(observable
                 .observeOn(AndroidSchedulers.mainThread())

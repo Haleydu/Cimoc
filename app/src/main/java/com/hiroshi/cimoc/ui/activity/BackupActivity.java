@@ -8,7 +8,7 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BackupPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
-import com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference;
+import com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
 import com.hiroshi.cimoc.ui.view.BackupView;
 import com.hiroshi.cimoc.utils.PermissionUtils;

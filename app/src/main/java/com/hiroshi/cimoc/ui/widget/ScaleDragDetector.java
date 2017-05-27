@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.custom.photo;
+package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;

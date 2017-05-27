@@ -9,7 +9,7 @@ import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourceDetailPresenter;
-import com.hiroshi.cimoc.ui.custom.Option;
+import com.hiroshi.cimoc.ui.widget.Option;
 import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SourceDetailView;
 

@@ -20,7 +20,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
 import com.hiroshi.cimoc.utils.PermissionUtils;
-import com.hiroshi.cimoc.utils.ViewUtils;
+import com.hiroshi.cimoc.ui.widget.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

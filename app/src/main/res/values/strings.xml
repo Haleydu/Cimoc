@@ -70,10 +70,8 @@
     <string name="comic_info_title">漫画名称</string>
     <string name="comic_info_source">图源名称</string>
     <string name="comic_info_status">漫画状态</string>
-    <string name="comic_info_favorite">收藏时间</string>
-    <string name="comic_info_history">历史时间</string>
-    <string name="comic_info_download">下载时间</string>
     <string name="comic_info_chapter">最后阅读</string>
+    <string name="comic_info_time">阅读时间</string>
 
     <string name="favorite_check_update">检查更新</string>
     <string name="favorite_check_update_fail">检查更新失败</string>

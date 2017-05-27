@@ -1,9 +1,9 @@
-package com.hiroshi.cimoc.ui.custom.rvp;
+package com.hiroshi.cimoc.ui.widget.rvp;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-public class ViewUtils {
+public class RecyclerViewUtils {
 
     /**
      * Get center child in X Axes

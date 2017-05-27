@@ -32,19 +32,19 @@
                         android:textColor="?attr/colorPrimary"
                         android:textSize="14sp"
                         android:text="@string/backup_save"/>
-                    <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+                    <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                         android:id="@+id/backup_save_favorite_auto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:title="@string/backup_save_favorite_auto"
                         app:summary="@string/backup_save_favorite_auto_summary"/>
-                    <com.hiroshi.cimoc.ui.custom.Option
+                    <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_save_favorite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:title="@string/backup_save_favorite"
                         app:summary="@string/backup_save_favorite_summary"/>
-                    <com.hiroshi.cimoc.ui.custom.Option
+                    <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_save_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -65,13 +65,13 @@
                         android:textColor="?attr/colorPrimary"
                         android:textSize="14sp"
                         android:text="@string/backup_restore"/>
-                    <com.hiroshi.cimoc.ui.custom.Option
+                    <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_restore_favorite"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:title="@string/backup_restore_favorite"
                         app:summary="@string/backup_restore_favorite_summary"/>
-                    <com.hiroshi.cimoc.ui.custom.Option
+                    <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_restore_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

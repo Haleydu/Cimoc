@@ -12,7 +12,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupp
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
-import com.hiroshi.cimoc.ui.custom.ChapterButton;
+import com.hiroshi.cimoc.ui.widget.ChapterButton;
 
 import java.util.List;
 

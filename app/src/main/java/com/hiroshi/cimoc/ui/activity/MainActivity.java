@@ -225,12 +225,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.drawer_night:
-                    night = !night;
+                    onNightSwitch();
                     mPreference.putBoolean(PreferenceManager.PREF_NIGHT, night);
-                    mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-                    if (mNightMask != null) {
-                        mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
-                    }
                     break;
                 case R.id.drawer_settings:
                     startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_ACTIVITY_SETTINGS);
@@ -289,6 +285,15 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     HintUtils.showToast(this, R.string.main_permission_fail);
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onNightSwitch() {
+        night = !night;
+        mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
+        if (mNightMask != null) {
+            mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
         }
     }
 

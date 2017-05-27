@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.custom;
+package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

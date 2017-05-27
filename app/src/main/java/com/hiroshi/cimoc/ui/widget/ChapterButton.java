@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.custom;
+package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.utils.ViewUtils;
 
 /**
  * Created by Hiroshi on 2016/10/2.
