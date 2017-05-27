@@ -42,6 +42,11 @@ public class LocalPresenter extends BasePresenter<LocalView> {
         mTaskManager = TaskManager.getInstance(mBaseView);
     }
 
+    // TODO 提取出来
+    public Comic load(long id) {
+        return mComicManager.load(id);
+    }
+
     public void load() {
         mCompositeSubscription.add(mComicManager.listLocalInRx()
                 .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {

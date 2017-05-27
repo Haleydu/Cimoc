@@ -128,6 +128,12 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp"
                     android:text="@string/settings_other"/>
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_other_check_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_other_check_update"
+                    app:summary="@string/settings_other_check_update_summary"/>
                 <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_launch"
                     android:layout_width="match_parent"

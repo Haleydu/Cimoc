@@ -41,7 +41,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
 
     protected GridAdapter mGridAdapter;
 
-    protected long mSavedId;
+    protected long mSavedId = -1;
 
     @Override
     protected BaseAdapter initAdapter() {
@@ -119,7 +119,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     }
 
     protected void showComicInfo(Comic comic, int request) {
-        if (comic == null || comic.getLocal()) {
+        if (comic == null) {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.common_execute_fail,
                     R.string.comic_info_not_found, false, request);
             fragment.setTargetFragment(this, 0);

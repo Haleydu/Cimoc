@@ -31,12 +31,13 @@ import java.util.List;
 public class LocalFragment extends GridFragment implements LocalView {
 
     private static final int DIALOG_REQUEST_SCAN = 1;
-    private static final int DIALOG_REQUEST_DELETE = 2;
+    private static final int DIALOG_REQUEST_INFO = 2;
+    private static final int DIALOG_REQUEST_DELETE = 3;
 
-    private static final int OPERATION_DELETE = 0;
+    private static final int OPERATION_INFO = 0;
+    private static final int OPERATION_DELETE = 1;
 
     private LocalPresenter mPresenter;
-    private long mSavedId = -1;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -102,6 +103,9 @@ public class LocalFragment extends GridFragment implements LocalView {
             case DIALOG_REQUEST_OPERATION:
                 int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
                 switch (index) {
+                    case OPERATION_INFO:
+                        showComicInfo(mPresenter.load(mSavedId), DIALOG_REQUEST_INFO);
+                        break;
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                                 R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
@@ -142,7 +146,7 @@ public class LocalFragment extends GridFragment implements LocalView {
 
     @Override
     protected String[] getOperationItems() {
-        return new String[]{ getString(R.string.local_delete) };
+        return new String[]{ getString(R.string.comic_info), getString(R.string.local_delete) };
     }
 
 }

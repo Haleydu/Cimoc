@@ -2,9 +2,12 @@ package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
@@ -13,6 +16,7 @@ import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.NotificationUtils;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -76,19 +80,23 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
                 }
                 break;
             case DIALOG_REQUEST_UPDATE:
-                if (mBuilder == null) {
-                    mPresenter.checkUpdate();
-                    mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
-                            R.string.favorite_check_update_doing, true, 0, 0, true);
-                    NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-                } else {
-                    HintUtils.showToast(getActivity(), R.string.favorite_check_update_doing);
-                }
+                checkUpdate();
                 break;
             case DIALOG_REQUEST_DELETE:
                 mPresenter.unfavoriteComic(mSavedId);
                 HintUtils.showToast(getActivity(), R.string.common_execute_success);
                 break;
+        }
+    }
+
+    private void checkUpdate() {
+        if (mBuilder == null) {
+            mPresenter.checkUpdate();
+            mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
+                    R.string.favorite_check_update_doing, true, 0, 0, true);
+            NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+        } else {
+            HintUtils.showToast(getActivity(), R.string.favorite_check_update_doing);
         }
     }
 
@@ -98,6 +106,23 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
                 R.string.favorite_check_update_confirm, true, DIALOG_REQUEST_UPDATE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onComicLoadSuccess(List<MiniComic> list) {
+        super.onComicLoadSuccess(list);
+        WifiManager manager =
+                (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (manager.isWifiEnabled() &&
+                mPreference.getBoolean(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false)) {
+            Calendar calendar = Calendar.getInstance();
+            int day = calendar.get(Calendar.DAY_OF_YEAR);
+            calendar.setTimeInMillis(mPreference.getLong(PreferenceManager.PREF_OTHER_CHECK_UPDATE_LAST, 0));
+            if (day != calendar.get(Calendar.DAY_OF_YEAR)) {
+                mPreference.putLong(PreferenceManager.PREF_OTHER_CHECK_UPDATE_LAST, System.currentTimeMillis());
+                checkUpdate();
+            }
+        }
     }
 
     @Override

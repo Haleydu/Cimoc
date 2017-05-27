@@ -9,6 +9,7 @@ Online manga reader based on Android
 - 卷纸阅读（Scroll Reader）
 - 检查漫画更新（Check Manga For Update）
 - 下载漫画（Download Manga）
+- 本地漫画（Local Reader）
 - 本地备份恢复（Local Backup）
 
 # 支持网站
@@ -36,6 +37,7 @@ Online manga reader based on Android
 - [RecyclerViewPager](https://github.com/lsjwzh/RecyclerViewPager)
 - [PhotoDraweeView](https://github.com/ongakuer/PhotoDraweeView)
 - [Rhino](https://github.com/mozilla/rhino)
+- [BlazingChain](https://github.com/tommyettinger/BlazingChain)
 
 # ToDo
 - ~~综合搜索~~
@@ -46,15 +48,15 @@ Online manga reader based on Android
 - ~~阅读状态自定义点击事件~~
 
 # 应用截图
-<img src="./screenshot/01.png" width="30%" height="30%">
-<img src="./screenshot/02.png" width="30%" height="30%">
-<img src="./screenshot/03.png" width="30%" height="30%">
-<img src="./screenshot/04.png" width="30%" height="30%">
-<img src="./screenshot/05.png" width="30%" height="30%">
-<img src="./screenshot/06.png" width="30%" height="30%">
-<img src="./screenshot/07.png" width="30%" height="30%">
-<img src="./screenshot/08.png" width="30%" height="30%">
-<img src="./screenshot/09.png" width="30%" height="30%">
+<img src="./screenshot/01.png" width="250">
+<img src="./screenshot/02.png" width="250">
+<img src="./screenshot/03.png" width="250">
+<img src="./screenshot/04.png" width="250">
+<img src="./screenshot/05.png" width="250">
+<img src="./screenshot/06.png" width="250">
+<img src="./screenshot/07.png" width="250">
+<img src="./screenshot/08.png" width="250">
+<img src="./screenshot/09.png" width="250">
 
 # 增加图源
 - 继承 MangaParser 类，参照 Parser 接口的注释

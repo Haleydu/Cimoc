@@ -38,7 +38,7 @@ public class ComicManager {
 
     public List<Comic> listDownload() {
         return mComicDao.queryBuilder()
-                .where(Properties.Download.isNotNull(), Properties.Local.eq(false))
+                .where(Properties.Download.isNotNull())
                 .list();
     }
 
@@ -65,7 +65,7 @@ public class ComicManager {
 
     public Observable<List<Comic>> listFinishInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull(), Properties.Local.eq(false), Properties.Finish.eq(true))
+                .where(Properties.Favorite.isNotNull(), Properties.Finish.eq(true))
                 .orderDesc(Properties.Highlight, Properties.Favorite)
                 .rx()
                 .list();
@@ -89,7 +89,7 @@ public class ComicManager {
 
     public Observable<List<Comic>> listDownloadInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Download.isNotNull(), Properties.Local.eq(false))
+                .where(Properties.Download.isNotNull())
                 .orderDesc(Properties.Download)
                 .rx()
                 .list();

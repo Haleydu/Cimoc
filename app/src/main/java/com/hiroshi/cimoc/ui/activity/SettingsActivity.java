@@ -60,6 +60,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_reader_white_edge) CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
+    @BindView(R.id.settings_other_check_update) CheckBoxPreference mCheckUpdate;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
     @BindView(R.id.settings_other_theme) ChoicePreference mOtherTheme;
@@ -91,6 +92,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
+        mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
         mOtherLaunch.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_LAUNCH,
@@ -204,6 +206,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPaging.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
+        mCheckUpdate.setColorStateList(stateList);
     }
 
     @OnClick(R.id.settings_other_storage) void onOtherStorageClick() {

@@ -148,13 +148,16 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     private Pair<List<Comic>, List<Task>> findInvalid(LongSparseArray<Comic> array) {
-        List<Task> tList = new LinkedList<>();
-        List<Comic> cList = new LinkedList<>();
-        Set<Long> set = new HashSet<>();
+        List<Task> tList = new LinkedList<>();  // 无效任务列表
+        List<Comic> cList = new LinkedList<>(); // 无效漫画列表
+        Set<Long> set = new HashSet<>();        // 有效漫画 ID
         for (Task task : mTaskManager.listValid()) {
             Comic comic = array.get(task.getKey());
-            if (comic == null || Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(), comic,
-                    new Chapter(task.getTitle(), task.getPath()), mSourceManager.getParser(comic.getSource()).getTitle()) == null) {
+            if (comic == null) {
+                tList.add(task);
+            } else if (Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(),
+                    comic, new Chapter(task.getTitle(), task.getPath()),
+                    mSourceManager.getParser(comic.getSource()).getTitle()) == null) {
                 tList.add(task);
             } else {
                 set.add(task.getKey());

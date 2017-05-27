@@ -59,10 +59,10 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
         ComicDao.createTable(db, false);
         db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", " +
-                "\"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"LAST\", " +
-                "\"PAGE\", \"CHAPTER\") SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", " +
-                "\"COVER\", \"UPDATE\", \"HIGHLIGHT\", 0, \"FAVORITE\", \"HISTORY\", \"LAST\", " +
-                "\"PAGE\", null FROM \"COMIC2\"");
+                "\"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", " +
+                "\"LAST\",  \"PAGE\", \"CHAPTER\") SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", " +
+                "\"COVER\", \"UPDATE\", \"HIGHLIGHT\", 0, \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", " +
+                "\"LAST\",  \"PAGE\", null FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.setTransactionSuccessful();
         db.endTransaction();

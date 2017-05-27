@@ -125,7 +125,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         if (mComic.getLocal()) {
             DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
                     DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
-                    DocumentFile.fromFile(new File(chapter.getPath()));
+                    DocumentFile.fromFile(new File(Uri.parse(chapter.getPath()).getPath()));
             return Local.images(dir, chapter);
         }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
@@ -203,6 +203,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                             case LOAD_INIT:
                                 chapter = mChapterManger.moveNext();
                                 chapter.setCount(list.size());
+                                if (!chapter.getTitle().equals(mComic.getTitle())) {
+                                    mComic.setChapter(chapter.getTitle());
+                                    mComicManager.update(mComic);
+                                }
                                 mBaseView.onChapterChange(chapter);
                                 mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
                                 break;
