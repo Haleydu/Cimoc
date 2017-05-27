@@ -1,6 +1,10 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.net.Uri;
+import android.os.Build;
+
 import com.hiroshi.cimoc.core.Download;
+import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.manager.ComicManager;
@@ -10,9 +14,11 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
+import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -116,6 +122,12 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     }
 
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
+        if (mComic.getLocal()) {
+            DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
+                    DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
+                    DocumentFile.fromFile(new File(Uri.parse(chapter.getPath()).getPath()));
+            return Local.images(dir, chapter);
+        }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
                 Manga.getChapterImage(mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
@@ -138,6 +150,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private void updateChapter(Chapter chapter, boolean isNext) {
         mBaseView.onChapterChange(chapter);
         mComic.setLast(chapter.getPath());
+        mComic.setChapter(chapter.getTitle());
         mComic.setPage(isNext ? 1 : chapter.getCount());
         mComicManager.update(mComic);
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE, mComic.getId()));
@@ -175,6 +188,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         }
     }
 
+    public void switchNight() {
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_SWITCH_NIGHT));
+    }
+
     private void images(Observable<List<ImageUrl>> observable) {
         mCompositeSubscription.add(observable
                 .observeOn(AndroidSchedulers.mainThread())
@@ -186,8 +203,12 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                             case LOAD_INIT:
                                 chapter = mChapterManger.moveNext();
                                 chapter.setCount(list.size());
+                                if (!chapter.getTitle().equals(mComic.getTitle())) {
+                                    mComic.setChapter(chapter.getTitle());
+                                    mComicManager.update(mComic);
+                                }
                                 mBaseView.onChapterChange(chapter);
-                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource());
+                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
                                 break;
                             case LOAD_PREV:
                                 chapter = mChapterManger.movePrev();

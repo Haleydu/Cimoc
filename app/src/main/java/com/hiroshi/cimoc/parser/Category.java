@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.parser;
 
 import android.support.annotation.IntDef;
 
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

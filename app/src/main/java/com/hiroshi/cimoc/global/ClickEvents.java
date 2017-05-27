@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.global;
 
+import android.content.Context;
+
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 
@@ -22,6 +24,9 @@ public class ClickEvents {
     public static final int EVENT_SWITCH_MODE = 10;
     public static final int EVENT_SWITCH_CONTROL = 11;
     public static final int EVENT_RELOAD_IMAGE = 12;
+    public static final int EVENT_SWITCH_NIGHT = 13;
+
+    private static String[] mEventTitle;
 
     public static String[] getPageClickEvents() {
         return new String[] { PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
@@ -93,35 +98,18 @@ public class ClickEvents {
         return array;
     }
 
-    public static int getTitleId(int value) {
-        switch (value) {
-            case EVENT_PREV_PAGE:
-                return R.string.event_prev_page;
-            case EVENT_NEXT_PAGE:
-                return R.string.event_next_page;
-            case EVENT_SAVE_PICTURE:
-                return R.string.event_save_picture;
-            case EVENT_LOAD_PREV:
-                return R.string.event_load_prev;
-            case EVENT_LOAD_NEXT:
-                return R.string.event_load_next;
-            case EVENT_EXIT_READER:
-                return R.string.event_exit_reader;
-            case EVENT_TO_FIRST:
-                return R.string.event_to_first;
-            case EVENT_TO_LAST:
-                return R.string.event_to_last;
-            case EVENT_SWITCH_SCREEN:
-                return R.string.event_switch_screen;
-            case EVENT_SWITCH_MODE:
-                return R.string.event_switch_mode;
-            case EVENT_SWITCH_CONTROL:
-                return R.string.event_switch_control;
-            case EVENT_RELOAD_IMAGE:
-                return R.string.event_reload_image;
-            default:
-                return R.string.event_null;
+    public static String[] getEventTitleArray(Context context) {
+        if (mEventTitle == null) {
+            mEventTitle = context.getResources().getStringArray(R.array.event_items);
         }
+        return mEventTitle;
+    }
+
+    public static String getEventTitle(Context context, int value) {
+        if (mEventTitle == null) {
+            mEventTitle = context.getResources().getStringArray(R.array.event_items);
+        }
+        return mEventTitle[value];
     }
 
 }

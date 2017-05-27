@@ -42,16 +42,19 @@ public class Node {
     }
 
     public String text() {
-        return element.text().trim();
+        try {
+            return element.text().trim();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String text(String cssQuery) {
         try {
             return element.select(cssQuery).first().text().trim();
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public String textWithSubstring(String cssQuery, int start, int end) {
@@ -70,18 +73,16 @@ public class Node {
         try {
             return element.attr(attr).trim();
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public String attr(String cssQuery, String attr) {
         try {
             return element.select(cssQuery).first().attr(attr).trim();
         } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public String attrWithSubString(String attr, int start, int end) {

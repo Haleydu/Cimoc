@@ -1,9 +1,9 @@
 package com.hiroshi.cimoc.source;
 
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -81,27 +81,19 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public Request getChapterRequest(String html, String cid) {
-        String url = "http://m.ikanman.com/support/chapters.aspx?id=".concat(cid);
-        return new Request.Builder().url(url).build();
-    }
-
-    @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("div.chapter-list")) {
-            List<Chapter> ulList = new LinkedList<>();
-            for (Node ul : node.list("ul")) {
-                List<Chapter> liList = new LinkedList<>();
-                for (Node li : ul.list("li > a")) {
-                    String title = li.attr("title");
-                    String path = li.hrefWithSplit(2);
-                    liList.add(new Chapter(title, path));
-                }
-                ulList.addAll(0, liList);
-            }
-            list.addAll(ulList);
+        String baseText = body.id("__VIEWSTATE").attr("value");
+        if (!StringUtils.isEmpty(baseText)) {
+            body = new Node(DecryptionUtils.LZ64Decrypt(baseText));
+        } else {
+            body = body.id("chapterList");
+        }
+        for (Node li : body.list("li > a")) {
+            String title = li.text();
+            String path = li.hrefWithSplit(2);
+            list.add(new Chapter(title, path));
         }
         return list;
     }

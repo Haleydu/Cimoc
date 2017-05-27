@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,10 @@ import android.widget.TextView;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.manager.SourceManager;
@@ -63,9 +68,13 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         gridHolder.comicTitle.setText(comic.getTitle());
         gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         if (mProvider != null) {
+            ImageRequest request = ImageRequestBuilder
+                    .newBuilderWithSource(Uri.parse(comic.getCover()))
+                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels, App.mCoverHeightPixels))
+                    .build();
             DraweeController controller = mProvider.get(comic.getSource())
                     .setOldController(gridHolder.comicImage.getController())
-                    .setUri(comic.getCover())
+                    .setImageRequest(request)
                     .build();
             gridHolder.comicImage.setController(controller);
         }

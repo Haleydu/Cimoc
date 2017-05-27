@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hiroshi.cimoc.ui.widget.RetryDraweeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/reader_image_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    fresco:progressBarImage="@drawable/reader_progress"
+    fresco:progressBarImageScaleType="center"
+    fresco:retryImage="@drawable/ic_replay_white_24dp"
+    fresco:retryImageScaleType="center"
+    fresco:failureImage="@drawable/ic_clear_white_24dp"
+    fresco:failureImageScaleType="center"/>

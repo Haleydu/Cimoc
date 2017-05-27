@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.custom.rvp;
+package com.hiroshi.cimoc.ui.widget.rvp;
 
 import android.content.Context;
 import android.graphics.PointF;
@@ -207,9 +207,9 @@ public class RecyclerViewPager extends RecyclerView {
     public int getCurrentPosition() {
         int curPosition;
         if (getLayoutManager().canScrollHorizontally()) {
-            curPosition = ViewUtils.getCenterXChildPosition(this);
+            curPosition = RecyclerViewUtils.getCenterXChildPosition(this);
         } else {
-            curPosition = ViewUtils.getCenterYChildPosition(this);
+            curPosition = RecyclerViewUtils.getCenterYChildPosition(this);
         }
         if (curPosition < 0) {
             curPosition = mSmoothScrollTargetPosition;
@@ -225,14 +225,14 @@ public class RecyclerViewPager extends RecyclerView {
 
         int childCount = getChildCount();
         if (childCount > 0) {
-            int curPosition = ViewUtils.getCenterXChildPosition(this);
+            int curPosition = RecyclerViewUtils.getCenterXChildPosition(this);
             int childWidth = getWidth() - getPaddingLeft() - getPaddingRight();
             int flingCount = Math.max(-1, Math.min(1, getFlingCount(velocityX, childWidth)));
             int targetPosition = flingCount == 0 ? curPosition : mPositionOnTouchDown + flingCount;
             targetPosition = Math.max(targetPosition, 0);
             targetPosition = Math.min(targetPosition, getItemCount() - 1);
             if (targetPosition == curPosition && mPositionOnTouchDown == curPosition) {
-                View centerXChild = ViewUtils.getCenterXChild(this);
+                View centerXChild = RecyclerViewUtils.getCenterXChild(this);
                 if (centerXChild != null) {
                     if (mTouchSpan > centerXChild.getWidth() * mTriggerOffset * mTriggerOffset && targetPosition != 0) {
                         if (!reverseLayout) targetPosition--;
@@ -255,14 +255,14 @@ public class RecyclerViewPager extends RecyclerView {
 
         int childCount = getChildCount();
         if (childCount > 0) {
-            int curPosition = ViewUtils.getCenterYChildPosition(this);
+            int curPosition = RecyclerViewUtils.getCenterYChildPosition(this);
             int childHeight = getHeight() - getPaddingTop() - getPaddingBottom();
             int flingCount = Math.max(-1, Math.min(1, getFlingCount(velocityY, childHeight)));
             int targetPosition = flingCount == 0 ? curPosition : mPositionOnTouchDown + flingCount;
             targetPosition = Math.max(targetPosition, 0);
             targetPosition = Math.min(targetPosition, getItemCount() - 1);
             if (targetPosition == curPosition && mPositionOnTouchDown == curPosition) {
-                View centerYChild = ViewUtils.getCenterYChild(this);
+                View centerYChild = RecyclerViewUtils.getCenterYChild(this);
                 if (centerYChild != null) {
                     if (mTouchSpan > centerYChild.getHeight() * mTriggerOffset && targetPosition != 0) {
                         if (!reverseLayout) targetPosition--;
@@ -302,8 +302,8 @@ public class RecyclerViewPager extends RecyclerView {
             case MotionEvent.ACTION_DOWN:
                 if (getLayoutManager() != null) {
                     mPositionOnTouchDown = getLayoutManager().canScrollHorizontally()
-                            ? ViewUtils.getCenterXChildPosition(this)
-                            : ViewUtils.getCenterYChildPosition(this);
+                            ? RecyclerViewUtils.getCenterXChildPosition(this)
+                            : RecyclerViewUtils.getCenterYChildPosition(this);
                 }
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
@@ -337,8 +337,8 @@ public class RecyclerViewPager extends RecyclerView {
         super.onScrollStateChanged(state);
         if (state == SCROLL_STATE_DRAGGING) {
             mNeedAdjust = true;
-            mCurView = getLayoutManager().canScrollHorizontally() ? ViewUtils.getCenterXChild(this) :
-                    ViewUtils.getCenterYChild(this);
+            mCurView = getLayoutManager().canScrollHorizontally() ? RecyclerViewUtils.getCenterXChild(this) :
+                    RecyclerViewUtils.getCenterYChild(this);
             if (mCurView != null) {
                 if (mHasCalledOnPageChanged) {
                     // While rvp is scrolling, mPositionBeforeScroll will be previous value.
@@ -365,8 +365,8 @@ public class RecyclerViewPager extends RecyclerView {
             mCurView = null;
         } else if (state == SCROLL_STATE_IDLE) {
             if (mNeedAdjust) {
-                int targetPosition = getLayoutManager().canScrollHorizontally() ? ViewUtils.getCenterXChildPosition(this) :
-                        ViewUtils.getCenterYChildPosition(this);
+                int targetPosition = getLayoutManager().canScrollHorizontally() ? RecyclerViewUtils.getCenterXChildPosition(this) :
+                        RecyclerViewUtils.getCenterYChildPosition(this);
                 if (mCurView != null) {
                     targetPosition = getChildAdapterPosition(mCurView);
                     if (getLayoutManager().canScrollHorizontally()) {

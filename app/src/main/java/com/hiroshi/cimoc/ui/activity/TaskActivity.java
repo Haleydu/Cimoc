@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +22,9 @@ import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.service.DownloadService.DownloadServiceBinder;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.TaskAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.ItemDialogFragment;
 import com.hiroshi.cimoc.ui.view.TaskView;
+import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
 
 import java.util.ArrayList;
@@ -36,13 +39,19 @@ import butterknife.OnClick;
  */
 public class TaskActivity extends CoordinatorActivity implements TaskView {
 
-    public static final int REQUEST_CODE_DELETE = 0;
+    private static final int REQUEST_CODE_DELETE = 0;
+    private static final int DIALOG_REQUEST_OPERATION = 1;
+
+    private static final int OPERATION_READ = 0;
+    private static final int OPERATION_DELETE = 1;
 
     private TaskAdapter mTaskAdapter;
     private TaskPresenter mPresenter;
     private ServiceConnection mConnection;
     private DownloadServiceBinder mBinder;
     private boolean mTaskOrder;
+
+    private Task mSavedTask;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -100,7 +109,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         Task task = mTaskAdapter.getItem(position);
         switch (task.getState()) {
             case Task.STATE_FINISH:
-                startReader(task.getPath());
+                startReader(task.getPath(), false);
                 break;
             case Task.STATE_PAUSE:
             case Task.STATE_ERROR:
@@ -122,15 +131,48 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
+    public void onItemLongClick(View view, int position) {
+        mSavedTask = mTaskAdapter.getItem(position);
+        String[] item = { getString(R.string.task_read), getString(R.string.task_delete) };
+        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
+                item, DIALOG_REQUEST_OPERATION);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        switch (requestCode) {
+            case DIALOG_REQUEST_OPERATION:
+                int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+                switch (index) {
+                    case OPERATION_READ:
+                        startReader(mSavedTask.getPath(), true);
+                        break;
+                    case OPERATION_DELETE:
+                        showProgressDialog();
+                        List<Chapter> list = new ArrayList<>(1);
+                        list.add(new Chapter(mSavedTask.getTitle(), mSavedTask.getPath(), mSavedTask.getId()));
+                        if (!mPresenter.getComic().getLocal()) {
+                            mBinder.getService().removeDownload(mSavedTask.getId());
+                        }
+                        mPresenter.deleteTask(list, mTaskAdapter.getItemCount() == 1);
+                        break;
+                }
+                break;
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!mTaskAdapter.getDateSet().isEmpty()) {
             switch (item.getItemId()) {
                 case R.id.task_history:
                     String path = mPresenter.getComic().getLast();
                     if (path == null) {
-                        path = mTaskAdapter.getItem(mTaskOrder ? 0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                        path = mTaskAdapter.getItem(mTaskOrder ?
+                                0 : mTaskAdapter.getDateSet().size() - 1).getPath();
                     }
-                    startReader(path);
+                    startReader(path, true);
                     break;
                 case R.id.task_delete:
                     ArrayList<Chapter> list = new ArrayList<>(mTaskAdapter.getItemCount());
@@ -139,6 +181,24 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     }
                     Intent intent = ChapterActivity.createIntent(this, list);
                     startActivityForResult(intent, REQUEST_CODE_DELETE);
+                    break;
+                case R.id.detail_search_title:
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(),
+                                null, ResultActivity.LAUNCH_MODE_SEARCH);
+                        startActivity(intent);
+                    } else {
+                        showSnackbar(R.string.common_keyword_empty);
+                    }
+                    break;
+                case R.id.detail_search_author:
+                    if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
+                        intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(),
+                                null, ResultActivity.LAUNCH_MODE_SEARCH);
+                        startActivity(intent);
+                    } else {
+                        showSnackbar(R.string.common_keyword_empty);
+                    }
                     break;
                 case R.id.task_sort:
                     mTaskAdapter.reverse();
@@ -150,10 +210,12 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         return super.onOptionsItemSelected(item);
     }
 
-    private void startReader(String path) {
+    private void startReader(String path, boolean preview) {
         List<Chapter> list = new ArrayList<>();
         for (Task t : mTaskAdapter.getDateSet()) {
-            if (t.getState() == Task.STATE_FINISH) {
+            if (preview && t.getProgress() > 0) {
+                list.add(new Chapter(t.getTitle(), t.getPath(), t.getProgress(), true, true, t.getId()));
+            } else if (t.getState() == Task.STATE_FINISH) {
                 list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true, t.getId()));
             }
         }
@@ -202,27 +264,33 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
-    public void onTaskLoadSuccess(final List<Task> list) {
+    public void onTaskLoadSuccess(final List<Task> list, boolean local) {
         mTaskAdapter.setColorId(ThemeUtils.getResourceId(this, R.attr.colorAccent));
         mTaskAdapter.setLast(mPresenter.getComic().getLast());
         mTaskAdapter.addAll(list);
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mBinder = (DownloadServiceBinder) service;
-                mBinder.getService().initTask(mTaskAdapter.getDateSet());
-                hideProgressBar();
-            }
+        if (!local) {
+            mConnection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    mBinder = (DownloadServiceBinder) service;
+                    mBinder.getService().initTask(mTaskAdapter.getDateSet());
+                    hideProgressBar();
+                }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {}
-        };
-        bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
+                @Override
+                public void onServiceDisconnected(ComponentName name) {}
+            };
+            bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
+        } else {
+            hideProgressBar();
+            mLayoutView.removeView(mActionButton);
+        }
     }
 
     @Override
     public void onTaskLoadFail() {
         hideProgressBar();
+        mLayoutView.removeView(mActionButton);
         showSnackbar(R.string.task_load_task_fail);
     }
 

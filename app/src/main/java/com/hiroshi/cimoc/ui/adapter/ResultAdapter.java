@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.View;
@@ -9,6 +10,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.manager.SourceManager;
@@ -57,7 +62,11 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicAuthor.setText(comic.getAuthor());
         viewHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         viewHolder.comicUpdate.setText(comic.getUpdate());
-        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setUri(comic.getCover()).build());
+        ImageRequest request = ImageRequestBuilder
+                .newBuilderWithSource(Uri.parse(comic.getCover()))
+                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels, App.mCoverHeightPixels))
+                .build();
+        viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setImageRequest(request).build());
     }
 
     public void setProvider(ControllerBuilderProvider provider) {

@@ -104,9 +104,13 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onDownloadDeleteFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
+    }
+
+    public Comic load(long id) {
+        return mComicManager.load(id);
     }
 
     public void load() {
@@ -169,7 +173,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onTaskLoadFail();
+                        mBaseView.onExecuteFail();
                     }
                 }));
     }

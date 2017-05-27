@@ -13,4 +13,10 @@
     <item android:id="@+id/task_delete"
         android:title="@string/task_delete"
         app:showAsAction="never" />
+    <item android:id="@+id/detail_search_title"
+        android:title="@string/detail_search_title"
+        app:showAsAction="never"/>
+    <item android:id="@+id/detail_search_author"
+        android:title="@string/detail_search_author"
+        app:showAsAction="never"/>
 </menu>

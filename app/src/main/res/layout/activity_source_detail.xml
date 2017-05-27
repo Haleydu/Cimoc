@@ -9,24 +9,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <include layout="@layout/custom_toolbar"/>
-        <com.hiroshi.cimoc.ui.custom.Option
+        <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/source_detail_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             app:title="@string/source_detail_type"/>
-        <com.hiroshi.cimoc.ui.custom.Option
+        <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/source_detail_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             app:title="@string/source_detail_title"/>
-        <com.hiroshi.cimoc.ui.custom.Option
+        <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/source_detail_favorite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/source_detail_favorite"/>
-        <com.hiroshi.cimoc.ui.custom.Option
+        <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/source_detail_server"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

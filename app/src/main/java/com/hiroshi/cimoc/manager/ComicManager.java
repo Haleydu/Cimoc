@@ -42,6 +42,19 @@ public class ComicManager {
                 .list();
     }
 
+    public List<Comic> listLocal() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Local.eq(true))
+                .list();
+    }
+
+    public Observable<List<Comic>> listLocalInRx() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Local.eq(true))
+                .rx()
+                .list();
+    }
+
     public Observable<List<Comic>> listFavoriteInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull())
@@ -146,6 +159,10 @@ public class ComicManager {
         } else {
             update(comic);
         }
+    }
+
+    public void deleteByKey(long key) {
+        mComicDao.deleteByKey(key);
     }
 
     public void insert(Comic comic) {

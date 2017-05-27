@@ -7,10 +7,10 @@ import com.hiroshi.cimoc.model.MiniComic;
  */
 public interface HistoryView extends GridView {
 
+    void onHistoryDelete(long id);
+
     void onItemUpdate(MiniComic comic);
 
     void onHistoryClearSuccess();
-
-    void onHistoryClearFail();
 
 }

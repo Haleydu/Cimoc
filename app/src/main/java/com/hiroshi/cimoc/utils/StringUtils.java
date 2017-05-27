@@ -11,6 +11,17 @@ import java.util.regex.Pattern;
  */
 public class StringUtils {
 
+    public static boolean endWith(String str, String... args) {
+        if (str != null) {
+            for (String arg : args) {
+                if (str.endsWith(arg)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static String filter(String str) {
         if (str == null) {
             return null;
@@ -68,6 +79,10 @@ public class StringUtils {
 
     public static String getProgress(int progress, int max) {
         return format("%d/%d", progress, max);
+    }
+
+    public static String getFormatTime(String format, long time) {
+        return new SimpleDateFormat(format, Locale.getDefault()).format(new Date(time));
     }
 
     public static String getDateStringWithSuffix(String suffix) {

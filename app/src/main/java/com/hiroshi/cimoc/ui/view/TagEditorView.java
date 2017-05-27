@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Tag;
 
 import java.util.List;

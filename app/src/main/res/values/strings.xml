@@ -4,6 +4,7 @@
     <string name="drawer_comic">漫画</string>
     <string name="drawer_source">图源</string>
     <string name="drawer_tag">标签</string>
+    <string name="drawer_picture">截图</string>
     <string name="drawer_settings">设置</string>
     <string name="drawer_about">关于</string>
     <string name="drawer_light">日间模式</string>
@@ -42,7 +43,6 @@
     <string name="detail_tag">编辑标签</string>
     <string name="detail_search_title">搜索标题</string>
     <string name="detail_search_author">搜索作者</string>
-    <string name="detail_search_empty">关键字为空</string>
 
     <string name="tag_editor">标签编辑</string>
 
@@ -58,20 +58,31 @@
     <string name="comic_tab_favorite">收藏</string>
     <string name="comic_tab_history">历史</string>
     <string name="comic_tab_download">下载</string>
+    <string name="comic_tab_local">本地</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
-    <string name="comic_filter_continue">连载</string>
-    <string name="comic_filter_finish">完结</string>
+    <string name="comic_status_continue">连载</string>
+    <string name="comic_status_finish">完结</string>
     <string name="comic_tag_select">标签选择</string>
+    <string name="comic_info">漫画信息</string>
+    <string name="comic_info_not_found">找不到漫画信息</string>
+    <string name="comic_info_title">漫画名称</string>
+    <string name="comic_info_source">图源名称</string>
+    <string name="comic_info_status">漫画状态</string>
+    <string name="comic_info_chapter">最后阅读</string>
+    <string name="comic_info_time">阅读时间</string>
 
     <string name="favorite_check_update">检查更新</string>
     <string name="favorite_check_update_fail">检查更新失败</string>
     <string name="favorite_check_update_confirm">是否检查更新</string>
     <string name="favorite_check_update_doing">正在检查更新</string>
     <string name="favorite_check_update_done">检查更新完成</string>
+    <string name="favorite_delete">取消收藏</string>
+    <string name="favorite_delete_confirm">是否取消收藏</string>
 
-    <string name="history_delete_confirm">是否删除该历史纪录</string>
+    <string name="history_delete">删除历史</string>
+    <string name="history_delete_confirm">是否删除历史</string>
     <string name="history_clear_confirm">是否清除所有历史纪录</string>
 
     <string name="reader_prev_none">前面没有了</string>
@@ -119,8 +130,6 @@
     <string name="settings_reader_load_next_summary">位于最后一页自动加载下一章</string>
     <string name="settings_reader_white_edge">自动裁剪白边</string>
     <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
-    <string name="settings_reader_disable_popup">禁用进度指示</string>
-    <string name="settings_reader_disable_popup_summary">阅读状态禁用进度指示</string>
     <string name="settings_reader_keep_bright">保持屏幕常亮</string>
     <string name="settings_reader_keep_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
@@ -144,6 +153,8 @@
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
+    <string name="settings_other_check_update">自动检查漫画更新</string>
+    <string name="settings_other_check_update_summary">WIFI 环境下自动检查漫画更新</string>
     <string name="settings_other_launch">默认启动页</string>
     <string name="settings_other_theme">主题颜色</string>
     <string name="settings_other_night_alpha">夜间模式亮度</string>
@@ -195,6 +206,10 @@
     <string name="dialog_negative">取消</string>
     <string name="dialog_doing">正在执行中</string>
 
+    <string name="local_add">添加目录</string>
+    <string name="local_delete">删除漫画</string>
+    <string name="local_delete_confirm">是否删除漫画（不会删除文件）</string>
+
     <string name="tag_add">添加标签</string>
     <string name="tag_add_empty">标签名称不能为空</string>
     <string name="tag_delete_confirm">是否删除标签</string>
@@ -212,6 +227,7 @@
     <string name="download_task_fail">读取任务失败</string>
     <string name="download_ask_stop">请先暂停下载任务</string>
     <string name="download_action_confirm">是否开始或暂停下载</string>
+    <string name="download_delete">删除漫画</string>
     <string name="download_delete_confirm">是否删除下载</string>
 
     <string name="task_parse">正在解析</string>
@@ -224,6 +240,7 @@
     <string name="task_history">继续阅读</string>
     <string name="task_load_task_fail">读取任务失败</string>
     <string name="task_delete">删除任务</string>
+    <string name="task_read">阅读漫画</string>
     <string name="task_sort">排序</string>
     <string name="task_empty">未选择任务</string>
 
@@ -231,24 +248,13 @@
     <string name="dir_picker_parent">&lt; 返回上层目录 &gt;</string>
 
     <string name="event_select">事件选择</string>
-    <string name="event_null">无</string>
-    <string name="event_prev_page">上一页</string>
-    <string name="event_next_page">下一页</string>
-    <string name="event_save_picture">保存图片</string>
-    <string name="event_load_prev">加载上一章</string>
-    <string name="event_load_next">加载下一章</string>
-    <string name="event_exit_reader">退出阅读器</string>
-    <string name="event_to_first">跳到第一页</string>
-    <string name="event_to_last">跳到最后一页</string>
-    <string name="event_switch_screen">切换屏幕方向</string>
-    <string name="event_switch_mode">切换阅读模式</string>
-    <string name="event_switch_control">显示/隐藏进度条</string>
-    <string name="event_reload_image">重新加载图片</string>
 
     <string name="common_data_load_fail">读取数据失败</string>
+    <string name="common_keyword_empty">关键字为空</string>
     <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>
     <string name="common_execute_success">操作成功</string>
     <string name="common_execute_fail">操作失败</string>
+    <string name="common_operation_select">操作选择</string>
     <string name="common_null">null</string>
 </resources>

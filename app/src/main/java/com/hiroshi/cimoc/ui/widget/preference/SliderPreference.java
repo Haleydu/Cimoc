@@ -1,4 +1,4 @@
-package com.hiroshi.cimoc.ui.custom.preference;
+package com.hiroshi.cimoc.ui.widget.preference;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -11,9 +11,9 @@ import android.view.View;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.ui.custom.Option;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.SliderDialogFragment;
+import com.hiroshi.cimoc.ui.widget.Option;
 
 /**
  * Created by Hiroshi on 2017/1/10.

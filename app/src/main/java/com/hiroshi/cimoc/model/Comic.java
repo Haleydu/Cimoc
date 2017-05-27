@@ -18,6 +18,7 @@ public class Comic {
     @NotNull private String title;
     @NotNull private String cover;
     @NotNull private boolean highlight;
+    @NotNull private boolean local;
     private String update;
     private Boolean finish;
     private Long favorite;
@@ -25,12 +26,14 @@ public class Comic {
     private Long download;
     private String last;
     private Integer page;
+    private String chapter;
 
     @Transient private String intro;
     @Transient private String author;
 
     public Comic(int source, String cid, String title, String cover, String update, String author) {
-        this(null, source, cid, title, cover == null ? "" : cover, false, update, null, null, null, null, null, null);
+        this(null, source, cid, title, cover == null ? "" : cover, false, false, update,
+                null, null, null, null, null, null, null);
         this.author = author;
     }
 
@@ -40,19 +43,21 @@ public class Comic {
     }
 
     public Comic(int source, String cid, String title, String cover, long download) {
-        this(null, source, cid, title, cover == null ? "" : cover, false, null, null, null, null, download, null, null);
+        this(null, source, cid, title, cover == null ? "" : cover, false, false, null,
+                null, null, null, download, null, null, null);
     }
 
-    @Generated(hash = 1222404104)
-    public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover,
-            boolean highlight, String update, Boolean finish, Long favorite, Long history, Long download,
-            String last, Integer page) {
+    @Generated(hash = 873921140)
+    public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover, boolean highlight,
+            boolean local, String update, Boolean finish, Long favorite, Long history, Long download, String last, Integer page,
+            String chapter) {
         this.id = id;
         this.source = source;
         this.cid = cid;
         this.title = title;
         this.cover = cover;
         this.highlight = highlight;
+        this.local = local;
         this.update = update;
         this.finish = finish;
         this.favorite = favorite;
@@ -60,6 +65,7 @@ public class Comic {
         this.download = download;
         this.last = last;
         this.page = page;
+        this.chapter = chapter;
     }
 
     @Generated(hash = 1347984162)
@@ -205,6 +211,22 @@ public class Comic {
 
     public void setFinish(Boolean finish) {
         this.finish = finish;
+    }
+
+    public boolean getLocal() {
+        return this.local;
+    }
+
+    public void setLocal(boolean local) {
+        this.local = local;
+    }
+
+    public String getChapter() {
+        return this.chapter;
+    }
+
+    public void setChapter(String chapter) {
+        this.chapter = chapter;
     }
 
 }

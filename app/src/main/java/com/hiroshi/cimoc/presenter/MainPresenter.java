@@ -29,9 +29,15 @@ public class MainPresenter extends BasePresenter<MainView> {
             @Override
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();
-                mBaseView.onLastChange(comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
+                mBaseView.onLastChange(comic.getId(), comic.getSource(), comic.getCid(),
+                        comic.getTitle(), comic.getCover());
             }
         });
+    }
+
+    public boolean checkLocal(long id) {
+        Comic comic = mComicManager.load(id);
+        return comic != null && comic.getLocal();
     }
 
     public void loadLast() {
@@ -41,7 +47,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                     @Override
                     public void call(Comic comic) {
                         if (comic != null) {
-                            mBaseView.onLastLoadSuccess(comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
+                            mBaseView.onLastLoadSuccess(comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
                         }
                     }
                 }, new Action1<Throwable>() {

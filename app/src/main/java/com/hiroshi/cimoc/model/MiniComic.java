@@ -12,6 +12,7 @@ public class MiniComic {
     private String cover;
     private Boolean finish;
     private boolean highlight;
+    private boolean local;
 
     public MiniComic(Comic comic) {
         this.id = comic.getId();
@@ -21,6 +22,7 @@ public class MiniComic {
         this.cover = comic.getCover();
         this.finish = comic.getFinish();
         this.highlight = comic.getHighlight();
+        this.local = comic.getLocal();
     }
 
     @Override
@@ -45,8 +47,8 @@ public class MiniComic {
         return highlight;
     }
 
-    public void setHighlight(boolean highlight) {
-        this.highlight = highlight;
+    public boolean isLocal() {
+        return local;
     }
 
     public String getCover() {

@@ -6,6 +6,7 @@
         <item>标签</item>
         <item>历史</item>
         <item>下载</item>
+        <item>本地</item>
     </string-array>
     <string-array name="reader_mode_items">
         <item>翻页模式</item>
@@ -42,6 +43,7 @@
         <item>切换阅读模式</item>
         <item>显示/隐藏进度条</item>
         <item>重新加载图片</item>
+        <item>切换夜间模式</item>
     </string-array>
     <string-array name="category_items">
         <item>题材</item>

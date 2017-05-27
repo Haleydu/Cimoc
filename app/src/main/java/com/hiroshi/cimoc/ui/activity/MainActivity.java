@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -25,6 +26,9 @@ import android.widget.TextView;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
@@ -65,6 +69,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private MainPresenter mPresenter;
     private ActionBarDrawerToggle mDrawerToggle;
     private long mExitTime = 0;
+    private long mLastId = -1;
     private int mLastSource = -1;
     private String mLastCid;
 
@@ -121,9 +126,14 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLastSource != -1 && mLastCid != null) {
+                if (mPresenter.checkLocal(mLastId)) {
+                    Intent intent = TaskActivity.createIntent(MainActivity.this, mLastId);
+                    startActivity(intent);
+                } else if (mLastSource != -1 && mLastCid != null) {
                     Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
                     startActivity(intent);
+                } else {
+                    HintUtils.showToast(MainActivity.this, R.string.common_execute_fail);
                 }
             }
         });
@@ -215,12 +225,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.drawer_night:
-                    night = !night;
+                    onNightSwitch();
                     mPreference.putBoolean(PreferenceManager.PREF_NIGHT, night);
-                    mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-                    if (mNightMask != null) {
-                        mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
-                    }
                     break;
                 case R.id.drawer_settings:
                     startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_ACTIVITY_SETTINGS);
@@ -238,6 +244,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mCurrentFragment.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_ACTIVITY_SETTINGS:
@@ -282,13 +289,22 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
+    public void onNightSwitch() {
+        night = !night;
+        mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
+        if (mNightMask != null) {
+            mNightMask.setVisibility(night ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    @Override
     public void onUpdateReady() {
         HintUtils.showToast(this, R.string.main_ready_update);
     }
 
     @Override
-    public void onLastLoadSuccess(int source, String cid, String title, String cover) {
-        onLastChange(source, cid, title,cover);
+    public void onLastLoadSuccess(long id, int source, String cid, String title, String cover) {
+        onLastChange(id, source, cid, title,cover);
     }
 
     @Override
@@ -297,23 +313,30 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    public void onLastChange(int source, String cid, String title, String cover) {
+    public void onLastChange(long id, int source, String cid, String title, String cover) {
+        mLastId = id;
         mLastSource = source;
         mLastCid = cid;
         mLastText.setText(title);
+        ImageRequest request = ImageRequestBuilder
+                .newBuilderWithSource(Uri.parse(cover))
+                .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
+                .build();
         DraweeController controller = ((App) getApplication()).getBuilderProvider().get(source)
                 .setOldController(mDraweeView.getController())
-                .setUri(cover)
+                .setImageRequest(request)
                 .build();
         mDraweeView.setController(controller);
     }
 
     private void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
-        ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+        ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked },
+                { android.R.attr.state_checked }},
                 new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemTextColor(itemList);
-        ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
+        ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked },
+                { android.R.attr.state_checked }},
                 new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemIconTintList(iconList);
         mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));
@@ -361,6 +384,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             case PreferenceManager.HOME_FAVORITE:
             case PreferenceManager.HOME_HISTORY:
             case PreferenceManager.HOME_DOWNLOAD:
+            case PreferenceManager.HOME_LOCAL:
                 return getString(R.string.drawer_comic);
             case PreferenceManager.HOME_SOURCE:
                 return getString(R.string.drawer_source);

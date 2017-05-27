@@ -19,5 +19,5 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
-        app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
+        app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior"/>
 </android.support.design.widget.CoordinatorLayout>

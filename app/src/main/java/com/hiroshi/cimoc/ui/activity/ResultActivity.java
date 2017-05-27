@@ -53,7 +53,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         mLayoutManager = new LinearLayoutManager(this);
         mResultAdapter = new ResultAdapter(this, new LinkedList<Comic>());
         mResultAdapter.setOnItemClickListener(this);
-        mProvider = new ControllerBuilderProvider(this, SourceManager.getInstance(this).new HeaderGetter());
+        mProvider = new ControllerBuilderProvider(this, SourceManager.getInstance(this).new HeaderGetter(), true);
         mResultAdapter.setProvider(mProvider);
         mResultAdapter.setTitleGetter(SourceManager.getInstance(this).new TitleGetter());
         mRecyclerView.setHasFixedSize(true);

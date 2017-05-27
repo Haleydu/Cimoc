@@ -16,7 +16,7 @@ import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
 import com.hiroshi.cimoc.ui.view.BaseView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
-import com.hiroshi.cimoc.utils.ViewUtils;
+import com.hiroshi.cimoc.ui.widget.ViewUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,6 +58,11 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     @Override
     public App getAppInstance() {
         return (App) getApplication();
+    }
+
+    @Override
+    public void onNightSwitch() {
+        initNight();
     }
 
     protected void initTheme() {

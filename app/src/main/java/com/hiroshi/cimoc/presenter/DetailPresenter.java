@@ -81,6 +81,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 Task task = map.get(chapter.getPath());
                 if (task != null) {
                     chapter.setDownload(true);
+                    chapter.setCount(task.getProgress());
                     chapter.setComplete(task.isFinish());
                 }
             }

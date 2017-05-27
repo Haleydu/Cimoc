@@ -1,9 +1,9 @@
 package com.hiroshi.cimoc.source;
 
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
@@ -44,8 +44,11 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://v2.api.dmzj.com/search/show/0/%s/%d.json", keyword, page - 1);
-        return new Request.Builder().url(url).build();
+        if (page == 1) {
+            String url = StringUtils.format("http://v2.api.dmzj.com/search/show/0/%s/%d.json", keyword, page - 1);
+            return new Request.Builder().url(url).build();
+        }
+        return null;
     }
 
     @Override
@@ -85,7 +88,7 @@ public class Dmzjv2 extends MangaParser {
             String title = object.getString("title");
             String cover = object.getString("cover");
             Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
-            String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+            String update = time == null ? null : StringUtils.getFormatTime("yyyy-MM-dd", time);
             String intro = object.optString("description");
             StringBuilder sb = new StringBuilder();
             JSONArray array = object.getJSONArray("authors");

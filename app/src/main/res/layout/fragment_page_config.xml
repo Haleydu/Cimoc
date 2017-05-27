@@ -9,41 +9,41 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.hiroshi.cimoc.ui.custom.preference.ChoicePreference
+        <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
             android:id="@+id/settings_reader_turn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_turn"/>
-        <com.hiroshi.cimoc.ui.custom.preference.ChoicePreference
+        <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
             android:id="@+id/settings_reader_orientation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_orientation"/>
-        <com.hiroshi.cimoc.ui.custom.Option
+        <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/settings_reader_click_event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_click_event"
             app:summary="@string/settings_reader_click_event_summary"/>
-        <com.hiroshi.cimoc.ui.custom.Option
+        <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/settings_reader_long_click_event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_long_click_event"
             app:summary="@string/settings_reader_long_click_event_summary"/>
-        <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+        <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_load_prev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_load_prev"
             app:summary="@string/settings_reader_load_prev_summary"/>
-        <com.hiroshi.cimoc.ui.custom.preference.CheckBoxPreference
+        <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_load_next"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_load_next"
             app:summary="@string/settings_reader_load_next_summary"/>
-        <com.hiroshi.cimoc.ui.custom.preference.SliderPreference
+        <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
             android:id="@+id/settings_reader_trigger"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

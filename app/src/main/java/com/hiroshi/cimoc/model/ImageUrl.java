@@ -18,6 +18,7 @@ public class ImageUrl {
     private String[] urls;
     private String chapter; // 所属章节
     private int state;  // 切图时表示状态
+    private long size; // 图片大小
     private boolean lazy;   // 懒加载
     private boolean loading;    // 正在懒加载
     private boolean success;    // 图片显示成功
@@ -41,6 +42,7 @@ public class ImageUrl {
         this.urls = urls;
         this.chapter = chapter;
         this.state = state;
+        this.size = 0;
         this.lazy = lazy;
         this.loading = false;
         this.success = false;
@@ -80,6 +82,14 @@ public class ImageUrl {
 
     public int getState() {
         return state;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public long getSize() {
+        return size;
     }
 
     public void setLazy(boolean lazy) {

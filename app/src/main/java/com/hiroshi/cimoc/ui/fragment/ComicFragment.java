@@ -25,6 +25,7 @@ import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.DownloadFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.FavoriteFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.GridFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.HistoryFragment;
+import com.hiroshi.cimoc.ui.fragment.recyclerview.grid.LocalFragment;
 import com.hiroshi.cimoc.ui.view.ComicView;
 import com.hiroshi.cimoc.utils.HintUtils;
 
@@ -61,10 +62,11 @@ public class ComicFragment extends BaseFragment implements ComicView {
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_history));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_favorite));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_download));
+        mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_local));
         mTabAdapter = new TabPagerAdapter(getFragmentManager(),
-                new GridFragment[]{ new HistoryFragment(), new FavoriteFragment(), new DownloadFragment() },
-                new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download) });
-        mViewPager.setOffscreenPageLimit(3);
+                new GridFragment[]{ new HistoryFragment(), new FavoriteFragment(), new DownloadFragment(), new LocalFragment() },
+                new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download), getString(R.string.comic_tab_local) });
+        mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(mTabAdapter);
         int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
         switch (home) {
@@ -77,6 +79,9 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 break;
             case PreferenceManager.HOME_DOWNLOAD:
                 mViewPager.setCurrentItem(2);
+                break;
+            case PreferenceManager.HOME_LOCAL:
+                mViewPager.setCurrentItem(3);
                 break;
         }
         mTabLayout.setupWithViewPager(mViewPager);
@@ -107,11 +112,19 @@ public class ComicFragment extends BaseFragment implements ComicView {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        for (int i = 0; i < mTabAdapter.getCount(); ++i) {
+            mTabAdapter.getItem(i).onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
             case DIALOG_REQUEST_FILTER:
                 int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
-                Intent intent = PartFavoriteActivity.createIntent(getActivity(), mTagList.get(index).getId(), mTagList.get(index).getTitle());
+                Intent intent = PartFavoriteActivity.createIntent(getActivity(),
+                        mTagList.get(index).getId(), mTagList.get(index).getTitle());
                 startActivity(intent);
                 break;
         }
@@ -120,8 +133,8 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onTagLoadSuccess(List<Tag> list) {
         hideProgressDialog();
-        mTagList.add(new Tag(TagManager.TAG_FINISH, getString(R.string.comic_filter_finish)));
-        mTagList.add(new Tag(TagManager.TAG_CONTINUE, getString(R.string.comic_filter_continue)));
+        mTagList.add(new Tag(TagManager.TAG_FINISH, getString(R.string.comic_status_finish)));
+        mTagList.add(new Tag(TagManager.TAG_CONTINUE, getString(R.string.comic_status_continue)));
         mTagList.addAll(list);
         int size = mTagList.size();
         String[] item = new String[size];
@@ -142,7 +155,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
     @Override
     public void onThemeChange(@ColorRes int primary, @ColorRes int accent) {
         mTabLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), primary));
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < mTabAdapter.getCount(); ++i) {
             ((ThemeResponsive) mTabAdapter.getItem(i)).onThemeChange(primary, accent);
         }
     }

@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.manager.TagManager;
 import com.hiroshi.cimoc.manager.TagRefManager;
-import com.hiroshi.cimoc.model.Pair;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.rx.RxBus;

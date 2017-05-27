@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
+import com.hiroshi.cimoc.ui.widget.ZoomableRecyclerView;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -28,6 +29,8 @@ public class StreamReaderActivity extends ReaderActivity {
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_STREAM_INTERVAL, false)) {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
         }
+        ((ZoomableRecyclerView) mRecyclerView).setVertical(turn == PreferenceManager.READER_TURN_ATB);
+        ((ZoomableRecyclerView) mRecyclerView).setTapListenerListener(this);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -61,10 +64,28 @@ public class StreamReaderActivity extends ReaderActivity {
                     ImageUrl oldImage = mReaderAdapter.getItem(mLastPosition);
 
                     if (!oldImage.getChapter().equals(newImage.getChapter())) {
-                        if (dx > 0 || dy > 0) {
-                            mPresenter.toNextChapter();
-                        } else if (dx < 0 || dy < 0) {
-                            mPresenter.toPrevChapter();
+                        switch (turn) {
+                            case PreferenceManager.READER_TURN_ATB:
+                                if (dy > 0) {
+                                    mPresenter.toNextChapter();
+                                } else if (dy < 0) {
+                                    mPresenter.toPrevChapter();
+                                }
+                                break;
+                            case PreferenceManager.READER_TURN_LTR:
+                                if (dx > 0) {
+                                    mPresenter.toNextChapter();
+                                } else if (dx < 0) {
+                                    mPresenter.toPrevChapter();
+                                }
+                                break;
+                            case PreferenceManager.READER_TURN_RTL:
+                                if (dx > 0) {
+                                    mPresenter.toPrevChapter();
+                                } else if (dx < 0) {
+                                    mPresenter.toNextChapter();
+                                }
+                                break;
                         }
                     }
                     progress = mReaderAdapter.getItem(target).getNum();

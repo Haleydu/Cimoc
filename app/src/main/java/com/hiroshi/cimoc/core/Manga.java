@@ -1,11 +1,13 @@
 package com.hiroshi.cimoc.core;
 
+import android.util.SparseBooleanArray;
+
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 
@@ -31,7 +33,21 @@ import rx.schedulers.Schedulers;
  */
 public class Manga {
 
-    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page) {
+    private static int filterResult(String str, SparseBooleanArray hash) {
+        int count = 0;
+        if (str != null) {
+            for (int i = 0; i < str.length(); ++i) {
+                if (hash.get(str.charAt(i), false)) {
+                    ++count;
+                }
+            }
+        }
+        return count;
+    }
+
+    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword,
+                                                    final int page, final SparseBooleanArray hash,
+                                                    final int limit) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
@@ -46,8 +62,11 @@ public class Manga {
                     while (iterator.hasNext()) {
                         Comic comic = iterator.next();
                         if (comic != null) {
-                            subscriber.onNext(comic);
-                            Thread.sleep(random.nextInt(200));
+                            if (filterResult(comic.getTitle(), hash) > limit ||
+                                    filterResult(comic.getAuthor(), hash) > limit) {
+                                subscriber.onNext(comic);
+                                Thread.sleep(random.nextInt(200));
+                            }
                         }
                     }
                     subscriber.onCompleted();
@@ -84,7 +103,8 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Comic>> getCategoryComic(final Parser parser, final String format, final int page) {
+    public static Observable<List<Comic>> getCategoryComic(final Parser parser, final String format,
+                                                           final int page) {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
@@ -105,7 +125,8 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<ImageUrl>> getChapterImage(final Parser parser, final String cid, final String path) {
+    public static Observable<List<ImageUrl>> getChapterImage(final Parser parser, final String cid,
+                                                             final String path) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
@@ -220,7 +241,8 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Pair<Comic, Pair<Integer, Integer>>> checkUpdate(final SourceManager manager, final List<Comic> list) {
+    public static Observable<Pair<Comic, Pair<Integer, Integer>>> checkUpdate(
+            final SourceManager manager, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Pair<Comic, Pair<Integer, Integer>>>() {
             @Override
             public void call(Subscriber<? super Pair<Comic, Pair<Integer, Integer>>> subscriber) {

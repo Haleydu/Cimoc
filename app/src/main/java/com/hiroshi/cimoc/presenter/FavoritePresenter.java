@@ -3,9 +3,10 @@ package com.hiroshi.cimoc.presenter;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.manager.TagRefManager;
+import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
-import com.hiroshi.cimoc.model.Pair;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.rx.ToAnotherList;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
@@ -25,11 +26,13 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     private ComicManager mComicManager;
     private SourceManager mSourceManager;
+    private TagRefManager mTagRefManager;
 
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mSourceManager = SourceManager.getInstance(mBaseView);
+        mTagRefManager = TagRefManager.getInstance(mBaseView);
     }
 
     @SuppressWarnings("unchecked")
@@ -69,6 +72,10 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         });
     }
 
+    public Comic load(long id) {
+        return mComicManager.load(id);
+    }
+
     public void load() {
         mCompositeSubscription.add(mComicManager.listFavoriteInRx()
                 .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
@@ -89,6 +96,14 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                         mBaseView.onComicLoadFail();
                     }
                 }));
+    }
+
+    public void unfavoriteComic(long id) {
+        Comic comic = mComicManager.load(id);
+        comic.setFavorite(null);
+        mTagRefManager.deleteByComic(id);
+        mComicManager.updateOrDelete(comic);
+        mBaseView.OnComicUnFavorite(id);
     }
 
     public void checkUpdate() {

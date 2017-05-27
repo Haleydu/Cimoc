@@ -14,6 +14,7 @@ public interface DialogCaller {
     String EXTRA_DIALOG_TITLE = "cimoc.intent.extra.EXTRA_DIALOG_TITLE";
     String EXTRA_DIALOG_ITEMS = "cimoc.intent.extra.EXTRA_DIALOG_ITEMS";
     String EXTRA_DIALOG_CONTENT = "cimoc.intent.extra.EXTRA_DIALOG_CONTENT";
+    String EXTRA_DIALOG_CONTENT_TEXT = "cimoc.intent.extra.EXTRA_DIALOG_CONTENT_TEXT";
     String EXTRA_DIALOG_NEGATIVE = "cimoc.intent.extra.EXTRA_DIALOG_NEGATIVE";
     String EXTRA_DIALOG_CHOICE_ITEMS = "cimoc.intent.extra.EXTRA_DIALOG_CHOICE_ITEMS";
 

@@ -1,31 +1,25 @@
-package com.hiroshi.cimoc.ui.custom.photo;
+package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MotionEventCompat;
-import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewParent;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Interpolator;
 
-import com.facebook.drawee.controller.AbstractDraweeController;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
-import com.facebook.drawee.view.SimpleDraweeView;
 
 /**
  * https://github.com/ongakuer/PhotoDraweeView
  */
-public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGestureListener, GestureDetector.OnDoubleTapListener {
+public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestureListener,
+        FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
 
     public static final float MIN_SCALE = 1.0f;
     public static final float MID_SCALE = 2.0f;
@@ -41,9 +35,7 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
     public static final int MODE_VERTICAL = 0;
     public static final int MODE_HORIZONTAL = 1;
 
-    private final float[] mMatrixValues = new float[9];
     private final RectF mDisplayRect = new RectF();
-    private final Interpolator mZoomInterpolator = new AccelerateDecelerateInterpolator();
 
     private ScaleDragDetector mScaleDragDetector;
     private GestureDetectorCompat mGestureDetector;
@@ -53,11 +45,9 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
     private int mScrollMode = MODE_HORIZONTAL;
 
     private final Matrix mMatrix = new Matrix();
-    private int mImageInfoHeight = -1, mImageInfoWidth = -1;
     private FlingRunnable mCurrentFlingRunnable;
 
-    private OnSingleTapListener mSingleTapListener;
-    private OnLongPressListener mOnLongPressListener;
+    private OnTapGestureListener mTapGestureListener;
 
     public PhotoDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
         super(context, hierarchy);
@@ -78,12 +68,6 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        init();
-    }
-
-    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         cancelFling();
@@ -91,22 +75,16 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
 
     protected void init() {
         getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
-
         mScaleDragDetector = new ScaleDragDetector(getContext(), this);
         mGestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
             @Override
             public void onLongPress(MotionEvent e) {
-                if (mOnLongPressListener != null) {
-                    mOnLongPressListener.onLongPress(PhotoDraweeView.this, e.getRawX(), e.getRawY());
+                if (mTapGestureListener != null) {
+                    mTapGestureListener.onLongPress(e.getRawX(), e.getRawY());
                 }
             }
         });
         mGestureDetector.setOnDoubleTapListener(this);
-    }
-
-    public boolean retry() {
-        AbstractDraweeController controller = (AbstractDraweeController) getController();
-        return controller != null && controller.onClick();
     }
 
     @Override
@@ -144,26 +122,24 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
-        int saveCount = canvas.save();
+        canvas.save();
         canvas.concat(mMatrix);
         super.onDraw(canvas);
-        canvas.restoreToCount(saveCount);
+        canvas.restore();
     }
 
-    public void update(int id, int imageInfoWidth, int imageInfoHeight) {
+    public void update(int id) {
         Object tag = getTag();
         if (tag == null || (int) tag != id) {
             setTag(id);
-            mImageInfoWidth = imageInfoWidth;
-            mImageInfoHeight = imageInfoHeight;
-            updateBaseMatrix();
+            resetMatrix();
         }
     }
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        if (mSingleTapListener != null) {
-            mSingleTapListener.onSingleTap(this, e.getRawX(), e.getRawY());
+        if (mTapGestureListener != null) {
+            mTapGestureListener.onSingleTap(e.getRawX(), e.getRawY());
             return true;
         }
         return false;
@@ -172,7 +148,7 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
     @Override
     public boolean onDoubleTap(MotionEvent event) {
         try {
-            float scale = getScale();
+            float scale = ViewUtils.calculateScale(mMatrix);
             float x = event.getX();
             float y = event.getY();
 
@@ -190,7 +166,7 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
 
     @Override
     public void onScale(float scaleFactor, float focusX, float focusY) {
-        if (getScale() < MAX_SCALE || scaleFactor < 1.0F) {
+        if (ViewUtils.calculateScale(mMatrix) < MAX_SCALE || scaleFactor < 1.0F) {
             mMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
             checkMatrixAndInvalidate();
         }
@@ -198,7 +174,10 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
 
     @Override
     public void onScaleEnd() {
-        checkMinScale();
+        if (ViewUtils.calculateScale(mMatrix) < MIN_SCALE) {
+            RectF rect = getDisplayRect();
+            new AnimatedScaleRunnable(MIN_SCALE, rect.centerX(), rect.centerY(), this, mMatrix, this);
+        }
     }
 
     @Override
@@ -235,15 +214,17 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
 
     @Override
     public void onFling(float startX, float startY, float velocityX, float velocityY) {
-        mCurrentFlingRunnable = new FlingRunnable(getContext());
-        mCurrentFlingRunnable.fling(getViewWidth(), getViewHeight(), (int) velocityX,
+        RectF rect = getDisplayRect();
+        mCurrentFlingRunnable = new FlingRunnable(getContext(), this, this);
+        mCurrentFlingRunnable.fling(rect, getViewWidth(), getViewHeight(), (int) velocityX,
                 (int) velocityY);
         post(mCurrentFlingRunnable);
     }
 
-    public float getScale() {
-        return (float) Math.sqrt((float) Math.pow(getMatrixValue(mMatrix, Matrix.MSCALE_X), 2) +
-                (float) Math.pow(getMatrixValue(mMatrix, Matrix.MSKEW_Y), 2));
+    @Override
+    public void onFlingRunning(int dx, int dy) {
+        mMatrix.postTranslate(dx, dy);
+        invalidate();
     }
 
     private void setScale(float scale, float focalX, float focalY) {
@@ -251,19 +232,15 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
             return;
         }
 
-        post(new AnimatedZoomRunnable(getScale(), scale, focalX, focalY));
+        post(new AnimatedScaleRunnable(scale, focalX, focalY, this, mMatrix, this));
     }
 
     public void setScrollMode(int mode) {
         mScrollMode = mode;
     }
 
-    public void setOnSingleTapListener(OnSingleTapListener listener) {
-        mSingleTapListener = listener;
-    }
-
-    public void setOnLongPressListener(OnLongPressListener listener) {
-        mOnLongPressListener = listener;
+    public void setTapListenerListener(OnTapGestureListener listener) {
+        mTapGestureListener = listener;
     }
 
     private int getViewWidth() {
@@ -272,11 +249,6 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
 
     private int getViewHeight() {
         return getHeight() - getPaddingTop() - getPaddingBottom();
-    }
-
-    private float getMatrixValue(Matrix matrix, int whichValue) {
-        matrix.getValues(mMatrixValues);
-        return mMatrixValues[whichValue];
     }
 
     public RectF getDisplayRect() {
@@ -289,6 +261,12 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
                 break;
         }
         return getDisplayRect(mMatrix);
+    }
+
+    private RectF getDisplayRect(Matrix matrix) {
+        getHierarchy().getActualImageBounds(mDisplayRect);
+        matrix.mapRect(mDisplayRect);
+        return mDisplayRect;
     }
 
     public void checkMatrixAndInvalidate() {
@@ -380,23 +358,6 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
         return true;
     }
 
-    private RectF getDisplayRect(Matrix matrix) {
-        if (mImageInfoWidth == -1 && mImageInfoHeight == -1) {
-            return null;
-        }
-        mDisplayRect.set(0.0F, 0.0F, mImageInfoWidth, mImageInfoHeight);
-        getHierarchy().getActualImageBounds(mDisplayRect);
-        matrix.mapRect(mDisplayRect);
-        return mDisplayRect;
-    }
-
-    private void updateBaseMatrix() {
-        if (mImageInfoWidth == -1 && mImageInfoHeight == -1) {
-            return;
-        }
-        resetMatrix();
-    }
-
     private void resetMatrix() {
         mMatrix.reset();
         switch (mScrollMode) {
@@ -410,132 +371,11 @@ public class PhotoDraweeView extends SimpleDraweeView implements OnScaleDragGest
         invalidate();
     }
 
-    private void checkMinScale() {
-        if (getScale() < MIN_SCALE) {
-            RectF rect = getDisplayRect();
-            if (null != rect) {
-                post(new AnimatedZoomRunnable(getScale(), MIN_SCALE, rect.centerX(), rect.centerY()));
-            }
-        }
-    }
-
     private void cancelFling() {
         if (mCurrentFlingRunnable != null) {
             mCurrentFlingRunnable.cancelFling();
             mCurrentFlingRunnable = null;
         }
-    }
-
-    private void postOnAnimation(View view, Runnable runnable) {
-        if (Build.VERSION.SDK_INT >= 16) {
-            view.postOnAnimation(runnable);
-        } else {
-            view.postDelayed(runnable, 16L);
-        }
-    }
-
-    private class AnimatedZoomRunnable implements Runnable {
-        private final float mFocalX, mFocalY;
-        private final long mStartTime;
-        private final float mZoomStart, mZoomEnd;
-
-        public AnimatedZoomRunnable(final float currentZoom, final float targetZoom,
-                                    final float focalX, final float focalY) {
-            mFocalX = focalX;
-            mFocalY = focalY;
-            mStartTime = System.currentTimeMillis();
-            mZoomStart = currentZoom;
-            mZoomEnd = targetZoom;
-        }
-
-        @Override public void run() {
-            float t = interpolate();
-            float scale = mZoomStart + t * (mZoomEnd - mZoomStart);
-            float deltaScale = scale / getScale();
-
-            onScale(deltaScale, mFocalX, mFocalY);
-
-            if (t < 1f) {
-                postOnAnimation(PhotoDraweeView.this, this);
-            }
-        }
-
-        private float interpolate() {
-            float t = 1f * (System.currentTimeMillis() - mStartTime) / 200;
-            t = Math.min(1f, t);
-            t = mZoomInterpolator.getInterpolation(t);
-            return t;
-        }
-    }
-
-    private class FlingRunnable implements Runnable {
-
-        private final ScrollerCompat mScroller;
-        private int mCurrentX, mCurrentY;
-
-        public FlingRunnable(Context context) {
-            mScroller = ScrollerCompat.create(context);
-        }
-
-        public void cancelFling() {
-            mScroller.abortAnimation();
-        }
-
-        public void fling(int viewWidth, int viewHeight, int velocityX, int velocityY) {
-            final RectF rect = getDisplayRect();
-            if (null == rect) {
-                return;
-            }
-
-            final int startX = Math.round(-rect.left);
-            final int minX, maxX, minY, maxY;
-
-            if (viewWidth < rect.width()) {
-                minX = 0;
-                maxX = Math.round(rect.width() - viewWidth);
-            } else {
-                minX = maxX = startX;
-            }
-
-            final int startY = Math.round(-rect.top);
-            if (viewHeight < rect.height()) {
-                minY = 0;
-                maxY = Math.round(rect.height() - viewHeight);
-            } else {
-                minY = maxY = startY;
-            }
-
-            mCurrentX = startX;
-            mCurrentY = startY;
-
-            if (startX != maxX || startY != maxY) {
-                mScroller.fling(startX, startY, velocityX, velocityY, minX, maxX, minY, maxY, 0, 0);
-            }
-        }
-
-        @Override public void run() {
-            if (mScroller.isFinished()) {
-                return;
-            }
-
-            if (mScroller.computeScrollOffset()) {
-                final int newX = mScroller.getCurrX();
-                final int newY = mScroller.getCurrY();
-                mMatrix.postTranslate(mCurrentX - newX, mCurrentY - newY);
-                invalidate();
-                mCurrentX = newX;
-                mCurrentY = newY;
-                postOnAnimation(PhotoDraweeView.this, this);
-            }
-        }
-    }
-
-    public interface OnSingleTapListener {
-        void onSingleTap(PhotoDraweeView draweeView, float x, float y);
-    }
-
-    public interface OnLongPressListener {
-        void onLongPress(PhotoDraweeView draweeView, float x, float y);
     }
 
 }

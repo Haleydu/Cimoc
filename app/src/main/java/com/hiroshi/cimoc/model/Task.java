@@ -23,14 +23,14 @@ public class Task implements Parcelable {
     public static final int STATE_ERROR = 5;
 
     @Id(autoincrement = true) private Long id;
-    @NotNull private long key;
+    @NotNull private long key;      // 漫画主键
     @NotNull private String path;
     @NotNull private String title;
     @NotNull private int progress;
     @NotNull private int max;
 
     @Transient private int source;
-    @Transient private String cid;
+    @Transient private String cid;  // 漫画 ID
     @Transient private int state;
 
     public Task(Parcel source) {

@@ -62,7 +62,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
 
         for (int i = 0; i != 5; ++i) {
             final int index = i;
-            mButtonList.get(i).setText(ClickEvents.getTitleId(mChoiceArray[i]));
+            mButtonList.get(i).setText(ClickEvents.getEventTitle(this, mChoiceArray[i]));
             mButtonList.get(i).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -89,7 +89,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
-                getResources().getStringArray(R.array.event_items), mChoiceArray[index], index);
+                ClickEvents.getEventTitleArray(this), mChoiceArray[index], index);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -99,7 +99,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         mChoiceArray[requestCode] = index;
         mPreference.putInt(mKeyArray[requestCode], index);
         if (requestCode < 5) {
-            mButtonList.get(requestCode).setText(ClickEvents.getTitleId(index));
+            mButtonList.get(requestCode).setText(ClickEvents.getEventTitle(this, index));
         }
     }
 

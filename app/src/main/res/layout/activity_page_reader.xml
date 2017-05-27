@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black">
-        <com.hiroshi.cimoc.ui.custom.rvp.RecyclerViewPager
+        <com.hiroshi.cimoc.ui.widget.rvp.RecyclerViewPager
             android:id="@+id/reader_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

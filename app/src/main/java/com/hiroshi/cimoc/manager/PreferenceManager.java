@@ -23,6 +23,7 @@ public class PreferenceManager {
     public static final int HOME_TAG = 2;
     public static final int HOME_HISTORY = 3;
     public static final int HOME_DOWNLOAD = 4;
+    public static final int HOME_LOCAL = 5;
 
     public static final String PREF_APP_VERSION = "pref_app_version";
 
@@ -31,7 +32,6 @@ public class PreferenceManager {
     public static final String PREF_READER_MODE = "pref_reader_mode";
     public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
-    public static final String PREF_READER_DISABLE_POPUP = "pref_reader_disable_popup";
     public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
     public static final String PREF_READER_PAGING = "pref_reader_paging";
 
@@ -74,6 +74,8 @@ public class PreferenceManager {
 
     public static final String PREF_NIGHT = "pref_night";
 
+    public static final String PREF_OTHER_CHECK_UPDATE = "pref_other_check_update";
+    public static final String PREF_OTHER_CHECK_UPDATE_LAST = "pref_other_check_update_last";
     public static final String PREF_OTHER_STORAGE = "pref_other_storage";
     public static final String PREF_OTHER_THEME = "pref_other_theme";
     public static final String PREF_OTHER_LAUNCH = "pref_other_launch";

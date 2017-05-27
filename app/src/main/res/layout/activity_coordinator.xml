@@ -28,7 +28,7 @@
             android:layout_margin="16dp"
             android:layout_gravity="bottom|end"
             android:visibility="invisible"
-            app:layout_behavior="com.hiroshi.cimoc.ui.custom.ScrollAwareFABBehavior"/>
+            app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior"/>
     </android.support.design.widget.CoordinatorLayout>
     <include layout="@layout/custom_night_mask"/>
 </FrameLayout>

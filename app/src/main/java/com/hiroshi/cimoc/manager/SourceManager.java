@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.U17;
@@ -112,6 +113,9 @@ public class SourceManager {
                     break;
                 case Dmzjv2.TYPE:
                     parser = new Dmzjv2(source);
+                    break;
+                case Locality.TYPE:
+                    parser = new Locality();
                     break;
                 default:
                     parser = new Null();
