@@ -43,7 +43,10 @@ public class IKanman extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("http://m.ikanman.com/s/%s.html?page=%d&ajax=1", keyword, page);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url)
+                .build();
     }
 
     @Override
@@ -65,7 +68,10 @@ public class IKanman extends MangaParser {
     @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.ikanman.com/comic/".concat(cid);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url)
+                .build();
     }
 
     @Override
@@ -101,7 +107,10 @@ public class IKanman extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("http://m.ikanman.com/comic/%s/%s.html", cid, path);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url)
+                .build();
     }
 
     @Override
@@ -315,7 +324,8 @@ public class IKanman extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.ikanman.com");
+        return Headers.of("Referer", "http://m.ikanman.com",
+                "User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile");
     }
 
 }

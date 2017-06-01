@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.manager.TagManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.PartFavoritePresenter;
@@ -44,6 +45,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     private GridAdapter mGridAdapter;
 
     private MiniComic mSavedComic;
+    private boolean isDeletable;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -71,6 +73,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     protected void initData() {
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+        isDeletable = id != TagManager.TAG_CONTINUE && id != TagManager.TAG_FINISH;
         mPresenter.load(id);
     }
 
@@ -102,10 +105,12 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
 
     @Override
     public void onItemLongClick(View view, int position) {
-        mSavedComic = mGridAdapter.getItem(position);
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
-        fragment.show(getFragmentManager(), null);
+        if (isDeletable) {
+            mSavedComic = mGridAdapter.getItem(position);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                    R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @Override
@@ -143,6 +148,12 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
         MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select,
                 list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
         fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onComicTitleLoadFail() {
+        hideProgressDialog();
+        HintUtils.showToast(this, R.string.common_data_load_fail);
     }
 
     @Override

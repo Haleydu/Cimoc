@@ -41,6 +41,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     private GestureDetectorCompat mGestureDetector;
 
     private boolean mBlockParentIntercept = false;
+    private boolean mAlwaysBlockParent = false;
     private int mScrollEdge = EDGE_BOTH;
     private int mScrollMode = MODE_HORIZONTAL;
 
@@ -176,7 +177,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     public void onScaleEnd() {
         if (ViewUtils.calculateScale(mMatrix) < MIN_SCALE) {
             RectF rect = getDisplayRect();
-            new AnimatedScaleRunnable(MIN_SCALE, rect.centerX(), rect.centerY(), this, mMatrix, this);
+            post(new AnimatedScaleRunnable(MIN_SCALE, rect.centerX(), rect.centerY(), this, mMatrix, this));
         }
     }
 
@@ -188,6 +189,11 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
             ViewParent parent = getParent();
             if (parent == null) {
+                return;
+            }
+
+            if (mAlwaysBlockParent) {
+                parent.requestDisallowInterceptTouchEvent(mScrollEdge != EDGE_BOTH);
                 return;
             }
 
@@ -233,6 +239,10 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
         }
 
         post(new AnimatedScaleRunnable(scale, focalX, focalY, this, mMatrix, this));
+    }
+
+    public void setAlwaysBlockParent(boolean block) {
+        mAlwaysBlockParent = block;
     }
 
     public void setScrollMode(int mode) {

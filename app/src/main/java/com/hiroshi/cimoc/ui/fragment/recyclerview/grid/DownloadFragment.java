@@ -91,6 +91,9 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     protected void performActionButtonClick() {
+        if (mGridAdapter.getDateSet().isEmpty()) {
+            return;
+        }
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.download_action_confirm, true, DIALOG_REQUEST_SWITCH);
         fragment.setTargetFragment(this, 0);

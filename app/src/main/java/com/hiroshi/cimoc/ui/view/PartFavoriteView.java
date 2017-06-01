@@ -17,6 +17,8 @@ public interface PartFavoriteView extends BaseView, DialogCaller {
 
     void onComicTitleLoadSuccess(List<String> list);
 
+    void onComicTitleLoadFail();
+
     void onComicInsertSuccess(List<MiniComic> list);
 
     void onComicInsertFail();

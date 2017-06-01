@@ -160,10 +160,10 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         mCompositeSubscription.add(Storage.savePicture(mBaseView.getAppInstance().getContentResolver(),
                 mBaseView.getAppInstance().getDocumentFile(), inputStream, buildPictureName(title, page, url))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
+                .subscribe(new Action1<Uri>() {
                     @Override
-                    public void call(String path) {
-                        mBaseView.onPictureSaveSuccess(path);
+                    public void call(Uri uri) {
+                        mBaseView.onPictureSaveSuccess(uri);
                     }
                 }, new Action1<Throwable>() {
                     @Override

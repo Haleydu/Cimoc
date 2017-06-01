@@ -59,6 +59,8 @@ public class Backup {
     private static final String JSON_KEY_COMIC_LAST = "last";
     private static final String JSON_KEY_COMIC_PAGE = "page";
     private static final String JSON_KEY_COMIC_CHAPTER = "chapter";
+    private static final String JSON_KEY_COMIC_FAVORITE = "favorite";
+    private static final String JSON_KEY_COMIC_HISTORY = "history";
 
     public static Observable<String[]> loadFavorite(DocumentFile root) {
         return load(root, SUFFIX_CIMOC, SUFFIX_CFBF);
@@ -157,6 +159,8 @@ public class Backup {
             object.put(JSON_KEY_COMIC_LAST, comic.getLast());
             object.put(JSON_KEY_COMIC_PAGE, comic.getPage());
             object.put(JSON_KEY_COMIC_CHAPTER, comic.getChapter());
+            object.put(JSON_KEY_COMIC_FAVORITE, comic.getFavorite());
+            object.put(JSON_KEY_COMIC_HISTORY, comic.getHistory());
             array.put(object);
         }
         return array;
@@ -226,9 +230,8 @@ public class Backup {
                     String last = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_CIMOC_KEY_COMIC_PAGE) ?
                             object.getInt(JSON_CIMOC_KEY_COMIC_PAGE) : null;
-                    String chapter = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
                     list.add(new Comic(null, source, cid, title, cover, false, false, update,
-                            finish, null, null, null, last, page, chapter));
+                            finish, null, null, null, last, page, null));
                 }
                 break;
             case SUFFIX_CFBF:
@@ -245,9 +248,13 @@ public class Backup {
                     String last = object.optString(JSON_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_KEY_COMIC_PAGE) ?
                             object.getInt(JSON_KEY_COMIC_PAGE) : null;
-                    String chapter = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
+                    String chapter = object.optString(JSON_KEY_COMIC_CHAPTER, null);
+                    Long favorite = object.has(JSON_KEY_COMIC_FAVORITE) ?
+                            object.getLong(JSON_KEY_COMIC_FAVORITE) : System.currentTimeMillis();
+                    Long history = object.has(JSON_KEY_COMIC_HISTORY) ?
+                            object.getLong(JSON_KEY_COMIC_HISTORY) : null;
                     list.add(new Comic(null, source, cid, title, cover, false, false, update,
-                            finish, null, null, null, last, page, chapter));
+                            finish, favorite, history, null, last, page, chapter));
                 }
                 break;
         }

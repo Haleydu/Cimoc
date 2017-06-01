@@ -135,6 +135,8 @@
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
     <string name="settings_reader_hide_info_summary">阅读状态隐藏右上角的信息</string>
     <string name="settings_reader_trigger">翻页触发位移</string>
+    <string name="settings_reader_ban_turn">放大禁止翻页</string>
+    <string name="settings_reader_ban_turn_summary">放大状态下禁止翻页</string>
     <string name="settings_reader_interval">显示图片间隔</string>
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_reader_hide_nav">隐藏导航栏</string>

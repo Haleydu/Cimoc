@@ -90,7 +90,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
-        mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false);
+        mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
@@ -220,15 +220,23 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick(R.id.settings_download_scan) void onDownloadScanClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
-        fragment.show(getFragmentManager(), null);
+        if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
+            showSnackbar(R.string.download_ask_stop);
+        } else {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                    R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @OnClick(R.id.settings_download_delete) void onDownloadDeleteClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
-        fragment.show(getFragmentManager(), null);
+        if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
+            showSnackbar(R.string.download_ask_stop);
+        } else {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                    R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @OnClick(R.id.settings_other_clear_cache) void onOtherCacheClick() {

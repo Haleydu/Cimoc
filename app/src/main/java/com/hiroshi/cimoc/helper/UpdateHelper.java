@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.helper;
 
 import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
@@ -25,10 +27,10 @@ import java.util.List;
 
 public class UpdateHelper {
 
-    // 1.04.08.000
-    private static final int VERSION = 10408000;
+    // 1.04.08.002
+    private static final int VERSION = 10408002;
 
-    public static void update(PreferenceManager manager, DaoSession session) {
+    public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
         if (version != VERSION) {
             switch (version) {
@@ -44,9 +46,31 @@ public class UpdateHelper {
                     session.getSourceDao().insert(Dmzjv2.getDefaultSource());
                 case 10406000:
                 case 10407000:
+                case 10408000:
+                    deleteDownloadFromLocal(session);
             }
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
+    }
+
+    /**
+     * app: 1.4.8.0 -> 1.4.8.1
+     * 删除本地漫画中 download 字段的值
+     */
+    private static void deleteDownloadFromLocal(final DaoSession session) {
+        session.runInTx(new Runnable() {
+            @Override
+            public void run() {
+                ComicDao dao = session.getComicDao();
+                List<Comic> list = dao.queryBuilder().where(ComicDao.Properties.Local.eq(true)).list();
+                if (!list.isEmpty()) {
+                    for (Comic comic : list) {
+                        comic.setDownload(null);
+                    }
+                    dao.updateInTx(list);
+                }
+            }
+        });
     }
 
     /**

@@ -153,7 +153,7 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
                 .doOnNext(new Action1<List<Task>>() {
                     @Override
                     public void call(List<Task> list) {
-                        LongSparseArray<Comic> array = ComicUtils.buildDownloadComicMap(mComicManager);
+                        LongSparseArray<Comic> array = ComicUtils.buildComicMap(mComicManager.listDownload());
                         for (Task task : list) {
                             Comic comic = array.get(task.getKey());
                             if (comic != null) {

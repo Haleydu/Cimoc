@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.view;
 
+import android.net.Uri;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 
@@ -33,7 +35,7 @@ public interface ReaderView extends BaseView {
 
     void onImageLoadFail(int id);
 
-    void onPictureSaveSuccess(String path);
+    void onPictureSaveSuccess(Uri uri);
 
     void onPictureSaveFail();
 

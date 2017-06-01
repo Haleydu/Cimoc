@@ -105,7 +105,7 @@ public class ComicManager {
 
     public Observable<List<Comic>> listFavoriteNotIn(Collection<Long> collections) {
         return mComicDao.queryBuilder()
-                .where(Properties.Id.notIn(collections))
+                .where(Properties.Favorite.isNotNull(), Properties.Id.notIn(collections))
                 .rx()
                 .list();
     }

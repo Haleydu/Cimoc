@@ -102,6 +102,9 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     protected void performActionButtonClick() {
+        if (mGridAdapter.getDateSet().isEmpty()) {
+            return;
+        }
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.favorite_check_update_confirm, true, DIALOG_REQUEST_UPDATE);
         fragment.setTargetFragment(this, 0);
