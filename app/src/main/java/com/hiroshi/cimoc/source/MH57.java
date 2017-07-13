@@ -30,10 +30,13 @@ public class MH57 extends MangaParser {
 
     public static final int TYPE = 8;
     public static final String DEFAULT_TITLE = "57漫画";
-    public static final String DEFAULT_SERVER = "http://images.333dm.com http://cartoon.akshk.com";
+
+    private static final String[] servers = {
+            "http://images.333dm.com"
+    };
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public MH57(Source source) {
@@ -118,7 +121,7 @@ public class MH57 extends MangaParser {
                 JSONArray array = new JSONArray(jsonString);
                 int size = array.length();
                 for (int i = 0; i != size; ++i) {
-                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i)), false));
+                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i), servers), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

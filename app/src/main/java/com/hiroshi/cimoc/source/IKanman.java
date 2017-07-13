@@ -30,10 +30,15 @@ public class IKanman extends MangaParser {
 
     public static final int TYPE = 0;
     public static final String DEFAULT_TITLE = "看漫画";
-    public static final String DEFAULT_SERVER = "http://p.yogajx.com http://idx0.hamreus.com:8080 http://ilt2.hamreus.com:8080";
+
+    private static final String[] servers = {
+            "http://p.yogajx.com",
+            "http://us.hamreus.com:8080",
+            "http://eu.hamreus.com:8080"
+    };
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public IKanman(Source source) {
@@ -67,9 +72,9 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.ikanman.com/comic/".concat(cid);
+        String url = "http://www.ikanman.com/comic/".concat(cid);
         return new Request.Builder()
-                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
                 .url(url)
                 .build();
     }
@@ -77,12 +82,12 @@ public class IKanman extends MangaParser {
     @Override
     public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String title = body.text("div.main-bar > h1");
-        String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
-        String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-        String author = body.attr("div.book-detail > div.cont-list > dl:eq(3) > dd > a", "title");
-        String intro = body.text("#bookIntro");
-        boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
+        String title = body.text("div.book-title > h1");
+        String cover = body.src("p.hcover > img");
+        String update = body.text("div.chapter-bar > span.fr > span:eq(1)");
+        String author = body.attr("ul.detail-list > li:eq(1) > span:eq(1) > a", "title");
+        String intro = body.text("#intro-cut");
+        boolean status = isFinish(body.text("div.chapter-bar > span.fr > span:eq(0)"));
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -93,12 +98,10 @@ public class IKanman extends MangaParser {
         String baseText = body.id("__VIEWSTATE").attr("value");
         if (!StringUtils.isEmpty(baseText)) {
             body = new Node(DecryptionUtils.LZ64Decrypt(baseText));
-        } else {
-            body = body.id("chapterList");
         }
-        for (Node li : body.list("li > a")) {
-            String title = li.text();
-            String path = li.hrefWithSplit(2);
+        for (Node node : body.list("div.chapter-list > ul > li > a")) {
+            String title = node.attr("title");
+            String path = node.hrefWithSplit(2);
             list.add(new Chapter(title, path));
         }
         return list;
@@ -128,7 +131,7 @@ public class IKanman extends MangaParser {
                 String jsonString = result.substring(11, result.length() - 9);
                 JSONArray array = new JSONObject(jsonString).getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i)), false));
+                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i), servers), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

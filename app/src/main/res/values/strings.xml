@@ -103,7 +103,6 @@
     <string name="source_detail_type">图源 ID</string>
     <string name="source_detail_title">图源名称</string>
     <string name="source_detail_favorite">收藏统计</string>
-    <string name="source_detail_server">图片服务器</string>
 
     <string name="category_subject">主题</string>
     <string name="category_area">地区</string>
@@ -130,6 +129,8 @@
     <string name="settings_reader_load_next_summary">位于最后一页自动加载下一章</string>
     <string name="settings_reader_white_edge">自动裁剪白边</string>
     <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
+    <string name="settings_reader_ban_double_click">禁止双击放大</string>
+    <string name="settings_reader_ban_double_click_summary">阅读状态禁止双击放大</string>
     <string name="settings_reader_keep_bright">保持屏幕常亮</string>
     <string name="settings_reader_keep_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
@@ -152,6 +153,8 @@
     <string name="settings_download_scan_summary">扫描并恢复已下载漫画</string>
     <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！重点是，不一定可以成功！</string>
     <string name="settings_search">搜索设置</string>
+    <string name="settings_search_result_filter">过滤搜索结果</string>
+    <string name="settings_search_result_filter_summary">不显示标题或作者与关键词差异字的漫画</string>
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>

@@ -26,13 +26,24 @@ public class HHAAZZ extends MangaParser {
 
     public static final int TYPE = 2;
     public static final String DEFAULT_TITLE = "手机汗汗";
-    public static final String DEFAULT_SERVER = "http://x8.1112223333.com/dm01/ http://x8.1112223333.com/dm02/ http://x8.1112223333.com/dm03/ " +
-            "http://x8.1112223333.com/dm04/ http://x8.1112223333.com/dm05/ http://x8.1112223333.com/dm06/ " +
-            "http://x8.1112223333.com/dm07/ http://x8.1112223333.com/dm08/ http://x8.1112223333.com/dm09/ " +
-            "http://x8.1112223333.com/dm10/ http://x8.1112223333.com/dm11/ http://x8.1112223333.com/dm12/";
+
+    private static final String[] servers = {
+            "http://x8.1112223333.com/dm01/",
+            "http://x8.1112223333.com/dm02/",
+            "http://x8.1112223333.com/dm03/",
+            "http://x8.1112223333.com/dm04/",
+            "http://x8.1112223333.com/dm05/",
+            "http://x8.1112223333.com/dm06/",
+            "http://x8.1112223333.com/dm07/",
+            "http://x8.1112223333.com/dm08/",
+            "http://x8.1112223333.com/dm09/",
+            "http://x8.1112223333.com/dm10/",
+            "http://x8.1112223333.com/dm11/",
+            "http://x8.1112223333.com/dm12/"
+    };
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public HHAAZZ(Source source) {
@@ -103,13 +114,11 @@ public class HHAAZZ extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        if (mServer != null) {
-            String[] str = StringUtils.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
-            if (str != null) {
-                String[] result = unsuan(str[0]);
-                for (int i = 0; i != result.length; ++i) {
-                    list.add(new ImageUrl(i + 1, mServer[Integer.parseInt(str[1]) - 1].concat(result[i]), false));
-                }
+        String[] str = StringUtils.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
+        if (str != null) {
+            String[] result = unsuan(str[0]);
+            for (int i = 0; i != result.length; ++i) {
+                list.add(new ImageUrl(i + 1, servers[Integer.parseInt(str[1]) - 1].concat(result[i]), false));
             }
         }
         return list;

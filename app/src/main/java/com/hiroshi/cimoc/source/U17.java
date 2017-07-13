@@ -29,10 +29,9 @@ public class U17 extends MangaParser {
 
     public static final int TYPE = 4;
     public static final String DEFAULT_TITLE = "有妖气";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public U17(Source source) {

@@ -41,7 +41,6 @@ public class UpdateHelper {
                 case 10404001:
                 case 10404002:
                 case 10404003:
-                    updateSourceServer(session);
                 case 10405000:
                     session.getSourceDao().insert(Dmzjv2.getDefaultSource());
                 case 10406000:
@@ -69,29 +68,6 @@ public class UpdateHelper {
                     }
                     dao.updateInTx(list);
                 }
-            }
-        });
-    }
-
-    /**
-     * app: 1.4.4.2 -> 1.4.4.3
-     * db: 7 -> 8
-     * 表 SOURCE 添加 SERVER 字段
-     */
-    private static void updateSourceServer(final DaoSession session) {
-        session.runInTx(new Runnable() {
-            @Override
-            public void run() {
-                SourceDao dao = session.getSourceDao();
-                Source source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(IKanman.TYPE)).unique();
-                source.setServer(IKanman.DEFAULT_SERVER);
-                dao.update(source);
-                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(HHAAZZ.TYPE)).unique();
-                source.setServer(HHAAZZ.DEFAULT_SERVER);
-                dao.update(source);
-                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(MH57.TYPE)).unique();
-                source.setServer(MH57.DEFAULT_SERVER);
-                dao.update(source);
             }
         });
     }

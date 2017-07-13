@@ -13,18 +13,10 @@ import okhttp3.Request;
  */
 public abstract class MangaParser implements Parser {
 
-    protected String[] mServer;
     protected String mTitle;
     private Category mCategory;
 
     protected void init(Source source, Category category) {
-        if (source.getServer() != null) {
-            if (source.getServer() != null) {
-                mServer = source.getServer().split(" ");
-            } else {
-                mServer = new String[]{""};
-            }
-        }
         mTitle = source.getTitle();
         mCategory = category;
     }
@@ -75,11 +67,11 @@ public abstract class MangaParser implements Parser {
         return mTitle;
     }
 
-    protected String[] buildUrl(String path) {
-        if (mServer != null) {
-            String[] url = new String[mServer.length];
-            for (int i = 0; i != mServer.length; ++i) {
-                url[i] = mServer[i].concat(path);
+    protected String[] buildUrl(String path, String[] servers) {
+        if (servers != null) {
+            String[] url = new String[servers.length];
+            for (int i = 0; i != servers.length; ++i) {
+                url[i] = servers[i].concat(path);
             }
             return url;
         }

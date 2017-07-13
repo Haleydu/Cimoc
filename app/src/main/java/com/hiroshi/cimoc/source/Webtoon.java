@@ -33,10 +33,9 @@ public class Webtoon extends MangaParser {
 
     public static final int TYPE = 6;
     public static final String DEFAULT_TITLE = "Webtoon";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public Webtoon(Source source) {

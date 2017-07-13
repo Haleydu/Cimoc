@@ -126,10 +126,6 @@ public class SourceManager {
         return parser;
     }
 
-    public void resetParse(Source source) {
-        mParserArray.remove(source.getType());
-    }
-
     public class TitleGetter {
 
         public String getTitle(int type) {

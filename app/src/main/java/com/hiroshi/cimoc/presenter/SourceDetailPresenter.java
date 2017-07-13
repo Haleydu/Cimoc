@@ -13,7 +13,6 @@ public class SourceDetailPresenter extends BasePresenter<SourceDetailView> {
 
     private SourceManager mSourceManager;
     private ComicManager mComicManager;
-    private Source mSource;
 
     @Override
     protected void onViewAttach() {
@@ -22,19 +21,9 @@ public class SourceDetailPresenter extends BasePresenter<SourceDetailView> {
     }
 
     public void load(int type) {
-        mSource = mSourceManager.load(type);
+        Source source = mSourceManager.load(type);
         long count = mComicManager.countBySource(type);
-        mBaseView.onSourceLoadSuccess(type, mSource.getTitle(), count, mSource.getServer());
-    }
-
-    public String getServer() {
-        return mSource.getServer();
-    }
-
-    public void updateServer(String server) {
-        mSource.setServer(server);
-        mSourceManager.update(mSource);
-        mSourceManager.resetParse(mSource);
+        mBaseView.onSourceLoadSuccess(type, source.getTitle(), count);
     }
 
 }

@@ -57,6 +57,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isPaging;
     private boolean isWhiteEdge;
     private boolean isBanTurn;
+    private boolean isDoubleTap;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -102,6 +103,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             case READER_PAGE:
                 ((PhotoDraweeView) draweeView).setTapListenerListener(mTapGestureListener);
                 ((PhotoDraweeView) draweeView).setAlwaysBlockParent(isBanTurn);
+                ((PhotoDraweeView) draweeView).setDoubleTap(isDoubleTap);
                 ((PhotoDraweeView) draweeView).setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
@@ -174,7 +176,13 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         mLazyLoadListener = listener;
     }
 
-    public void setBanTurn(boolean block) { isBanTurn = block; }
+    public void setDoubleTap(boolean enable) {
+        isDoubleTap = enable;
+    }
+
+    public void setBanTurn(boolean block) {
+        isBanTurn = block;
+    }
 
     public void setVertical(boolean vertical) {
         isVertical = vertical;

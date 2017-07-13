@@ -35,10 +35,9 @@ public class DM5 extends MangaParser {
 
     public static final int TYPE = 5;
     public static final String DEFAULT_TITLE = "动漫屋";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public DM5(Source source) {

@@ -45,6 +45,8 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     private int mScrollEdge = EDGE_BOTH;
     private int mScrollMode = MODE_HORIZONTAL;
 
+    private boolean isDoubleTap = true;
+
     private final Matrix mMatrix = new Matrix();
     private FlingRunnable mCurrentFlingRunnable;
 
@@ -148,16 +150,19 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
     @Override
     public boolean onDoubleTap(MotionEvent event) {
-        try {
-            float scale = ViewUtils.calculateScale(mMatrix);
-            float x = event.getX();
-            float y = event.getY();
+        if (isDoubleTap) {
+            try {
+                float scale = ViewUtils.calculateScale(mMatrix);
+                float x = event.getX();
+                float y = event.getY();
 
-            setScale(scale < MID_SCALE ? MID_SCALE : MIN_SCALE, x, y);
-        } catch (Exception e) {
-            // Can sometimes happen when getX() and getY() is called
+                setScale(scale < MID_SCALE ? MID_SCALE : MIN_SCALE, x, y);
+            } catch (Exception e) {
+                // Can sometimes happen when getX() and getY() is called
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -239,6 +244,10 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
         }
 
         post(new AnimatedScaleRunnable(scale, focalX, focalY, this, mMatrix, this));
+    }
+
+    public void setDoubleTap(boolean enable) {
+        isDoubleTap = enable;
     }
 
     public void setAlwaysBlockParent(boolean block) {

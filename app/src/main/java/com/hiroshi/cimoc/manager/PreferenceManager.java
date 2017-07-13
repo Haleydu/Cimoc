@@ -33,6 +33,7 @@ public class PreferenceManager {
     public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
     public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
+    public static final String PREF_READER_BAN_DOUBLE_CLICK = "pref_reader_ban_double_click";
     public static final String PREF_READER_PAGING = "pref_reader_paging";
     public static final String PREF_READER_WHITE_EDGE = "pref_reader_white_edge";
 
@@ -89,6 +90,7 @@ public class PreferenceManager {
     public static final String PREF_BACKUP_SAVE_FAVORITE_COUNT = "pref_backup_save_favorite_count";
 
     public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
+    public static final String PREF_SEARCH_RESULT_FILTER = "pref_search_result_filter";
 
     public static final String PREF_CHAPTER_BUTTON_MODE = "pref_chapter_button_mode";
     public static final String PREF_CHAPTER_ASCEND_MODE = "pref_chapter_ascend_mode";

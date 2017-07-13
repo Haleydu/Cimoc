@@ -30,6 +30,8 @@ public class StreamReaderActivity extends ReaderActivity {
             mRecyclerView.addItemDecoration(mReaderAdapter.getItemDecoration());
         }
         ((ZoomableRecyclerView) mRecyclerView).setVertical(turn == PreferenceManager.READER_TURN_ATB);
+        ((ZoomableRecyclerView) mRecyclerView).setDoubleTap(
+                !mPreference.getBoolean(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false));
         ((ZoomableRecyclerView) mRecyclerView).setTapListenerListener(this);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

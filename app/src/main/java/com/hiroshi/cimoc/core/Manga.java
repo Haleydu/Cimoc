@@ -62,7 +62,7 @@ public class Manga {
                     while (iterator.hasNext()) {
                         Comic comic = iterator.next();
                         if (comic != null) {
-                            if (filterResult(comic.getTitle(), hash) > limit ||
+                            if (hash == null || filterResult(comic.getTitle(), hash) > limit ||
                                     filterResult(comic.getAuthor(), hash) > limit) {
                                 subscriber.onNext(comic);
                                 Thread.sleep(random.nextInt(200));

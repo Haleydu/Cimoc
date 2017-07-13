@@ -2,16 +2,13 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SourceDetailPresenter;
-import com.hiroshi.cimoc.ui.widget.Option;
-import com.hiroshi.cimoc.ui.fragment.dialog.EditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SourceDetailView;
+import com.hiroshi.cimoc.ui.widget.Option;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -29,7 +26,6 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
     @BindView(R.id.source_detail_type) Option mSourceType;
     @BindView(R.id.source_detail_title) Option mSourceTitle;
     @BindView(R.id.source_detail_favorite) Option mSourceFavorite;
-    @BindView(R.id.source_detail_server) Option mSourceServer;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -44,32 +40,14 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
     }
 
     @OnClick(R.id.source_detail_favorite) void onSourceFavoriteClick() {
-
-    }
-
-    @OnClick(R.id.source_detail_server) void onSourceServerClick() {
-        EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.source_detail_server,
-                mPresenter.getServer(), DIALOG_REQUEST_EDITOR);
-        fragment.show(getFragmentManager(), null);
+        // TODO 显示这个图源的漫画
     }
 
     @Override
-    public void onDialogResult(int requestCode, Bundle bundle) {
-        switch (requestCode) {
-            case DIALOG_REQUEST_EDITOR:
-                String value = bundle.getString(DialogCaller.EXTRA_DIALOG_RESULT_VALUE);
-                mPresenter.updateServer(value);
-                mSourceServer.setSummary(value);
-                break;
-        }
-    }
-
-    @Override
-    public void onSourceLoadSuccess(int type, String title, long count, String server) {
+    public void onSourceLoadSuccess(int type, String title, long count) {
         mSourceType.setSummary(String.valueOf(type));
         mSourceTitle.setSummary(title);
         mSourceFavorite.setSummary(String.valueOf(count));
-        mSourceServer.setSummary(server);
     }
 
     @Override

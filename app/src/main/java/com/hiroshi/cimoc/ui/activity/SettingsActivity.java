@@ -57,9 +57,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_keep_bright) CheckBoxPreference mReaderKeepBright;
     @BindView(R.id.settings_reader_hide_info) CheckBoxPreference mReaderHideInfo;
     @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
+    @BindView(R.id.settings_reader_ban_double_click) CheckBoxPreference mReaderBanDoubleClick;
     @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_reader_white_edge) CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
+    @BindView(R.id.settings_search_result_filter) CheckBoxPreference mSearchResultFilter;
     @BindView(R.id.settings_other_check_update) CheckBoxPreference mCheckUpdate;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
@@ -89,9 +91,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderKeepBright.bindPreference(PreferenceManager.PREF_READER_KEEP_BRIGHT, false);
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        mReaderBanDoubleClick.bindPreference(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
+        mSearchResultFilter.bindPreference(PreferenceManager.PREF_SEARCH_RESULT_FILTER, true);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -203,9 +207,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderKeepBright.setColorStateList(stateList);
         mReaderHideInfo.setColorStateList(stateList);
         mReaderHideNav.setColorStateList(stateList);
+        mReaderBanDoubleClick.setColorStateList(stateList);
         mReaderPaging.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
+        mSearchResultFilter.setColorStateList(stateList);
         mCheckUpdate.setColorStateList(stateList);
     }
 

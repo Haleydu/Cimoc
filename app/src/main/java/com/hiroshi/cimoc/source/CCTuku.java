@@ -29,10 +29,9 @@ public class CCTuku extends MangaParser {
 
     public static final int TYPE = 3;
     public static final String DEFAULT_TITLE = "CC图库";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public CCTuku(Source source) {

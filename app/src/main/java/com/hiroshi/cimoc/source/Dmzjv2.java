@@ -32,10 +32,9 @@ public class Dmzjv2 extends MangaParser {
 
     public static final int TYPE = 10;
     public static final String DEFAULT_TITLE = "动漫之家v2";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public Dmzjv2(Source source) {

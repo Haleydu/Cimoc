@@ -173,6 +173,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
         mReaderAdapter.setTapGestureListener(this);
         mReaderAdapter.setLazyLoadListener(this);
+        mReaderAdapter.setDoubleTap(!mPreference.getBoolean(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false));
         mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
         if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
             mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
