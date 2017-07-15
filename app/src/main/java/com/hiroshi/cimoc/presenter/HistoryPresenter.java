@@ -25,6 +25,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
         mComicManager = ComicManager.getInstance(mBaseView);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void initSubscription() {
         super.initSubscription();
@@ -32,6 +33,12 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
             @Override
             public void call(RxEvent rxEvent) {
                 mBaseView.onItemUpdate((MiniComic) rxEvent.getData());
+            }
+        });
+        addSubscription(RxEvent.EVENT_COMIC_HISTORY_RESTORE, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                mBaseView.OnComicRestore((List<MiniComic>) rxEvent.getData());
             }
         });
     }

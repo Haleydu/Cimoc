@@ -39,6 +39,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
     private ScaleDragDetector mScaleDragDetector;
     private GestureDetectorCompat mGestureDetector;
+    private OnTapGestureListener mTapGestureListener;
 
     private boolean mBlockParentIntercept = false;
     private boolean mAlwaysBlockParent = false;
@@ -49,8 +50,6 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
     private final Matrix mMatrix = new Matrix();
     private FlingRunnable mCurrentFlingRunnable;
-
-    private OnTapGestureListener mTapGestureListener;
 
     public PhotoDraweeView(Context context, GenericDraweeHierarchy hierarchy) {
         super(context, hierarchy);
@@ -125,10 +124,10 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
-        canvas.save();
+        int count = canvas.save();
         canvas.concat(mMatrix);
         super.onDraw(canvas);
-        canvas.restore();
+        canvas.restoreToCount(count);
     }
 
     public void update(int id) {
@@ -181,7 +180,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     @Override
     public void onScaleEnd() {
         if (ViewUtils.calculateScale(mMatrix) < MIN_SCALE) {
-            RectF rect = getDisplayRect();
+            RectF rect = checkAndGetDisplayRect();
             post(new AnimatedScaleRunnable(MIN_SCALE, rect.centerX(), rect.centerY(), this, mMatrix, this));
         }
     }
@@ -225,10 +224,9 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
     @Override
     public void onFling(float startX, float startY, float velocityX, float velocityY) {
-        RectF rect = getDisplayRect();
         mCurrentFlingRunnable = new FlingRunnable(getContext(), this, this);
-        mCurrentFlingRunnable.fling(rect, getViewWidth(), getViewHeight(), (int) velocityX,
-                (int) velocityY);
+        mCurrentFlingRunnable.fling(checkAndGetDisplayRect(), ViewUtils.getViewWidth(this),
+                ViewUtils.getViewHeight(this), (int) velocityX, (int) velocityY);
         post(mCurrentFlingRunnable);
     }
 
@@ -262,15 +260,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
         mTapGestureListener = listener;
     }
 
-    private int getViewWidth() {
-        return getWidth() - getPaddingLeft() - getPaddingRight();
-    }
-
-    private int getViewHeight() {
-        return getHeight() - getPaddingTop() - getPaddingBottom();
-    }
-
-    public RectF getDisplayRect() {
+    public RectF checkAndGetDisplayRect() {
         switch (mScrollMode) {
             case MODE_HORIZONTAL:
                 checkHorizontalBounds();
@@ -279,12 +269,12 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
                 checkVerticalBounds();
                 break;
         }
-        return getDisplayRect(mMatrix);
+        return getDisplayRect();
     }
 
-    private RectF getDisplayRect(Matrix matrix) {
+    private RectF getDisplayRect() {
         getHierarchy().getActualImageBounds(mDisplayRect);
-        matrix.mapRect(mDisplayRect);
+        mMatrix.mapRect(mDisplayRect);
         return mDisplayRect;
     }
 
@@ -304,17 +294,13 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     }
 
     public boolean checkVerticalBounds() {
-        RectF rect = getDisplayRect(mMatrix);
-        if (rect == null) {
-            return false;
-        }
+        RectF rect = getDisplayRect();
 
-        float height = rect.height();
-        float width = rect.width();
-        float deltaX = 0.0F;
-        float deltaY = 0.0F;
+        final float height = rect.height(), width = rect.width();
+        final int viewHeight = ViewUtils.getViewHeight(this);
+        final int viewWidth = ViewUtils.getViewWidth(this);
+        float deltaX = 0.0F, deltaY = 0.0F;
 
-        int viewHeight = getViewHeight();
         if (height <= viewHeight) {
             deltaY = (viewHeight - height) / 2 - rect.top;
             mScrollEdge = EDGE_BOTH;
@@ -327,7 +313,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
         } else {
             mScrollEdge = EDGE_NONE;
         }
-        int viewWidth = getViewWidth();
+
         if (width <= (float) viewWidth) {
             deltaX = (viewWidth - width) / 2 - rect.left;
         } else if (rect.left > 0.0F) {
@@ -341,17 +327,13 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     }
 
     public boolean checkHorizontalBounds() {
-        RectF rect = getDisplayRect(mMatrix);
-        if (rect == null) {
-            return false;
-        }
+        RectF rect = getDisplayRect();
 
-        float height = rect.height();
-        float width = rect.width();
-        float deltaX = 0.0F;
-        float deltaY = 0.0F;
+        final float height = rect.height(), width = rect.width();
+        final int viewHeight = ViewUtils.getViewHeight(this);
+        final int viewWidth = ViewUtils.getViewWidth(this);
+        float deltaX = 0.0F, deltaY = 0.0F;
 
-        int viewHeight = getViewHeight();
         if (height <= (float) viewHeight) {
             deltaY = (viewHeight - height) / 2 - rect.top;
         } else if (rect.top > 0.0F) {
@@ -359,7 +341,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
         } else if (rect.bottom < (float) viewHeight) {
             deltaY = viewHeight - rect.bottom;
         }
-        int viewWidth = getViewWidth();
+
         if (width <= viewWidth) {
             deltaX = (viewWidth - width) / 2 - rect.left;
             mScrollEdge = EDGE_BOTH;

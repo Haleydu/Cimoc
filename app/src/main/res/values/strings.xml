@@ -154,7 +154,7 @@
     <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！重点是，不一定可以成功！</string>
     <string name="settings_search">搜索设置</string>
     <string name="settings_search_result_filter">过滤搜索结果</string>
-    <string name="settings_search_result_filter_summary">不显示标题或作者与关键词差异字的漫画</string>
+    <string name="settings_search_result_filter_summary">不显示标题或作者与关键字差异大的漫画</string>
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
@@ -171,10 +171,10 @@
     <string name="settings_other_clear_cache_summary">清理在线漫画的缓存数据</string>
 
     <string name="backup_save">备份</string>
-    <string name="backup_save_favorite_auto">自动备份</string>
-    <string name="backup_save_favorite_auto_summary">自动备份收藏的漫画</string>
-    <string name="backup_save_favorite">备份收藏</string>
-    <string name="backup_save_favorite_summary">备份收藏的漫画</string>
+    <string name="backup_save_comic_auto">自动备份</string>
+    <string name="backup_save_comic_auto_summary">自动备份收藏和历史漫画</string>
+    <string name="backup_save_comic">备份漫画</string>
+    <string name="backup_save_comic_summary">备份收藏和历史漫画</string>
     <string name="backup_save_tag">备份标签</string>
     <string name="backup_save_tag_summary">备份标签及相应漫画</string>
     <string name="backup_save_tag_not_found">没有找到标签</string>
@@ -182,8 +182,8 @@
     <string name="backup_save_success">备份成功 共 %d 条记录</string>
     <string name="backup_restore">恢复</string>
     <string name="backup_restore_not_found">没有找到备份文件</string>
-    <string name="backup_restore_favorite">恢复收藏</string>
-    <string name="backup_restore_favorite_summary">恢复收藏的漫画</string>
+    <string name="backup_restore_comic">恢复漫画</string>
+    <string name="backup_restore_comic_summary">恢复收藏和历史漫画</string>
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 

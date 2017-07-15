@@ -32,7 +32,7 @@ public class TagPresenter extends BasePresenter<TagView> {
         addSubscription(RxEvent.EVENT_TAG_RESTORE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onTagRestore((Tag) rxEvent.getData());
+                mBaseView.onTagRestore((List<Tag>) rxEvent.getData());
             }
         });
     }

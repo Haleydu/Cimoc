@@ -19,13 +19,9 @@ public interface BackupView extends BaseView, DialogCaller {
 
     void onBackupRestoreFail();
 
-    void onFavoriteFileLoadSuccess(String[] file);
+    void onComicFileLoadSuccess(String[] file);
 
     void onTagFileLoadSuccess(String[] file);
-
-    void onTagLoadSuccess(List<Tag> list);
-
-    void onTagLoadFail();
 
     void onFileLoadFail();
 

@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -99,10 +100,16 @@ public class IKanman extends MangaParser {
         if (!StringUtils.isEmpty(baseText)) {
             body = new Node(DecryptionUtils.LZ64Decrypt(baseText));
         }
-        for (Node node : body.list("div.chapter-list > ul > li > a")) {
-            String title = node.attr("title");
-            String path = node.hrefWithSplit(2);
-            list.add(new Chapter(title, path));
+        for (Node node : body.list("div.chapter-list")) {
+            List<Node> uls = node.list("ul");
+            Collections.reverse(uls);
+            for (Node ul : uls) {
+                for (Node li : ul.list("li > a")) {
+                    String title = li.attr("title");
+                    String path = li.hrefWithSplit(2);
+                    list.add(new Chapter(title, path));
+                }
+            }
         }
         return list;
     }

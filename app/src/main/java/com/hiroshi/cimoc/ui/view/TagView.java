@@ -20,6 +20,6 @@ public interface TagView extends BaseView, ThemeResponsive, DialogCaller {
 
     void onTagDeleteFail();
 
-    void onTagRestore(Tag tag);
+    void onTagRestore(List<Tag> list);
 
 }

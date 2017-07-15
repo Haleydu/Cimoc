@@ -30,6 +30,12 @@ public class TagRefManager {
         mRefDao.getSession().runInTx(runnable);
     }
 
+    public List<TagRef> listByTag(long tid) {
+        return mRefDao.queryBuilder()
+                .where(TagRefDao.Properties.Tid.eq(tid))
+                .list();
+    }
+
     public List<TagRef> listByComic(long cid) {
         return mRefDao.queryBuilder()
                 .where(TagRefDao.Properties.Cid.eq(cid))

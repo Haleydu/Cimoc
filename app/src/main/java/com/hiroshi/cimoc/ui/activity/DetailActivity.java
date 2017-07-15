@@ -70,8 +70,8 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     protected void initData() {
-        mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE, true);
-        mBackupCount = mPreference.getInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, 0);
+        mAutoBackup = mPreference.getBoolean(PreferenceManager.PREF_BACKUP_SAVE_COMIC, true);
+        mBackupCount = mPreference.getInt(PreferenceManager.PREF_BACKUP_SAVE_COMIC_COUNT, 0);
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
         int source = getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1);
         String cid = getIntent().getStringExtra(Extra.EXTRA_CID);
@@ -82,7 +82,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     protected void onPause() {
         super.onPause();
         if (mAutoBackup) {
-            mPreference.putInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, mBackupCount);
+            mPreference.putInt(PreferenceManager.PREF_BACKUP_SAVE_COMIC_COUNT, mBackupCount);
         }
     }
 
@@ -257,7 +257,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     private void increment() {
         if (mAutoBackup && ++mBackupCount == 10) {
             mBackupCount = 0;
-            mPreference.putInt(PreferenceManager.PREF_BACKUP_SAVE_FAVORITE_COUNT, 0);
+            mPreference.putInt(PreferenceManager.PREF_BACKUP_SAVE_COMIC_COUNT, 0);
             mPresenter.backup();
         }
     }

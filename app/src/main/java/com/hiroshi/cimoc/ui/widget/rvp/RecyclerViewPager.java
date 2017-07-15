@@ -294,33 +294,18 @@ public class RecyclerViewPager extends RecyclerView {
         mSmoothScrollTargetPosition += pos;
     }
 
-    private boolean isScaling = false;
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        switch (ev.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                if (getLayoutManager() != null) {
-                    mPositionOnTouchDown = getLayoutManager().canScrollHorizontally()
-                            ? RecyclerViewUtils.getCenterXChildPosition(this)
-                            : RecyclerViewUtils.getCenterYChildPosition(this);
-                }
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                isScaling = true;
-                break;
-            case MotionEvent.ACTION_UP:
-                isScaling = false;
-                break;
+        if (ev.getAction() == MotionEvent.ACTION_DOWN && getLayoutManager() != null) {
+            mPositionOnTouchDown = getLayoutManager().canScrollHorizontally()
+                    ? RecyclerViewUtils.getCenterXChildPosition(this)
+                    : RecyclerViewUtils.getCenterYChildPosition(this);
         }
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        if (isScaling) {
-            return true;
-        }
         if (e.getAction() == MotionEvent.ACTION_MOVE) {
             if (mCurView != null) {
                 mMaxLeftWhenDragging = Math.max(mCurView.getLeft(), mMaxLeftWhenDragging);
@@ -330,6 +315,15 @@ public class RecyclerViewPager extends RecyclerView {
             }
         }
         return super.onTouchEvent(e);
+    }
+
+    @Override
+    public boolean onInterceptHoverEvent(MotionEvent event) {
+        try {
+            return super.onInterceptHoverEvent(event);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Override
