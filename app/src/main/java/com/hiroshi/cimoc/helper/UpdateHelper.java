@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -76,7 +77,7 @@ public class UpdateHelper {
      * 初始化图源
      */
     private static void initSource(DaoSession session) {
-        List<Source> list = new ArrayList<>(10);
+        List<Source> list = new ArrayList<>(11);
         list.add(IKanman.getDefaultSource());
         list.add(Dmzj.getDefaultSource());
         list.add(HHAAZZ.getDefaultSource());
@@ -88,6 +89,7 @@ public class UpdateHelper {
         list.add(MH57.getDefaultSource());
         list.add(Chuiyao.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
+        list.add(MangaNel.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

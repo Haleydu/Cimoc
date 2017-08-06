@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
@@ -116,6 +117,9 @@ public class SourceManager {
                     break;
                 case Locality.TYPE:
                     parser = new Locality();
+                    break;
+                case MangaNel.TYPE:
+                    parser = new MangaNel(source);
                     break;
                 default:
                     parser = new Null();

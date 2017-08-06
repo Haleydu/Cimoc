@@ -87,7 +87,7 @@ public abstract class MangaParser implements Parser {
     }
 
     protected boolean isFinish(String text) {
-        return text != null && text.contains("完结");
+        return text != null && (text.contains("完结") || text.contains("Completed")) ;
     }
 
 }
