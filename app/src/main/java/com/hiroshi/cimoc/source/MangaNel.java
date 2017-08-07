@@ -63,7 +63,7 @@ public class MangaNel extends MangaParser {
      */
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        if (page > 1) return null;
+        if (page > 1) return null; // MangaNel的搜索不支持分页，最多仅返回20个搜索结果
         
         try {
             return new JsonIterator(new JSONArray(html)) {
@@ -72,6 +72,10 @@ public class MangaNel extends MangaParser {
                     try {
                         String cid = object.getString("nameunsigned");
                         String title = object.getString("name");
+                        if (title.contains("<span")){
+                            Node n = new Node(title);
+                            title = n.text();
+                        }
                         String cover = object.getString("image");
                         String update = object.getString("lastchapter");
                         String author = object.getString("author");
@@ -117,8 +121,8 @@ public class MangaNel extends MangaParser {
         String author = body.list("div.manga-info-top >  ul.manga-info-text > li").get(1).text("a");
         String intro = body.text("#noidungm");
         boolean status = isFinish(body.list("div.manga-info-top >  ul.manga-info-text > li")
-            .get(1)
-            .text(""));
+            .get(2)
+            .text());
         comic.setInfo(title, cover, update, intro, author, status);
     }
     
