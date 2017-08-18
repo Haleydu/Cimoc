@@ -16,8 +16,6 @@ import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.ui.view.BackupView;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 

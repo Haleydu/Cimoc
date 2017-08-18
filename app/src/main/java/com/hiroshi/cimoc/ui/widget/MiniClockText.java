@@ -2,16 +2,16 @@ package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import java.util.Calendar;
 
 /**
  * Created by Hiroshi on 2016/7/16.
  */
-public class MiniClockText extends TextView {
+public class MiniClockText extends AppCompatTextView {
 
     public static final CharSequence FORMAT_24_HOUR = "HH:mm";
 

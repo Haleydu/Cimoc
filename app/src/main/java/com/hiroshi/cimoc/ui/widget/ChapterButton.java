@@ -6,8 +6,8 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 
@@ -15,7 +15,7 @@ import com.hiroshi.cimoc.R;
  * Created by Hiroshi on 2016/10/2.
  */
 
-public class ChapterButton extends TextView {
+public class ChapterButton extends AppCompatTextView {
 
     private static final int[] NORMAL_STATE = new int[] { -android.R.attr.state_selected };
     private static final int[] SELECTED_STATE = new int[] { android.R.attr.state_selected };

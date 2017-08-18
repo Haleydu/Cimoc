@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.view.MotionEventCompat;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.VelocityTracker;

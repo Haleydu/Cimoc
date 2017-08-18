@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.model;
 
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

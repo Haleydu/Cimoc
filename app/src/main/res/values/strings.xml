@@ -30,7 +30,6 @@
 
     <string name="result">搜索结果</string>
     <string name="result_empty">搜索结果为空</string>
-    <string name="result_error">搜索错误</string>
 
     <string name="detail">详情</string>
     <string name="detail_favorite">收藏成功</string>
@@ -74,7 +73,6 @@
     <string name="comic_info_chapter">最后阅读</string>
     <string name="comic_info_time">阅读时间</string>
 
-    <string name="favorite_check_update">检查更新</string>
     <string name="favorite_check_update_fail">检查更新失败</string>
     <string name="favorite_check_update_confirm">是否检查更新</string>
     <string name="favorite_check_update_doing">正在检查更新</string>
@@ -117,9 +115,7 @@
     <string name="settings_reader_config">阅读配置</string>
     <string name="settings_reader_config_summary">自定义阅读模式下各项功能</string>
     <string name="settings_reader_turn">阅读方向</string>
-    <string name="settings_reader_turn_summary">选择默认阅读方向</string>
     <string name="settings_reader_orientation">屏幕方向</string>
-    <string name="settings_reader_orientation_summary">选择默认屏幕方向</string>
     <string name="settings_reader_click_event">自定义点击事件</string>
     <string name="settings_reader_click_event_summary">阅读状态屏幕及音量键点击事件</string>
     <string name="settings_reader_long_click_event">自定义长按事件</string>
@@ -181,8 +177,6 @@
     <string name="backup_save_comic_summary">备份收藏和历史漫画</string>
     <string name="backup_save_tag">备份标签</string>
     <string name="backup_save_tag_summary">备份标签及相应漫画</string>
-    <string name="backup_save_tag_not_found">没有找到标签</string>
-    <string name="backup_save_tag_load_fail">读取标签失败</string>
     <string name="backup_save_success">备份成功 共 %d 条记录</string>
     <string name="backup_restore">恢复</string>
     <string name="backup_restore_not_found">没有找到备份文件</string>
@@ -207,7 +201,6 @@
     <string name="about_update_doing">正在检查更新</string>
     <string name="about_update_fail">检查更新失败</string>
     <string name="about_resource_fail">打开网页失败</string>
-    <string name="about_update_log">更新日志</string>
 
     <string name="dialog_choice">单项选择</string>
     <string name="dialog_confirm">操作确认</string>
@@ -215,12 +208,10 @@
     <string name="dialog_negative">取消</string>
     <string name="dialog_doing">正在执行中</string>
 
-    <string name="local_add">添加目录</string>
     <string name="local_delete">删除漫画</string>
     <string name="local_delete_confirm">是否删除漫画（不会删除文件）</string>
 
     <string name="tag_add">添加标签</string>
-    <string name="tag_add_empty">标签名称不能为空</string>
     <string name="tag_delete_confirm">是否删除标签</string>
 
     <string name="part_favorite_select">选择漫画</string>
@@ -233,7 +224,6 @@
     <string name="download_start_success">已开始全部下载任务</string>
     <string name="download_stop_success">已暂停全部下载任务</string>
     <string name="download_task_empty">下载任务为空</string>
-    <string name="download_task_fail">读取任务失败</string>
     <string name="download_ask_stop">请先暂停下载任务</string>
     <string name="download_action_confirm">是否开始或暂停下载</string>
     <string name="download_delete">删除漫画</string>
@@ -260,7 +250,6 @@
 
     <string name="common_data_load_fail">读取数据失败</string>
     <string name="common_keyword_empty">关键字为空</string>
-    <string name="common_network_error">网络错误</string>
     <string name="common_parse_error">解析错误</string>
     <string name="common_execute_success">操作成功</string>
     <string name="common_execute_fail">操作失败</string>

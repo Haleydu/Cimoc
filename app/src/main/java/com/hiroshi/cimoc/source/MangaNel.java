@@ -5,7 +5,6 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.Category;
 import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
@@ -31,12 +30,12 @@ import okhttp3.Request;
  */
 
 public class MangaNel extends MangaParser {
+
     public static final int TYPE = 43;
     public static final String DEFAULT_TITLE = "MangaNel";
-    public static final String DEFAULT_SERVER = null;
     
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
     
     public MangaNel(Source source) {

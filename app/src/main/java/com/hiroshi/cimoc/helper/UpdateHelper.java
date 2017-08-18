@@ -5,7 +5,6 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
@@ -28,8 +27,8 @@ import java.util.List;
 
 public class UpdateHelper {
 
-    // 1.04.08.003
-    private static final int VERSION = 10408003;
+    // 1.04.08.004
+    private static final int VERSION = 10408004;
 
     public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
@@ -48,6 +47,10 @@ public class UpdateHelper {
                 case 10407000:
                 case 10408000:
                     deleteDownloadFromLocal(session);
+                case 10408001:
+                case 10408002:
+                case 10408003:
+                    session.getSourceDao().insert(MangaNel.getDefaultSource());
             }
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }

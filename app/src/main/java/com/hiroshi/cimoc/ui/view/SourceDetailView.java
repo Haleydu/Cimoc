@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.component.DialogCaller;
-
 /**
  * Created by Hiroshi on 2017/1/18.
  */

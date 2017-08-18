@@ -19,8 +19,6 @@ import butterknife.OnClick;
 
 public class SourceDetailActivity extends BackActivity implements SourceDetailView {
 
-    private static final int DIALOG_REQUEST_EDITOR = 0;
-
     private SourceDetailPresenter mPresenter;
 
     @BindView(R.id.source_detail_type) Option mSourceType;
