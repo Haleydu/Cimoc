@@ -76,6 +76,13 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_white_edge"
                     app:summary="@string/settings_reader_white_edge_summary"/>
+                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                    android:id="@+id/settings_reader_scale_factor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_reader_scale_factor"
+                    app:min="100"
+                    app:max="300"/>
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"

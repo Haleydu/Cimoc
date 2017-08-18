@@ -10,4 +10,7 @@
         android:title="@string/comic_filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom" />
+    <item android:id="@+id/comic_cancel_highlight"
+        android:title="@string/comic_cancel_highlight"
+        app:showAsAction="never" />
 </menu>

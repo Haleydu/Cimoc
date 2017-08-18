@@ -147,6 +147,10 @@ public class ComicManager {
                 .unique();
     }
 
+    public void cancelHighlight() {
+        mComicDao.getDatabase().execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 0 WHERE \"HIGHLIGHT\" = 1");
+    }
+
     public void updateOrInsert(Comic comic) {
         if (comic.getId() == null) {
             insert(comic);

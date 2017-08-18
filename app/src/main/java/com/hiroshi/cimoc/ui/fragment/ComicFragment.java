@@ -107,6 +107,9 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.comic_cancel_highlight:
+                ((FavoriteFragment) mTabAdapter.getItem(1)).cancelAllHighlight();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

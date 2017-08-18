@@ -33,9 +33,7 @@ public class IKanman extends MangaParser {
     public static final String DEFAULT_TITLE = "看漫画";
 
     private static final String[] servers = {
-            "http://p.yogajx.com",
-            "http://us.hamreus.com:8080",
-            "http://eu.hamreus.com:8080"
+            "http://p.yogajx.com"
     };
 
     public static Source getDefaultSource() {

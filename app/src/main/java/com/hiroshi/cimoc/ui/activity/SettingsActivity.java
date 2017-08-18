@@ -50,6 +50,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 5;
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 6;
     private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 7;
+    private static final int DIALOG_REQUEST_READER_SCALE_FACTOR = 8;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
@@ -66,6 +67,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
     @BindView(R.id.settings_other_theme) ChoicePreference mOtherTheme;
+    @BindView(R.id.settings_reader_scale_factor) SliderPreference mReaderScaleFactor;
     @BindView(R.id.settings_other_night_alpha) SliderPreference mOtherNightAlpha;
     @BindView(R.id.settings_download_thread) SliderPreference mDownloadThread;
 
@@ -103,6 +105,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 PreferenceManager.HOME_FAVORITE, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
         mOtherTheme.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_THEME,
                 ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
+        mReaderScaleFactor.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_SCALE_FACTOR, 200,
+                R.string.settings_reader_scale_factor, DIALOG_REQUEST_READER_SCALE_FACTOR);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
                 R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
         mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
@@ -146,6 +150,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         switch (requestCode) {
             case DIALOG_REQUEST_READER_MODE:
                 mReaderMode.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));
+                break;
+            case DIALOG_REQUEST_READER_SCALE_FACTOR:
+                mReaderScaleFactor.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
                 break;
             case DIALOG_REQUEST_OTHER_LAUNCH:
                 mOtherLaunch.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));

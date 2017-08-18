@@ -20,7 +20,6 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
         FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
 
     public static final float MIN_SCALE = 1.0f;
-    public static final float MID_SCALE = 2.0f;
     public static final float MAX_SCALE = 3.0f;
 
     private final Matrix mMatrix = new Matrix();
@@ -31,8 +30,8 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
     private GestureDetectorCompat mGestureDetector;
     private OnTapGestureListener mTapGestureListener;
 
+    private float mScaleFactor = 2.0f;
     private boolean isVertical = true;
-
     private boolean isDoubleTap = true;
 
     private FlingRunnable mCurrentFlingRunnable;
@@ -154,7 +153,7 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
                 float x = event.getX();
                 float y = event.getY();
 
-                setScale(scale < MID_SCALE ? MID_SCALE : MIN_SCALE, x, y);
+                setScale(scale < mScaleFactor ? mScaleFactor : MIN_SCALE, x, y);
             } catch (Exception e) {
                 // Can sometimes happen when getX() and getY() is called
             }
@@ -166,6 +165,10 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
     @Override
     public boolean onDoubleTapEvent(MotionEvent event) {
         return false;
+    }
+
+    public void setScaleFactor(float factor) {
+        mScaleFactor = factor;
     }
 
     public void setDoubleTap(boolean enable) {

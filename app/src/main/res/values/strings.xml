@@ -61,6 +61,7 @@
     <string name="comic_tab_local">本地</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
+    <string name="comic_cancel_highlight">全部标记已读</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_status_continue">连载</string>
     <string name="comic_status_finish">完结</string>
@@ -136,14 +137,17 @@
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
     <string name="settings_reader_hide_info_summary">阅读状态隐藏右上角的信息</string>
     <string name="settings_reader_trigger">翻页触发位移</string>
+    <string name="settings_reader_quick_turn">快速翻页</string>
+    <string name="settings_reader_quick_turn_summary">不显示翻页平移效果</string>
     <string name="settings_reader_ban_turn">放大禁止翻页</string>
-    <string name="settings_reader_ban_turn_summary">放大状态下禁止翻页</string>
+    <string name="settings_reader_ban_turn_summary">放大状态禁止翻页</string>
     <string name="settings_reader_interval">显示图片间隔</string>
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
     <string name="settings_reader_paging">自动切割大图</string>
-    <string name="settings_reader_paging_summary">阅读状态下自动切割大图</string>
+    <string name="settings_reader_paging_summary">阅读状态自动切割大图</string>
+    <string name="settings_reader_scale_factor">双击放大百分比</string>
     <string name="settings_download">下载设置</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_delete">删除无效漫画</string>

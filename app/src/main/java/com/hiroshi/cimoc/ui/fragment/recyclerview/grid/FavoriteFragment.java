@@ -89,6 +89,11 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         }
     }
 
+    public void cancelAllHighlight() {
+        mPresenter.cancelAllHighlight();
+        mGridAdapter.cancelAllHighlight();
+    }
+
     private void checkUpdate() {
         if (mBuilder == null) {
             mPresenter.checkUpdate();
@@ -164,6 +169,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     public void onComicCheckComplete() {
         NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_done, false);
         NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+        NotificationUtils.cancelNotification(0, mManager);
         mBuilder = null;
     }
 

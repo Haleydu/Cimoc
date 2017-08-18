@@ -34,6 +34,7 @@ public class RecyclerViewPager extends RecyclerView {
     private int mSmoothScrollTargetPosition = -1;
     private int mPositionBeforeScroll = -1;
     private float mTriggerOffset = 0.05f;
+    private Float mScrollSpeed;
 
     boolean mNeedAdjust;
     int mFirstLeftWhenDragging;
@@ -123,7 +124,7 @@ public class RecyclerViewPager extends RecyclerView {
         return flinging;
     }
 
-    public void smoothScrollToPosition(int position, final float speed) {
+    public void startSmoothScroll(int position) {
         mSmoothScrollTargetPosition = position;
         LinearSmoothScroller linearSmoothScroller =
                 new LinearSmoothScroller(getContext()) {
@@ -137,32 +138,9 @@ public class RecyclerViewPager extends RecyclerView {
                     }
 
                     @Override
-                    protected void onTargetFound(View targetView, State state, Action action) {
-                        if (getLayoutManager() == null) {
-                            return;
-                        }
-                        int dx = calculateDxToMakeVisible(targetView, getHorizontalSnapPreference());
-                        int dy = calculateDyToMakeVisible(targetView, getVerticalSnapPreference());
-                        if (dx > 0) {
-                            dx = dx - getLayoutManager().getLeftDecorationWidth(targetView);
-                        } else {
-                            dx = dx + getLayoutManager().getRightDecorationWidth(targetView);
-                        }
-                        if (dy > 0) {
-                            dy = dy - getLayoutManager().getTopDecorationHeight(targetView);
-                        } else {
-                            dy = dy + getLayoutManager().getBottomDecorationHeight(targetView);
-                        }
-                        final int distance = (int) Math.sqrt(dx * dx + dy * dy);
-                        final int time = calculateTimeForDeceleration(distance);
-                        if (time > 0) {
-                            action.update(-dx, -dy, time, mDecelerateInterpolator);
-                        }
-                    }
-
-                    @Override
                     protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                        return speed * getContext().getResources().getDisplayMetrics().density / displayMetrics.density;
+                        return getContext().getResources().getDisplayMetrics().density
+                                * mScrollSpeed / displayMetrics.density;
                     }
                 };
         linearSmoothScroller.setTargetPosition(position);
@@ -177,7 +155,7 @@ public class RecyclerViewPager extends RecyclerView {
         if (mPositionBeforeScroll < 0) {
             mPositionBeforeScroll = getCurrentPosition();
         }
-        smoothScrollToPosition(position, 0.08f);
+        startSmoothScroll(position);
 
         if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
                 mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
@@ -243,7 +221,7 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()), 0.14f);
+            startSmoothScroll(safeTargetPosition(targetPosition, getItemCount()));
         }
     }
 
@@ -273,8 +251,12 @@ public class RecyclerViewPager extends RecyclerView {
                     }
                 }
             }
-            smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()), 0.14f);
+            startSmoothScroll(safeTargetPosition(targetPosition, getItemCount()));
         }
+    }
+
+    public void setScrollSpeed(float speed) {
+        mScrollSpeed = speed;
     }
 
     public void setTriggerOffset(float offset) {
@@ -384,7 +366,7 @@ public class RecyclerViewPager extends RecyclerView {
                         }
                     }
                 }
-                smoothScrollToPosition(safeTargetPosition(targetPosition, getItemCount()), 0.14f);
+                startSmoothScroll(safeTargetPosition(targetPosition, getItemCount()));
                 mCurView = null;
             } else if (mSmoothScrollTargetPosition != mPositionBeforeScroll) {
                 if (mOnPageChangedListener != null) {

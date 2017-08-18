@@ -58,6 +58,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isWhiteEdge;
     private boolean isBanTurn;
     private boolean isDoubleTap;
+    private float mScaleFactor;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -104,7 +105,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 ((PhotoDraweeView) draweeView).setTapListenerListener(mTapGestureListener);
                 ((PhotoDraweeView) draweeView).setAlwaysBlockParent(isBanTurn);
                 ((PhotoDraweeView) draweeView).setDoubleTap(isDoubleTap);
-                ((PhotoDraweeView) draweeView).setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
+                ((PhotoDraweeView) draweeView).setScaleFactor(mScaleFactor);
+                ((PhotoDraweeView) draweeView).setScrollMode(isVertical ?
+                        PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
@@ -140,7 +143,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url));
 
-            // Todo 切图后可能需要修改图片高度和宽度
+            // TODO 切图后可能需要修改图片高度和宽度
             MangaPostprocessor processor = new MangaPostprocessor(imageUrl);
             processor.setPaging(isPaging);
             processor.setWhiteEdge(isWhiteEdge);
@@ -176,6 +179,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         mLazyLoadListener = listener;
     }
 
+    public void setScaleFactor(float factor) {
+        mScaleFactor = factor;
+    }
+
     public void setDoubleTap(boolean enable) {
         isDoubleTap = enable;
     }
@@ -202,7 +209,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     private boolean isNeedResize(ImageUrl imageUrl) {
         // 长图例如条漫不 resize
-        return (imageUrl.getWidth() << 1) > imageUrl.getHeight() && imageUrl.getSize() > App.mLargePixels;
+        return (imageUrl.getWidth() * 2) > imageUrl.getHeight() && imageUrl.getSize() > App.mLargePixels;
     }
 
     @Override

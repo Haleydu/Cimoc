@@ -32,7 +32,7 @@ public class MH57 extends MangaParser {
     public static final String DEFAULT_TITLE = "57漫画";
 
     private static final String[] servers = {
-            "http://images.333dm.com"
+            "http://images.720rs.com"
     };
 
     public static Source getDefaultSource() {
@@ -144,7 +144,7 @@ public class MH57 extends MangaParser {
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new ArrayList<>();
         Node body = new Node(html);
-        for (Node node : body.list("#AspNetPager1 > span.current")) {
+        for (Node node : body.list("span.pager > span.current")) {
             try {
                 if (Integer.parseInt(node.text()) < page) {
                     return list;

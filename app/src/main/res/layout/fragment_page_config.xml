@@ -49,6 +49,12 @@
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_ban_turn"
             app:summary="@string/settings_reader_ban_turn_summary"/>
+        <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+            android:id="@+id/settings_reader_quick_turn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/settings_reader_quick_turn"
+            app:summary="@string/settings_reader_quick_turn_summary"/>
         <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
             android:id="@+id/settings_reader_trigger"
             android:layout_width="match_parent"
