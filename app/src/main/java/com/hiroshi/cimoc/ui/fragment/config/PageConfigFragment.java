@@ -28,6 +28,8 @@ public class PageConfigFragment extends BaseFragment implements DialogCaller {
 
     @BindView(R.id.settings_reader_load_prev) CheckBoxPreference mReaderLoadPrev;
     @BindView(R.id.settings_reader_load_next) CheckBoxPreference mReaderLoadNext;
+    @BindView(R.id.settings_reader_ban_turn) CheckBoxPreference mReaderBanTurn;
+    @BindView(R.id.settings_reader_quick_turn) CheckBoxPreference mReaderQuickTurn;
     @BindView(R.id.settings_reader_orientation) ChoicePreference mReaderOrientation;
     @BindView(R.id.settings_reader_turn) ChoicePreference mReaderTurn;
     @BindView(R.id.settings_reader_trigger) SliderPreference mReaderTrigger;
@@ -36,6 +38,8 @@ public class PageConfigFragment extends BaseFragment implements DialogCaller {
     protected void initView() {
         mReaderLoadPrev.bindPreference(PreferenceManager.PREF_READER_PAGE_LOAD_PREV, true);
         mReaderLoadNext.bindPreference(PreferenceManager.PREF_READER_PAGE_LOAD_NEXT, true);
+        mReaderBanTurn.bindPreference(PreferenceManager.PREF_READER_PAGE_BAN_TURN, false);
+        mReaderQuickTurn.bindPreference(PreferenceManager.PREF_READER_PAGE_QUICK_TURN, false);
         mReaderOrientation.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_PAGE_ORIENTATION,
                 PreferenceManager.READER_ORIENTATION_PORTRAIT, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
         mReaderTurn.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_PAGE_TURN,

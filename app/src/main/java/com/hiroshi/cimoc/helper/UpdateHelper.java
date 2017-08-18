@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.helper;
 
 import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
@@ -26,10 +28,10 @@ import java.util.List;
 
 public class UpdateHelper {
 
-    // 1.04.08.000
-    private static final int VERSION = 10408000;
+    // 1.04.08.003
+    private static final int VERSION = 10408003;
 
-    public static void update(PreferenceManager manager, DaoSession session) {
+    public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
         if (version != VERSION) {
             switch (version) {
@@ -40,35 +42,33 @@ public class UpdateHelper {
                 case 10404001:
                 case 10404002:
                 case 10404003:
-                    updateSourceServer(session);
                 case 10405000:
                     session.getSourceDao().insert(Dmzjv2.getDefaultSource());
                 case 10406000:
                 case 10407000:
+                case 10408000:
+                    deleteDownloadFromLocal(session);
             }
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
     }
 
     /**
-     * app: 1.4.4.2 -> 1.4.4.3
-     * db: 7 -> 8
-     * 表 SOURCE 添加 SERVER 字段
+     * app: 1.4.8.0 -> 1.4.8.1
+     * 删除本地漫画中 download 字段的值
      */
-    private static void updateSourceServer(final DaoSession session) {
+    private static void deleteDownloadFromLocal(final DaoSession session) {
         session.runInTx(new Runnable() {
             @Override
             public void run() {
-                SourceDao dao = session.getSourceDao();
-                Source source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(IKanman.TYPE)).unique();
-                source.setServer(IKanman.DEFAULT_SERVER);
-                dao.update(source);
-                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(HHAAZZ.TYPE)).unique();
-                source.setServer(HHAAZZ.DEFAULT_SERVER);
-                dao.update(source);
-                source = dao.queryBuilder().where(SourceDao.Properties.Type.eq(MH57.TYPE)).unique();
-                source.setServer(MH57.DEFAULT_SERVER);
-                dao.update(source);
+                ComicDao dao = session.getComicDao();
+                List<Comic> list = dao.queryBuilder().where(ComicDao.Properties.Local.eq(true)).list();
+                if (!list.isEmpty()) {
+                    for (Comic comic : list) {
+                        comic.setDownload(null);
+                    }
+                    dao.updateInTx(list);
+                }
             }
         });
     }

@@ -63,7 +63,7 @@ public class App extends Application implements AppGetter {
         mHeightPixels = metrics.heightPixels;
         mCoverWidthPixels = mWidthPixels / 3;
         mCoverHeightPixels = mHeightPixels * mCoverWidthPixels / mWidthPixels;
-        mLargePixels = 2 * metrics.widthPixels * metrics.heightPixels;
+        mLargePixels = 3 * metrics.widthPixels * metrics.heightPixels;
     }
 
     public void initRootDocumentFile() {

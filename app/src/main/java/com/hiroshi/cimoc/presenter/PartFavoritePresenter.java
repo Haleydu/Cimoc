@@ -116,6 +116,7 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
     }
 
     public void loadComicTitle(List<MiniComic> list) {
+        // TODO 不使用 in
         mCompositeSubscription.add(mComicManager.listFavoriteNotIn(buildIdList(list))
                 .compose(new ToAnotherList<>(new Func1<Comic, String>() {
                     @Override
@@ -133,7 +134,7 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        mBaseView.onComicLoadFail();
+                        mBaseView.onComicTitleLoadFail();
                     }
                 }));
     }

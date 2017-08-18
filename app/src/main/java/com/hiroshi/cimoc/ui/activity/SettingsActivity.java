@@ -50,6 +50,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 5;
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 6;
     private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 7;
+    private static final int DIALOG_REQUEST_READER_SCALE_FACTOR = 8;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
@@ -57,13 +58,16 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_keep_bright) CheckBoxPreference mReaderKeepBright;
     @BindView(R.id.settings_reader_hide_info) CheckBoxPreference mReaderHideInfo;
     @BindView(R.id.settings_reader_hide_nav) CheckBoxPreference mReaderHideNav;
+    @BindView(R.id.settings_reader_ban_double_click) CheckBoxPreference mReaderBanDoubleClick;
     @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_reader_white_edge) CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
+    @BindView(R.id.settings_search_result_filter) CheckBoxPreference mSearchResultFilter;
     @BindView(R.id.settings_other_check_update) CheckBoxPreference mCheckUpdate;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
     @BindView(R.id.settings_other_theme) ChoicePreference mOtherTheme;
+    @BindView(R.id.settings_reader_scale_factor) SliderPreference mReaderScaleFactor;
     @BindView(R.id.settings_other_night_alpha) SliderPreference mOtherNightAlpha;
     @BindView(R.id.settings_download_thread) SliderPreference mDownloadThread;
 
@@ -89,9 +93,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderKeepBright.bindPreference(PreferenceManager.PREF_READER_KEEP_BRIGHT, false);
         mReaderHideInfo.bindPreference(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        mReaderBanDoubleClick.bindPreference(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
-        mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false);
+        mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
+        mSearchResultFilter.bindPreference(PreferenceManager.PREF_SEARCH_RESULT_FILTER, true);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -99,6 +105,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 PreferenceManager.HOME_FAVORITE, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
         mOtherTheme.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_THEME,
                 ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
+        mReaderScaleFactor.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_SCALE_FACTOR, 200,
+                R.string.settings_reader_scale_factor, DIALOG_REQUEST_READER_SCALE_FACTOR);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
                 R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
         mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
@@ -142,6 +150,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         switch (requestCode) {
             case DIALOG_REQUEST_READER_MODE:
                 mReaderMode.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));
+                break;
+            case DIALOG_REQUEST_READER_SCALE_FACTOR:
+                mReaderScaleFactor.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
                 break;
             case DIALOG_REQUEST_OTHER_LAUNCH:
                 mOtherLaunch.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));
@@ -203,9 +214,11 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderKeepBright.setColorStateList(stateList);
         mReaderHideInfo.setColorStateList(stateList);
         mReaderHideNav.setColorStateList(stateList);
+        mReaderBanDoubleClick.setColorStateList(stateList);
         mReaderPaging.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
+        mSearchResultFilter.setColorStateList(stateList);
         mCheckUpdate.setColorStateList(stateList);
     }
 
@@ -220,15 +233,23 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     }
 
     @OnClick(R.id.settings_download_scan) void onDownloadScanClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
-        fragment.show(getFragmentManager(), null);
+        if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
+            showSnackbar(R.string.download_ask_stop);
+        } else {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                    R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @OnClick(R.id.settings_download_delete) void onDownloadDeleteClick() {
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
-        fragment.show(getFragmentManager(), null);
+        if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
+            showSnackbar(R.string.download_ask_stop);
+        } else {
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
+                    R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
+            fragment.show(getFragmentManager(), null);
+        }
     }
 
     @OnClick(R.id.settings_other_clear_cache) void onOtherCacheClick() {

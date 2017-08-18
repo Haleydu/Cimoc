@@ -129,10 +129,8 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
     }
 
     @Override
-    public void onTagRestore(Tag tag) {
-        if (!mTagAdapter.contains(tag)) {
-            mTagAdapter.add(tag);
-        }
+    public void onTagRestore(List<Tag> list) {
+        mTagAdapter.addAll(list);
     }
 
     @Override

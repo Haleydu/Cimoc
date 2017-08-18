@@ -88,7 +88,9 @@ public class Comic {
             this.update = update;
         }
         this.intro = intro;
-        this.author = author;
+        if (author != null) {
+            this.author = author;
+        }
         this.finish = finish;
         this.highlight = false;
     }

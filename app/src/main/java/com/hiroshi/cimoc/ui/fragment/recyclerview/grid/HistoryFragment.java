@@ -10,6 +10,8 @@ import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.HistoryView;
 import com.hiroshi.cimoc.utils.HintUtils;
 
+import java.util.List;
+
 /**
  * Created by Hiroshi on 2016/7/1.
  */
@@ -38,6 +40,9 @@ public class HistoryFragment extends GridFragment implements HistoryView {
 
     @Override
     protected void performActionButtonClick() {
+        if (mGridAdapter.getDateSet().isEmpty()) {
+            return;
+        }
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.history_clear_confirm, true, DIALOG_REQUEST_CLEAR);
         fragment.setTargetFragment(this, 0);
@@ -83,6 +88,11 @@ public class HistoryFragment extends GridFragment implements HistoryView {
         hideProgressDialog();
         mGridAdapter.removeItemById(mSavedId);
         HintUtils.showToast(getActivity(), R.string.common_execute_success);
+    }
+
+    @Override
+    public void OnComicRestore(List<MiniComic> list) {
+        mGridAdapter.addAll(0, list);
     }
 
     @Override

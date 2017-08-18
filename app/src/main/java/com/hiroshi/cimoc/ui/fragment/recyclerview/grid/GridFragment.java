@@ -74,10 +74,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     }
 
     @OnClick(R.id.grid_action_button) void onActionButtonClick() {
-        if (getActionButtonRes() == R.drawable.ic_add_white_24dp ||
-                !mGridAdapter.getDateSet().isEmpty()) {
-            performActionButtonClick();
-        }
+        performActionButtonClick();
     }
 
     @Override
@@ -121,7 +118,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     protected void showComicInfo(Comic comic, int request) {
         if (comic == null) {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.common_execute_fail,
-                    R.string.comic_info_not_found, false, request);
+                    R.string.comic_info_not_found, true, request);
             fragment.setTargetFragment(this, 0);
             fragment.show(getFragmentManager(), null);
             return;

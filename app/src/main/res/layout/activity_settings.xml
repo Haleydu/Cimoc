@@ -59,6 +59,12 @@
                     app:title="@string/settings_reader_hide_nav"
                     app:summary="@string/settings_reader_hide_nav_summary"/>
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_ban_double_click"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_reader_ban_double_click"
+                    app:summary="@string/settings_reader_ban_double_click_summary"/>
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_paging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -70,6 +76,13 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_white_edge"
                     app:summary="@string/settings_reader_white_edge_summary"/>
+                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                    android:id="@+id/settings_reader_scale_factor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_reader_scale_factor"
+                    app:min="100"
+                    app:max="300"/>
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"
@@ -117,6 +130,12 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_search_auto_complete"
                     app:summary="@string/settings_search_auto_complete_summary"/>
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_search_result_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_search_result_filter"
+                    app:summary="@string/settings_search_result_filter_summary"/>
                 <TextView
                     android:id="@+id/settings_other_title"
                     android:layout_width="match_parent"

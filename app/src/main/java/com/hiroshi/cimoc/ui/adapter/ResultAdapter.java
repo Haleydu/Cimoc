@@ -64,7 +64,7 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicUpdate.setText(comic.getUpdate());
         ImageRequest request = ImageRequestBuilder
                 .newBuilderWithSource(Uri.parse(comic.getCover()))
-                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels, App.mCoverHeightPixels))
+                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
                 .build();
         viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setImageRequest(request).build());
     }

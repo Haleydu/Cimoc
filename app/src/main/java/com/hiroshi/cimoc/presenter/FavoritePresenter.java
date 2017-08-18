@@ -98,6 +98,10 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 }));
     }
 
+    public void cancelAllHighlight() {
+        mComicManager.cancelHighlight();
+    }
+
     public void unfavoriteComic(long id) {
         Comic comic = mComicManager.load(id);
         comic.setFavorite(null);

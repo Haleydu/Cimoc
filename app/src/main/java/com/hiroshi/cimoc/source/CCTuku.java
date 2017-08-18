@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -27,10 +29,9 @@ public class CCTuku extends MangaParser {
 
     public static final int TYPE = 3;
     public static final String DEFAULT_TITLE = "CC图库";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public CCTuku(Source source) {
@@ -39,26 +40,20 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://m.tuku.cc/comic/search?word=%s&page=%d", keyword, page);
+        String url = StringUtils.format("http://tuku.cc/search/index/nickname/%s/p/%d.html", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        int total = Integer.parseInt(StringUtils.match("\\d+", body.text("div.title-banner > div > h1"), 0));
-        if (page > total) {
-            return null;
-        }
-        return new NodeIterator(body.list("div.main-list > div > div > div")) {
+        return new NodeIterator(body.list("div.updateList > div.bookList_3 > div")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit("div:eq(1) > div:eq(0) > a", 1);
-                String title = node.text("div:eq(1) > div:eq(0) > a");
-                String cover = node.src("div:eq(0) > a > img");
-                String update = node.text("div:eq(1) > div:eq(1) > dl:eq(3) > dd > font");
-                String author = node.text("div:eq(1) > div:eq(1) > dl:eq(1) > dd > a");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                String cid = node.hrefWithSplit("a", 1);
+                String title = node.text("p.title > a");
+                String cover = node.src("div.book > a > img");
+                return new Comic(TYPE, cid, title, cover, null, null);
             }
         };
     }
@@ -66,26 +61,30 @@ public class CCTuku extends MangaParser {
     @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.tuku.cc/comic/".concat(cid);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url)
+                .build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String title = body.textWithSubstring("div.title-banner > div.book-title > h1", 0, -3);
-        String cover = body.src("div.book > div > div.row > div:eq(0) > a > img");
-        String update = body.textWithSubstring("div.book > div > div.row > div:eq(1) > div > dl:eq(5) > dd > font", 0, 10);
-        String author = body.text("div.book > div > div.row > div:eq(1) > div > dl:eq(1) > dd > a");
-        String intro = body.text("div.book-details > p:eq(1)");
-        boolean status = isFinish(body.text("div.book > div > div.row > div:eq(0) > div"));
-        comic.setInfo(title, cover, update, intro, author, status);
+        String title = body.text("div.detailTop > div.content > div.info > p.title");
+        String cover = body.src("div.detailTop > div.content > img");
+        String update = body.textWithSubstring("#chapter > div > div > div.top > span", 0, 10);
+        // FIXME 这里可能有多个作者 暂时先取第一个
+        String author = body.text("div.detailTop > div.content > div.info > p:eq(1) > a");
+        String intro = body.text("div.detailContent > p:eq(1)");
+        // FIXME 手机版页面好像获取不到状态 电脑板页面太大不想用 暂时先固定为连载吧
+        comic.setInfo(title, cover, update, intro, author, false);
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("ul.list-body > li > a")) {
+        for (Node node : body.list("#chapter > div > div > ul > li > a")) {
             String title = node.text();
             String path = StringUtils.split(node.href(), "/", 3);
             list.add(new Chapter(title, path));
@@ -101,6 +100,7 @@ public class CCTuku extends MangaParser {
 
     @Override
     public List<ImageUrl> parseImages(String html) {
+        // TODO 好像拿不到总页数 GG
         List<ImageUrl> list = new LinkedList<>();
         String[] rs = StringUtils.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
         if (rs != null) {

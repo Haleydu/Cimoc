@@ -20,7 +20,6 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
         FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
 
     public static final float MIN_SCALE = 1.0f;
-    public static final float MID_SCALE = 2.0f;
     public static final float MAX_SCALE = 3.0f;
 
     private final Matrix mMatrix = new Matrix();
@@ -31,8 +30,9 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
     private GestureDetectorCompat mGestureDetector;
     private OnTapGestureListener mTapGestureListener;
 
+    private float mScaleFactor = 2.0f;
     private boolean isVertical = true;
-    private int mScaleCount = -5;
+    private boolean isDoubleTap = true;
 
     private FlingRunnable mCurrentFlingRunnable;
 
@@ -71,13 +71,7 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
         mScaleDragDetector.onTouchEvent(event);
 
         if (!wasScaling && !mScaleDragDetector.isScaling()) {
-            if (mScaleCount <= -5) {
-                super.onTouchEvent(event);
-            } else {
-                --mScaleCount;
-            }
-        } else {
-            mScaleCount = 0;
+            super.onTouchEvent(event);
         }
 
         mGestureDetector.onTouchEvent(event);
@@ -104,7 +98,7 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
     @Override
     public void onScaleEnd() {
         if (ViewUtils.calculateScale(mMatrix) < MIN_SCALE) {
-//            checkBounds();
+            checkBounds();
             RectF rect = getDisplayRect(mMatrix);
             post(new AnimatedScaleRunnable(MIN_SCALE, rect.centerX(), rect.centerY(), this, mMatrix, this));
         }
@@ -112,15 +106,13 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
 
     @Override
     public void onDrag(float dx, float dy) {
-        if (mScaleCount <= -5) {
-            if (isVertical) {
-                mMatrix.postTranslate(dx, 0);
-            } else {
-                mMatrix.postTranslate(0, dy);
-            }
-            checkBounds();
-            invalidate();
+        if (isVertical) {
+            mMatrix.postTranslate(dx, 0);
+        } else {
+            mMatrix.postTranslate(0, dy);
         }
+        checkBounds();
+        invalidate();
     }
 
     @Override
@@ -155,21 +147,32 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
 
     @Override
     public boolean onDoubleTap(MotionEvent event) {
-        try {
-            float scale = ViewUtils.calculateScale(mMatrix);
-            float x = event.getX();
-            float y = event.getY();
+        if (isDoubleTap) {
+            try {
+                float scale = ViewUtils.calculateScale(mMatrix);
+                float x = event.getX();
+                float y = event.getY();
 
-            setScale(scale < MID_SCALE ? MID_SCALE : MIN_SCALE, x, y);
-        } catch (Exception e) {
-            // Can sometimes happen when getX() and getY() is called
+                setScale(scale < mScaleFactor ? mScaleFactor : MIN_SCALE, x, y);
+            } catch (Exception e) {
+                // Can sometimes happen when getX() and getY() is called
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean onDoubleTapEvent(MotionEvent event) {
         return false;
+    }
+
+    public void setScaleFactor(float factor) {
+        mScaleFactor = factor;
+    }
+
+    public void setDoubleTap(boolean enable) {
+        isDoubleTap = enable;
     }
 
     public void setTapListenerListener(OnTapGestureListener listener) {

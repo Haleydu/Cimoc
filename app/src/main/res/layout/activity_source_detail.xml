@@ -26,11 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/source_detail_favorite"/>
-        <com.hiroshi.cimoc.ui.widget.Option
-            android:id="@+id/source_detail_server"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title="@string/source_detail_server"/>
     </LinearLayout>
     <include layout="@layout/custom_night_mask"/>
 </FrameLayout>

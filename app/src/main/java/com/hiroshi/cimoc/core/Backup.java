@@ -47,7 +47,7 @@ public class Backup {
     private static final String JSON_CIMOC_KEY_COMIC_PAGE = "p";
 
     private static final String JSON_KEY_VERSION = "version";
-    private static final String JSON_KEY_TAG_OBJECT = "tag";
+    private static final String JSON_KEY_TAG_ARRAY = "tag";
     private static final String JSON_KEY_TAG_TITLE = "title";
     private static final String JSON_KEY_COMIC_ARRAY = "comic";
     private static final String JSON_KEY_COMIC_SOURCE = "source";
@@ -59,6 +59,8 @@ public class Backup {
     private static final String JSON_KEY_COMIC_LAST = "last";
     private static final String JSON_KEY_COMIC_PAGE = "page";
     private static final String JSON_KEY_COMIC_CHAPTER = "chapter";
+    private static final String JSON_KEY_COMIC_FAVORITE = "favorite";
+    private static final String JSON_KEY_COMIC_HISTORY = "history";
 
     public static Observable<String[]> loadFavorite(DocumentFile root) {
         return load(root, SUFFIX_CIMOC, SUFFIX_CFBF);
@@ -86,7 +88,7 @@ public class Backup {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static void saveFavoriteAuto(ContentResolver resolver, DocumentFile root, List<Comic> list) {
+    public static void saveComicAuto(ContentResolver resolver, DocumentFile root, List<Comic> list) {
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
         if (dir != null) {
             try {
@@ -101,7 +103,7 @@ public class Backup {
         }
     }
 
-    public static int saveFavorite(ContentResolver resolver, DocumentFile root, List<Comic> list) {
+    public static int saveComic(ContentResolver resolver, DocumentFile root, List<Comic> list) {
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
         if (dir != null) {
             try {
@@ -119,15 +121,14 @@ public class Backup {
         return -1;
     }
 
-    public static int saveTag(final ContentResolver resolver, final DocumentFile root, final Tag tag, final List<Comic> list) {
+    public static int saveTag(final ContentResolver resolver, final DocumentFile root, final List<Pair<Tag, List<Comic>>> list) {
         DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
         if (dir != null) {
             try {
                 JSONObject result = new JSONObject();
-                result.put(JSON_KEY_VERSION, 1);
-                result.put(JSON_KEY_TAG_OBJECT, buildTagObject(tag));
-                result.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
-                String filename = tag.getTitle().concat(".").concat(SUFFIX_CTBF);
+                result.put(JSON_KEY_VERSION, 2);
+                result.put(JSON_KEY_TAG_ARRAY, buildTagArray(list));
+                String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CTBF);
                 DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
                 return list.size();
@@ -138,28 +139,43 @@ public class Backup {
         return -1;
     }
 
-    private static JSONObject buildTagObject(Tag tag) throws JSONException {
+    private static JSONArray buildTagArray(List<Pair<Tag, List<Comic>>> list) throws JSONException {
+        JSONArray array = new JSONArray();
+        for (Pair<Tag, List<Comic>> pair : list) {
+            array.put(buildTagObject(pair.first, pair.second));
+        }
+        return array;
+    }
+
+    private static JSONObject buildTagObject(Tag tag, List<Comic> list) throws JSONException {
         JSONObject object = new JSONObject();
         object.put(JSON_KEY_TAG_TITLE, tag.getTitle());
+        object.put(JSON_KEY_COMIC_ARRAY, buildComicArray(list));
         return object;
     }
 
     private static JSONArray buildComicArray(List<Comic> list) throws JSONException {
         JSONArray array = new JSONArray();
         for (Comic comic : list) {
-            JSONObject object = new JSONObject();
-            object.put(JSON_KEY_COMIC_SOURCE, comic.getSource());
-            object.put(JSON_KEY_COMIC_CID, comic.getCid());
-            object.put(JSON_KEY_COMIC_TITLE, comic.getTitle());
-            object.put(JSON_KEY_COMIC_COVER, comic.getCover());
-            object.put(JSON_KEY_COMIC_UPDATE, comic.getUpdate());
-            object.put(JSON_KEY_COMIC_FINISH, comic.getFinish());
-            object.put(JSON_KEY_COMIC_LAST, comic.getLast());
-            object.put(JSON_KEY_COMIC_PAGE, comic.getPage());
-            object.put(JSON_KEY_COMIC_CHAPTER, comic.getChapter());
-            array.put(object);
+            array.put(buildComicObject(comic));
         }
         return array;
+    }
+
+    private static JSONObject buildComicObject(Comic comic) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put(JSON_KEY_COMIC_SOURCE, comic.getSource());
+        object.put(JSON_KEY_COMIC_CID, comic.getCid());
+        object.put(JSON_KEY_COMIC_TITLE, comic.getTitle());
+        object.put(JSON_KEY_COMIC_COVER, comic.getCover());
+        object.put(JSON_KEY_COMIC_UPDATE, comic.getUpdate());
+        object.put(JSON_KEY_COMIC_FINISH, comic.getFinish());
+        object.put(JSON_KEY_COMIC_FAVORITE, comic.getFavorite());
+        object.put(JSON_KEY_COMIC_HISTORY, comic.getHistory());
+        object.put(JSON_KEY_COMIC_LAST, comic.getLast());
+        object.put(JSON_KEY_COMIC_PAGE, comic.getPage());
+        object.put(JSON_KEY_COMIC_CHAPTER, comic.getChapter());
+        return object;
     }
 
     private static String readBackupFile(ContentResolver resolver, DocumentFile root, String filename) {
@@ -171,15 +187,25 @@ public class Backup {
         return null;
     }
 
-    public static Observable<Pair<String, List<Comic>>> restoreTag(final ContentResolver resolver, final DocumentFile root, final String filename) {
-        return Observable.create(new Observable.OnSubscribe<Pair<String, List<Comic>>>() {
+    public static Observable<List<Pair<Tag, List<Comic>>>> restoreTag(final ContentResolver resolver, final DocumentFile root, final String filename) {
+        return Observable.create(new Observable.OnSubscribe<List<Pair<Tag, List<Comic>>>>() {
             @Override
-            public void call(Subscriber<? super Pair<String, List<Comic>>> subscriber) {
+            public void call(Subscriber<? super List<Pair<Tag, List<Comic>>>> subscriber) {
+                List<Pair<Tag, List<Comic>>> result = new LinkedList<>();
                 String jsonString = readBackupFile(resolver, root, filename);
                 try {
                     JSONObject object = new JSONObject(jsonString);
-                    List<Comic> list = loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF);
-                    subscriber.onNext(Pair.create(object.getJSONObject(JSON_KEY_TAG_OBJECT).getString(JSON_KEY_TAG_TITLE), list));
+                    switch (object.getInt(JSON_KEY_VERSION)) {
+                        case 1:
+                            result.add(Pair.create(
+                                    new Tag(null, object.getJSONObject(JSON_KEY_TAG_ARRAY).getString(JSON_KEY_TAG_TITLE)),
+                                    loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF)));
+                            break;
+                        case 2:
+                            result.addAll(loadTagArray(object.getJSONArray(JSON_KEY_TAG_ARRAY)));
+                            break;
+                    }
+                    subscriber.onNext(result);
                     subscriber.onCompleted();
                 } catch (JSONException e) {
                     subscriber.onError(e);
@@ -188,7 +214,7 @@ public class Backup {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<Comic>> restoreFavorite(final ContentResolver resolver, final DocumentFile root, final String filename) {
+    public static Observable<List<Comic>> restoreComic(final ContentResolver resolver, final DocumentFile root, final String filename) {
         return Observable.create(new Observable.OnSubscribe<List<Comic>>() {
             @Override
             public void call(Subscriber<? super List<Comic>> subscriber) {
@@ -210,6 +236,16 @@ public class Backup {
         }).subscribeOn(Schedulers.io());
     }
 
+    private static List<Pair<Tag, List<Comic>>> loadTagArray(JSONArray array) throws JSONException {
+        List<Pair<Tag, List<Comic>>> list = new LinkedList<>();
+        for (int i = 0; i != array.length(); ++i) {
+            JSONObject object = array.getJSONObject(i);
+            Tag tag = new Tag(null, object.getString(JSON_KEY_TAG_TITLE));
+            list.add(Pair.create(tag, loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CFBF)));
+        }
+        return list;
+    }
+
     private static List<Comic> loadComicArray(JSONArray array, String suffix) throws JSONException {
         List<Comic> list = new LinkedList<>();
         switch (suffix) {
@@ -226,9 +262,8 @@ public class Backup {
                     String last = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_CIMOC_KEY_COMIC_PAGE) ?
                             object.getInt(JSON_CIMOC_KEY_COMIC_PAGE) : null;
-                    String chapter = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
                     list.add(new Comic(null, source, cid, title, cover, false, false, update,
-                            finish, null, null, null, last, page, chapter));
+                            finish, null, null, null, last, page, null));
                 }
                 break;
             case SUFFIX_CFBF:
@@ -245,9 +280,17 @@ public class Backup {
                     String last = object.optString(JSON_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_KEY_COMIC_PAGE) ?
                             object.getInt(JSON_KEY_COMIC_PAGE) : null;
-                    String chapter = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
+                    String chapter = object.optString(JSON_KEY_COMIC_CHAPTER, null);
+                    Long favorite = object.has(JSON_KEY_COMIC_FAVORITE) ?
+                            object.getLong(JSON_KEY_COMIC_FAVORITE) : null;
+                    Long history = object.has(JSON_KEY_COMIC_HISTORY) ?
+                            object.getLong(JSON_KEY_COMIC_HISTORY) : null;
+                    if (favorite == null && history == null) {
+                        // 以前只备份收藏 没有保存 favorite history
+                        favorite = System.currentTimeMillis();
+                    }
                     list.add(new Comic(null, source, cid, title, cover, false, false, update,
-                            finish, null, null, null, last, page, chapter));
+                            finish, favorite, history, null, last, page, chapter));
                 }
                 break;
         }

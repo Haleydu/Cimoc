@@ -48,9 +48,10 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 TagDao.createTable(db, false);
                 TagRefDao.createTable(db, false);
             case 7:
-                updateSource(db);
             case 8:
                 updateLocal(db);
+            case 9:
+                updateSource(db);
         }
     }
 
@@ -72,8 +73,8 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         db.beginTransaction();
         db.execSQL("ALTER TABLE \"SOURCE\" RENAME TO \"SOURCE2\"");
         SourceDao.createTable(db, false);
-        db.execSQL("INSERT INTO \"SOURCE\" (\"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", \"SERVER\")" +
-                " SELECT \"_id\", \"TYPE\", \"TITLE\", \"ENABLE\", null FROM \"SOURCE2\"");
+        db.execSQL("INSERT INTO \"SOURCE\" (\"_id\", \"TYPE\", \"TITLE\", \"ENABLE\")" +
+                " SELECT \"_id\", \"TYPE\", \"TITLE\", \"ENABLE\" FROM \"SOURCE2\"");
         db.execSQL("DROP TABLE \"SOURCE2\"");
         db.setTransactionSuccessful();
         db.endTransaction();

@@ -33,7 +33,10 @@ public class PreferenceManager {
     public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";
     public static final String PREF_READER_HIDE_INFO = "pref_reader_hide";
     public static final String PREF_READER_HIDE_NAV = "pref_reader_hide_nav";
+    public static final String PREF_READER_BAN_DOUBLE_CLICK = "pref_reader_ban_double_click";
     public static final String PREF_READER_PAGING = "pref_reader_paging";
+    public static final String PREF_READER_WHITE_EDGE = "pref_reader_white_edge";
+    public static final String PREF_READER_SCALE_FACTOR = "pref_reader_scale_factor";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
     public static final String PREF_READER_PAGE_ORIENTATION = "pref_reader_page_orientation";
@@ -52,7 +55,8 @@ public class PreferenceManager {
     public static final String PREF_READER_PAGE_LOAD_PREV = "pref_reader_page_load_prev";
     public static final String PREF_READER_PAGE_LOAD_NEXT = "pref_reader_page_load_next";
     public static final String PREF_READER_PAGE_TRIGGER = "pref_reader_page_trigger";
-    public static final String PREF_READER_PAGE_WHITE_EDGE = "pref_reader_white_edge";
+    public static final String PREF_READER_PAGE_BAN_TURN = "pref_reader_page_ban_turn";
+    public static final String PREF_READER_PAGE_QUICK_TURN = "pref_reader_page_quick_turn";
 
     public static final String PREF_READER_STREAM_TURN = "pref_reader_stream_turn";
     public static final String PREF_READER_STREAM_ORIENTATION = "pref_reader_stream_orientation";
@@ -83,10 +87,11 @@ public class PreferenceManager {
 
     public static final String PREF_DOWNLOAD_THREAD = "pref_download_thread";
 
-    public static final String PREF_BACKUP_SAVE_FAVORITE = "pref_backup_save_favorite";
-    public static final String PREF_BACKUP_SAVE_FAVORITE_COUNT = "pref_backup_save_favorite_count";
+    public static final String PREF_BACKUP_SAVE_COMIC = "pref_backup_save_favorite";
+    public static final String PREF_BACKUP_SAVE_COMIC_COUNT = "pref_backup_save_favorite_count";
 
     public static final String PREF_SEARCH_AUTO_COMPLETE = "pref_search_auto_complete";
+    public static final String PREF_SEARCH_RESULT_FILTER = "pref_search_result_filter";
 
     public static final String PREF_CHAPTER_BUTTON_MODE = "pref_chapter_button_mode";
     public static final String PREF_CHAPTER_ASCEND_MODE = "pref_chapter_ascend_mode";

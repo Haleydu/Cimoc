@@ -80,7 +80,7 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void scanTask() {
-        // Todo
+        // Todo 重写一下
         mCompositeSubscription.add(Download.scan(mBaseView.getAppInstance().getContentResolver(), mBaseView.getAppInstance().getDocumentFile())
                 .doOnNext(new Action1<Pair<Comic, List<Task>>>() {
                     @Override
@@ -120,11 +120,14 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
     }
 
     public void deleteTask() {
+        // Todo 重写一下
+        mBaseView.getAppInstance().getDocumentFile().refresh();
         mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                mBaseView.getAppInstance().getDocumentFile().refresh();
-                Pair<List<Comic>, List<Task>> pair = findInvalid(ComicUtils.buildDownloadComicMap(mComicManager));
+                List<Comic> list = mComicManager.listDownload();
+                list.addAll(mComicManager.listLocal());
+                Pair<List<Comic>, List<Task>> pair = findInvalid(ComicUtils.buildComicMap(list));
                 deleteInvalid(pair.first, pair.second);
                 subscriber.onCompleted();
             }
@@ -155,6 +158,8 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
             Comic comic = array.get(task.getKey());
             if (comic == null) {
                 tList.add(task);
+            } else if (comic.getLocal()) {
+                set.add(task.getKey());
             } else if (Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(),
                     comic, new Chapter(task.getTitle(), task.getPath()),
                     mSourceManager.getParser(comic.getSource()).getTitle()) == null) {

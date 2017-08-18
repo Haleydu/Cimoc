@@ -61,6 +61,7 @@
     <string name="comic_tab_local">本地</string>
     <string name="comic_filter">过滤</string>
     <string name="comic_search">搜索</string>
+    <string name="comic_cancel_highlight">全部标记已读</string>
     <string name="comic_load_tag_fail">读取标签失败</string>
     <string name="comic_status_continue">连载</string>
     <string name="comic_status_finish">完结</string>
@@ -103,7 +104,6 @@
     <string name="source_detail_type">图源 ID</string>
     <string name="source_detail_title">图源名称</string>
     <string name="source_detail_favorite">收藏统计</string>
-    <string name="source_detail_server">图片服务器</string>
 
     <string name="category_subject">主题</string>
     <string name="category_area">地区</string>
@@ -130,17 +130,24 @@
     <string name="settings_reader_load_next_summary">位于最后一页自动加载下一章</string>
     <string name="settings_reader_white_edge">自动裁剪白边</string>
     <string name="settings_reader_white_edge_summary">阅读状态自动裁剪白边</string>
+    <string name="settings_reader_ban_double_click">禁止双击放大</string>
+    <string name="settings_reader_ban_double_click_summary">阅读状态禁止双击放大</string>
     <string name="settings_reader_keep_bright">保持屏幕常亮</string>
     <string name="settings_reader_keep_bright_summary">阅读状态保持屏幕常亮</string>
     <string name="settings_reader_hide_info">隐藏阅读信息</string>
     <string name="settings_reader_hide_info_summary">阅读状态隐藏右上角的信息</string>
     <string name="settings_reader_trigger">翻页触发位移</string>
+    <string name="settings_reader_quick_turn">快速翻页</string>
+    <string name="settings_reader_quick_turn_summary">不显示翻页平移效果</string>
+    <string name="settings_reader_ban_turn">放大禁止翻页</string>
+    <string name="settings_reader_ban_turn_summary">放大状态禁止翻页</string>
     <string name="settings_reader_interval">显示图片间隔</string>
     <string name="settings_reader_interval_summary">阅读状态显示图片间隔</string>
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
     <string name="settings_reader_paging">自动切割大图</string>
-    <string name="settings_reader_paging_summary">阅读状态下自动切割大图</string>
+    <string name="settings_reader_paging_summary">阅读状态自动切割大图</string>
+    <string name="settings_reader_scale_factor">双击放大百分比</string>
     <string name="settings_download">下载设置</string>
     <string name="settings_download_thread">多任务下载数量</string>
     <string name="settings_download_delete">删除无效漫画</string>
@@ -150,6 +157,8 @@
     <string name="settings_download_scan_summary">扫描并恢复已下载漫画</string>
     <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！重点是，不一定可以成功！</string>
     <string name="settings_search">搜索设置</string>
+    <string name="settings_search_result_filter">过滤搜索结果</string>
+    <string name="settings_search_result_filter_summary">不显示标题或作者与关键字差异大的漫画</string>
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
@@ -166,10 +175,10 @@
     <string name="settings_other_clear_cache_summary">清理在线漫画的缓存数据</string>
 
     <string name="backup_save">备份</string>
-    <string name="backup_save_favorite_auto">自动备份</string>
-    <string name="backup_save_favorite_auto_summary">自动备份收藏的漫画</string>
-    <string name="backup_save_favorite">备份收藏</string>
-    <string name="backup_save_favorite_summary">备份收藏的漫画</string>
+    <string name="backup_save_comic_auto">自动备份</string>
+    <string name="backup_save_comic_auto_summary">自动备份收藏和历史漫画</string>
+    <string name="backup_save_comic">备份漫画</string>
+    <string name="backup_save_comic_summary">备份收藏和历史漫画</string>
     <string name="backup_save_tag">备份标签</string>
     <string name="backup_save_tag_summary">备份标签及相应漫画</string>
     <string name="backup_save_tag_not_found">没有找到标签</string>
@@ -177,8 +186,8 @@
     <string name="backup_save_success">备份成功 共 %d 条记录</string>
     <string name="backup_restore">恢复</string>
     <string name="backup_restore_not_found">没有找到备份文件</string>
-    <string name="backup_restore_favorite">恢复收藏</string>
-    <string name="backup_restore_favorite_summary">恢复收藏的漫画</string>
+    <string name="backup_restore_comic">恢复漫画</string>
+    <string name="backup_restore_comic_summary">恢复收藏和历史漫画</string>
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 

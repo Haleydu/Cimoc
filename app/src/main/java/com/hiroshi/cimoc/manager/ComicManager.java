@@ -55,6 +55,13 @@ public class ComicManager {
                 .list();
     }
 
+    public Observable<List<Comic>> listFavoriteOrHistoryInRx() {
+        return mComicDao.queryBuilder()
+                .whereOr(Properties.Favorite.isNotNull(), Properties.History.isNotNull())
+                .rx()
+                .list();
+    }
+
     public Observable<List<Comic>> listFavoriteInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull())
@@ -105,7 +112,7 @@ public class ComicManager {
 
     public Observable<List<Comic>> listFavoriteNotIn(Collection<Long> collections) {
         return mComicDao.queryBuilder()
-                .where(Properties.Id.notIn(collections))
+                .where(Properties.Favorite.isNotNull(), Properties.Id.notIn(collections))
                 .rx()
                 .list();
     }
@@ -138,6 +145,10 @@ public class ComicManager {
                 .limit(1)
                 .rx()
                 .unique();
+    }
+
+    public void cancelHighlight() {
+        mComicDao.getDatabase().execSQL("UPDATE \"COMIC\" SET \"HIGHLIGHT\" = 0 WHERE \"HIGHLIGHT\" = 1");
     }
 
     public void updateOrInsert(Comic comic) {

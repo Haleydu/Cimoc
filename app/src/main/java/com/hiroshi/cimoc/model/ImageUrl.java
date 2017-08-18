@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.model;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -18,7 +19,8 @@ public class ImageUrl {
     private String[] urls;
     private String chapter; // 所属章节
     private int state;  // 切图时表示状态
-    private long size; // 图片大小
+    private int height; // 图片高度
+    private int width;  // 图片宽度
     private boolean lazy;   // 懒加载
     private boolean loading;    // 正在懒加载
     private boolean success;    // 图片显示成功
@@ -42,7 +44,8 @@ public class ImageUrl {
         this.urls = urls;
         this.chapter = chapter;
         this.state = state;
-        this.size = 0;
+        this.height = 0;
+        this.width = 0;
         this.lazy = lazy;
         this.loading = false;
         this.success = false;
@@ -84,12 +87,24 @@ public class ImageUrl {
         return state;
     }
 
-    public void setSize(long size) {
-        this.size = size;
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getWidth() {
+        return width;
     }
 
     public long getSize() {
-        return size;
+        return height * width;
     }
 
     public void setLazy(boolean lazy) {

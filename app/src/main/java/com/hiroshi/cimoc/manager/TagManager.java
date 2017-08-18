@@ -25,6 +25,10 @@ public class TagManager {
         mTagDao = getter.getAppInstance().getDaoSession().getTagDao();
     }
 
+    public List<Tag> list() {
+        return mTagDao.queryBuilder().list();
+    }
+
     public Observable<List<Tag>> listInRx() {
         return mTagDao.queryBuilder()
                 .rx()

@@ -6,6 +6,7 @@ import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -55,6 +56,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isVertical;
     private boolean isPaging;
     private boolean isWhiteEdge;
+    private boolean isBanTurn;
+    private boolean isDoubleTap;
+    private float mScaleFactor;
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -94,12 +98,16 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
         final DraweeView draweeView = ((ImageHolder) holder).draweeView;
 
-        PipelineDraweeControllerBuilder builder = imageUrl.getSize() > App.mLargePixels ?
+        PipelineDraweeControllerBuilder builder = isNeedResize(imageUrl) ?
                 mLargeControllerSupplier.get() : mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
                 ((PhotoDraweeView) draweeView).setTapListenerListener(mTapGestureListener);
-                ((PhotoDraweeView) draweeView).setScrollMode(isVertical ? PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
+                ((PhotoDraweeView) draweeView).setAlwaysBlockParent(isBanTurn);
+                ((PhotoDraweeView) draweeView).setDoubleTap(isDoubleTap);
+                ((PhotoDraweeView) draweeView).setScaleFactor(mScaleFactor);
+                ((PhotoDraweeView) draweeView).setScrollMode(isVertical ?
+                        PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
@@ -135,11 +143,12 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url));
 
+            // TODO 切图后可能需要修改图片高度和宽度
             MangaPostprocessor processor = new MangaPostprocessor(imageUrl);
             processor.setPaging(isPaging);
             processor.setWhiteEdge(isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
-            if (imageUrl.getSize() > App.mLargePixels) {
+            if (isNeedResize(imageUrl)) {
                 ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
                         new ResizeOptions(App.mHeightPixels, App.mWidthPixels);
                 imageRequestBuilder.setResizeOptions(options);
@@ -170,6 +179,18 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         mLazyLoadListener = listener;
     }
 
+    public void setScaleFactor(float factor) {
+        mScaleFactor = factor;
+    }
+
+    public void setDoubleTap(boolean enable) {
+        isDoubleTap = enable;
+    }
+
+    public void setBanTurn(boolean block) {
+        isBanTurn = block;
+    }
+
     public void setVertical(boolean vertical) {
         isVertical = vertical;
     }
@@ -184,6 +205,11 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setReaderMode(@ReaderMode int reader) {
         this.reader = reader;
+    }
+
+    private boolean isNeedResize(ImageUrl imageUrl) {
+        // 长图例如条漫不 resize
+        return (imageUrl.getWidth() * 2) > imageUrl.getHeight() && imageUrl.getSize() > App.mLargePixels;
     }
 
     @Override

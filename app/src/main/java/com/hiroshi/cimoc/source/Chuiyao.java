@@ -29,10 +29,9 @@ public class Chuiyao extends MangaParser {
 
     public static final int TYPE = 9;
     public static final String DEFAULT_TITLE = "吹妖漫画";
-    public static final String DEFAULT_SERVER = null;
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true, DEFAULT_SERVER);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public Chuiyao(Source source) {

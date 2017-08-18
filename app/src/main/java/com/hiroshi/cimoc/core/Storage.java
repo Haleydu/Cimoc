@@ -123,17 +123,17 @@ public class Storage {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<String> savePicture(final ContentResolver resolver, final DocumentFile root,
+    public static Observable<Uri> savePicture(final ContentResolver resolver, final DocumentFile root,
                                                  final InputStream stream, final String filename) {
-        return Observable.create(new Observable.OnSubscribe<String>() {
+        return Observable.create(new Observable.OnSubscribe<Uri>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super Uri> subscriber) {
                 try {
                     DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, PICTURE);
                     if (dir != null) {
                         DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
                         DocumentUtils.writeBinaryToFile(resolver, file, stream);
-                        subscriber.onNext(file.getUri().toString());
+                        subscriber.onNext(file.getUri());
                         subscriber.onCompleted();
                     }
                 } catch (IOException e) {
@@ -157,7 +157,8 @@ public class Storage {
                     uri = DecryptionUtils.urlDecrypt(uri);
                 }
                 ImageUrl image = new ImageUrl(++count, uri, false);
-                image.setSize(opts.outWidth * opts.outHeight);
+                image.setHeight(opts.outHeight);
+                image.setWidth(opts.outWidth);
                 image.setChapter(chapter);
                 result.add(image);
             } catch (Exception e) {

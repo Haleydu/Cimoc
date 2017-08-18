@@ -70,7 +70,7 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         if (mProvider != null) {
             ImageRequest request = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(comic.getCover()))
-                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels, App.mCoverHeightPixels))
+                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
                     .build();
             DraweeController controller = mProvider.get(comic.getSource())
                     .setOldController(gridHolder.comicImage.getController())
@@ -124,6 +124,18 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
             }
         }
         return count;
+    }
+
+    public void cancelAllHighlight() {
+        int count = 0;
+        for (MiniComic comic : mDataSet) {
+            if (!comic.isHighlight()) {
+                break;
+            }
+            ++count;
+            comic.setHighlight(false);
+        }
+        notifyItemRangeChanged(0, count);
     }
 
     public void moveItemTop(MiniComic comic) {

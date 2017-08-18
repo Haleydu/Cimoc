@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
@@ -174,11 +173,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
         mReaderAdapter.setTapGestureListener(this);
         mReaderAdapter.setLazyLoadListener(this);
+        mReaderAdapter.setScaleFactor(mPreference.getInt(PreferenceManager.PREF_READER_SCALE_FACTOR, 200) * 0.01f);
+        mReaderAdapter.setDoubleTap(!mPreference.getBoolean(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false));
         mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
         if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
             mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
         }
-        mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_WHITE_EDGE, false));
+        mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_WHITE_EDGE, false));
+        mReaderAdapter.setBanTurn(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_BAN_TURN, false));
     }
 
     private void initLayoutManager() {
@@ -376,12 +378,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     @Override
-    public void onPictureSaveSuccess(String path) {
-        MediaScannerConnection.scanFile(getApplicationContext(), new String[] { path },
-                null, new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {}
-                });
+    public void onPictureSaveSuccess(Uri uri) {
+        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
         isSavingPicture = false;
         HintUtils.showToast(this, R.string.reader_picture_save_success);
     }

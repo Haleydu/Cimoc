@@ -55,6 +55,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     Comic comic = mComicManager.load(mComic.getId());
                     mComic.setPage(comic.getPage());
                     mComic.setLast(comic.getLast());
+                    mComic.setChapter(comic.getChapter());
                     mBaseView.onLastChange(mComic.getLast());
                 }
             }
@@ -147,11 +148,11 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     }
 
     public void backup() {
-        mComicManager.listFavoriteInRx()
+        mComicManager.listFavoriteOrHistoryInRx()
                 .doOnNext(new Action1<List<Comic>>() {
                     @Override
                     public void call(List<Comic> list) {
-                        Backup.saveFavoriteAuto(mBaseView.getAppInstance().getContentResolver(),
+                        Backup.saveComicAuto(mBaseView.getAppInstance().getContentResolver(),
                                 mBaseView.getAppInstance().getDocumentFile(), list);
                     }
                 })
