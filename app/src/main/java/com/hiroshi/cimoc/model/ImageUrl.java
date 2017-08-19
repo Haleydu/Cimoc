@@ -17,7 +17,7 @@ public class ImageUrl {
     private int num;    // 章节的第几页
     private String[] urls;
     private String chapter; // 所属章节
-    private int state;  // 切图时表示状态
+    private int state;  // 切图时表示状态 这里可以改为编号 比如长图可以切为多张方便加载
     private int height; // 图片高度
     private int width;  // 图片宽度
     private boolean lazy;   // 懒加载

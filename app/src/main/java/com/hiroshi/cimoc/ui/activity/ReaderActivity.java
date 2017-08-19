@@ -51,7 +51,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -176,9 +175,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         mReaderAdapter.setScaleFactor(mPreference.getInt(PreferenceManager.PREF_READER_SCALE_FACTOR, 200) * 0.01f);
         mReaderAdapter.setDoubleTap(!mPreference.getBoolean(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false));
         mReaderAdapter.setVertical(turn == PreferenceManager.READER_TURN_ATB);
-        if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
-            mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
-        }
+        mReaderAdapter.setPaging(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGING, false));
+        mReaderAdapter.setPortrait(orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT);
         mReaderAdapter.setWhiteEdge(mPreference.getBoolean(PreferenceManager.PREF_READER_WHITE_EDGE, false));
         mReaderAdapter.setBanTurn(mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_BAN_TURN, false));
     }
@@ -304,27 +302,10 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     @Override
-    public void onPicturePaging(ImageUrl image, Semaphore sem) {
+    public void onPicturePaging(ImageUrl image) {
         int pos = mReaderAdapter.getPositionById(image.getId());
-        int cur = getCurPosition();
-        if (pos > cur) {
-            image.setState(ImageUrl.STATE_PAGE_1);
-            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
-                    image.getChapter(), ImageUrl.STATE_PAGE_2, false));
-        } else if (pos < cur) {
-            image.setState(ImageUrl.STATE_PAGE_2);
-            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(),
-                    image.getChapter(), ImageUrl.STATE_PAGE_1, false));
-        } else if (mLastDx > 0 || mLastDy > 0) {
-            image.setState(ImageUrl.STATE_PAGE_2);
-            mReaderAdapter.add(pos, new ImageUrl(image.getNum(), image.getUrls(),
-                    image.getChapter(), ImageUrl.STATE_PAGE_1, false));
-        } else {
-            image.setState(ImageUrl.STATE_PAGE_1);
-            mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
-                    image.getChapter(), ImageUrl.STATE_PAGE_2, false));
-        }
-        sem.release();
+        mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
+                image.getChapter(), ImageUrl.STATE_PAGE_2, false));
     }
 
     @Override

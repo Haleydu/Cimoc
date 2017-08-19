@@ -21,7 +21,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -58,7 +57,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         addSubscription(RxEvent.EVENT_PICTURE_PAGING, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.onPicturePaging((ImageUrl) rxEvent.getData(), (Semaphore) rxEvent.getData(1));
+                mBaseView.onPicturePaging((ImageUrl) rxEvent.getData());
             }
         });
     }

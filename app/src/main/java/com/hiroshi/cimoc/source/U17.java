@@ -13,14 +13,17 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Created by Hiroshi on 2016/8/8.
@@ -136,26 +139,37 @@ public class U17 extends MangaParser {
     }
 
     @Override
+    public Request getCategoryRequest(String format, int page) {
+        String[] args = format.split(" ");
+        String url = "http://www.u17.com/comic/ajax.php?mod=comic_list&act=comic_list_new_fun&a=get_comic_list";
+        RequestBody body = new FormBody.Builder()
+                .add("data[group_id]", args[0])
+                .add("data[theme_id]", args[1])
+                .add("data[is_vip]", "no")
+                .add("data[accredit]", "no")
+                .add("data[color]", "no")
+                .add("data[comic_type]", "no")
+                .add("data[series_status]", args[2])
+                .add("data[order]", args[3])
+                .add("data[page_num]", String.valueOf(page))
+                .build();
+        return new Request.Builder().url(url).post(body).addHeader("Referer", "http://www.u17.com").build();
+    }
+
+    @Override
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new ArrayList<>();
-        Node body = new Node(html);
-        String total = StringUtils.replaceAll(body.text("#comiclist > div > div.pagelist > em"), "\\D+", "");
         try {
-            if (Integer.parseInt(total) < page) {
-                return list;
+            JSONArray array = new JSONObject(html).getJSONArray("comic_list");
+            for (int i = 0; i < array.length(); ++i) {
+                JSONObject object = array.getJSONObject(i);
+                String cid = object.getString("comic_id");
+                String title = object.getString("name");
+                String cover = object.getString("cover");
+                list.add(new Comic(TYPE, cid, title, cover, null, null));
             }
-        } catch (Exception e) {
+        } catch (JSONException e) {
             e.printStackTrace();
-        }
-        for (Node node : body.list("#comiclist > div > div.comiclist > ul > li")) {
-            String cid = node.hrefWithSplit("div.info > h3 > strong > a", 1);
-            String title = node.attr("div.info > h3 > strong > a", "title");
-            String cover = node.src("div.cover > a > img");
-            if (cover == null || cover.isEmpty()) {
-                cover = node.attr("div.cover > a > img", "xsrc");
-            }
-            String author = node.text("div.info > h3 > a[title]");
-            list.add(new Comic(TYPE, cid, title, cover, null, author));
         }
         return list;
     }
@@ -169,25 +183,25 @@ public class U17 extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return StringUtils.format("http://www.u17.com/comic_list/%s_%s_ca99_%s_%s_ac0_as0_wm0_co99_ct99_p%%d.html",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_READER], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
+            return StringUtils.format("%s %s %s %s",
+                    args[CATEGORY_READER], args[CATEGORY_SUBJECT], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override
         protected List<Pair<String, String>> getSubject() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", "th99"));
-            list.add(Pair.create("搞笑", "th1"));
-            list.add(Pair.create("魔幻", "th2"));
-            list.add(Pair.create("生活", "th3"));
-            list.add(Pair.create("恋爱", "th4"));
-            list.add(Pair.create("动作", "th5"));
-            list.add(Pair.create("科幻", "th6"));
-            list.add(Pair.create("战争", "th7"));
-            list.add(Pair.create("体育", "th8"));
-            list.add(Pair.create("推理", "th9"));
-            list.add(Pair.create("恐怖", "th11"));
-            list.add(Pair.create("同人", "th12"));
+            list.add(Pair.create("全部", "no"));
+            list.add(Pair.create("搞笑", "1"));
+            list.add(Pair.create("魔幻", "2"));
+            list.add(Pair.create("生活", "3"));
+            list.add(Pair.create("恋爱", "4"));
+            list.add(Pair.create("动作", "5"));
+            list.add(Pair.create("科幻", "6"));
+            list.add(Pair.create("战争", "7"));
+            list.add(Pair.create("体育", "8"));
+            list.add(Pair.create("推理", "9"));
+            list.add(Pair.create("惊悚", "11"));
+            list.add(Pair.create("同人", "12"));
             return list;
         }
 
@@ -199,9 +213,11 @@ public class U17 extends MangaParser {
         @Override
         protected List<Pair<String, String>> getReader() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", "gr99"));
-            list.add(Pair.create("少年", "gr1"));
-            list.add(Pair.create("少女", "gr2"));
+            list.add(Pair.create("全部", "no"));
+            list.add(Pair.create("少年", "1"));
+            list.add(Pair.create("少女", "2"));
+            list.add(Pair.create("耽美", "3"));
+            list.add(Pair.create("绘本", "4"));
             return list;
         }
 
@@ -213,8 +229,9 @@ public class U17 extends MangaParser {
         @Override
         protected List<Pair<String, String>> getProgress() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("连载", "ss0"));
-            list.add(Pair.create("完结", "ss1"));
+            list.add(Pair.create("全部", "no"));
+            list.add(Pair.create("连载", "0"));
+            list.add(Pair.create("完结", "1"));
             return list;
         }
 
@@ -226,12 +243,10 @@ public class U17 extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "ob0"));
-            list.add(Pair.create("人气", "ob9"));
-            list.add(Pair.create("章节", "ob1"));
-            list.add(Pair.create("评论", "ob3"));
-            list.add(Pair.create("发布", "ob2"));
-            list.add(Pair.create("收藏", "ob4"));
+            list.add(Pair.create("全站最热", "0"));
+            list.add(Pair.create("更新时间", "1"));
+            list.add(Pair.create("上升最快", "2"));
+            list.add(Pair.create("最新发布", "3"));
             return list;
         }
 

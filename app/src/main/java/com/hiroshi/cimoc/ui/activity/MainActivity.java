@@ -32,8 +32,10 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
+import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.MainPresenter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
@@ -65,6 +67,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
     private TextView mLastText;
     private SimpleDraweeView mDraweeView;
+    private ControllerBuilderProvider mControllerBuilderProvider;
 
     private MainPresenter mPresenter;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -137,6 +140,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 }
             }
         });
+        mControllerBuilderProvider = new ControllerBuilderProvider(this,
+                SourceManager.getInstance(this).new HeaderGetter(), false);
     }
 
     private void initFragment() {
@@ -184,6 +189,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mControllerBuilderProvider.clear();
         ((App) getApplication()).getBuilderProvider().clear();
         ((App) getApplication()).getGridRecycledPool().clear();
     }
@@ -322,7 +328,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 .newBuilderWithSource(Uri.parse(cover))
                 .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
                 .build();
-        DraweeController controller = ((App) getApplication()).getBuilderProvider().get(source)
+        DraweeController controller = mControllerBuilderProvider.get(source)
                 .setOldController(mDraweeView.getController())
                 .setImageRequest(request)
                 .build();

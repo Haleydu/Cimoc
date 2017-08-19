@@ -52,7 +52,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private OnTapGestureListener mTapGestureListener;
     private OnLazyLoadListener mLazyLoadListener;
     private @ReaderMode int reader;
-    private boolean isVertical;
+    private boolean isVertical; // 开页方向
+    private boolean isPortrait; // 屏幕方向
     private boolean isPaging;
     private boolean isWhiteEdge;
     private boolean isBanTurn;
@@ -143,15 +144,13 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     .newBuilderWithSource(Uri.parse(url));
 
             // TODO 切图后可能需要修改图片高度和宽度
-            MangaPostprocessor processor = new MangaPostprocessor(imageUrl);
-            processor.setPaging(isPaging);
-            processor.setWhiteEdge(isWhiteEdge);
+            MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isWhiteEdge, isPortrait);
             imageRequestBuilder.setPostprocessor(processor);
-            if (isNeedResize(imageUrl)) {
+/*            if (isNeedResize(imageUrl)) {
                 ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
                         new ResizeOptions(App.mHeightPixels, App.mWidthPixels);
                 imageRequestBuilder.setResizeOptions(options);
-            }
+            }*/
             imageRequestBuilder.setRequestListener(new BaseRequestListener() {
                 @Override
                 public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
@@ -192,6 +191,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setVertical(boolean vertical) {
         isVertical = vertical;
+    }
+
+    public void setPortrait(boolean portrait) {
+        isPortrait = portrait;
     }
 
     public void setPaging(boolean paging) {

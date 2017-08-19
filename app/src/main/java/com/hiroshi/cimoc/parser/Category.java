@@ -16,6 +16,7 @@ public interface Category {
 
     /**
      * 主题 地区 读者 年份 进度 排序
+     * TODO 根据不同图源定制类别
      */
     int CATEGORY_SUBJECT = 0;
     int CATEGORY_AREA = 1;
@@ -35,6 +36,7 @@ public interface Category {
 
     /**
      * 获取最终的格式化字符串，一般需要含有一个 %d 用于填充页码
+     * TODO 这里不要返回 String 返回数组
      * @param args 各个选项的值，按照定义的顺序
      */
     String getFormat(String... args);

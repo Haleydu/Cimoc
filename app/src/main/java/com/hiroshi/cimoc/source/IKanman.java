@@ -152,7 +152,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("div.book-detail > div.cont-list > dl:eq(2) > dd");
+        return new Node(html).text("div.chapter-bar > span.fr > span:eq(1)");
     }
 
     @Override
@@ -285,6 +285,7 @@ public class IKanman extends MangaParser {
         public List<Pair<String, String>> getYear() {
             List<Pair<String, String>> list = new ArrayList<>();
             list.add(Pair.create("全部", ""));
+            list.add(Pair.create("2017年", "2017"));
             list.add(Pair.create("2016年", "2016"));
             list.add(Pair.create("2015年", "2015"));
             list.add(Pair.create("2014年", "2014"));

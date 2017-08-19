@@ -7,12 +7,11 @@ import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.utils.StringUtils;
-
-import java.util.concurrent.Semaphore;
 
 /**
  * Created by Hiroshi on 2017/3/3.
@@ -20,15 +19,20 @@ import java.util.concurrent.Semaphore;
 
 public class MangaPostprocessor extends BasePostprocessor {
 
-    private boolean isPaging = false;
-    private boolean isWhiteEdge = false;
-    private boolean isDone = false;
     private ImageUrl mImage;
+    private boolean isPaging;
+    private boolean isWhiteEdge;
+    private boolean isPortrait;
+
     private int mWidth, mHeight;
     private int mPosX, mPosY;
+    private boolean isDone = false;
 
-    public MangaPostprocessor(ImageUrl image) {
+    public MangaPostprocessor(ImageUrl image, boolean paging, boolean whiteEdge, boolean portrait) {
         mImage = image;
+        isPaging = paging;
+        isWhiteEdge = whiteEdge;
+        isPortrait = portrait;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class MangaPostprocessor extends BasePostprocessor {
         mWidth = sourceBitmap.getWidth();
         mHeight = sourceBitmap.getHeight();
 
-        if (mWidth > 1.15 * mHeight && isPaging) {
+        if (isPaging) {
             preparePaging();
             isDone = true;
         }
@@ -57,27 +61,36 @@ public class MangaPostprocessor extends BasePostprocessor {
         return super.process(sourceBitmap, bitmapFactory);
     }
 
-    public void setPaging(boolean paging) {
-        isPaging = paging;
-    }
-
-    public void setWhiteEdge(boolean whiteEdge) {
-        isWhiteEdge = whiteEdge;
-    }
-
     private void preparePaging() {
-        mWidth = mWidth / 2;
-        if (mImage.getState() == ImageUrl.STATE_NULL) {
-            Semaphore sem = new Semaphore(0);
-            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage, sem));
-            try {
-                sem.acquire();
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (needHorizontalPaging()) {
+            mWidth = mWidth / 2;
+            if (mImage.getState() == ImageUrl.STATE_NULL) {
+                mImage.setState(ImageUrl.STATE_PAGE_1);
+                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage));
             }
+            mPosX = mImage.getState() == ImageUrl.STATE_PAGE_1 ? mWidth : 0;
+            mPosY = 0;
+        } else if (needVerticalPaging()) {
+            mHeight = mHeight / 2;
+            if (mImage.getState() == ImageUrl.STATE_NULL) {
+                mImage.setState(ImageUrl.STATE_PAGE_1);
+                RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage));
+            }
+            mPosX = 0;
+            mPosY = mImage.getState() == ImageUrl.STATE_PAGE_1 ? 0 : mHeight;
         }
-        mPosX = mImage.getState() == ImageUrl.STATE_PAGE_1 ? mWidth : 0;
-        mPosY = 0;
+    }
+
+    private boolean needVerticalPaging() {
+        return (mHeight > 2 * mWidth) &&
+                (isPortrait && (mHeight > 2 * App.mHeightPixels) ||
+                        !isPortrait && (mHeight > 2 * App.mWidthPixels));
+    }
+
+    private boolean needHorizontalPaging() {
+        return (mWidth > 1.2 * mHeight) &&
+                ((isPortrait && (mWidth > 1.2 * App.mWidthPixels)) ||
+                        (!isPortrait && (mWidth > 1.2 * App.mHeightPixels)));
     }
 
     private void prepareWhiteEdge(Bitmap bitmap) {
@@ -166,7 +179,6 @@ public class MangaPostprocessor extends BasePostprocessor {
     }
 
     /**
-     * 线性扫描
      * @return 全白返回 true
      */
     private boolean oneDimensionScan(int[] pixels, int length) {
@@ -179,7 +191,6 @@ public class MangaPostprocessor extends BasePostprocessor {
     }
 
     /**
-     * 平面扫描
      * 10 * 20 方格 按 2:3:3:2 划分为四个区域 权值分别为 0 1 2 3
      * @return 加权值 > 60 返回 false
      */
