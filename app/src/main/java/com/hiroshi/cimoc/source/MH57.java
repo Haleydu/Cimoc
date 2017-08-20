@@ -244,6 +244,7 @@ public class MH57 extends MangaParser {
         public List<Pair<String, String>> getYear() {
             List<Pair<String, String>> list = new ArrayList<>();
             list.add(Pair.create("全部", ""));
+            list.add(Pair.create("2017", "2017"));
             list.add(Pair.create("2016", "2016"));
             list.add(Pair.create("2015", "2015"));
             list.add(Pair.create("2014", "2014"));

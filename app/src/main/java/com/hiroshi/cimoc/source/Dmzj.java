@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -128,23 +130,21 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.dmzj.com/view/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://v2.api.dmzj.com/chapter/%s/%s.json", cid, path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String jsonString = StringUtils.match("\"page_url\":(\\[.*?\\]),", html, 1);
-        if (jsonString != null) {
-            try {
-                JSONArray array = new JSONArray(jsonString);
-                for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(i + 1, array.getString(i), false));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            JSONObject object = new JSONObject(html);
+            JSONArray array = object.getJSONArray("page_url");
+            for (int i = 0; i < array.length(); ++i) {
+                list.add(new ImageUrl(i + 1, array.getString(i), false));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return list;
     }

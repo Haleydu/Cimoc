@@ -38,7 +38,7 @@ public class HHSSEE extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://www.hhssee.com/comic/?act=search&st=".concat(keyword);
+            String url = "http://www.hhmmoo.com/comic/?act=search&st=".concat(keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -60,7 +60,7 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("http://www.hhssee.com/manhua%s.html", cid);
+        String url = StringUtils.format("http://www.hhmmoo.com/manhua%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -87,11 +87,7 @@ public class HHSSEE extends MangaParser {
         String name = body.text("#about_kit > ul > li:eq(0) > h1");
         for (Node node : body.list("#permalink > div.cVolList > ul.cVolUl > li > a")) {
             String title = node.text();
-            title = title.replaceFirst(name, "");
-            String temp = StringUtils.match("\\d+(-\\d+)?[集话卷]$", title, 0);
-            if (temp != null) {
-                title = temp;
-            }
+            title = title.replaceFirst(name, "").trim();
             String[] array = StringUtils.match("/page(\\d+).*s=(\\d+)", node.attr("href"), 1, 2);
             //String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
             String path = array != null ? array[0].concat("-").concat(array[1]) : "";
@@ -103,7 +99,7 @@ public class HHSSEE extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String[] array = path.split("-");
-        String url = StringUtils.format("http://www.hhssee.com/page%s/1.html?s=%s", array[0], array[1]);
+        String url = StringUtils.format("http://www.hhmmoo.com/page%s/1.html?s=%s", array[0], array[1]);
         return new Request.Builder().url(url).build();
     }
 
@@ -115,7 +111,7 @@ public class HHSSEE extends MangaParser {
         String path = body.attr("#hdVolID", "value");
         String server = body.attr("#hdS", "value");
         for (int i = 1; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("http://www.hhssee.com/page%s/%d.html?s=%s", path, i, server), true));
+            list.add(new ImageUrl(i, StringUtils.format("http://www.hhmmoo.com/page%s/%d.html?s=%s", path, i, server), true));
         }
         return list;
     }
@@ -187,11 +183,11 @@ public class HHSSEE extends MangaParser {
         @Override
         public String getFormat(String... args) {
             if (!"".equals(args[CATEGORY_SUBJECT])) {
-                return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_SUBJECT]);
+                return StringUtils.format("http://www.hhmmoo.com/comic/class_%s/%%d.html", args[CATEGORY_SUBJECT]);
             } else if (!"".equals(args[CATEGORY_AREA])) {
-                return StringUtils.format("http://www.hhssee.com/comic/class_%s/%%d.html", args[CATEGORY_AREA]);
+                return StringUtils.format("http://www.hhmmoo.com/comic/class_%s/%%d.html", args[CATEGORY_AREA]);
             } else {
-                return "http://www.hhssee.com/comic/%d.html";
+                return "http://www.hhmmoo.com/comic/%d.html";
             }
         }
 
@@ -213,6 +209,7 @@ public class HHSSEE extends MangaParser {
             list.add(Pair.create("厨艺", "12"));
             list.add(Pair.create("伪娘", "13"));
             list.add(Pair.create("冒险", "15"));
+            list.add(Pair.create("小说", "19"));
             list.add(Pair.create("耽美", "21"));
             list.add(Pair.create("经典", "22"));
             list.add(Pair.create("亲情", "25"));
@@ -228,7 +225,6 @@ public class HHSSEE extends MangaParser {
         protected List<Pair<String, String>> getArea() {
             List<Pair<String, String>> list = new ArrayList<>();
             list.add(Pair.create("全部", ""));
-            list.add(Pair.create("大陆", "19"));
             list.add(Pair.create("香港", "20"));
             list.add(Pair.create("欧美", "23"));
             list.add(Pair.create("日文", "24"));
@@ -239,7 +235,7 @@ public class HHSSEE extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://www.hhssee.com");
+        return Headers.of("Referer", "http://www.hhmmoo.com");
     }
 
 }
