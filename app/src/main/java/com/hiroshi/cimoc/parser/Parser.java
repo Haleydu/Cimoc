@@ -43,7 +43,7 @@ public interface Parser {
      * @param html 页面源代码
      * @param comic 漫画实体类，需要设置其中的字段
      */
-    void parseInfo(String html, Comic comic);
+    void parseInfo(String html, Comic comic) throws UnsupportedEncodingException;
 
     /**
      * 章节列表的 HTTP 请求，若在 {@link #parseInfo} 中可以解析出章节列表，返回 null，代表不用再次解析

@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 
 import org.json.JSONArray;
 
@@ -67,12 +68,12 @@ public class PuFei extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.chuiyao.com/manhua/".concat(cid);
+        String url = "http://m.pufei.net/manhua/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
@@ -86,7 +87,7 @@ public class PuFei extends MangaParser {
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapterList > ul > li > a")) {
+        for (Node node : new Node(html).list("#chapterList2 > ul > li > a")) {
             String title = node.attr("title");
             String path = node.hrefWithSplit(2);
             list.add(new Chapter(title, path));
@@ -96,19 +97,20 @@ public class PuFei extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.chuiyao.com/manhua/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.pufei.net/manhua/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String str = StringUtils.match("parseJSON\\('(.*?)'\\)", html, 1);
+        String str = StringUtils.match("cp=\"(.*?)\"", html, 1);
         if (str != null) {
             try {
-                JSONArray array = new JSONArray(str);
-                for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(i + 1, array.getString(i), false));
+                str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
+                String[] array = str.split(",");
+                for (int i = 0; i != array.length; ++i) {
+                    list.add(new ImageUrl(i + 1, "http://f.pufei.net/" + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -151,7 +153,7 @@ public class PuFei extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
+            return StringUtils.format("http://m.pufei.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
                 args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
         }
 
