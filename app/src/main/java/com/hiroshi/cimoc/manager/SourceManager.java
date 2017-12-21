@@ -19,6 +19,7 @@ import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.Null;
+import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -120,6 +121,9 @@ public class SourceManager {
                     break;
                 case MangaNel.TYPE:
                     parser = new MangaNel(source);
+                    break;
+                case PuFei.TYPE:
+                    parser = new PuFei(source);
                     break;
                 default:
                     parser = new Null();

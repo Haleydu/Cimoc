@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -22,7 +23,7 @@ public interface Parser {
      * @param keyword 关键字
      * @param page 页码
      */
-    Request getSearchRequest(String keyword, int page);
+    Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException;
 
     /**
      * 获取搜索结果迭代器，这里不直接解析成列表是为了多图源搜索时，不同图源漫画穿插的效果
