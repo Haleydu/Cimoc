@@ -32,10 +32,6 @@ public class IKanman extends MangaParser {
     public static final int TYPE = 0;
     public static final String DEFAULT_TITLE = "看漫画";
 
-    private static final String[] servers = {
-            "http://p.yogajx.com"
-    };
-
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
@@ -134,9 +130,13 @@ public class IKanman extends MangaParser {
                 String result = DecryptionUtils.evalDecrypt(packed);
 
                 String jsonString = result.substring(11, result.length() - 9);
-                JSONArray array = new JSONObject(jsonString).getJSONArray("images");
+                JSONObject object = new JSONObject(jsonString);
+                String chapterId = object.getString("chapterId");
+                String md5 = object.getJSONObject("sl").getString("md5");
+                JSONArray array = object.getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(i + 1, buildUrl(array.getString(i), servers), false));
+                    String url = StringUtils.format("http://i.hamreus.com:8080/%s?cid=%s&md5=%s", array.getString(i), chapterId, md5);
+                    list.add(new ImageUrl(i + 1, url, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

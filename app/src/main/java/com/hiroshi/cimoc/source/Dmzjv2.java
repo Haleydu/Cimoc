@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
@@ -76,70 +77,64 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("http://v2.api.dmzj.com/comic/%s.json", cid);
+        String url = StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) {
-        try {
-            JSONObject object = new JSONObject(html);
-            String title = object.getString("title");
-            String cover = object.getString("cover");
-            Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
-            String update = time == null ? null : StringUtils.getFormatTime("yyyy-MM-dd", time);
-            String intro = object.optString("description");
-            StringBuilder sb = new StringBuilder();
-            JSONArray array = object.getJSONArray("authors");
-            for (int i = 0; i < array.length(); ++i) {
-                sb.append(array.getJSONObject(i).getString("tag_name")).append(" ");
-            }
-            String author = sb.toString();
-            boolean status = object.getJSONArray("status").getJSONObject(0).getInt("tag_id") == 2310;
-            comic.setInfo(title, cover, update, intro, author, status);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Node body = new Node(html);
+        String intro = body.textWithSubstring("p.txtDesc", 3);
+        String title = body.attr("#Cover > img", "title");
+        String cover = body.src("#Cover > img");
+        String author = body.text("div.Introduct_Sub > div.sub_r > p:eq(0) > a");
+        String update = body.textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
+        boolean status = isFinish(body.text("div.Introduct_Sub > div.sub_r > p:eq(2) > a:eq(3)"));
+        comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
+        String jsonString = StringUtils.match("initIntroData\\((.*?)\\);", html, 1);
         List<Chapter> list = new LinkedList<>();
-        try {
-            JSONObject object = new JSONObject(html);
-            JSONArray array = object.getJSONArray("chapters");
-            for (int i = 0; i != array.length(); ++i) {
-                JSONArray data = array.getJSONObject(i).getJSONArray("data");
-                for (int j = 0; j != data.length(); ++j) {
-                    JSONObject chapter = data.getJSONObject(j);
-                    String title = chapter.getString("chapter_title");
-                    String path = chapter.getString("chapter_id");
-                    list.add(new Chapter(title, path));
+        if (jsonString != null) {
+            try {
+                JSONArray array = new JSONArray(jsonString);
+                for (int i = 0; i != array.length(); ++i) {
+                    JSONArray data = array.getJSONObject(i).getJSONArray("data");
+                    for (int j = 0; j != data.length(); ++j) {
+                        JSONObject object = data.getJSONObject(j);
+                        String title = object.getString("chapter_name");
+                        String path = object.getString("id");
+                        list.add(new Chapter(title, path));
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return list;
     }
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://v2.api.dmzj.com/chapter/%s/%s.json", cid, path);
+        String url = StringUtils.format("http://m.dmzj.com/view/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        try {
-            JSONObject object = new JSONObject(html);
-            JSONArray array = object.getJSONArray("page_url");
-            for (int i = 0; i < array.length(); ++i) {
-                list.add(new ImageUrl(i + 1, array.getString(i), false));
+        String jsonString = StringUtils.match("\"page_url\":(\\[.*?\\]),", html, 1);
+        if (jsonString != null) {
+            try {
+                JSONArray array = new JSONArray(jsonString);
+                for (int i = 0; i != array.length(); ++i) {
+                    list.add(new ImageUrl(i + 1, array.getString(i), false));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return list;
     }
@@ -151,14 +146,7 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        try {
-            JSONObject object = new JSONObject(html);
-            long time = object.getLong("last_updatetime") * 1000;
-            return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new Node(html).textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
     }
 
     @Override

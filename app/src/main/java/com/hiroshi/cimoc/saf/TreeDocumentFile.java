@@ -96,10 +96,13 @@ class TreeDocumentFile extends DocumentFile {
             return null;
         }
 
-        Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri, null, displayName);
-        if (result != null) {
-            doc = new TreeDocumentFile(this, mContext, result, displayName, null);
-            mSubFiles.put(displayName, doc);
+        try {
+            Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri, null, displayName);
+            if (result != null) {
+                doc = new TreeDocumentFile(this, mContext, result, displayName, null);
+                mSubFiles.put(displayName, doc);
+            }
+        } catch (FileNotFoundException e) {
         }
 
         return doc;
@@ -116,11 +119,14 @@ class TreeDocumentFile extends DocumentFile {
             return null;
         }
 
-        Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri,
-                DocumentsContract.Document.MIME_TYPE_DIR, displayName);
-        if (result != null) {
-            doc = new TreeDocumentFile(this, mContext, result, displayName, DocumentsContract.Document.MIME_TYPE_DIR);
-            mSubFiles.put(displayName, doc);
+        try {
+            Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri,
+                    DocumentsContract.Document.MIME_TYPE_DIR, displayName);
+            if (result != null) {
+                doc = new TreeDocumentFile(this, mContext, result, displayName, DocumentsContract.Document.MIME_TYPE_DIR);
+                mSubFiles.put(displayName, doc);
+            }
+        } catch (FileNotFoundException e) {
         }
 
         return doc;
@@ -184,10 +190,13 @@ class TreeDocumentFile extends DocumentFile {
 
     @Override
     public boolean delete() {
-        if (DocumentsContract.deleteDocument(mContext.getContentResolver(), mUri)) {
-            // 为求方便，就这样吧
-            ((TreeDocumentFile) getParentFile()).mSubFiles.remove(mDisplayName);
-            return true;
+        try {
+            if (DocumentsContract.deleteDocument(mContext.getContentResolver(), mUri)) {
+                // 为求方便，就这样吧
+                ((TreeDocumentFile) getParentFile()).mSubFiles.remove(mDisplayName);
+                return true;
+            }
+        } catch (FileNotFoundException e){
         }
         return false;
     }
@@ -265,13 +274,15 @@ class TreeDocumentFile extends DocumentFile {
 
     @Override
     public boolean renameTo(String displayName) {
-        final Uri result = DocumentsContract.renameDocument(mContext.getContentResolver(), mUri, displayName);
-        if (result != null) {
-            mUri = result;
-            return true;
-        } else {
-            return false;
+        try {
+            final Uri result = DocumentsContract.renameDocument(mContext.getContentResolver(), mUri, displayName);
+            if (result != null) {
+                mUri = result;
+                return true;
+            }
+        } catch (FileNotFoundException e) {
         }
+        return false;
     }
 
     private boolean checkSubFiles() {

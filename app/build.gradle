@@ -1,17 +1,16 @@
-apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.4"
+        versionName "1.4.8.7"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -29,16 +28,16 @@ greendao {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.android.support:support-v13:${SUPPORT_LIB_VERSION}"
-    compile "com.android.support:appcompat-v7:${SUPPORT_LIB_VERSION}"
-    compile "com.android.support:recyclerview-v7:${SUPPORT_LIB_VERSION}"
-    compile "com.android.support:design:${SUPPORT_LIB_VERSION}"
-    compile 'com.jakewharton:butterknife:8.7.0'
-    apt 'com.jakewharton:butterknife-compiler:8.7.0'
+    compile "com.android.support:support-v13:27.0.2"
+    compile "com.android.support:appcompat-v7:27.0.2"
+    compile "com.android.support:recyclerview-v7:27.0.2"
+    compile "com.android.support:design:27.0.2"
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'org.greenrobot:greendao:3.2.2'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.facebook.fresco:fresco:1.5.0'
-    compile 'org.jsoup:jsoup:1.10.3'
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    compile 'com.facebook.fresco:fresco:1.8.0'
+    compile 'org.jsoup:jsoup:1.11.2'
     compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile 'io.reactivex:rxjava:1.2.4'
     compile 'io.reactivex:rxandroid:1.2.1'
