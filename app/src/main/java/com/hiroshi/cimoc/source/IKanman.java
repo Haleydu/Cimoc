@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.misc.Pair;
+import android.util.Pair;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -42,7 +43,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://m.ikanman.com/s/%s.html?page=%d&ajax=1", keyword, page);
+        String url = StringUtils.format("http://m.manhuagui.com/s/%s.html?page=%d&ajax=1", keyword, page);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
                 .url(url)
@@ -67,7 +68,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://www.ikanman.com/comic/".concat(cid);
+        String url = "http://www.manhuagui.com/comic/".concat(cid);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
                 .url(url)
@@ -110,7 +111,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.ikanman.com/comic/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.manhuagui.com/comic/%s/%s.html", cid, path);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
                 .url(url)
@@ -193,7 +194,7 @@ public class IKanman extends MangaParser {
             String path = args[CATEGORY_AREA].concat(" ").concat(args[CATEGORY_SUBJECT]).concat(" ").concat(args[CATEGORY_READER])
                     .concat(" ").concat(args[CATEGORY_YEAR]).concat(" ").concat(args[CATEGORY_PROGRESS]).trim();
             path = path.replaceAll("\\s+", "_");
-            return StringUtils.format("http://www.ikanman.com/list/%s/%s_p%%d.html", path, args[CATEGORY_ORDER]);
+            return StringUtils.format("http://www.manhuagui.com/list/%s/%s_p%%d.html", path, args[CATEGORY_ORDER]);
         }
 
         @Override

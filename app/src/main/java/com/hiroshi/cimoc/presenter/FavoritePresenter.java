@@ -1,10 +1,11 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.util.Pair;
+
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TagRefManager;
-import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -111,24 +112,21 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     }
 
     public void checkUpdate() {
-        mCompositeSubscription.add(mComicManager.listFavoriteInRx()
-                .flatMap(new Func1<List<Comic>, Observable<Pair<Comic, Pair<Integer, Integer>>>>() {
+        final List<Comic> list = mComicManager.listFavorite();
+        mCompositeSubscription.add(Manga.checkUpdate(mSourceManager, list)
+                .doOnNext(new Action1<Comic>() {
                     @Override
-                    public Observable<Pair<Comic, Pair<Integer, Integer>>> call(List<Comic> list) {
-                        return Manga.checkUpdate(mSourceManager, list);
-                    }
-                })
-                .doOnNext(new Action1<Pair<Comic, Pair<Integer, Integer>>>() {
-                    @Override
-                    public void call(Pair<Comic, Pair<Integer, Integer>> pair) {
-                        if (pair.first != null) {
-                            mComicManager.update(pair.first);
+                    public void call(Comic comic) {
+                        if (comic != null) {
+                            mComicManager.update(comic);
                         }
                     }
                 })
                 .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Pair<Comic, Pair<Integer, Integer>>>() {
+                .subscribe(new Observer<Comic>() {
+                    private int count = 0;
+
                     @Override
                     public void onCompleted() {
                         mBaseView.onComicCheckComplete();
@@ -140,9 +138,10 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     }
 
                     @Override
-                    public void onNext(Pair<Comic, Pair<Integer, Integer>> pair) {
-                        MiniComic comic = pair.first == null ? null : new MiniComic(pair.first);
-                        mBaseView.onComicCheckSuccess(comic, pair.second.first, pair.second.second);
+                    public void onNext(Comic comic) {
+                        ++count;
+                        MiniComic miniComic = comic == null ? null : new MiniComic(comic);
+                        mBaseView.onComicCheckSuccess(miniComic, count, list.size());
                     }
                 }));
     }

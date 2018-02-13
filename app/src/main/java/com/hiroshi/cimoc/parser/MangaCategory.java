@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.parser;
 
-import com.hiroshi.cimoc.misc.Pair;
+import android.util.Pair;
 
 import java.util.List;
 

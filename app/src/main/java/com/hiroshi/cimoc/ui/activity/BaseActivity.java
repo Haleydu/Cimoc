@@ -14,9 +14,9 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ProgressDialogFragment;
 import com.hiroshi.cimoc.ui.view.BaseView;
+import com.hiroshi.cimoc.ui.widget.ViewUtils;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
-import com.hiroshi.cimoc.ui.widget.ViewUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

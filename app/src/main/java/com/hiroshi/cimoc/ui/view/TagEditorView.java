@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.ui.view;
 
-import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.misc.Switcher;
 import com.hiroshi.cimoc.model.Tag;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface TagEditorView extends BaseView {
 
-    void onTagLoadSuccess(List<Pair<Tag, Boolean>> list);
+    void onTagLoadSuccess(List<Switcher<Tag>> list);
 
     void onTagLoadFail();
 

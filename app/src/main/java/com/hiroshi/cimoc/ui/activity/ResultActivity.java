@@ -10,7 +10,6 @@ import android.widget.FrameLayout;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
-import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -43,8 +42,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     protected BasePresenter initPresenter() {
         String keyword = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
         int[] source = getIntent().getIntArrayExtra(Extra.EXTRA_SOURCE);
-        boolean filter = mPreference.getBoolean(PreferenceManager.PREF_SEARCH_RESULT_FILTER, true);
-        mPresenter = new ResultPresenter(source, keyword, filter);
+        mPresenter = new ResultPresenter(source, keyword);
         mPresenter.attachView(this);
         return mPresenter;
     }

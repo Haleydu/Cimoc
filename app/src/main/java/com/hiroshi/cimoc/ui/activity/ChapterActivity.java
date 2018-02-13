@@ -15,12 +15,12 @@ import android.view.View;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.misc.Switcher;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.adapter.BaseAdapter;
 import com.hiroshi.cimoc.ui.adapter.ChapterAdapter;
-import com.hiroshi.cimoc.utils.PermissionUtils;
 import com.hiroshi.cimoc.ui.widget.ViewUtils;
+import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,12 +72,12 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
         }
     }
 
-    private List<Pair<Chapter, Boolean>> getAdapterList() {
+    private List<Switcher<Chapter>> getAdapterList() {
         isAscendMode = mPreference.getBoolean(PreferenceManager.PREF_CHAPTER_ASCEND_MODE, false);
         List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
-        List<Pair<Chapter, Boolean>> result = new ArrayList<>(list.size());
+        List<Switcher<Chapter>> result = new ArrayList<>(list.size());
         for (int i = 0; i < list.size(); ++i) {
-            result.add(Pair.create(list.get(i), list.get(i).isDownload()));
+            result.add(new Switcher<>(list.get(i), list.get(i).isDownload()));
         }
         if (isAscendMode) {
             Collections.reverse(result);
@@ -96,8 +96,8 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
         if (!isProgressBarShown()) {
             switch (item.getItemId()) {
                 case R.id.chapter_all:
-                    for (Pair<Chapter, Boolean> pair : mChapterAdapter.getDateSet()) {
-                        pair.second = true;
+                    for (Switcher<Chapter> switcher : mChapterAdapter.getDateSet()) {
+                        switcher.setEnable(true);
                     }
                     mChapterAdapter.notifyDataSetChanged();
                     break;
@@ -118,18 +118,18 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
 
     @Override
     public void onItemClick(View view, int position) {
-        Pair<Chapter, Boolean> pair = mChapterAdapter.getItem(position);
-        if (!pair.first.isDownload()) {
-            pair.second = !pair.second;
+        Switcher<Chapter> switcher = mChapterAdapter.getItem(position);
+        if (!switcher.getElement().isDownload()) {
+            switcher.switchEnable();
             mChapterAdapter.notifyItemChanged(position);
         }
     }
 
     @OnClick(R.id.chapter_action_button) void onActionButtonClick() {
         ArrayList<Chapter> list = new ArrayList<>();
-        for (Pair<Chapter, Boolean> pair : mChapterAdapter.getDateSet()) {
-            if (!pair.first.isDownload() && pair.second) {
-                list.add(pair.first);
+        for (Switcher<Chapter> switcher : mChapterAdapter.getDateSet()) {
+            if (!switcher.getElement().isDownload() && switcher.isEnable()) {
+                list.add(switcher.getElement());
             }
         }
 
@@ -221,7 +221,7 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
 
         private void update(int pos) {
             mLastPosition = pos;
-            mChapterAdapter.getItem(pos).second = !mChapterAdapter.getItem(pos).second;
+            mChapterAdapter.getItem(pos).switchEnable();
             mChapterAdapter.notifyItemChanged(pos);
         }
     }

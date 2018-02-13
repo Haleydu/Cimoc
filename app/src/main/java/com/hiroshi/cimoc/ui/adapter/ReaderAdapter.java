@@ -13,7 +13,6 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.view.DraweeView;
-import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
@@ -53,7 +52,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private OnLazyLoadListener mLazyLoadListener;
     private @ReaderMode int reader;
     private boolean isVertical; // 开页方向
-    private boolean isPortrait; // 屏幕方向
     private boolean isPaging;
     private boolean isWhiteEdge;
     private boolean isBanTurn;
@@ -144,7 +142,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     .newBuilderWithSource(Uri.parse(url));
 
             // TODO 切图后可能需要修改图片高度和宽度
-            MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isWhiteEdge, isPortrait);
+            MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
 /*            if (isNeedResize(imageUrl)) {
                 ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
@@ -191,10 +189,6 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setVertical(boolean vertical) {
         isVertical = vertical;
-    }
-
-    public void setPortrait(boolean portrait) {
-        isPortrait = portrait;
     }
 
     public void setPaging(boolean paging) {

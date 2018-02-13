@@ -7,7 +7,6 @@ import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory;
 import com.facebook.imagepipeline.request.BasePostprocessor;
-import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -22,17 +21,15 @@ public class MangaPostprocessor extends BasePostprocessor {
     private ImageUrl mImage;
     private boolean isPaging;
     private boolean isWhiteEdge;
-    private boolean isPortrait;
 
     private int mWidth, mHeight;
     private int mPosX, mPosY;
     private boolean isDone = false;
 
-    public MangaPostprocessor(ImageUrl image, boolean paging, boolean whiteEdge, boolean portrait) {
+    public MangaPostprocessor(ImageUrl image, boolean paging, boolean whiteEdge) {
         mImage = image;
         isPaging = paging;
         isWhiteEdge = whiteEdge;
-        isPortrait = portrait;
     }
 
     @Override
@@ -82,15 +79,11 @@ public class MangaPostprocessor extends BasePostprocessor {
     }
 
     private boolean needVerticalPaging() {
-        return (mHeight > 2 * mWidth) &&
-                (isPortrait && (mHeight > 2 * App.mHeightPixels) ||
-                        !isPortrait && (mHeight > 2 * App.mWidthPixels));
+        return mHeight > 3 * mWidth;
     }
 
     private boolean needHorizontalPaging() {
-        return (mWidth > 1.2 * mHeight) &&
-                ((isPortrait && (mWidth > 1.2 * App.mWidthPixels)) ||
-                        (!isPortrait && (mWidth > 1.2 * App.mHeightPixels)));
+        return mWidth > 1.2 * mHeight;
     }
 
     private void prepareWhiteEdge(Bitmap bitmap) {

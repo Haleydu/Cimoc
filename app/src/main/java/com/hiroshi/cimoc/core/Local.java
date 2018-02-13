@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.core;
 
-import com.hiroshi.cimoc.misc.Pair;
+import android.util.Pair;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;

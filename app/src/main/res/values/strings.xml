@@ -146,15 +146,10 @@
     <string name="settings_reader_scale_factor">双击放大百分比</string>
     <string name="settings_download">下载设置</string>
     <string name="settings_download_thread">多任务下载数量</string>
-    <string name="settings_download_delete">删除无效漫画</string>
-    <string name="settings_download_delete_summary">扫描并删除已下载的无效漫画</string>
-    <string name="settings_download_delete_confirm">删除存储目录中不存在的无效下载漫画或章节，删除过程中最好不要检查漫画更新！</string>
     <string name="settings_download_scan">扫描已下载漫画</string>
     <string name="settings_download_scan_summary">扫描并恢复已下载漫画</string>
     <string name="settings_download_scan_confirm">需要将从本软件下载的漫画放在软件存储目录的 download 目录下！重点是，不一定可以成功！</string>
     <string name="settings_search">搜索设置</string>
-    <string name="settings_search_result_filter">过滤搜索结果</string>
-    <string name="settings_search_result_filter_summary">不显示标题或作者与关键字差异大的漫画</string>
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
@@ -220,7 +215,7 @@
     <string name="part_favorite_add">添加漫画</string>
 
     <string name="download_service_doing">正在下载漫画</string>
-    <string name="download_service_complete">所有任务已完成</string>
+    <string name="download_service_done">所有任务已完成</string>
     <string name="download_start_success">已开始全部下载任务</string>
     <string name="download_stop_success">已暂停全部下载任务</string>
     <string name="download_task_empty">下载任务为空</string>

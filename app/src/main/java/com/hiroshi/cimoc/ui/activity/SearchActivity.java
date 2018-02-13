@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +18,7 @@ import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.misc.Switcher;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
@@ -48,7 +50,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     private ArrayAdapter<String> mArrayAdapter;
 
     private SearchPresenter mPresenter;
-    private List<Pair<Source, Boolean>> mSourceList;
+    private List<Switcher<Source>> mSourceList;
     private boolean mAutoComplete;
 
     @Override
@@ -114,8 +116,8 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                     String[] arr1 = new String[size];
                     boolean[] arr2 = new boolean[size];
                     for (int i = 0; i < size; ++i) {
-                        arr1[i] = mSourceList.get(i).first.getTitle();
-                        arr2[i] = mSourceList.get(i).second;
+                        arr1[i] = mSourceList.get(i).getElement().getTitle();
+                        arr2[i] = mSourceList.get(i).isEnable();
                     }
                     MultiDialogFragment fragment =
                             MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
@@ -134,7 +136,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                 if (check != null) {
                     int size = mSourceList.size();
                     for (int i = 0; i < size; ++i) {
-                        mSourceList.get(i).second = check[i];
+                        mSourceList.get(i).setEnable(check[i]);
                     }
                 }
                 break;
@@ -156,9 +158,9 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
             mInputLayout.setError(getString(R.string.search_keyword_empty));
         } else {
             ArrayList<Integer> list = new ArrayList<>();
-            for (Pair<Source, Boolean> pair : mSourceList) {
-                if (pair.second) {
-                    list.add(pair.first.getType());
+            for (Switcher<Source> switcher : mSourceList) {
+                if (switcher.isEnable()) {
+                    list.add(switcher.getElement().getType());
                 }
             }
             if (list.isEmpty()) {
@@ -180,7 +182,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     public void onSourceLoadSuccess(List<Source> list) {
         hideProgressBar();
         for (Source source : list) {
-            mSourceList.add(Pair.create(source, true));
+            mSourceList.add(new Switcher<>(source, true));
         }
     }
 

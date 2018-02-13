@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import com.hiroshi.cimoc.manager.TagManager;
 import com.hiroshi.cimoc.manager.TagRefManager;
-import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.misc.Switcher;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.TagRef;
 import com.hiroshi.cimoc.rx.RxBus;
@@ -49,16 +49,16 @@ public class TagEditorPresenter extends BasePresenter<TagEditorView> {
                         }
                     }
                 })
-                .compose(new ToAnotherList<>(new Func1<Tag, Pair<Tag, Boolean>>() {
+                .compose(new ToAnotherList<>(new Func1<Tag, Switcher<Tag>>() {
                     @Override
-                    public Pair<Tag, Boolean> call(Tag tag) {
-                        return Pair.create(tag, mTagSet.contains(tag.getId()));
+                    public Switcher<Tag> call(Tag tag) {
+                        return new Switcher<>(tag, mTagSet.contains(tag.getId()));
                     }
                 }))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Pair<Tag, Boolean>>>() {
+                .subscribe(new Action1<List<Switcher<Tag>>>() {
                     @Override
-                    public void call(List<Pair<Tag, Boolean>> list) {
+                    public void call(List<Switcher<Tag>> list) {
                         mBaseView.onTagLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {

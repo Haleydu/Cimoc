@@ -6,7 +6,6 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.source.CCTuku;
-import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -27,8 +26,8 @@ import java.util.List;
 
 public class UpdateHelper {
 
-    // 1.04.08.004
-    private static final int VERSION = 10408004;
+    // 1.04.08.008
+    private static final int VERSION = 10408008;
 
     public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
@@ -51,6 +50,12 @@ public class UpdateHelper {
                 case 10408002:
                 case 10408003:
                     session.getSourceDao().insert(MangaNel.getDefaultSource());
+                case 10408004:
+                case 10408005:
+                case 10408006:
+                case 10408007:
+                    // 删除 Chuiyao
+                    session.getDatabase().execSQL("DELETE * FROM SOURCE WHERE \"TYPE\" = 9");
             }
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
@@ -90,7 +95,6 @@ public class UpdateHelper {
         list.add(Webtoon.getDefaultSource());
         list.add(HHSSEE.getDefaultSource());
         list.add(MH57.getDefaultSource());
-        list.add(Chuiyao.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);

@@ -19,12 +19,12 @@ import com.hiroshi.cimoc.presenter.SettingsPresenter;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.service.DownloadService;
 import com.hiroshi.cimoc.ui.activity.settings.ReaderConfigActivity;
-import com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference;
-import com.hiroshi.cimoc.ui.widget.preference.ChoicePreference;
-import com.hiroshi.cimoc.ui.widget.preference.SliderPreference;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.StorageEditorDialogFragment;
 import com.hiroshi.cimoc.ui.view.SettingsView;
+import com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference;
+import com.hiroshi.cimoc.ui.widget.preference.ChoicePreference;
+import com.hiroshi.cimoc.ui.widget.preference.SliderPreference;
 import com.hiroshi.cimoc.utils.ServiceUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.ThemeUtils;
@@ -47,7 +47,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_OTHER_THEME = 2;
     private static final int DIALOG_REQUEST_OTHER_STORAGE = 3;
     private static final int DIALOG_REQUEST_DOWNLOAD_THREAD = 4;
-    private static final int DIALOG_REQUEST_DOWNLOAD_DELETE = 5;
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 6;
     private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 7;
     private static final int DIALOG_REQUEST_READER_SCALE_FACTOR = 8;
@@ -62,7 +61,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_reader_paging) CheckBoxPreference mReaderPaging;
     @BindView(R.id.settings_reader_white_edge) CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_search_auto_complete) CheckBoxPreference mSearchAutoComplete;
-    @BindView(R.id.settings_search_result_filter) CheckBoxPreference mSearchResultFilter;
     @BindView(R.id.settings_other_check_update) CheckBoxPreference mCheckUpdate;
     @BindView(R.id.settings_reader_mode) ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch) ChoicePreference mOtherLaunch;
@@ -97,7 +95,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
-        mSearchResultFilter.bindPreference(PreferenceManager.PREF_SEARCH_RESULT_FILTER, true);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -184,10 +181,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 showProgressDialog();
                 mPresenter.scanTask();
                 break;
-            case DIALOG_REQUEST_DOWNLOAD_DELETE:
-                showProgressDialog();
-                mPresenter.deleteTask();
-                break;
             case DIALOG_REQUEST_OTHER_NIGHT_ALPHA:
                 int alpha = bundle.getInt(EXTRA_DIALOG_RESULT_VALUE);
                 mOtherNightAlpha.setValue(alpha);
@@ -218,7 +211,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPaging.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
-        mSearchResultFilter.setColorStateList(stateList);
         mCheckUpdate.setColorStateList(stateList);
     }
 
@@ -238,16 +230,6 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         } else {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                     R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
-            fragment.show(getFragmentManager(), null);
-        }
-    }
-
-    @OnClick(R.id.settings_download_delete) void onDownloadDeleteClick() {
-        if (ServiceUtils.isServiceRunning(this, DownloadService.class)) {
-            showSnackbar(R.string.download_ask_stop);
-        } else {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                    R.string.settings_download_delete_confirm, true, DIALOG_REQUEST_DOWNLOAD_DELETE);
             fragment.show(getFragmentManager(), null);
         }
     }

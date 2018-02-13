@@ -107,12 +107,6 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_download_scan"
                     app:summary="@string/settings_download_scan_summary"/>
-                <com.hiroshi.cimoc.ui.widget.Option
-                    android:id="@+id/settings_download_delete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="@string/settings_download_delete"
-                    app:summary="@string/settings_download_delete_summary"/>
                 <TextView
                     android:id="@+id/settings_search_title"
                     android:layout_width="match_parent"
@@ -130,12 +124,6 @@
                     android:layout_height="wrap_content"
                     app:title="@string/settings_search_auto_complete"
                     app:summary="@string/settings_search_auto_complete_summary"/>
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
-                    android:id="@+id/settings_search_result_filter"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="@string/settings_search_result_filter"
-                    app:summary="@string/settings_search_result_filter_summary"/>
                 <TextView
                     android:id="@+id/settings_other_title"
                     android:layout_width="match_parent"

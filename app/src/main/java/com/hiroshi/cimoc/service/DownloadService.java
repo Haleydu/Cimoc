@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.service;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -10,6 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import android.util.Pair;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
@@ -20,7 +19,7 @@ import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
-import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.misc.NotificationWrapper;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.parser.Parser;
@@ -28,7 +27,6 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DocumentUtils;
-import com.hiroshi.cimoc.utils.NotificationUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.IOException;
@@ -51,11 +49,12 @@ import okhttp3.Response;
  */
 public class DownloadService extends Service implements AppGetter {
 
+    private static final String NOTIFICATION_DOWNLOAD = "NOTIFICATION_DOWNLOAD";
+
     private LongSparseArray<Pair<Worker, Future>> mWorkerArray;
     private ExecutorService mExecutorService;
     private OkHttpClient mHttpClient;
-    private Notification.Builder builder;
-    private NotificationManager notification;
+    private NotificationWrapper mNotification;
     private TaskManager mTaskManager;
     private SourceManager mSourceManager;
     private ContentResolver mContentResolver;
@@ -83,11 +82,10 @@ public class DownloadService extends Service implements AppGetter {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_START));
-            if (notification == null) {
-                notification = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                builder = NotificationUtils.getBuilder(this, R.drawable.ic_file_download_white_24dp,
-                        R.string.download_service_doing, true);
-                NotificationUtils.notifyBuilder(1, notification, builder);
+            if (mNotification == null) {
+                mNotification = new NotificationWrapper(this, NOTIFICATION_DOWNLOAD,
+                        R.drawable.ic_file_download_white_24dp, true);
+                mNotification.post(getString(R.string.download_service_doing), true);
             }
             List<Task> list =  intent.getParcelableArrayListExtra(Extra.EXTRA_TASK);
             for (Task task : list) {
@@ -102,7 +100,7 @@ public class DownloadService extends Service implements AppGetter {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (notification != null) {
+        if (mNotification != null) {
             mExecutorService.shutdownNow();
             notifyCompleted();
         }
@@ -136,10 +134,10 @@ public class DownloadService extends Service implements AppGetter {
     }
 
     private void notifyCompleted() {
-        if (notification != null) {
-            NotificationUtils.setBuilder(this, builder, R.string.download_service_complete, false);
-            NotificationUtils.notifyBuilder(1, notification, builder);
-            notification = null;
+        if (mNotification != null) {
+            mNotification.post(getString(R.string.download_service_done), false);
+            mNotification.cancel();
+            mNotification = null;
         }
         mWorkerArray.clear();
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_STOP));

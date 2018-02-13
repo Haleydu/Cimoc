@@ -17,6 +17,8 @@ import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
+import com.hiroshi.cimoc.utils.DocumentUtils;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
@@ -25,7 +27,7 @@ import okhttp3.OkHttpClient;
 /**
  * Created by Hiroshi on 2016/7/5.
  */
-public class App extends Application implements AppGetter {
+public class App extends Application implements AppGetter, Thread.UncaughtExceptionHandler {
 
     public static int mWidthPixels;
     public static int mHeightPixels;
@@ -45,10 +47,30 @@ public class App extends Application implements AppGetter {
     @Override
     public void onCreate() {
         super.onCreate();
+        mPreferenceManager = new PreferenceManager(this);
+        Thread.setDefaultUncaughtExceptionHandler(this);
         mOpenHelper = new DBOpenHelper(this, "cimoc.db");
-        UpdateHelper.update(getPreferenceManager(), getDaoSession());
+        UpdateHelper.update(mPreferenceManager, getDaoSession());
         Fresco.initialize(this);
         initPixels();
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement element : e.getStackTrace()) {
+            sb.append(element.toString());
+            sb.append("\n");
+        }
+        sb.append(e.getLocalizedMessage());
+        try {
+            DocumentFile doc = getDocumentFile();
+            DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(doc, "log");
+            DocumentFile file = DocumentUtils.getOrCreateFile(dir, StringUtils.getDateStringWithSuffix("log"));
+            DocumentUtils.writeStringToFile(getContentResolver(), file, sb.toString());
+        } catch (Exception ex) {
+        }
+        System.exit(1);
     }
 
     @Override
@@ -67,7 +89,7 @@ public class App extends Application implements AppGetter {
     }
 
     public void initRootDocumentFile() {
-        String uri = mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE);
+        String uri = getPreferenceManager().getString(PreferenceManager.PREF_OTHER_STORAGE);
         mDocumentFile = Storage.initRoot(this, uri);
     }
 
@@ -86,9 +108,6 @@ public class App extends Application implements AppGetter {
     }
 
     public PreferenceManager getPreferenceManager() {
-        if (mPreferenceManager == null) {
-            mPreferenceManager = new PreferenceManager(getApplicationContext());
-        }
         return mPreferenceManager;
     }
 

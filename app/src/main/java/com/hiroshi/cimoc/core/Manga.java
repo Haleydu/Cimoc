@@ -1,10 +1,7 @@
 package com.hiroshi.cimoc.core;
 
-import android.util.SparseBooleanArray;
-
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -33,21 +30,7 @@ import rx.schedulers.Schedulers;
  */
 public class Manga {
 
-    private static int filterResult(String str, SparseBooleanArray hash) {
-        int count = 0;
-        if (str != null) {
-            for (int i = 0; i < str.length(); ++i) {
-                if (hash.get(str.charAt(i), false)) {
-                    ++count;
-                }
-            }
-        }
-        return count;
-    }
-
-    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword,
-                                                    final int page, final SparseBooleanArray hash,
-                                                    final int limit) {
+    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
@@ -62,11 +45,8 @@ public class Manga {
                     while (iterator.hasNext()) {
                         Comic comic = iterator.next();
                         if (comic != null) {
-                            if (hash == null || filterResult(comic.getTitle(), hash) > limit ||
-                                    filterResult(comic.getAuthor(), hash) > limit) {
-                                subscriber.onNext(comic);
-                                Thread.sleep(random.nextInt(200));
-                            }
+                            subscriber.onNext(comic);
+                            Thread.sleep(random.nextInt(200));
                         }
                     }
                     subscriber.onCompleted();
@@ -241,37 +221,30 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<Pair<Comic, Pair<Integer, Integer>>> checkUpdate(
+    public static Observable<Comic> checkUpdate(
             final SourceManager manager, final List<Comic> list) {
-        return Observable.create(new Observable.OnSubscribe<Pair<Comic, Pair<Integer, Integer>>>() {
+        return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
-            public void call(Subscriber<? super Pair<Comic, Pair<Integer, Integer>>> subscriber) {
+            public void call(Subscriber<? super Comic> subscriber) {
                 OkHttpClient client = new OkHttpClient.Builder()
                         .connectTimeout(1500, TimeUnit.MILLISECONDS)
                         .readTimeout(1500, TimeUnit.MILLISECONDS)
                         .build();
-                int size = list.size();
-                int count = 0;
                 for (Comic comic : list) {
-                    Pair<Comic, Pair<Integer, Integer>> pair = Pair.create(comic, Pair.create(++count, size));
-                    if (comic.getSource() < 100) {
-                        Parser parser = manager.getParser(comic.getSource());
-                        Request request = parser.getCheckRequest(comic.getCid());
-                        try {
-                            String update = parser.parseCheck(getResponseBody(client, request));
-                            if (comic.getUpdate() != null && update != null && !comic.getUpdate().equals(update)) {
-                                comic.setFavorite(System.currentTimeMillis());
-                                comic.setUpdate(update);
-                                comic.setHighlight(true);
-                                subscriber.onNext(pair);
-                                continue;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                    Parser parser = manager.getParser(comic.getSource());
+                    Request request = parser.getCheckRequest(comic.getCid());
+                    try {
+                        String update = parser.parseCheck(getResponseBody(client, request));
+                        if (comic.getUpdate() != null && update != null && !comic.getUpdate().equals(update)) {
+                            comic.setFavorite(System.currentTimeMillis());
+                            comic.setUpdate(update);
+                            comic.setHighlight(true);
+                            subscriber.onNext(comic);
+                            continue;
                         }
+                    } catch (Exception e) {
                     }
-                    pair.first = null;
-                    subscriber.onNext(pair);
+                    subscriber.onNext(null);
                 }
                 subscriber.onCompleted();
             }

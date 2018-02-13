@@ -1,8 +1,7 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
+import android.util.Pair;
 
-import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -22,7 +21,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +67,6 @@ public class DM5 extends MangaParser {
                 protected Comic parse(JSONObject object) {
                     try {
                         String cid = object.getString("Url").split("/")[1];
-                        Log.e("--------", cid);
                         String title = object.getString("Title");
                         String cover = object.getString("Pic");
                         String update = object.getString("LastPartTime");
@@ -103,17 +100,23 @@ public class DM5 extends MangaParser {
         String cover = body.src("div.banner_detail_form > div.cover > img");
         String update = body.textWithSplit("#tempc > div.detail-list-title > span.s > span", " ", -1);
         if (update != null) {
+            Calendar calendar = Calendar.getInstance();
             if (update.contains("今天")) {
-                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            } else if (update.contains("昨天")) {
+                calendar.add(Calendar.DATE, -1);
+                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            } else if (update.contains("前天")) {
+                calendar.add(Calendar.DATE, -2);
+                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            } else if (update.matches("(\\d+)-(\\d+)-(\\d+)")) {
+                update = StringUtils.match("(\\d+)-(\\d+)-(\\d+)", update, 0);
             } else {
-                if (!update.matches("(\\d+)-(\\d+)-(\\d+)")) {
-                    int year = Calendar.getInstance().get(Calendar.YEAR);
-                    String[] rs = StringUtils.match("(\\d+).*?(\\d+)", update, 1, 2);
-                    if (rs != null) {
-                        update = year + "-" + rs[0] + "-" + rs[1];
-                    } else {
-                        update = null;
-                    }
+                String[] rs = StringUtils.match("(\\d+)月(\\d+)号", update, 1, 2);
+                if (rs != null) {
+                    update = calendar.get(Calendar.YEAR) + "-" + rs[0] + "-" + rs[1];
+                } else {
+                    update = null;
                 }
             }
         }
@@ -155,7 +158,7 @@ public class DM5 extends MangaParser {
             if (packed != null) {
                 String key = StringUtils.match("comic=(.*?);", DecryptionUtils.evalDecrypt(packed), 1);
                 if (key != null) {
-                    key = key.replaceAll("'|\\+", "");
+                    key = key.replaceAll("['+]", "");
                     format = format.concat("&key=").concat(key);
                 }
             }

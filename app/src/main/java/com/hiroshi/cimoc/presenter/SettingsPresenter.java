@@ -1,15 +1,12 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.v4.util.LongSparseArray;
+import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Storage;
 import com.hiroshi.cimoc.manager.ComicManager;
-import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
-import com.hiroshi.cimoc.misc.Pair;
-import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
@@ -17,19 +14,12 @@ import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.SettingsView;
-import com.hiroshi.cimoc.utils.ComicUtils;
 
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
-import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Hiroshi on 2016/7/22.
@@ -38,13 +28,11 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
 
     private ComicManager mComicManager;
     private TaskManager mTaskManager;
-    private SourceManager mSourceManager;
 
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mTaskManager = TaskManager.getInstance(mBaseView);
-        mSourceManager = SourceManager.getInstance(mBaseView);
     }
 
     public void clearCache() {
@@ -117,81 +105,6 @@ public class SettingsPresenter extends BasePresenter<SettingsView> {
                         mBaseView.onExecuteSuccess();
                     }
                 }));
-    }
-
-    public void deleteTask() {
-        // Todo 重写一下
-        mBaseView.getAppInstance().getDocumentFile().refresh();
-        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                List<Comic> list = mComicManager.listDownload();
-                list.addAll(mComicManager.listLocal());
-                Pair<List<Comic>, List<Task>> pair = findInvalid(ComicUtils.buildComicMap(list));
-                deleteInvalid(pair.first, pair.second);
-                subscriber.onCompleted();
-            }
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String msg) {
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onExecuteFail();
-                    }
-                }, new Action0() {
-                    @Override
-                    public void call() {
-                        mBaseView.onExecuteSuccess();
-                    }
-                }));
-    }
-
-    private Pair<List<Comic>, List<Task>> findInvalid(LongSparseArray<Comic> array) {
-        List<Task> tList = new LinkedList<>();  // 无效任务列表
-        List<Comic> cList = new LinkedList<>(); // 无效漫画列表
-        Set<Long> set = new HashSet<>();        // 有效漫画 ID
-        for (Task task : mTaskManager.listValid()) {
-            Comic comic = array.get(task.getKey());
-            if (comic == null) {
-                tList.add(task);
-            } else if (comic.getLocal()) {
-                set.add(task.getKey());
-            } else if (Download.getChapterDir(mBaseView.getAppInstance().getDocumentFile(),
-                    comic, new Chapter(task.getTitle(), task.getPath()),
-                    mSourceManager.getParser(comic.getSource()).getTitle()) == null) {
-                tList.add(task);
-            } else {
-                set.add(task.getKey());
-            }
-        }
-        for (int i = 0; i != array.size(); ++i) {
-            if (!set.contains(array.keyAt(i))) {
-                cList.add(array.valueAt(i));
-            }
-        }
-        return Pair.create(cList, tList);
-    }
-
-    private void deleteInvalid(final List<Comic> cList, final List<Task> tList) {
-        List<Long> list = new LinkedList<>();
-        for (Comic comic : cList) {
-            list.add(comic.getId());
-        }
-        mComicManager.runInTx(new Runnable() {
-            @Override
-            public void run() {
-                for (Comic comic : cList) {
-                    comic.setDownload(null);
-                    mComicManager.updateOrDelete(comic);
-                }
-                mTaskManager.deleteInTx(tList);
-            }
-        });
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_CLEAR, list));
     }
 
 }

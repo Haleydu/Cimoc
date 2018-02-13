@@ -62,6 +62,12 @@ public class ComicManager {
                 .list();
     }
 
+    public List<Comic> listFavorite() {
+        return mComicDao.queryBuilder()
+                .where(Properties.Favorite.isNotNull())
+                .list();
+    }
+
     public Observable<List<Comic>> listFavoriteInRx() {
         return mComicDao.queryBuilder()
                 .where(Properties.Favorite.isNotNull())

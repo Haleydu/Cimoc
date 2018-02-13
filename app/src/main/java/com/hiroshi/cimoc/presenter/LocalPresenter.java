@@ -1,11 +1,11 @@
 package com.hiroshi.cimoc.presenter;
 
 import android.support.v4.util.LongSparseArray;
+import android.util.Pair;
 
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.TaskManager;
-import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;

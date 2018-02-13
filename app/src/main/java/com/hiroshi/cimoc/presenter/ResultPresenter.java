@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.util.SparseBooleanArray;
-
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
@@ -33,27 +31,13 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private SourceManager mSourceManager;
     private State[] mStateArray;
 
-    private SparseBooleanArray mKeywordHash;
-    private int mFilterLimit = -1;
-
     private String keyword;
     private int error = 0;
 
-    public ResultPresenter(int[] source, String keyword, boolean filter) {
+    public ResultPresenter(int[] source, String keyword) {
         this.keyword = keyword;
-        if (filter) {
-            initHash();
-        }
         if (source != null) {
             initStateArray(source);
-        }
-    }
-
-    private void initHash() {
-        mKeywordHash = new SparseBooleanArray(keyword.length());
-        mFilterLimit = keyword.length() / 2;
-        for (int i = 0; i < keyword.length(); ++i) {
-            mKeywordHash.append(keyword.charAt(i), true);
         }
     }
 
@@ -117,8 +101,7 @@ public class ResultPresenter extends BasePresenter<ResultView> {
             if (obj.state == STATE_NULL) {
                 Parser parser = mSourceManager.getParser(obj.source);
                 obj.state = STATE_DOING;
-                mCompositeSubscription.add(Manga.getSearchResult(parser, keyword, ++obj.page,
-                        mKeywordHash, mFilterLimit)
+                mCompositeSubscription.add(Manga.getSearchResult(parser, keyword, ++obj.page)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<Comic>() {
                             @Override

@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.AppCompatSpinner;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,8 +11,8 @@ import android.widget.ArrayAdapter;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.SourceManager;
-import com.hiroshi.cimoc.misc.Pair;
 import com.hiroshi.cimoc.parser.Category;
+import com.hiroshi.cimoc.ui.adapter.CategoryAdapter;
 
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
                  if (!mCategory.isComposite()) {
                      mSpinnerList.get(i).setOnItemSelectedListener(this);
                  }
-                 mSpinnerList.get(i).setAdapter(new ArrayAdapter<>(this, R.layout.item_spinner, mCategory.getAttrList(type[i])));
+                 mSpinnerList.get(i).setAdapter(new CategoryAdapter(this, mCategory.getAttrList(type[i])));
             }
         }
     }
@@ -82,12 +83,11 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
         startActivity(intent);
     }
 
-    @SuppressWarnings("unchecked")
     private String getSpinnerValue(AppCompatSpinner spinner) {
         if (!spinner.isShown()) {
             return null;
         }
-        return ((Pair<String, String>) spinner.getSelectedItem()).second;
+        return ((CategoryAdapter) spinner.getAdapter()).getValue(spinner.getSelectedItemPosition());
     }
 
     @Override

@@ -2,11 +2,12 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Pair;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
-import com.hiroshi.cimoc.misc.Pair;
+import com.hiroshi.cimoc.misc.Switcher;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.TagEditorPresenter;
@@ -37,7 +38,7 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
 
     @Override
     protected BaseAdapter initAdapter() {
-        mTagAdapter = new TagEditorAdapter(this, new ArrayList<Pair<Tag, Boolean>>());
+        mTagAdapter = new TagEditorAdapter(this, new ArrayList<Switcher<Tag>>());
         return mTagAdapter;
     }
 
@@ -55,7 +56,7 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
     }
 
     @Override
-    public void onTagLoadSuccess(List<Pair<Tag, Boolean>> list) {
+    public void onTagLoadSuccess(List<Switcher<Tag>> list) {
         hideProgressBar();
         mTagAdapter.addAll(list);
     }
@@ -80,17 +81,17 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
 
     @Override
     public void onItemClick(View view, int position) {
-        Pair<Tag, Boolean> pair = mTagAdapter.getItem(position);
-        pair.second = !pair.second;
+        Switcher<Tag> switcher = mTagAdapter.getItem(position);
+        switcher.switchEnable();
         mTagAdapter.notifyItemChanged(position);
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
         showProgressDialog();
         List<Long> list = new ArrayList<>();
-        for (Pair<Tag, Boolean> pair : mTagAdapter.getDateSet()) {
-            if (pair.second) {
-                list.add(pair.first.getId());
+        for (Switcher<Tag> switcher : mTagAdapter.getDateSet()) {
+            if (switcher.isEnable()) {
+                list.add(switcher.getElement().getId());
             }
         }
         mPresenter.updateRef(list);

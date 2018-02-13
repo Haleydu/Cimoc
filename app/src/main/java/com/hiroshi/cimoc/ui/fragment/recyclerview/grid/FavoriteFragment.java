@@ -1,20 +1,18 @@
 package com.hiroshi.cimoc.ui.fragment.recyclerview.grid;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.misc.NotificationWrapper;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.FavoritePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.HintUtils;
-import com.hiroshi.cimoc.utils.NotificationUtils;
 
 import java.util.Calendar;
 import java.util.List;
@@ -31,9 +29,10 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     private static final int OPERATION_INFO = 0;
     private static final int OPERATION_DELETE = 1;
 
+    private static final String NOTIFICATION_CHECK_UPDATE = "NOTIFICATION_CHECK_UPDATE";
+
     private FavoritePresenter mPresenter;
-    private Notification.Builder mBuilder;
-    private NotificationManager mManager;
+    private NotificationWrapper mNotification;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -45,7 +44,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     protected void initView() {
         super.initView();
-        mManager = NotificationUtils.getManager(getActivity());
         mGridAdapter.setSymbol(true);
     }
 
@@ -57,8 +55,8 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mBuilder != null) {
-            NotificationUtils.cancelNotification(0, mManager);
+        if (mNotification != null) {
+            mNotification.cancel();
         }
     }
 
@@ -95,11 +93,11 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     private void checkUpdate() {
-        if (mBuilder == null) {
+        if (mNotification == null) {
             mPresenter.checkUpdate();
-            mBuilder = NotificationUtils.getBuilder(getActivity(), R.drawable.ic_sync_white_24dp,
-                    R.string.favorite_check_update_doing, true, 0, 0, true);
-            NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+            mNotification = new NotificationWrapper(getActivity(), NOTIFICATION_CHECK_UPDATE,
+                    R.drawable.ic_sync_white_24dp, true);
+            mNotification.post(getString(R.string.favorite_check_update_doing), 0, 0);
         } else {
             HintUtils.showToast(getActivity(), R.string.favorite_check_update_doing);
         }
@@ -154,23 +152,20 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
             mGridAdapter.remove(comic);
             mGridAdapter.add(0, comic);
         }
-        mBuilder.setProgress(max, progress, false);
-        NotificationUtils.notifyBuilder(0, mManager, mBuilder);
+        mNotification.post(progress, max);
     }
 
     @Override
     public void onComicCheckFail() {
-        NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_fail, false);
-        NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-        mBuilder = null;
+        mNotification.post(getString(R.string.favorite_check_update_fail), false);
+        mNotification = null;
     }
 
     @Override
     public void onComicCheckComplete() {
-        NotificationUtils.setBuilder(getActivity(), mBuilder, R.string.favorite_check_update_done, false);
-        NotificationUtils.notifyBuilder(0, mManager, mBuilder);
-        NotificationUtils.cancelNotification(0, mManager);
-        mBuilder = null;
+        mNotification.post(getString(R.string.favorite_check_update_done), false);
+        mNotification.cancel();
+        mNotification = null;
     }
 
     @Override
