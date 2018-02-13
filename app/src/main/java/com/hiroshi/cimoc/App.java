@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -13,6 +14,7 @@ import com.hiroshi.cimoc.helper.DBOpenHelper;
 import com.hiroshi.cimoc.helper.UpdateHelper;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.misc.ActivityLifecycle;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.saf.DocumentFile;
@@ -41,15 +43,18 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     private PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
     private RecyclerView.RecycledViewPool mRecycledPool;
-    private DBOpenHelper mOpenHelper;
     private DaoSession mDaoSession;
+    private ActivityLifecycle mActivityLifecycle;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mPreferenceManager = new PreferenceManager(this);
         Thread.setDefaultUncaughtExceptionHandler(this);
-        mOpenHelper = new DBOpenHelper(this, "cimoc.db");
+        mActivityLifecycle = new ActivityLifecycle();
+        registerActivityLifecycleCallbacks(mActivityLifecycle);
+        mPreferenceManager = new PreferenceManager(this);
+        DBOpenHelper helper = new DBOpenHelper(this, "cimoc.db");
+        mDaoSession = new DaoMaster(helper.getWritableDatabase()).newSession(IdentityScopeType.None);
         UpdateHelper.update(mPreferenceManager, getDaoSession());
         Fresco.initialize(this);
         initPixels();
@@ -58,11 +63,14 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         StringBuilder sb = new StringBuilder();
+        sb.append("MODEL: ").append(Build.MODEL).append('\n');
+        sb.append("SDK: ").append(Build.VERSION.SDK_INT).append('\n');
+        sb.append("RELEASE: ").append(Build.VERSION.RELEASE).append('\n');
+        sb.append('\n').append(e.getLocalizedMessage()).append('\n');
         for (StackTraceElement element : e.getStackTrace()) {
+            sb.append('\n');
             sb.append(element.toString());
-            sb.append("\n");
         }
-        sb.append(e.getLocalizedMessage());
         try {
             DocumentFile doc = getDocumentFile();
             DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(doc, "log");
@@ -70,6 +78,7 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
             DocumentUtils.writeStringToFile(getContentResolver(), file, sb.toString());
         } catch (Exception ex) {
         }
+        mActivityLifecycle.clear();
         System.exit(1);
     }
 
@@ -89,7 +98,7 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     }
 
     public void initRootDocumentFile() {
-        String uri = getPreferenceManager().getString(PreferenceManager.PREF_OTHER_STORAGE);
+        String uri = mPreferenceManager.getString(PreferenceManager.PREF_OTHER_STORAGE);
         mDocumentFile = Storage.initRoot(this, uri);
     }
 
@@ -101,9 +110,6 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     }
 
     public DaoSession getDaoSession() {
-        if (mDaoSession == null) {
-            mDaoSession = new DaoMaster(mOpenHelper.getWritableDatabase()).newSession(IdentityScopeType.None);
-        }
         return mDaoSession;
     }
 

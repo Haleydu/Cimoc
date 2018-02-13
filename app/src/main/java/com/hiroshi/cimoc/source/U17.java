@@ -153,6 +153,7 @@ public class U17 extends MangaParser {
                 .add("data[series_status]", args[2])
                 .add("data[order]", args[3])
                 .add("data[page_num]", String.valueOf(page))
+                .add("data[read_mode]", "no")
                 .build();
         return new Request.Builder().url(url).post(body).addHeader("Referer", "http://www.u17.com").build();
     }

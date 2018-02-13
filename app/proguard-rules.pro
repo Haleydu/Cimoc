@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--optimizationpasses 0
+-optimizationpasses 3
 
 -keepattributes SourceFile, LineNumberTable
 

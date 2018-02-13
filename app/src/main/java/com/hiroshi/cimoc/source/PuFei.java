@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.source;
 
-import com.hiroshi.cimoc.misc.Pair;
+import android.util.Pair;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -10,10 +11,8 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
-
-import org.json.JSONArray;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -23,8 +22,6 @@ import java.util.List;
 
 import okhttp3.Headers;
 import okhttp3.Request;
-
-import static android.text.TextUtils.concat;
 
 /**
  * Created by FEILONG on 2017/12/21.

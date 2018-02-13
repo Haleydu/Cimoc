@@ -110,9 +110,6 @@ public class SourceManager {
                 case MH57.TYPE:
                     parser = new MH57(source);
                     break;
-                case Chuiyao.TYPE:
-                    parser = new Chuiyao(source);
-                    break;
                 case Dmzjv2.TYPE:
                     parser = new Dmzjv2(source);
                     break;
@@ -122,9 +119,11 @@ public class SourceManager {
                 case MangaNel.TYPE:
                     parser = new MangaNel(source);
                     break;
+/*
                 case PuFei.TYPE:
                     parser = new PuFei(source);
                     break;
+*/
                 default:
                     parser = new Null();
                     break;

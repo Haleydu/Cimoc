@@ -56,7 +56,8 @@ public class UpdateHelper {
                 case 10408006:
                 case 10408007:
                     // 删除 Chuiyao
-                    session.getDatabase().execSQL("DELETE * FROM SOURCE WHERE \"TYPE\" = 9");
+                    session.getDatabase().execSQL("DELETE FROM SOURCE WHERE \"TYPE\" = 9");
+                    // session.getSourceDao().insert(PuFei.getDefaultSource());
             }
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
@@ -98,7 +99,7 @@ public class UpdateHelper {
         list.add(MH57.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
-        list.add(PuFei.getDefaultSource());
+        // list.add(PuFei.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

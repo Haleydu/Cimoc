@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Observable;
 
 import rx.functions.Func1;
 
