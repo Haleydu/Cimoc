@@ -98,10 +98,10 @@ public class DM5 extends MangaParser {
         Node body = new Node(html);
         String title = body.textWithSplit("div.banner_detail_form > div.info > p.title", " ", 0);
         String cover = body.src("div.banner_detail_form > div.cover > img");
-        String update = body.textWithSplit("#tempc > div.detail-list-title > span.s > span", " ", -1);
+        String update = body.text("#tempc > div.detail-list-title > span.s > span");
         if (update != null) {
             Calendar calendar = Calendar.getInstance();
-            if (update.contains("今天")) {
+            if (update.contains("今天") || update.contains("分钟前")) {
                 update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
             } else if (update.contains("昨天")) {
                 calendar.add(Calendar.DATE, -1);
@@ -109,15 +109,15 @@ public class DM5 extends MangaParser {
             } else if (update.contains("前天")) {
                 calendar.add(Calendar.DATE, -2);
                 update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
-            } else if (update.matches("(\\d+)-(\\d+)-(\\d+)")) {
-                update = StringUtils.match("(\\d+)-(\\d+)-(\\d+)", update, 0);
             } else {
-                String[] rs = StringUtils.match("(\\d+)月(\\d+)号", update, 1, 2);
-                if (rs != null) {
-                    update = calendar.get(Calendar.YEAR) + "-" + rs[0] + "-" + rs[1];
-                } else {
-                    update = null;
+                String result = StringUtils.match("\\d+-\\d+-\\d+", update, 0);
+                if (result == null) {
+                    String[] rs = StringUtils.match("(\\d+)月(\\d+)号", update, 1, 2);
+                    if (rs != null) {
+                        result = calendar.get(Calendar.YEAR) + "-" + rs[0] + "-" + rs[1];
+                    }
                 }
+                update = result;
             }
         }
         String author = body.text("div.banner_detail_form > div.info > p.subtitle > a");
@@ -230,7 +230,27 @@ public class DM5 extends MangaParser {
         protected List<Pair<String, String>> getSubject() {
             List<Pair<String, String>> list = new ArrayList<>();
             list.add(Pair.create("全部", ""));
+            list.add(Pair.create("热血", "tag31"));
+            list.add(Pair.create("恋爱", "tag26"));
+            list.add(Pair.create("校园", "tag1"));
             list.add(Pair.create("百合", "tag3"));
+            list.add(Pair.create("耽美", "tag27"));
+            list.add(Pair.create("冒险", "tag2"));
+            list.add(Pair.create("后宫", "tag8"));
+            list.add(Pair.create("科幻", "tag25"));
+            list.add(Pair.create("战争", "tag12"));
+            list.add(Pair.create("悬疑", "tag17"));
+            list.add(Pair.create("推理", "tag33"));
+            list.add(Pair.create("搞笑", "tag37"));
+            list.add(Pair.create("奇幻", "tag14"));
+            list.add(Pair.create("魔法", "tag15"));
+            list.add(Pair.create("恐怖", "tag29"));
+            list.add(Pair.create("神鬼", "tag20"));
+            list.add(Pair.create("历史", "tag4"));
+            list.add(Pair.create("同人", "tag30"));
+            list.add(Pair.create("运动", "tag34"));
+            list.add(Pair.create("绅士", "tag36"));
+            list.add(Pair.create("机战", "tag40"));
             return list;
         }
 
