@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -22,7 +23,7 @@ public interface Parser {
      * @param keyword 关键字
      * @param page 页码
      */
-    Request getSearchRequest(String keyword, int page);
+    Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException;
 
     /**
      * 获取搜索结果迭代器，这里不直接解析成列表是为了多图源搜索时，不同图源漫画穿插的效果
@@ -42,7 +43,7 @@ public interface Parser {
      * @param html 页面源代码
      * @param comic 漫画实体类，需要设置其中的字段
      */
-    void parseInfo(String html, Comic comic);
+    void parseInfo(String html, Comic comic) throws UnsupportedEncodingException;
 
     /**
      * 章节列表的 HTTP 请求，若在 {@link #parseInfo} 中可以解析出章节列表，返回 null，代表不用再次解析

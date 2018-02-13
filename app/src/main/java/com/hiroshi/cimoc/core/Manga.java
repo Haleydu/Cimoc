@@ -21,6 +21,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -256,7 +257,12 @@ public class Manga {
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                return response.body().string();
+                byte[] bodybytes = response.body().bytes();
+                String body = new String(bodybytes);
+                if (body.indexOf("charset=gb2312") != -1) {
+                    body = new String(bodybytes, "GB2312");
+                }
+                return body;
             }
         } catch (Exception e) {
             e.printStackTrace();
