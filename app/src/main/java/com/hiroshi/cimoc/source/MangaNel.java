@@ -23,8 +23,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 /**
  * Created by nich on 2017/8/6.
@@ -51,8 +53,14 @@ public class MangaNel extends MangaParser {
      */
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://manganel.com/home/getjsonsearchstory?searchword=%s&search_style=tentruyen", keyword, page);
-        return new Request.Builder().url(url).build();
+        String url = "http://manganelo.com/home/getjson_searchstory";
+    
+        RequestBody formBody = new FormBody.Builder()
+            .add("searchword", keyword)
+            .add("search_style", "tentruyen")
+            .build();
+        
+        return new Request.Builder().url(url).post(formBody).build();
     }
     
     /**
@@ -99,7 +107,7 @@ public class MangaNel extends MangaParser {
      */
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://manganel.com/manga/" + cid;
+        String url = "http://manganelo.com/manga/" + cid;
         return new Request.Builder().url(url).build();
     }
     
@@ -178,7 +186,7 @@ public class MangaNel extends MangaParser {
      */
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://manganel.com/");
+        return Headers.of("Referer", "http://manganelo.com/");
     }
     
     @Override
@@ -195,7 +203,7 @@ public class MangaNel extends MangaParser {
             .href(), 0));
         if (page <= total) {
             for (Node node : body.list("div.truyen-list > div.list-truyen-item-wrap")) {
-                String cid = node.href("h3 > a").replace("http://manganel.com/manga/", "");
+                String cid = node.href("h3 > a").replace("http://manganelo.com/manga/", "");
                 String title = node.text("h3 > a");
                 String cover = node.src("a > img");
                 String update = node.list("a").get(2).text();
