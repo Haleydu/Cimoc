@@ -136,7 +136,7 @@ public class IKanman extends MangaParser {
                 String md5 = object.getJSONObject("sl").getString("md5");
                 JSONArray array = object.getJSONArray("images");
                 for (int i = 0; i != array.length(); ++i) {
-                    String url = StringUtils.format("http://i.hamreus.com:8080/%s?cid=%s&md5=%s", array.getString(i), chapterId, md5);
+                    String url = StringUtils.format("http://i.hamreus.com/%s?cid=%s&md5=%s", array.getString(i), chapterId, md5);
                     list.add(new ImageUrl(i + 1, url, false));
                 }
             } catch (Exception e) {
