@@ -186,9 +186,9 @@
     <string name="about_support">注意</string>
     <string name="about_support_summary">您使用的是非原始仓库的Cimoc程序。</string>
     <string name="about_support_account">本程序由feilongfl维护。</string>
-    <string name="about_support_email"></string>
-    <string name="about_support_feedback"></string>
-    <string name="about_already_clip"></string>
+    <string name="about_support_email">1</string>
+    <string name="about_support_feedback">2</string>
+    <string name="about_already_clip">3</string>
     <string name="about_update">检查更新</string>
     <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
     <string name="about_update_summary">点击检查更新</string>

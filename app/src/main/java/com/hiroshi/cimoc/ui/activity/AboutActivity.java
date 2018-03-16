@@ -24,7 +24,7 @@ import butterknife.OnClick;
 
 public class AboutActivity extends BackActivity implements AboutView {
 
-    @BindView(R.id.about_update_summary) TextView mUpdateText;
+//    @BindView(R.id.about_update_summary) TextView mUpdateText;
     @BindView(R.id.about_version_name) TextView mVersionName;
     @BindView(R.id.about_layout) View mLayoutView;
 
@@ -64,7 +64,7 @@ public class AboutActivity extends BackActivity implements AboutView {
 //        }
     }
 
-    @OnClick(R.id.about_update_btn) void onUpdateClick() {
+//    @OnClick(R.id.about_update_btn) void onUpdateClick() {
 //        if (update) {
 //            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
 //            try {
@@ -83,7 +83,7 @@ public class AboutActivity extends BackActivity implements AboutView {
 //                checking = false;
 //            }
 //        }
-    }
+//    }
 
     @Override
     public void onUpdateNone() {
