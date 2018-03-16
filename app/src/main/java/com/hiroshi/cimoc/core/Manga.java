@@ -45,7 +45,7 @@ public class Manga {
                     }
                     while (iterator.hasNext()) {
                         Comic comic = iterator.next();
-                        if (comic != null) {
+                        if (comic != null && comic.getTitle().indexOf(keyword) != -1) {
                             subscriber.onNext(comic);
                             Thread.sleep(random.nextInt(200));
                         }
