@@ -19,4 +19,7 @@
     <item android:id="@+id/detail_search_author"
         android:title="@string/detail_search_author"
         app:showAsAction="never"/>
+    <item android:id="@+id/detail_share_url"
+        android:title="@string/detail_share_url"
+        app:showAsAction="never"/>
 </menu>

@@ -42,6 +42,7 @@
     <string name="detail_tag">编辑标签</string>
     <string name="detail_search_title">搜索标题</string>
     <string name="detail_search_author">搜索作者</string>
+    <string name="detail_share_url">复制链接</string>
 
     <string name="tag_editor">标签编辑</string>
 

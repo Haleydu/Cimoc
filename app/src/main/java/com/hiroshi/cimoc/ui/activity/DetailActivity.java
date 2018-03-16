@@ -144,6 +144,10 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                         showSnackbar(R.string.common_keyword_empty);
                     }
                     break;
+                case R.id.detail_share_url:
+//                    Comic c = mPresenter.getComic();
+                    showSnackbar("功能尚未开放");
+                    break;
             }
         }
         return super.onOptionsItemSelected(item);
