@@ -12,23 +12,23 @@ import rx.functions.Action1;
 public class AboutPresenter extends BasePresenter<AboutView> {
 
     public void checkUpdate(final String version) {
-        mCompositeSubscription.add(Update.check()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String s) {
-                        if (version.equals(s)) {
-                            mBaseView.onUpdateNone();
-                        } else {
-                            mBaseView.onUpdateReady();
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onCheckError();
-                    }
-                }));
+//        mCompositeSubscription.add(Update.check()
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<String>() {
+//                    @Override
+//                    public void call(String s) {
+//                        if (version.equals(s)) {
+//                            mBaseView.onUpdateNone();
+//                        } else {
+//                            mBaseView.onUpdateReady();
+//                        }
+//                    }
+//                }, new Action1<Throwable>() {
+//                    @Override
+//                    public void call(Throwable throwable) {
+//                        mBaseView.onCheckError();
+//                    }
+//                }));
     }
 
 }
