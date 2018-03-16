@@ -50,7 +50,7 @@ public class PuFei extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("li > a")) {
+        return new NodeIterator(body.list("#detail > li > a")) {
             @Override
             protected Comic parse(Node node) {
                 String cid = node.hrefWithSplit(1);
