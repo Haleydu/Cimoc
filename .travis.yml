@@ -27,6 +27,6 @@ cache:
 deploy:
   provider: releases
   api_key:
-    secure: 20e8c50c2561bb17bb631481cb63252f7490c0d1
+    secure: 892f62bf986cf395fbbb904de764c0c5cacbe844
   file: app/build/outputs/apk/buff.apk
   skip_cleanup: true
