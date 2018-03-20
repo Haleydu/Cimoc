@@ -35,3 +35,4 @@ deploy:
   skip_cleanup: true
   on:
     repo: feilongfl/Cimoc
+    branch: release-tci
