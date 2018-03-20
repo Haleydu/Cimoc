@@ -9,8 +9,12 @@ android:
     - extra
 licenses:
     - 'android-sdk-license-.+'
+before_install:
+    - yes | sdkmanager "platforms;android-27"
 jdk:
     - oraclejdk8
+before_script:
+    - chmod +x gradlew
 script:
     - ./gradlew assembleDebug
 before_cache:
