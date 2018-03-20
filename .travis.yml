@@ -24,6 +24,12 @@ cache:
   - "$HOME/.m2"
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
+before_deploy:       # 部署之前
+#  - mv app/build/outputs/apk/app-debug.apk app/build/outputs/apk/buff.apk
+  - ls
+  - echo 1
+  - ls app
+  - echo 2
 deploy:
   provider: releases
   api_key:
