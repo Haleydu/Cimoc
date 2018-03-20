@@ -3,7 +3,7 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-27.0.2
+    - build-tools-27.0.3
     - android-27
     - add-on
     - extra
@@ -12,7 +12,7 @@ licenses:
 jdk:
     - oraclejdk8
 script:
-    - ./gradlew :repository:testMockDebugUnitTest :repository:testProdDebugUnitTest :repository:testProdReleaseUnitTest
+    - ./gradlew assembleDebug
 before_cache:
     - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
