@@ -69,6 +69,11 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://m.webtoons.com/episodeList?titleNo=".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.webtoons.com/episodeList?titleNo=".concat(cid);
         return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();

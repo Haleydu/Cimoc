@@ -67,6 +67,11 @@ public class IKanman extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://www.manhuagui.com/comic/".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://www.manhuagui.com/comic/".concat(cid);
         return new Request.Builder()

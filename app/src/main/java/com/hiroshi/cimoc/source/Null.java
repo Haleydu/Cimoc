@@ -78,4 +78,6 @@ public class Null extends MangaParser {
         return null;
     }
 
+    @Override
+    public String getUrl(String cid){ return null; }
 }

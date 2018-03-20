@@ -158,7 +158,7 @@ public class Local {
 
     private static Comic buildComic(DocumentFile dir, String cover) {
         return new Comic(null, Locality.TYPE, dir.getUri().toString(), dir.getName(), cover,
-                false, true, null, null, null, null, null, null, null, null);
+                false, true, null, null, null, null, null, null, null, null,null);
     }
 
     private static Task buildTask(DocumentFile dir, int count, boolean single) {

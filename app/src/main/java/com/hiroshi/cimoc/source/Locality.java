@@ -35,6 +35,11 @@ public class Locality extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return null;
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         return null;
     }

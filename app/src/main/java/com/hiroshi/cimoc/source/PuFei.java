@@ -64,6 +64,11 @@ public class PuFei extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://m.pufei.net/manhua/".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.pufei.net/manhua/".concat(cid);
         return new Request.Builder().url(url).build();

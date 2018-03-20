@@ -58,6 +58,11 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://m.tuku.cc/comic/".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.tuku.cc/comic/".concat(cid);
         return new Request.Builder()

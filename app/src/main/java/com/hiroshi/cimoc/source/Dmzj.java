@@ -79,6 +79,11 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = StringUtils.format("http://v2.api.dmzj.com/comic/%s.json", cid);
         return new Request.Builder().url(url).build();

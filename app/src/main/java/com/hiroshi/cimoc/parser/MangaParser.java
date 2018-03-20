@@ -82,4 +82,8 @@ public abstract class MangaParser implements Parser {
         return text != null && (text.contains("完结") || text.contains("Completed")) ;
     }
 
+    @Override
+    public String getUrl(String cid) {
+        return cid;
+    }
 }

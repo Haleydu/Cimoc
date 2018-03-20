@@ -88,6 +88,11 @@ public class DM5 extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://www.dm5.com/".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://www.dm5.com/".concat(cid);
         return new Request.Builder().url(url).build();

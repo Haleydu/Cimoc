@@ -62,6 +62,11 @@ public class Chuiyao extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://m.chuiyao.com/manhua/".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.chuiyao.com/manhua/".concat(cid);
         return new Request.Builder().url(url).build();

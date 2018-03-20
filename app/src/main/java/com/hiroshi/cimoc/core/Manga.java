@@ -63,6 +63,7 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<Chapter>> subscriber) {
                 try {
+                    comic.setUrl(parser.getUrl(comic.getCid()));
                     Request request = parser.getInfoRequest(comic.getCid());
                     String html = getResponseBody(App.getHttpClient(), request);
                     parser.parseInfo(html, comic);

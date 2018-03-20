@@ -99,7 +99,12 @@ public class MangaNel extends MangaParser {
             return null;
         }
     }
-    
+
+    @Override
+    public String getUrl(String cid){
+        return "http://manganelo.com/manga/" + cid;
+    }
+
     /**
      * 详情页的 HTTP 请求
      *

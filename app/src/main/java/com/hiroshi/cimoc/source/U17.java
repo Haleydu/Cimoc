@@ -65,6 +65,11 @@ public class U17 extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return StringUtils.format("http://www.u17.com/comic/%s.html", cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = StringUtils.format("http://www.u17.com/comic/%s.html", cid);
         return new Request.Builder().url(url).build();

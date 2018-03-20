@@ -76,6 +76,11 @@ public class MH57 extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid){
+        return "http://m.57mh.com/".concat(cid);
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = "http://m.57mh.com/".concat(cid);
         return new Request.Builder().url(url).build();
