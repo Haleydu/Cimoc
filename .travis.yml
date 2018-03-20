@@ -36,3 +36,4 @@ deploy:
   on:
     repo: feilongfl/Cimoc
     branch: release-tci
+    tags: true
