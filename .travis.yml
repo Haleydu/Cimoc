@@ -1,15 +1,25 @@
 language: android
+sudo: false         # 开启基于容器的Travis CI任务，让编译效率更高。
+
 android:
   components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    # - platform-tools
-    # - tools
-
-    # The BuildTools version used by your project
     - build-tools-27.0.3
-
-    # The SDK version used to compile your project
     - android-27
 
-    
+before_install:
+ - chmod +x gradlew
+
+ script:
+   - ./gradlew assembleDebug
+
+ before_deploy:
+   - mv app/build/outputs/apk/app-debug.apk app/build/outputs/apk/cimoc.apk
+
+deploy:              # 部署
+ provider: releases # 部署到GitHub Release，除此之外，Travis CI还支持发布到fir.im、AWS、Google App Engine等
+ api_key:           # 填写GitHub的token （Settings -> Personal access tokens -> Generate new token）
+   secure: a1380ccfaa28bb2340f20a66c82b76e3c8aa4e90
+ file: app/build/outputs/apk/buff.apk   # 部署文件路径
+ skip_cleanup: true     # 设置为true以跳过清理,不然apk文件就会被清理
+ on:     # 发布时机
+   tags: true       # tags设置为true表示只有在有tag的情况下才部署
