@@ -1,16 +1,22 @@
 language: android
-sudo: false         # 开启基于容器的Travis CI任务，让编译效率更高。
-
 android:
   components:
-    - build-tools-27.0.3
+    - tools
+    - platform-tools
+    - build-tools-27.0.2
     - android-27
-
-before_install:
-  - chmod +x gradlew
-
+    - add-on
+    - extra
+licenses:
+    - 'android-sdk-license-.+'
+jdk:
+    - oraclejdk8
 script:
-  - ./gradlew assembleDebug
-
-before_deploy:
-  - mv app/build/outputs/apk/app-debug.apk app/build/outputs/apk/cimoc.apk
+    - ./gradlew :repository:testMockDebugUnitTest :repository:testProdDebugUnitTest :repository:testProdReleaseUnitTest
+before_cache:
+    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
