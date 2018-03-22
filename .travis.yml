@@ -24,8 +24,8 @@ cache:
   - "$HOME/.m2"
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
-before_deploy:
-  - echo $KEYSTORE_PASStest
+#before_deploy:
+#  - echo $KEYSTORE_PASStest
 #  - mv app/build/outputs/apk/app-debug.apk app/build/outputs/apk/buff.apk
 #  - ls app/build/outputs/apk/debug
 #  - ls app/
