@@ -17,7 +17,7 @@ local.properties
 captures/
 
 # Keystore files
-*.jks
+# *.jks
 
 # Android Studio Navigation editor temp files
 .navigation/
