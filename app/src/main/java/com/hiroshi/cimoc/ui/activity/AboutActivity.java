@@ -50,13 +50,25 @@ public class AboutActivity extends BackActivity implements AboutView {
     }
 
     @OnClick(R.id.about_support_btn) void onSupportClick() {
-        ClipboardManager manager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        manager.setPrimaryClip(ClipData.newPlainText(null, getString(R.string.about_support_email)));
-        showSnackbar(R.string.about_already_clip);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_support_url)));
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            showSnackbar(R.string.about_resource_fail);
+        }
     }
 
     @OnClick(R.id.about_resource_btn) void onResourceClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_resource_url)));
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            showSnackbar(R.string.about_resource_fail);
+        }
+    }
+
+    @OnClick(R.id.about_resource_ori_btn) void onOriResourceClick() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_resource_ori_url)));
         try {
             startActivity(intent);
         } catch (Exception e) {

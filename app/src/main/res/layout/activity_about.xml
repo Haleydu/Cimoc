@@ -24,10 +24,19 @@
                 android:textColor="@color/white"
                 android:textSize="54sp"/>
             <TextView
-                android:id="@+id/about_version_name"
+                android:id="@+id/about_version_byname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/about_app_name"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:text="@string/about_version"
+                android:textSize="14sp"/>
+            <TextView
+                android:id="@+id/about_version_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/about_version_byname"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/white"
                 android:textSize="14sp"/>
@@ -78,6 +87,28 @@
                 android:text="@string/about_resource_url"/>
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/about_resource_ori_btn"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:clickable="true"
+            android:background="?android:attr/selectableItemBackground">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                android:text="@string/about_resource_ori"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:textSize="14sp"
+                android:text="@string/about_resource_ori_url"/>
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/about_support_btn"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -97,19 +128,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="2dp"
                 android:textSize="14sp"
-                android:text="@string/about_support_summary"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:textSize="14sp"
-                android:text="@string/about_support_account"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:textSize="14sp"
-                android:text="@string/about_support_feedback"/>
+                android:text="@string/about_support_url"/>
         </LinearLayout>
     </LinearLayout>
     <include layout="@layout/custom_night_mask"/>

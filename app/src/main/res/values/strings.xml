@@ -182,13 +182,11 @@
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
     <string name="about_resource">源代码</string>
-    <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
-    <string name="about_support">支持作者</string>
-    <string name="about_support_summary">如果喜欢本应用，不妨支持一下作者哟</string>
-    <string name="about_support_account">支付宝账号：cimoc_app@163.com</string>
-    <string name="about_support_email">cimoc_app@163.com</string>
-    <string name="about_support_feedback">该邮箱也用于意见反馈</string>
-    <string name="about_already_clip">邮箱已复制到剪切板</string>
+    <string name="about_resource_url">https://github.com/feilongfl/Cimoc</string>
+    <string name="about_resource_ori">原作仓库</string>
+    <string name="about_resource_ori_url">https://github.com/Arachnid-27/Cimoc</string>
+    <string name="about_support">意见反馈</string>
+    <string name="about_support_url">https://github.com/feilongfl/Cimoc/issues</string>
     <string name="about_update">检查更新</string>
     <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
     <string name="about_update_summary">点击检查更新</string>
@@ -251,4 +249,5 @@
     <string name="common_execute_fail">操作失败</string>
     <string name="common_operation_select">操作选择</string>
     <string name="common_null">null</string>
+    <string name="about_version">飞龙</string>
 </resources>
