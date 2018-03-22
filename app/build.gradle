@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.8014"
+        versionName "1.4.8.8015"
         resConfigs "en", "zh"
     }
     signingConfigs {
@@ -23,10 +23,10 @@ android {
     }
     buildTypes {
         release {
-//            minifyEnabled true
-//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-//            shrinkResources true
-//            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources true
+            zipAlignEnabled true
             signingConfig signingConfigs.release
         }
         android.applicationVariants.all { variant ->
