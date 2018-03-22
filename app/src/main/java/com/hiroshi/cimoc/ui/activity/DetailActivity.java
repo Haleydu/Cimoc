@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -105,15 +106,15 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         Intent intent;
         if (!isProgressBarShown()) {
             switch (item.getItemId()) {
-                case R.id.detail_history:
-                    if (!mDetailAdapter.getDateSet().isEmpty()) {
-                        String path = mPresenter.getComic().getLast();
-                        if (path == null) {
-                            path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
-                        }
-                        startReader(path);
-                    }
-                    break;
+//                case R.id.detail_history:
+//                    if (!mDetailAdapter.getDateSet().isEmpty()) {
+//                        String path = mPresenter.getComic().getLast();
+//                        if (path == null) {
+//                            path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
+//                        }
+//                        startReader(path);
+//                    }
+//                    break;
                 case R.id.detail_download:
                     if (!mDetailAdapter.getDateSet().isEmpty()) {
                         intent = ChapterActivity.createIntent(this, new ArrayList<>(mDetailAdapter.getDateSet()));
@@ -146,13 +147,21 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     break;
                 case R.id.detail_share_url:
                     String url = mPresenter.getComic().getUrl();
-//                    showSnackbar(url);
-
                     intent = new Intent(Intent.ACTION_SEND);
                     intent.setType("text/plain");
                     intent.putExtra(Intent.EXTRA_TEXT, url);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(Intent.createChooser(intent, url));
+                    break;
+                case R.id.detail_disqus:
+                    showSnackbar("开发中...");
+
+//                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_support_url)));
+//                    try {
+//                        startActivity(intent);
+//                    } catch (Exception e) {
+//                        showSnackbar(R.string.about_resource_fail);
+//                    }
                     break;
             }
         }
@@ -184,6 +193,16 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
             increment();
             mActionButton.setImageResource(R.drawable.ic_favorite_white_24dp);
             showSnackbar(R.string.detail_favorite);
+        }
+    }
+
+    @OnClick(R.id.coordinator_action_button2) void onActionButton2Click() {
+        if (!mDetailAdapter.getDateSet().isEmpty()) {
+            String path = mPresenter.getComic().getLast();
+            if (path == null) {
+                path = mDetailAdapter.getItem(mDetailAdapter.getDateSet().size() - 1).getPath();
+            }
+            startReader(path);
         }
     }
 
@@ -247,6 +266,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
             int resId = comic.getFavorite() != null ? R.drawable.ic_favorite_white_24dp : R.drawable.ic_favorite_border_white_24dp;
             mActionButton.setImageResource(resId);
             mActionButton.setVisibility(View.VISIBLE);
+            mActionButton2.setVisibility(View.VISIBLE);
         }
     }
 

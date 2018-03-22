@@ -31,7 +31,7 @@
     <string name="result">搜索结果</string>
     <string name="result_empty">搜索结果为空</string>
 
-    <string name="detail">详情</string>
+    <string name="detail"></string>
     <string name="detail_favorite">收藏成功</string>
     <string name="detail_unfavorite">取消收藏成功</string>
     <string name="detail_tag_favorite">请先收藏漫画</string>
@@ -250,4 +250,5 @@
     <string name="common_operation_select">操作选择</string>
     <string name="common_null">null</string>
     <string name="about_version">飞龙</string>
+    <string name="detail_disqus">评论</string>
 </resources>

@@ -22,6 +22,16 @@
                 android:clipToPadding="false"/>
         </LinearLayout>
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/coordinator_action_button2"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="80dp"
+            android:layout_marginRight="20dp"
+            android:visibility="invisible"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_history_white_18dp"
+            app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior"/>
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/coordinator_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

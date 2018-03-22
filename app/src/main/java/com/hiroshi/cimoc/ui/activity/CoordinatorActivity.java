@@ -19,6 +19,7 @@ public abstract class CoordinatorActivity extends BackActivity implements
         BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
 
     @BindView(R.id.coordinator_action_button) FloatingActionButton mActionButton;
+    @BindView(R.id.coordinator_action_button2) FloatingActionButton mActionButton2;
     @BindView(R.id.coordinator_recycler_view) RecyclerView mRecyclerView;
     @BindView(R.id.coordinator_layout) CoordinatorLayout mLayoutView;
 
