@@ -28,7 +28,7 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file(".kesco.keystore")
+            storeFile file(".key.jks")
             storePassword System.getenv("KEYSTORE_PASS")
             keyAlias System.getenv("ALIAS_NAME")
             keyPassword System.getenv("ALIAS_PASS")
