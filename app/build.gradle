@@ -23,10 +23,10 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            shrinkResources true
-            zipAlignEnabled true
+//            minifyEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            shrinkResources true
+//            zipAlignEnabled true
             signingConfig signingConfigs.release
         }
         android.applicationVariants.all { variant ->
