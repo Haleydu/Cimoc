@@ -10,15 +10,24 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.8"
+        versionName "1.4.8.8014"
         resConfigs "en", "zh"
+    }
+    signingConfigs {
+        release {
+            storeFile file(".key.jks")
+            storePassword System.getenv("KEYSTORE_PASS")
+            keyAlias System.getenv("ALIAS_NAME")
+            keyPassword System.getenv("ALIAS_PASS")
+        }
     }
     buildTypes {
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            shrinkResources true
-            zipAlignEnabled true
+//            minifyEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            shrinkResources true
+//            zipAlignEnabled true
+            signingConfig signingConfigs.release
         }
         android.applicationVariants.all { variant ->
             variant.outputs.all {
