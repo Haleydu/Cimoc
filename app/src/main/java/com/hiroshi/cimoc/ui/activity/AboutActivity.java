@@ -77,24 +77,24 @@ public class AboutActivity extends BackActivity implements AboutView {
     }
 
     @OnClick(R.id.about_update_btn) void onUpdateClick() {
-        if (update) {
+//        if (update) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
             try {
                 startActivity(intent);
             } catch (Exception e) {
                 showSnackbar(R.string.about_resource_fail);
             }
-        } else if (!checking) {
-            try {
-                PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-                mUpdateText.setText(R.string.about_update_doing);
-                checking = true;
-                mPresenter.checkUpdate(info.versionName);
-            } catch (Exception e){
-                mUpdateText.setText(R.string.about_update_fail);
-                checking = false;
-            }
-        }
+//        } else if (!checking) {
+//            try {
+//                PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+//                mUpdateText.setText(R.string.about_update_doing);
+//                checking = true;
+//                mPresenter.checkUpdate(info.versionName);
+//            } catch (Exception e){
+//                mUpdateText.setText(R.string.about_update_fail);
+//                checking = false;
+//            }
+//        }
     }
 
     @Override

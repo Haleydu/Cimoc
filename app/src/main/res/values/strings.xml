@@ -188,8 +188,8 @@
     <string name="about_support">意见反馈</string>
     <string name="about_support_url">https://github.com/feilongfl/Cimoc/issues</string>
     <string name="about_update">检查更新</string>
-    <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
-    <string name="about_update_summary">点击检查更新</string>
+    <string name="about_update_url">https://github.com/feilongfl/Cimoc/releases</string>
+    <string name="about_update_summary">点击访问Github Releases页面</string>
     <string name="about_update_latest">当前已经是最新版本</string>
     <string name="about_update_download">点击下载最新版本</string>
     <string name="about_update_doing">正在检查更新</string>
