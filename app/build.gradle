@@ -13,6 +13,14 @@ android {
         versionName "1.4.8.8013"
         resConfigs "en", "zh"
     }
+    signingConfigs {
+        release {
+            storeFile file(".key.jks")
+            storePassword System.getenv("KEYSTORE_PASS")
+            keyAlias System.getenv("ALIAS_NAME")
+            keyPassword System.getenv("ALIAS_PASS")
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
@@ -25,14 +33,6 @@ android {
             variant.outputs.all {
                 outputFileName = "Cimoc.apk"
             }
-        }
-    }
-    signingConfigs {
-        release {
-            storeFile file(".key.jks")
-            storePassword System.getenv("KEYSTORE_PASS")
-            keyAlias System.getenv("ALIAS_NAME")
-            keyPassword System.getenv("ALIAS_PASS")
         }
     }
 }
