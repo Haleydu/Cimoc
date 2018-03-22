@@ -357,9 +357,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private boolean showAuthorNotice() {
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-//            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
-//                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
-//            fragment.show(getFragmentManager(), null);
+            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
+                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
+            fragment.show(getFragmentManager(), null);
             return true;
         }
         return false;
