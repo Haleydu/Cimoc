@@ -16,7 +16,7 @@ jdk:
 before_script:
 - chmod +x gradlew
 script:
-- "./gradlew assembleDebug"
+- "./gradlew assembleRelease"
 before_cache:
 - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
@@ -35,5 +35,7 @@ deploy:
   skip_cleanup: true
   on:
     repo: feilongfl/Cimoc
-    branch: release-tci
+    branch:
+      - release-tci
+      - test-sign
     tags: true

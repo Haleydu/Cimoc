@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.8"
+        versionName "1.4.8.8012"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -24,6 +24,14 @@ android {
             variant.outputs.all {
                 outputFileName = "Cimoc.apk"
             }
+        }
+    }
+    signingConfigs {
+        release {
+            storeFile file(".kesco.keystore")
+            storePassword System.getenv("KEYSTORE_PASS")
+            keyAlias System.getenv("ALIAS_NAME")
+            keyPassword System.getenv("ALIAS_PASS")
         }
     }
 }
