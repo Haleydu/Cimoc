@@ -60,6 +60,7 @@
     <string name="comic_tab_download">下载</string>
     <string name="comic_tab_local">本地</string>
     <string name="comic_filter">过滤</string>
+    <string name="comic_bbs">讨论圈</string>
     <string name="comic_search">搜索</string>
     <string name="comic_cancel_highlight">全部标记已读</string>
     <string name="comic_load_tag_fail">读取标签失败</string>

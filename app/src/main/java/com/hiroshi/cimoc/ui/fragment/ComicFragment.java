@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.TabLayout;
@@ -106,6 +107,12 @@ public class ComicFragment extends BaseFragment implements ComicView {
             case R.id.comic_search:
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.comic_bbs:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_url) + "/cimoc/cimoc-bbs"));
+                try {
+                    startActivity(intent);
+                } catch (Exception e) { }
                 break;
             case R.id.comic_cancel_highlight:
                 ((FavoriteFragment) mTabAdapter.getItem(1)).cancelAllHighlight();
