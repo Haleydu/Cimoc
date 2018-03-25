@@ -181,6 +181,8 @@
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
 
+    <string name="home_page">主页</string>
+    <string name="home_page_url">https://cimqus-jnmxnqfypk.now.sh</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/feilongfl/Cimoc</string>
     <string name="about_resource_ori">原作仓库</string>

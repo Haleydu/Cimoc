@@ -49,6 +49,15 @@ public class AboutActivity extends BackActivity implements AboutView {
         }
     }
 
+    @OnClick(R.id.home_page_btn) void onHomeClick() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_url)));
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            showSnackbar(R.string.about_resource_fail);
+        }
+    }
+
     @OnClick(R.id.about_support_btn) void onSupportClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_support_url)));
         try {
