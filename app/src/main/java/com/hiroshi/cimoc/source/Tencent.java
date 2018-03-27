@@ -53,6 +53,7 @@ public class Tencent extends MangaParser {
             @Override
             protected Comic parse(Node node) {
                 String cid = node.attr("a","href");
+                cid = cid.substring("/comic/index/id/".length());
                 String title = node.text(".comic-title");
                 String cover = node.attr(".cover-image", "src");
                 String update = node.text(".comic-update");
@@ -64,33 +65,39 @@ public class Tencent extends MangaParser {
 
     @Override
     public String getUrl(String cid){
-        return "http://m.pufei.net/manhua/".concat(cid);
+        return "http://ac.qq.com/Comic/ComicInfo/id/".concat(cid);
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.pufei.net/manhua/".concat(cid);
+        String url = "https://m.ac.qq.com/comic/index/id/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String title = body.text("div.main-bar > h1");
-        String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
-        String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-        String author = body.text("div.book-detail > div.cont-list > dl:eq(3) > dd");
-        String intro = body.text("#bookIntro");
-        boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
+        String title = body.text("li.head-info-title > h1");
+        String cover = body.src("div.head-info-cover > img");
+        String update = body.text("span.comicList-info-time");
+        String author = body.text("li.head-info-author");
+        String intro = body.text("div.detail-summary > p");
+        boolean status = isFinish("连载中");//todo: fix here
         comic.setInfo(title, cover, update, intro, author, status);
+    }
+
+    @Override
+    public Request getChapterRequest(String html, String cid){
+        String url = "https://m.ac.qq.com/comic/chapterList/id/".concat(cid);
+        return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapterList2 > ul > li > a")) {
-            String title = node.attr("title");
-            String path = node.hrefWithSplit(2);
+        for (Node node : new Node(html).list("ul.normal > li.chapter-item")) {
+            String title = node.text("a");
+            String path = node.href("a").substring("/chapter/index/id/518333/cid/".length());
             list.add(new Chapter(title, path));
         }
         return list;
@@ -98,14 +105,14 @@ public class Tencent extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.pufei.net/manhua/%s/%s.html", cid, path);
+        String url = StringUtils.format("https://m.ac.qq.com/chapter/index/id/%s/cid/%s", cid, path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String str = StringUtils.match("cp=\"(.*?)\"", html, 1);
+        String str = StringUtils.match("data: '([a-zA-Z0-9=/]+)',", html, 1);
         if (str != null) {
             try {
                 str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
