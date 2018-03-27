@@ -42,22 +42,21 @@ public class Tencent extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
-        String url = StringUtils.format("http://m.pufei.net/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
-            URLEncoder.encode(keyword, "GB2312"));
+        String url = "https://m.ac.qq.com/search/result?word=%s".concat(keyword);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("#detail > li > a")) {
+        return new NodeIterator(body.list(".comic-item")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit(1);
-                String title = node.text("h3");
-                String cover = node.attr("div > img", "data-src");
-                String update = node.text("dl:eq(5) > dd");
-                String author = node.text("dl:eq(2) > dd");
+                String cid = node.attr("a","href");
+                String title = node.text(".comic-title");
+                String cover = node.attr(".cover-image", "src");
+                String update = node.text(".comic-update");
+                String author = "UNKNOWN";
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
