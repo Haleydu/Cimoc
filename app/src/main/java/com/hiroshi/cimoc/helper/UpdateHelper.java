@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.PuFei;
+import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -100,6 +101,7 @@ public class UpdateHelper {
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
         list.add(PuFei.getDefaultSource());
+        list.add(Tencent.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 
