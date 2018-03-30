@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.8020"
+        versionName "1.4.8.8021"
         resConfigs "en", "zh"
     }
     signingConfigs {
