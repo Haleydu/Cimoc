@@ -14,6 +14,9 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ public class Tencent extends MangaParser {
     }
 
     public Tencent(Source source) {
-        init(source, new Tencent.Category());
+        init(source, null);
     }
 
     @Override
@@ -89,7 +92,9 @@ public class Tencent extends MangaParser {
     @Override
     public Request getChapterRequest(String html, String cid){
         String url = "https://m.ac.qq.com/comic/chapterList/id/".concat(cid);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+            .url(url)
+            .build();
     }
 
     @Override
@@ -106,7 +111,9 @@ public class Tencent extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("https://m.ac.qq.com/chapter/index/id/%s/cid/%s", cid, path);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+            .url(url)
+            .build();
     }
 
     @Override
@@ -115,10 +122,12 @@ public class Tencent extends MangaParser {
         String str = StringUtils.match("data: '([a-zA-Z0-9=/]+)',", html, 1);
         if (str != null) {
             try {
-                str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
-                String[] array = str.split(",");
-                for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://f.pufei.net/" + array[i], false));
+                //谜一般的加密，位于https://gtimg.ac.qq.com/h5/chapter/js/index_v2.2.js第1059行
+                str = DecryptionUtils.base64Decrypt(str.substring(1));
+                JSONObject object = new JSONObject(str);
+                JSONArray array = object.getJSONArray("picture");
+                for (int i = 0; i != array.length(); ++i) {
+                    list.add(new ImageUrl(i + 1, array.getJSONObject(i).getString("url"), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -152,55 +161,9 @@ public class Tencent extends MangaParser {
         return list;
     }
 
-    private static class Category extends MangaCategory {
-
-        @Override
-        public boolean isComposite() {
-            return true;
-        }
-
-        @Override
-        public String getFormat(String... args) {
-            return StringUtils.format("http://m.pufei.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
-        }
-
-        @Override
-        protected List<Pair<String, String>> getSubject() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("最近更新", "0"));
-            list.add(Pair.create("少年热血", "1"));
-            list.add(Pair.create("武侠格斗", "2"));
-            list.add(Pair.create("科幻魔幻", "3"));
-            list.add(Pair.create("竞技体育", "4"));
-            list.add(Pair.create("爆笑喜剧", "5"));
-            list.add(Pair.create("侦探推理", "6"));
-            list.add(Pair.create("恐怖灵异", "7"));
-            list.add(Pair.create("少女爱情", "8"));
-            list.add(Pair.create("恋爱生活", "9"));
-            return list;
-        }
-
-        @Override
-        protected boolean hasOrder() {
-            return true;
-        }
-
-        @Override
-        protected List<Pair<String, String>> getOrder() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "3"));
-            list.add(Pair.create("发布", "1"));
-            list.add(Pair.create("人气", "2"));
-            return list;
-        }
-
-    }
-
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.pufei.net");
+        return Headers.of("Referer", "https://m.ac.qq.com");
     }
 
 }
