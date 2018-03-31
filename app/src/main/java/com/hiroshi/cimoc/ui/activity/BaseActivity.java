@@ -45,6 +45,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
         mProgressDialog = ProgressDialogFragment.newInstance();
         initView();
         initData();
+        initUser();
     }
 
     @Override
@@ -110,6 +111,8 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     protected void initView() {}
 
     protected void initData() {}
+
+    protected void initUser() {}
 
     protected abstract int getLayoutRes();
 

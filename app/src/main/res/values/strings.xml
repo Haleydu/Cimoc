@@ -255,9 +255,12 @@
     <string name="about_version">飞龙</string>
     <string name="detail_disqus">评论</string>
 
+    <!--登陆相关-->
     <string name="com_auth0_client_id">NulJt1aXcyBVmuzf3KctjdURchpHhKqW</string>
     <string name="com_auth0_domain">cimoc.auth0.com</string>
     <string name="title_activity_login">Users</string>
+    <string name="user_login_tips">请登录</string>
+    <string name="user_login_failed">登陆失败</string>
+    <string name="user_login_sucess">登陆成功</string>
 
-    
 </resources>

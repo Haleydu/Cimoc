@@ -1,6 +1,8 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -50,6 +53,13 @@ import com.hiroshi.cimoc.utils.PermissionUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+//auth0
+import com.auth0.android.Auth0;
+import com.auth0.android.authentication.AuthenticationException;
+import com.auth0.android.provider.AuthCallback;
+import com.auth0.android.provider.WebAuthProvider;
+import com.auth0.android.result.Credentials;
+
 /**
  * Created by Hiroshi on 2016/7/1.
  */
@@ -65,6 +75,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @BindView(R.id.main_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
+
     private TextView mLastText;
     private SimpleDraweeView mDraweeView;
     private ControllerBuilderProvider mControllerBuilderProvider;
@@ -81,6 +92,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private BaseFragment mCurrentFragment;
     private boolean night;
 
+    //auth0
+    private Auth0 auth0;
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new MainPresenter();
@@ -95,6 +109,47 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         initFragment();
     }
 
+    private void login() {
+//        Toast.makeText(MainActivity.this, "Not logged in", Toast.LENGTH_SHORT).show();
+        HintUtils.showToast(MainActivity.this,R.string.user_login_tips);
+        WebAuthProvider.init(auth0)
+            .withScheme("demo")
+            .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+            .start(MainActivity.this, new AuthCallback() {
+                @Override
+                public void onFailure(@NonNull final Dialog dialog) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(final AuthenticationException exception) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            HintUtils.showToast(MainActivity.this,R.string.user_login_failed);
+                        }
+                    });
+                }
+
+                @Override
+                public void onSuccess(@NonNull final Credentials credentials) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
+                            HintUtils.showToast(MainActivity.this,R.string.user_login_sucess);
+                        }
+                    });
+                }
+            });
+    }
+
     @Override
     protected void initData() {
         mPresenter.loadLast();
@@ -102,6 +157,13 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (!showAuthorNotice()) {
             showPermission();
         }
+    }
+
+    @Override
+    protected void initUser(){
+        //auth0
+        auth0 = new Auth0(this);
+        auth0.setOIDCConformant(true);
     }
 
     private void initDrawerToggle() {
@@ -242,6 +304,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     break;
                 case R.id.drawer_backup:
                     startActivity(new Intent(MainActivity.this, BackupActivity.class));
+                    break;
+                case R.id.user_info:
+                    login();
                     break;
             }
         }
