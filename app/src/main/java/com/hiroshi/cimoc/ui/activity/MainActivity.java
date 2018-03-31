@@ -113,47 +113,53 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void login() {
-//        Toast.makeText(MainActivity.this, "Not logged in", Toast.LENGTH_SHORT).show();
-        HintUtils.showToast(MainActivity.this,R.string.user_login_tips);
-        WebAuthProvider.init(auth0)
-            .withScheme("demo")
-            .withScope("openid profile email")
-            .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
-            .start(MainActivity.this, new AuthCallback() {
-                @Override
-                public void onFailure(@NonNull final Dialog dialog) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialog.show();
-                        }
-                    });
-                }
+        if(mPreference.getString(PreferenceManager.PREFERENCES_USER_EMAIL,"") == "") {
+            HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
+            WebAuthProvider.init(auth0)
+                .withScheme("demo")
+                .withScope("openid profile email")
+                .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+                .start(MainActivity.this, new AuthCallback() {
+                    @Override
+                    public void onFailure(@NonNull final Dialog dialog) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.show();
+                            }
+                        });
+                    }
 
-                @Override
-                public void onFailure(final AuthenticationException exception) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    @Override
+                    public void onFailure(final AuthenticationException exception) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
 //                            Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                            HintUtils.showToast(MainActivity.this,R.string.user_login_failed);
-                        }
-                    });
-                }
+                                HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+                            }
+                        });
+                    }
 
-                @Override
-                public void onSuccess(@NonNull final Credentials credentials) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    @Override
+                    public void onSuccess(@NonNull final Credentials credentials) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
 //                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
-                            HintUtils.showToast(MainActivity.this,R.string.user_login_sucess);
-                            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN,credentials.getAccessToken());
-                            getUesrInfo();
-                        }
-                    });
-                }
-            });
+                                HintUtils.showToast(MainActivity.this, R.string.user_login_sucess);
+                                mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, credentials.getAccessToken());
+                                getUesrInfo();
+                            }
+                        });
+                    }
+                });
+        }else{
+            HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
+        }
     }
 
     @Override
@@ -177,7 +183,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         //user information received
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getNickname());
-//                        Toast.makeText(MainActivity.this, "email: " + information.getEmail(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -217,7 +222,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void initNavigation() {
         night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-        mNavigationView.getMenu().findItem(R.id.user_info).setTitle(mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,getString(R.string.user_login_item)));
+        mNavigationView.getMenu().findItem(R.id.user_info)
+            .setTitle(
+                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,"") == ""?
+                getString(R.string.user_login_item) :
+                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,"User")
+            );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
         mLastText = ButterKnife.findById(header, R.id.drawer_last_title);

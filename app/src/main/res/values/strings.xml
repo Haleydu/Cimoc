@@ -263,5 +263,6 @@
     <string name="user_login_item">登录</string>
     <string name="user_login_failed">登陆失败</string>
     <string name="user_login_sucess">登陆成功</string>
+    <string name="user_login_logout_sucess">注销成功</string>
 
 </resources>
