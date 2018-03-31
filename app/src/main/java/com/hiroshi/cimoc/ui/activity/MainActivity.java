@@ -117,6 +117,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         HintUtils.showToast(MainActivity.this,R.string.user_login_tips);
         WebAuthProvider.init(auth0)
             .withScheme("demo")
+            .withScope("openid profile email")
             .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
             .start(MainActivity.this, new AuthCallback() {
                 @Override
@@ -176,7 +177,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         //user information received
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
-                        Toast.makeText(MainActivity.this, information.getEmail(), Toast.LENGTH_LONG).show();
+//                        Toast.makeText(MainActivity.this, "email: " + information.getEmail(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -193,10 +194,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected void initUser () {
-            //auth0
-            auth0 = new Auth0(this);
-            auth0.setOIDCConformant(true);
-        }
+        //auth0
+        auth0 = new Auth0(this);
+        auth0.setOIDCConformant(true);
+
+//        Toast.makeText(MainActivity.this, "email: " + mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,null), Toast.LENGTH_LONG).show();
+    }
 
     private void initDrawerToggle() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
