@@ -26,3 +26,4 @@ captures/
 *.class
 
 
+/gradle.properties
