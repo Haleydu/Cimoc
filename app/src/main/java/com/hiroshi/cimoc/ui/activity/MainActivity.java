@@ -63,6 +63,8 @@ import com.auth0.android.provider.AuthCallback;
 import com.auth0.android.provider.WebAuthProvider;
 import com.auth0.android.result.Credentials;
 
+import java.util.Map;
+
 /**
  * Created by Hiroshi on 2016/7/1.
  */
@@ -113,7 +115,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void login() {
-        if(mPreference.getString(PreferenceManager.PREFERENCES_USER_EMAIL,"") == "") {
+        if(mPreference.getString(PreferenceManager.PREFERENCES_USER_ID,"") == "") {
             HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
             WebAuthProvider.init(auth0)
                 .withScheme("demo")
@@ -159,6 +161,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
             mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
             mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, "");
         }
     }
 
@@ -182,7 +185,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     public void onSuccess(UserProfile information) {
                         //user information received
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
-                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getNickname());
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, (String)information.getExtraInfo().get("sub"));
                     }
 
                     @Override
