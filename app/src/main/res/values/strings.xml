@@ -20,7 +20,7 @@
     <string name="main_permission_success">授权成功</string>
     <string name="main_permission_fail">授权失败</string>
     <string name="main_ready_update">检测到新版本</string>
-    
+
     <string name="search_menu_source">图源</string>
     <string name="search_keyword_empty">关键字为空</string>
     <string name="search_keyword_input">请输入关键字</string>
@@ -254,4 +254,10 @@
     <string name="common_null">null</string>
     <string name="about_version">飞龙</string>
     <string name="detail_disqus">评论</string>
+
+    <string name="com_auth0_client_id">NulJt1aXcyBVmuzf3KctjdURchpHhKqW</string>
+    <string name="com_auth0_domain">cimoc.auth0.com</string>
+    <string name="title_activity_login">Users</string>
+
+    
 </resources>
