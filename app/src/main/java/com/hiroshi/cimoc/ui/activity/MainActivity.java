@@ -27,6 +27,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.auth0.android.authentication.AuthenticationAPIClient;
+import com.auth0.android.callback.BaseCallback;
+import com.auth0.android.result.UserProfile;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
@@ -144,6 +147,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         public void run() {
 //                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
                             HintUtils.showToast(MainActivity.this,R.string.user_login_sucess);
+                            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN,credentials.getAccessToken());
+                            getUesrInfo();
                         }
                     });
                 }
@@ -159,12 +164,39 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         }
     }
 
-    @Override
-    protected void initUser(){
-        //auth0
-        auth0 = new Auth0(this);
-        auth0.setOIDCConformant(true);
+    public void getUesrInfo() {
+        String accessTocken = mPreference.getString(PreferenceManager.PREFERENCES_USER_TOCKEN, null);
+        if (accessTocken != null) {
+            AuthenticationAPIClient authentication = new AuthenticationAPIClient(auth0);
+            authentication
+                .userInfo(accessTocken)
+                .start(new BaseCallback<UserProfile, AuthenticationException>() {
+                    @Override
+                    public void onSuccess(UserProfile information) {
+                        //user information received
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
+                        Toast.makeText(MainActivity.this, information.getEmail(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(AuthenticationException error) {
+                        //user information request failed
+                        HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+                    }
+                });
+        }
+        else {
+            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+        }
     }
+
+    @Override
+    protected void initUser () {
+            //auth0
+            auth0 = new Auth0(this);
+            auth0.setOIDCConformant(true);
+        }
 
     private void initDrawerToggle() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
