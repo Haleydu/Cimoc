@@ -181,6 +181,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     }
 
     @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+        //todo: add comic to mangodb
         if (mPresenter.getComic().getFavorite() != null) {
             mPresenter.unfavoriteComic();
             increment();
