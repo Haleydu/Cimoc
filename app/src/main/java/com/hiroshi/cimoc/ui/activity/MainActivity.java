@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -25,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.auth0.android.authentication.AuthenticationAPIClient;
 import com.auth0.android.callback.BaseCallback;
@@ -62,8 +60,6 @@ import com.auth0.android.authentication.AuthenticationException;
 import com.auth0.android.provider.AuthCallback;
 import com.auth0.android.provider.WebAuthProvider;
 import com.auth0.android.result.Credentials;
-
-import java.util.Map;
 
 /**
  * Created by Hiroshi on 2016/7/1.
