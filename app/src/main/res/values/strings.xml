@@ -260,6 +260,7 @@
     <string name="com_auth0_domain">cimoc.auth0.com</string>
     <string name="title_activity_login">Users</string>
     <string name="user_login_tips">请登录</string>
+    <string name="user_login_item">登录</string>
     <string name="user_login_failed">登陆失败</string>
     <string name="user_login_sucess">登陆成功</string>
 

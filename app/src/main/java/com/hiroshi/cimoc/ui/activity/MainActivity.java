@@ -176,7 +176,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     public void onSuccess(UserProfile information) {
                         //user information received
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
-                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getNickname());
 //                        Toast.makeText(MainActivity.this, "email: " + information.getEmail(), Toast.LENGTH_LONG).show();
                     }
 
@@ -197,8 +197,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         //auth0
         auth0 = new Auth0(this);
         auth0.setOIDCConformant(true);
-
-//        Toast.makeText(MainActivity.this, "email: " + mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,null), Toast.LENGTH_LONG).show();
     }
 
     private void initDrawerToggle() {
@@ -219,6 +217,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void initNavigation() {
         night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
+        mNavigationView.getMenu().findItem(R.id.user_info).setTitle(mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,getString(R.string.user_login_item)));
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
         mLastText = ButterKnife.findById(header, R.id.drawer_last_title);

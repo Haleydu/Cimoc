@@ -5,8 +5,7 @@
         <item
             android:id="@+id/user_info"
             android:checkable="true"
-            android:icon="@drawable/ic_import_contacts_black_24dp"
-            android:title="auth0"/>
+            android:icon="@drawable/ic_account_box_black_24dp"/>
     </group>
     <group
         android:id="@+id/drawer_group_fragment"
