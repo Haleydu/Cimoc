@@ -97,6 +97,11 @@ public class PreferenceManager {
 
     private static final String PREFERENCES_NAME = "cimoc_preferences";
 
+    public static final String PREFERENCES_USER_TOCKEN = "user_tocken";
+    public static final String PREFERENCES_USER_NAME = "user_name";
+    public static final String PREFERENCES_USER_EMAIL = "user_email";
+    public static final String PREFERENCES_USER_ID = "user_id";
+
     private SharedPreferences mSharedPreferences;
 
     public PreferenceManager(Context context) {

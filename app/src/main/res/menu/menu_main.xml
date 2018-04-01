@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
+        android:id="@+id/drawer_group_user">
+        <item
+            android:id="@+id/user_info"
+            android:checkable="true"
+            android:icon="@drawable/ic_account_box_black_24dp"/>
+    </group>
+    <group
         android:id="@+id/drawer_group_fragment"
         android:checkableBehavior="single">
         <item
