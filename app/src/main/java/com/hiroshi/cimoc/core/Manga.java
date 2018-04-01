@@ -63,6 +63,7 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<Chapter>> subscriber) {
                 try {
+                    Mongo mongo = new Mongo();
                     comic.setUrl(parser.getUrl(comic.getCid()));
                     Request request = parser.getInfoRequest(comic.getCid());
                     String html = getResponseBody(App.getHttpClient(), request);
@@ -73,6 +74,7 @@ public class Manga {
                     }
                     List<Chapter> list = parser.parseChapter(html);
                     if (!list.isEmpty()) {
+                        mongo.UpdateComicBase(comic,list.get(0).getPath());
                         subscriber.onNext(list);
                         subscriber.onCompleted();
                     } else {
@@ -107,12 +109,15 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<ImageUrl>> getChapterImage(final Parser parser, final String cid,
+    public static Observable<List<ImageUrl>> getChapterImage(final Comic mComic,
+                                                             final Parser parser,
+                                                             final String cid,
                                                              final String path) {
         return Observable.create(new Observable.OnSubscribe<List<ImageUrl>>() {
             @Override
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
                 String html;
+                Mongo mongo = new Mongo();
                 try {
                     Request request = parser.getImagesRequest(cid, path);
                     html = getResponseBody(App.getHttpClient(), request);
@@ -120,6 +125,7 @@ public class Manga {
                     if (list.isEmpty()) {
                         throw new Exception();
                     } else {
+                        mongo.InsertComicChapter(mComic,path,list);
                         for (ImageUrl imageUrl : list) {
                             imageUrl.setChapter(path);
                         }

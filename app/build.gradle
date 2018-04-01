@@ -12,6 +12,7 @@ android {
         versionCode 1
         versionName "1.4.8.8022"
         resConfigs "en", "zh"
+        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
     signingConfigs {
         release {
@@ -56,4 +57,6 @@ dependencies {
     compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile 'io.reactivex:rxjava:1.2.4'
     compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.auth0.android:auth0:1.+'
+    compile 'org.mongodb:mongo-java-driver:3.0.3'
 }

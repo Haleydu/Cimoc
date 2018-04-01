@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -24,6 +25,9 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.auth0.android.authentication.AuthenticationAPIClient;
+import com.auth0.android.callback.BaseCallback;
+import com.auth0.android.result.UserProfile;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
@@ -50,6 +54,13 @@ import com.hiroshi.cimoc.utils.PermissionUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+//auth0
+import com.auth0.android.Auth0;
+import com.auth0.android.authentication.AuthenticationException;
+import com.auth0.android.provider.AuthCallback;
+import com.auth0.android.provider.WebAuthProvider;
+import com.auth0.android.result.Credentials;
+
 /**
  * Created by Hiroshi on 2016/7/1.
  */
@@ -65,6 +76,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @BindView(R.id.main_layout) DrawerLayout mDrawerLayout;
     @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
     @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
+
     private TextView mLastText;
     private SimpleDraweeView mDraweeView;
     private ControllerBuilderProvider mControllerBuilderProvider;
@@ -81,6 +93,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private BaseFragment mCurrentFragment;
     private boolean night;
 
+    //auth0
+    private Auth0 auth0;
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new MainPresenter();
@@ -95,6 +110,57 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         initFragment();
     }
 
+    private void login() {
+        if(mPreference.getString(PreferenceManager.PREFERENCES_USER_ID,"") == "") {
+            HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
+            WebAuthProvider.init(auth0)
+                .withScheme("demo")
+                .withScope("openid profile email")
+                .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+                .start(MainActivity.this, new AuthCallback() {
+                    @Override
+                    public void onFailure(@NonNull final Dialog dialog) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(final AuthenticationException exception) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+//                            Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                                HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull final Credentials credentials) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+//                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
+                                HintUtils.showToast(MainActivity.this, R.string.user_login_sucess);
+                                mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, credentials.getAccessToken());
+                                getUesrInfo();
+                            }
+                        });
+                    }
+                });
+        }else{
+            HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
+            mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, "");
+        }
+    }
+
     @Override
     protected void initData() {
         mPresenter.loadLast();
@@ -102,6 +168,40 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (!showAuthorNotice()) {
             showPermission();
         }
+    }
+
+    public void getUesrInfo() {
+        String accessTocken = mPreference.getString(PreferenceManager.PREFERENCES_USER_TOCKEN, null);
+        if (accessTocken != null) {
+            AuthenticationAPIClient authentication = new AuthenticationAPIClient(auth0);
+            authentication
+                .userInfo(accessTocken)
+                .start(new BaseCallback<UserProfile, AuthenticationException>() {
+                    @Override
+                    public void onSuccess(UserProfile information) {
+                        //user information received
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, (String)information.getExtraInfo().get("sub"));
+                    }
+
+                    @Override
+                    public void onFailure(AuthenticationException error) {
+                        //user information request failed
+                        HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+                    }
+                });
+        }
+        else {
+            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+        }
+    }
+
+    @Override
+    protected void initUser () {
+        //auth0
+        auth0 = new Auth0(this);
+        auth0.setOIDCConformant(true);
     }
 
     private void initDrawerToggle() {
@@ -122,6 +222,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void initNavigation() {
         night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
+        mNavigationView.getMenu().findItem(R.id.user_info)
+            .setTitle(
+                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,"") == ""?
+                getString(R.string.user_login_item) :
+                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,"User")
+            );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
         mLastText = ButterKnife.findById(header, R.id.drawer_last_title);
@@ -242,6 +348,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     break;
                 case R.id.drawer_backup:
                     startActivity(new Intent(MainActivity.this, BackupActivity.class));
+                    break;
+                case R.id.user_info:
+                    login();
                     break;
             }
         }

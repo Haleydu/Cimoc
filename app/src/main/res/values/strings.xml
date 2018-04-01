@@ -20,7 +20,7 @@
     <string name="main_permission_success">授权成功</string>
     <string name="main_permission_fail">授权失败</string>
     <string name="main_ready_update">检测到新版本</string>
-    
+
     <string name="search_menu_source">图源</string>
     <string name="search_keyword_empty">关键字为空</string>
     <string name="search_keyword_input">请输入关键字</string>
@@ -256,4 +256,21 @@
     <string name="common_null">null</string>
     <string name="about_version">飞龙</string>
     <string name="detail_disqus">评论</string>
+
+    <!--登陆相关-->
+    <string name="com_auth0_client_id">NulJt1aXcyBVmuzf3KctjdURchpHhKqW</string>
+    <string name="com_auth0_domain">cimoc.auth0.com</string>
+    <string name="title_activity_login">Users</string>
+    <string name="user_login_tips">请登录</string>
+    <string name="user_login_item">登录</string>
+    <string name="user_login_failed">登陆失败</string>
+    <string name="user_login_sucess">登陆成功</string>
+    <string name="user_login_logout_sucess">注销成功</string>
+
+    <!--祝愿不被乱改，请大家手下留情，可以随意下载，不要乱加东西-->
+    <string name="mongo_str">mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118</string>
+    <string name="mongo_database_name">comic</string>
+    <string name="mongo_comic_base">comic-base</string>
+    <string name="mongo_comic_chapter">comic-chapter</string>
+
 </resources>

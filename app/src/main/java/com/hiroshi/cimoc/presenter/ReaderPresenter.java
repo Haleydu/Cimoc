@@ -129,7 +129,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
-                Manga.getChapterImage(mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
+                Manga.getChapterImage(mComic,mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
     }
 
     public void toNextChapter() {
