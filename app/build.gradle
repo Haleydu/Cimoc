@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.8022"
+        versionName "1.4.8.8024"
         resConfigs "en", "zh"
         manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
