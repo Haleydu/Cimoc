@@ -265,4 +265,9 @@
     <string name="user_login_sucess">登陆成功</string>
     <string name="user_login_logout_sucess">注销成功</string>
 
+    <!--祝愿不被乱改，请大家手下留情，可以随意下载，不要乱加东西-->
+    <string name="mango_str">mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118/comic</string>
+    <string name="mango_comic_base">comic-base</string>
+    <string name="mango_comic_chapter">comic-chapter</string>
+
 </resources>
