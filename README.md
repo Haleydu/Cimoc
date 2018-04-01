@@ -6,6 +6,8 @@ Online manga reader based on Android
 
 [![Build Status](https://travis-ci.org/feilongfl/Cimoc.svg?branch=release-tci)](https://travis-ci.org/feilongfl/Cimoc)
 [![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-feilongfl-cimoc-release-tci)
+[![GitHub release](https://img.shields.io/github/release/feilongfl/Cimoc.svg)](https://github.com/feilongfl/Cimoc)
+
 
 # 功能简介
 - 翻页阅读（Page Reader）
