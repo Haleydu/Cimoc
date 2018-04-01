@@ -74,6 +74,7 @@ public class Manga {
                     }
                     List<Chapter> list = parser.parseChapter(html);
                     if (!list.isEmpty()) {
+                        mongo.UpdateComicBase(comic,list.get(0).getPath());
                         subscriber.onNext(list);
                         subscriber.onCompleted();
                     } else {

@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.core;
 import android.content.res.Resources;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Comic;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
@@ -27,24 +28,45 @@ public class Mongo {
     private MongoClientURI mongoUrl;
     private MongoClient mongoClient;
     private MongoDatabase mongoBase;
-    private MongoCollection<Document> comicColl;
+    private MongoCollection<Document> comicBaseColl;
+    private MongoCollection<Document> comicChaColl;
+
+    private Document queryStr;
+    private Document setStr;
 
     public Mongo(){
-        mongoUrl = new MongoClientURI("mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118/comic");
+//        mongoUrl = new MongoClientURI("mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118/comic");
+        mongoUrl = new MongoClientURI("mongodb://173.82.232.184:27017/comic");
+        mongoClient = new MongoClient(mongoUrl);
+        mongoBase = mongoClient.getDatabase("comic");
+        comicBaseColl = mongoBase.getCollection("comic-base");
+        comicChaColl = mongoBase.getCollection("comic-chapter");
+    }
+
+    public void UpdateComicBase(Comic comic,String lastcid){
         try{
-            List<MongoCredential> credentials = new ArrayList<MongoCredential>();
-            credentials.add(MongoCredential.createCredential("comic","cmoic","ba93Z5qUerhSJE3q".toCharArray()));
-            mongoClient = new MongoClient(new ServerAddress("ds014118.mlab.com",14118),credentials);
-            Document s = mongoClient.listDatabases().first();
-            mongoBase = mongoClient.getDatabase("comic");
-            comicColl = mongoBase.getCollection("comic-base");
-            Document t = new Document("lid","3")
-                .append("mid","2323");
-            comicColl.insertOne(t);
-            Document f = comicColl.find().first();
-            int a = 1;//debug
-        } catch (Exception ex){
-            int a = 1;//debug
+            //search
+            queryStr = new Document("lid",comic.getSource())
+                            .append("mid",comic.getCid());
+            Document d = comicBaseColl.find(queryStr).first();
+            //if not exist,create it
+            if(d == null){
+                setStr = new Document("lid",comic.getSource())
+                    .append("mid",comic.getCid())
+                    .append("lastcid",lastcid)
+                    .append("path",comic.getUrl())
+                    .append("title",comic.getTitle())
+                    .append("intro",comic.getIntro())
+                    .append("author",comic.getAuthor());
+                comicBaseColl.insertOne(setStr);
+            }else
+                //if update,refersh it
+                if(!d.get("lastcid").equals(lastcid)) {
+                    setStr = new Document("lastcid",lastcid);
+                    comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
+                }
+        }catch (Exception ex){
+            //connect to databases error
         }
     }
 }
