@@ -97,6 +97,13 @@ public static java.lang.String TABLENAME;
 #mongodb
 -dontwarn javax.**
 -dontwarn java.lang.management.**
+-dontwarn io.netty.**
+-dontwarn org.ietf.jgss.**
+-dontwarn org.slf4j.**
 
 -keep class javax.** { *; }
 -keep class java.lang.management.** { *; }
+-keep class io.netty.** { *; }
+-keep org.ietf.jgss.** { *; }
+-keep org.slf4j.** { *; }
+
