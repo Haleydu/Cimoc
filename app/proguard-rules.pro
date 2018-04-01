@@ -104,6 +104,6 @@ public static java.lang.String TABLENAME;
 -keep class javax.** { *; }
 -keep class java.lang.management.** { *; }
 -keep class io.netty.** { *; }
--keep org.ietf.jgss.** { *; }
--keep org.slf4j.** { *; }
+-keep class org.ietf.jgss.** { *; }
+-keep class org.slf4j.** { *; }
 
