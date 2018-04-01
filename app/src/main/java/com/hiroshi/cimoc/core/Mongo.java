@@ -53,8 +53,9 @@ public class Mongo {
 
     private List<Document> genChapterList(List<Chapter> list){
         List<Document> chapterList = new ArrayList<>();
-        Collections.reverse(list);
-        for (Chapter c : list){
+        ListIterator<Chapter> iterator=list.listIterator(list.size());
+        while(iterator.hasPrevious()){
+            Chapter c = iterator.previous();
             chapterList.add(
                 new Document("title", c.getTitle())
                     .append("cid",c.getPath())
