@@ -93,3 +93,10 @@ public static java.lang.String TABLENAME;
 -keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
     rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
+
+#mongodb
+-dontwarn javax.**
+-dontwarn java.lang.management.**
+
+-keep class javax.** { *; }
+-keep class java.lang.management.** { *; }
