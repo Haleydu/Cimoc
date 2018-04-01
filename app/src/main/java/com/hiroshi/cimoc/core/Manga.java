@@ -63,6 +63,7 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<Chapter>> subscriber) {
                 try {
+                    Mongo mongo = new Mongo();
                     comic.setUrl(parser.getUrl(comic.getCid()));
                     Request request = parser.getInfoRequest(comic.getCid());
                     String html = getResponseBody(App.getHttpClient(), request);
