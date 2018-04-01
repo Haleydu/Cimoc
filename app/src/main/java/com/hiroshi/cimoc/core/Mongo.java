@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.parser.Parser;
@@ -22,6 +23,7 @@ import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -49,7 +51,19 @@ public class Mongo {
         comicChaColl = mongoBase.getCollection("comic-chapter");
     }
 
-    public void UpdateComicBase(Comic comic,String lastcid){
+    private List<Document> genChapterList(List<Chapter> list){
+        List<Document> chapterList = new ArrayList<>();
+        Collections.reverse(list);
+        for (Chapter c : list){
+            chapterList.add(
+                new Document("title", c.getTitle())
+                    .append("cid",c.getPath())
+            );
+        }
+        return chapterList;
+    }
+
+    public void UpdateComicBase(Comic comic, List<Chapter> list){
         try{
             //search
             queryStr = new Document("lid",comic.getSource())
@@ -59,21 +73,31 @@ public class Mongo {
             if(d == null){
                 setStr = new Document("lid",comic.getSource())
                     .append("mid",comic.getCid())
-                    .append("lastcid",lastcid)
+                    .append("lastcid",list.get(0).getPath())
                     .append("path",comic.getUrl())
                     .append("title",comic.getTitle())
                     .append("intro",comic.getIntro())
-                    .append("author",comic.getAuthor());
+                    .append("author",comic.getAuthor())
+                    .append("chapter",genChapterList(list));
                 comicBaseColl.insertOne(setStr);
             }else
                 //if update,refersh it
-                if(!d.get("lastcid").equals(lastcid)) {
-                    setStr = new Document("lastcid",lastcid);
+                if(!d.get("lastcid").equals(list.get(0).getPath())) {
+                    setStr = new Document("lastcid",list.get(0).getPath())
+                                .append("chapter",genChapterList(list));
                     comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
                 }
         }catch (Exception ex){
             //connect to databases error
         }
+    }
+
+    private List<Document> genImageList(List<ImageUrl> list){
+        List<Document> picList = new ArrayList<>();
+        for (ImageUrl imageUrl : list) {
+            picList.add(new Document("src",imageUrl.getUrl()));
+        }
+        return picList;
     }
 
     public void InsertComicChapter(final Comic comic,
@@ -87,14 +111,10 @@ public class Mongo {
             Document d = comicChaColl.find(queryStr).first();
             //if not exist,create it
             if(d == null){
-                List<Document> picList = new ArrayList<>();
-                for (ImageUrl imageUrl : list) {
-                    picList.add(new Document("src",imageUrl.getUrl()));
-                }
                 setStr = new Document("lid",comic.getSource())
                     .append("mid",comic.getCid())
                     .append("cid",cid)
-                    .append("pic",picList);
+                    .append("pic",genImageList(list));
                 comicChaColl.insertOne(setStr);
             }
         }catch (Exception ex){
