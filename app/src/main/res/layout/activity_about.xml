@@ -74,6 +74,28 @@
                         android:text="@string/home_page_url"/>
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/home_page_cimqus_btn"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:background="?android:attr/selectableItemBackground">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="16sp"
+                        android:text="@string/home_page_cimqus"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
+                        android:textSize="14sp"
+                        android:text="@string/home_page_cimqus_url"/>
+                </LinearLayout>
+                <LinearLayout
                     android:id="@+id/about_update_btn"
                     android:orientation="vertical"
                     android:layout_width="match_parent"

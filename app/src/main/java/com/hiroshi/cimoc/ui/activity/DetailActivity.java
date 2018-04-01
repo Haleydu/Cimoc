@@ -154,7 +154,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     startActivity(Intent.createChooser(intent, url));
                     break;
                 case R.id.detail_disqus:
-                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_url) + "/cimoc/" +  mPresenter.getComic().getTitle()));
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_cimqus_url) + "/cimoc/" +  mPresenter.getComic().getTitle()));
                     try {
                         startActivity(intent);
                     } catch (Exception e) {
