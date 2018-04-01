@@ -1,9 +1,12 @@
 package com.hiroshi.cimoc.core;
 
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ImageUrl;
+import com.hiroshi.cimoc.parser.Parser;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.MongoCredential;
@@ -18,7 +21,10 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Created by FEILONG on 2018/4/1.
@@ -65,6 +71,32 @@ public class Mongo {
                     setStr = new Document("lastcid",lastcid);
                     comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
                 }
+        }catch (Exception ex){
+            //connect to databases error
+        }
+    }
+
+    public void InsertComicChapter(final Comic comic,
+                                   final String cid,
+                                   List<ImageUrl> list){
+        try{
+            //search
+            queryStr = new Document("lid",comic.getSource())
+                .append("mid",comic.getCid())
+                .append("cid",cid);
+            Document d = comicChaColl.find(queryStr).first();
+            //if not exist,create it
+            if(d == null){
+                List<Document> picList = new ArrayList<>();
+                for (ImageUrl imageUrl : list) {
+                    picList.add(new Document("src",imageUrl.getUrl()));
+                }
+                setStr = new Document("lid",comic.getSource())
+                    .append("mid",comic.getCid())
+                    .append("cid",cid)
+                    .append("pic",picList);
+                comicChaColl.insertOne(setStr);
+            }
         }catch (Exception ex){
             //connect to databases error
         }
