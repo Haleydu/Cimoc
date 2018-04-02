@@ -148,28 +148,26 @@ public class DM5 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "http://www.dm5.com/".concat(path);
-        return new Request.Builder().url(url).build();
+        String url = "http://m.dm5.com/".concat(path);
+        return new Request
+            .Builder()
+            .addHeader("Referer",StringUtils.format("http://m.dm5.com/%s", path))
+            .url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String regex = "DM5_MID=(.*?);.*?DM5_CID=(.*?);.*?DM5_IMAGE_COUNT=(.*?);.*?DM5_VIEWSIGN=\"(.*?)\";.*?DM5_VIEWSIGN_DT=\"(.*?)\";";
-        String[] rs = StringUtils.match(regex, html, 1, 2, 3, 4, 5);
-        if (rs != null) {
-            String format = "http://www.dm5.com/m%s/chapterfun.ashx?cid=%s&page=%d&_cid=%s&_mid=%s&_dt=%s&_sign=%s";
-            String packed = StringUtils.match("eval(.*?)\\s*</script>", html, 1);
-            if (packed != null) {
-                String key = StringUtils.match("comic=(.*?);", DecryptionUtils.evalDecrypt(packed), 1);
-                if (key != null) {
-                    key = key.replaceAll("['+]", "");
-                    format = format.concat("&key=").concat(key);
+        String str = StringUtils.match("eval\\(.*\\)", html, 0);
+        if (str != null) {
+            try {
+                str = DecryptionUtils.evalDecrypt(str,"newImgs");
+                String[] array = str.split(",");
+                for (int i = 0; i != array.length; ++i) {
+                    list.add(new ImageUrl(i + 1, array[i], false));
                 }
-            }
-            int page = Integer.parseInt(rs[2]);
-            for (int i = 0; i < page; ++i) {
-                list.add(new ImageUrl(i + 1, StringUtils.format(format, rs[1], rs[1], i + 1, rs[1], rs[0], rs[4], rs[3]), true));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return list;
@@ -306,8 +304,18 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://www.dm5.com");
+    public Headers getHeader(String url) {
+        String cid = "m".concat(StringUtils.match("cid=(\\d+)",url,1));
+        return Headers.of("Referer", "http://m.dm5.com/".concat(cid));
+    }
+
+    @Override
+    public Headers getHeader(List<ImageUrl> list){
+        String cid = "";
+        if(list != null){
+            cid = list.get(0).getChapter();
+        }
+        return Headers.of("Referer", "http://m.dm5.com/".concat(cid));
     }
 
 }
