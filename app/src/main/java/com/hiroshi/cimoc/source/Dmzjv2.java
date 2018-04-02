@@ -46,7 +46,7 @@ public class Dmzjv2 extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = StringUtils.format("http://v2.api.dmzj.com/search/show/0/%s/%d.json", keyword, page - 1);
+            String url = StringUtils.format("https://m.dmzj.com/search/%s.html", keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -55,13 +55,15 @@ public class Dmzjv2 extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         try {
-            return new JsonIterator(new JSONArray(html)) {
+            //var serchArry=[{"id":27445,"name":"\u5982\u679c\u6709\u59b9\u59b9\u5c31\u597d\u4e86@comic","comic_py":"ruguoyoumeimeijiuhaole","alias_name":"\u8981\u662f\u6709\u4e2a\u59b9\u59b9\u5c31\u597d\u4e86","authors":"\u5e73\u5742\u8bfb\/\u3044\uff5e\u3069\u3045\uff5e","types":"\u7231\u60c5\/\u540e\u5bab\/\u8f7b\u5c0f\u8bf4","zone":"\u65e5\u672c","status":"\u8fde\u8f7d\u4e2d","last_update_chapter_name":"\u7b2c24\u8bdd","last_update_chapter_id":75090,"hot_hits":16106154,"last_updatetime":1521125443,"description":"\u75af\u72c2\u7684\u5c0f\u8bf4\u5bb6\u7fbd\u5c9b\u4f0a\u6708\uff0c\u662f\u65e5\u591c\u4e3a\u4e86\u521b\u9020\u51fa\u672a\u66fe\u8c0b\u9762\u7684\u59b9\u59b9\u5f62\u8c61\u800c\u594b\u6597\u7684\u73b0\u4ee3\u76ae\u683c\u9a6c\u5229\u7fc1\u3002\u4ed6\u7684\u8eab\u8fb9\u805a\u96c6\u4e86\u4f5c\u5bb6\u3001\u753b\u5e08\u3001\u7f16\u8f91\u3001\u7a0e\u52a1\u4eba\u7b49\u5145\u6ee1\u4e2a\u6027\u7684\u602a\u4eba\uff1a\u7231\u4e0e\u624d\u80fd\u90fd\u662f\u91cd\u91cf\u7ea7\u7684\u6781\u81f4\u6b8b\u5ff5\u7cfb\u7f8e\u5c11\u5973\u53ef\u513f\u90a3\u7531\u591a\uff0c\u70e6\u607c\u7740\u604b\u7231\u70e6\u607c\u7740\u53cb\u60c5\u70e6\u607c\u7740\u68a6\u60f3\u7684\u9752\u6625\u4e09\u51a0\u738b\u767d\u5ddd\u4eac\uff0c\u80f8\u6000\u5927\u5fd7\u7684\u5e05\u54e5\u738b\u5b50\u4e0d\u7834\u6625\u6597\uff0c\u8f7b\u89c6\u4eba\u751f\u7684\u5929\u624d\u63d2\u753b\u5e08\u60e0\u90a3\u5239\u90a3\uff0c\u867d\u7136\u5f88\u53ef\u9760\u4f46\u662f\u5374\u4e0d\u60f3\u4f9d\u9760\u4ed6\u7684\u9b3c\u755c\u7a0e\u6b3e\u5b88\u62a4\u4eba\u5927\u91ce\u963f\u4ec0\u5229\uff0c\u5185\u5fc3\u9634\u6697\u7684\u7f16\u8f91\u571f\u5c90\u5065\u6b21\u90ce...","cover":"webpic\/19\/ruguoyoumeimei03029.jpg"},{"id":41016,"name":"\u5982\u679c\u6709\u59b9\u59b9\u5c31\u597d\u4e86\u5916\u4f20","comic_py":"ruguoyoumeimeijiuhaolewaizhuan","alias_name":"\u8981\u662f\u6709\u4e2a\u59b9\u59b9\u5c31\u597d\u4e86,\u53ea\u8981\u6210\u4e3a\u59b9\u59b9\u5c31\u597d\u4e86","authors":"\u5e73\u5742\u8bfb\/\u30b3\u30d0\u30b7\u30b3","types":"\u7231\u60c5\/\u540e\u5bab\/\u8f7b\u5c0f\u8bf4","zone":"\u65e5\u672c","status":"\u8fde\u8f7d\u4e2d","last_update_chapter_name":"\u7b2c02\u8bdd","last_update_chapter_id":66979,"hot_hits":1864533,"last_updatetime":1503305259,"description":"\u8981\u662f\u80fd\u88ab\u5f53\u6210\u59b9\u59b9\u5c31\u597d\u4e86\uff01\u6210\u4e3a\u59b9\u59b9\u5927\u4f5c\u6218\u3002","cover":"webpic\/5\/ysygmmjhlwz6486l.jpg"},{"id":8031,"name":"\u66fe\u7ecf_\u5982\u679c\u6709\u5e86\u795d\u65e5\u7684\u8bdd","comic_py":"zjrgyqzrdh","alias_name":"","authors":"\u30b9\u30bf\u30b8\u30aa\u30cb\u30ca\u30ca","types":"\u751f\u6d3b\/\u6821\u56ed","zone":"\u65e5\u672c","status":"\u8fde\u8f7d\u4e2d","last_update_chapter_name":"\u5168\u4e00\u8bdd","last_update_chapter_id":15129,"hot_hits":4175,"last_updatetime":1323068912,"description":"\u5982\u679c\u4f60\u65e9\u8d77\u53d1\u73b0\u65c1\u8fb9\u8eba\u7740\u4e00\u4e2a\u4eba\uff0c\u90a3\u4eba\u5c45\u7136\u8bf4\u5c31\u662f\u672a\u6765\u7684\u4f60\uff01\u59d0\u5e73\u9759\u7684\u751f\u6d3b\u5c31\u6b64\u65e0\u6cd5\u6de1\u5b9a.","cover":"webpic\/18\/ruguoyoude.jpg"},{"id":19239,"name":"\u5149\u955c\u00b7poker","comic_py":"guangjingpoker","alias_name":"","authors":"\u5982\u679c\u6709\u5982\u679cwuyu","types":"\u5192\u9669","zone":"\u5185\u5730","status":"\u8fde\u8f7d\u4e2d","last_update_chapter_name":"\u7b2c01\u8bdd \u660e\u4e89\u6697\u6597","last_update_chapter_id":38205,"hot_hits":274,"last_updatetime":1434533642,"description":"\u5149\u955c\u00b7poker","cover":"img\/webpic\/12\/1002082321434533480.jpg"}]
+            String str = StringUtils.match("serchArry=(\\[.*?\\])",html,1);
+            return new JsonIterator(new JSONArray(str)) {
                 @Override
                 protected Comic parse(JSONObject object) {
                     try {
                         String cid = object.getString("id");
-                        String title = object.getString("title");
-                        String cover = object.getString("cover");
+                        String title = object.getString("name");
+                        String cover = "https://images.dmzj.com/".concat(object.getString("cover"));
                         String author = object.optString("authors");
                         return new Comic(TYPE, cid, title, cover, null, author);
                     } catch (Exception e) {
