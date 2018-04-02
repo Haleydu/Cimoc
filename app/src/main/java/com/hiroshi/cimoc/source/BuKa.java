@@ -146,9 +146,10 @@ public class BuKa extends MangaParser {
         Matcher m = Pattern.compile("<img class=\"lazy\" data-original=\"(http.*?jpg)\" />").matcher(html);
         if (m.find()) {
             try {
-                for (int i = 0; m.find(); ++i) {
-                    list.add(new ImageUrl(i + 1, StringUtils.match("http.*jpg", m.group(0),0), false));
-                }
+                int i = 0;
+                do{
+                    list.add(new ImageUrl(++i, StringUtils.match("http.*jpg", m.group(0),0), false));
+                } while (m.find());
             } catch (Exception e) {
                 e.printStackTrace();
             }
