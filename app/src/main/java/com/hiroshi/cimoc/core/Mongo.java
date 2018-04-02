@@ -122,4 +122,27 @@ public class Mongo {
             //connect to databases error
         }
     }
+
+    public void InsertComicChapter(final int source,
+                                   final String mid,
+                                   final String cid,
+                                   List<ImageUrl> list){
+        try{
+            //search
+            queryStr = new Document("lid",source)
+                .append("mid",mid)
+                .append("cid",cid);
+            Document d = comicChaColl.find(queryStr).first();
+            //if not exist,create it
+            if(d == null){
+                setStr = new Document("lid",source)
+                    .append("mid",mid)
+                    .append("cid",cid)
+                    .append("pic",genImageList(list));
+                comicChaColl.insertOne(setStr);
+            }
+        }catch (Exception ex){
+            //connect to databases error
+        }
+    }
 }

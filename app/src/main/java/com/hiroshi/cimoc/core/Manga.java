@@ -139,14 +139,16 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static List<ImageUrl> getImageUrls(Parser parser, String cid, String path) throws InterruptedIOException {
+    public static List<ImageUrl> getImageUrls(Parser parser,int source, String cid, String path) throws InterruptedIOException {
         List<ImageUrl> list = new ArrayList<>();
+        Mongo mongo = new Mongo();
         Response response = null;
         try {
             Request request  = parser.getImagesRequest(cid, path);
             response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
                 list.addAll(parser.parseImages(response.body().string()));
+                mongo.InsertComicChapter(source,cid,path,list);
             } else {
                 throw new NetworkErrorException();
             }

@@ -260,7 +260,7 @@ public class DownloadService extends Service implements AppGetter {
         private List<ImageUrl> onDownloadParse() throws InterruptedIOException {
             mTask.setState(Task.STATE_PARSE);
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PARSE, mTask.getId()));
-            return Manga.getImageUrls(mParse, mTask.getCid(), mTask.getPath());
+            return Manga.getImageUrls(mParse, mTask.getSource(),mTask.getCid(), mTask.getPath());
         }
 
         private void onDownloadProgress(int progress) {
