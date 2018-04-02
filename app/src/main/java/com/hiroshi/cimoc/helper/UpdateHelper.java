@@ -5,6 +5,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
@@ -21,6 +22,8 @@ import com.hiroshi.cimoc.source.Webtoon;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
 
 /**
  * Created by Hiroshi on 2017/1/18.
@@ -102,6 +105,7 @@ public class UpdateHelper {
         list.add(MangaNel.getDefaultSource());
         list.add(PuFei.getDefaultSource());
         list.add(Tencent.getDefaultSource());
+        list.add(BuKa.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

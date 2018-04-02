@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
+import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
@@ -121,11 +122,15 @@ public class SourceManager {
                     parser = new MangaNel(source);
                     break;
 
+                    //feilong
                 case PuFei.TYPE:
                     parser = new PuFei(source);
                     break;
                 case Tencent.TYPE:
                     parser = new Tencent(source);
+                    break;
+                case BuKa.TYPE:
+                    parser = new BuKa(source);
                     break;
 
                 default:
