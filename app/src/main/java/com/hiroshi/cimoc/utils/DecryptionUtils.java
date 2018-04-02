@@ -6,9 +6,12 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
@@ -35,11 +38,27 @@ public class DecryptionUtils {
     }
 
     public static String evalDecrypt(String jsCode) {
+        return evalDecrypt(jsCode,null);
+    }
+
+    public static String evalDecrypt(String jsCode,String varName) {
         Context rhino = Context.enter();
         rhino.setOptimizationLevel(-1);
         Scriptable scope = rhino.initStandardObjects();
         Object object = rhino.evaluateString(scope, jsCode, null, 1, null);
-        return Context.toString(object);
+        if(varName == null){
+            return Context.toString(object);
+        }else {
+            Object jsObject = scope.get(varName, scope);
+//            return String.join(",",(List<String>)jsObject);
+            //这个竟然需要api26，喵喵喵??
+            String resault = "";
+            for (String s : (List<String>)jsObject){
+                resault += (s + ',');
+            }
+            return resault.substring(0,resault.length() - 1);
+            //我也不想这么写😭
+        }
     }
 
     public static String urlDecrypt(String str) {

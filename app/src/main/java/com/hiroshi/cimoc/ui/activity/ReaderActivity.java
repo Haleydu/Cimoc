@@ -312,26 +312,40 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         HintUtils.showToast(this, R.string.common_parse_error);
     }
 
+    private int _source;
+    private boolean _local;
+    private void setReaderAdapter(List<ImageUrl> list){
+        setReaderAdapter(list,_source,_local);
+    }
+
+    private void setReaderAdapter(List<ImageUrl> list, int source, boolean local){
+        _source = source;
+        _local = local;
+        mImagePipelineFactory = ImagePipelineFactoryBuilder
+            .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(list), false);
+        mLargeImagePipelineFactory = ImagePipelineFactoryBuilder
+            .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(list), true);
+        mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory),
+            ControllerBuilderSupplierFactory.get(this, mLargeImagePipelineFactory));
+    }
+
     @Override
     public void onNextLoadSuccess(List<ImageUrl> list) {
+        setReaderAdapter(list);
         mReaderAdapter.addAll(list);
         HintUtils.showToast(this, R.string.reader_load_success);
     }
 
     @Override
     public void onPrevLoadSuccess(List<ImageUrl> list) {
+        setReaderAdapter(list);
         mReaderAdapter.addAll(0, list);
         HintUtils.showToast(this, R.string.reader_load_success);
     }
 
     @Override
     public void onInitLoadSuccess(List<ImageUrl> list, int progress, int source, boolean local) {
-        mImagePipelineFactory = ImagePipelineFactoryBuilder
-                .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(), false);
-        mLargeImagePipelineFactory = ImagePipelineFactoryBuilder
-                .build(this, local ? null : SourceManager.getInstance(this).getParser(source).getHeader(), true);
-        mReaderAdapter.setControllerSupplier(ControllerBuilderSupplierFactory.get(this, mImagePipelineFactory),
-                ControllerBuilderSupplierFactory.get(this, mLargeImagePipelineFactory));
+        setReaderAdapter(list,source,local);
         mReaderAdapter.addAll(list);
         if (progress != 1) {
             mRecyclerView.scrollToPosition(progress - 1);

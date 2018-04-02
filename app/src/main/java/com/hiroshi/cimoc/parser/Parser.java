@@ -130,6 +130,8 @@ public interface Parser {
      * 获取下载图片时的 HTTP 请求头，一般用来设置 Referer 和 Cookie
      */
     Headers getHeader();
+    Headers getHeader(String url);
+    Headers getHeader(List<ImageUrl> list);
 
     /*
     * 设置当前漫画url，以便分享使用。
