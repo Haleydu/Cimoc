@@ -29,9 +29,13 @@ public class Mongo {
     private int hourLimit = 12;//todo: add to setting
 
     public Mongo() {
-//        mongoUrl = new MongoClientURI("mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118/comic");
+        //mlab 连接不上，什么鬼？？
+//        mongoUrl = new MongoClientURI("mongodb://android:android@ds014118.mlab.com:14118/comic?authSource=comic");
+        //Mongo clould 咕咕咕...
+//        mongoUrl = new MongoClientURI("mongodb+srv://feilong:8ChSLt3Rnuf6nhpHq9@cimoc-agcb8.mongodb.net/test");
+        //自己搭的，临时用下，不设密码了
         mongoUrl = new MongoClientURI("mongodb://173.82.232.184:27017/comic");
-        mongoClient = new MongoClient();
+        mongoClient = new MongoClient(mongoUrl);
         mongoBase = mongoClient.getDatabase(mongoUrl.getDatabase());
         comicBaseColl = mongoBase.getCollection("comic-base");
         comicChaColl = mongoBase.getCollection("comic-chapter");
@@ -65,9 +69,10 @@ public class Mongo {
     private Document QueryBaseDoc(int source, String mid) {
         Document queryStr = new Document("lid", source)
             .append("mid", mid);
-        try {
-            return comicBaseColl.find(queryStr).first();
-        } catch (Exception ex) {
+        Document resault = comicBaseColl.find(queryStr).first();
+        if (resault != null) {
+            return resault;
+        } else {
             return new Document();
         }
     }
@@ -222,9 +227,10 @@ public class Mongo {
         Document queryStr = new Document("lid", source)
             .append("mid", mid)
             .append("cid", cid);
-        try {
-            return comicChaColl.find(queryStr).first();
-        } catch (Exception ex) {
+        Document resault = comicChaColl.find(queryStr).first();
+        if (resault != null) {
+            return resault;
+        } else {
             return new Document();
         }
     }
