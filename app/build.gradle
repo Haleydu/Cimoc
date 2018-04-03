@@ -58,5 +58,5 @@ dependencies {
     compile 'io.reactivex:rxjava:1.2.4'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.auth0.android:auth0:1.+'
-    compile 'org.mongodb:mongo-java-driver:3.0.3'
+    compile 'org.mongodb:mongo-java-driver:3.6.3'
 }
