@@ -44,10 +44,10 @@ greendao {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v13:27.0.2'
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:recyclerview-v7:27.0.2'
-    compile 'com.android.support:design:27.0.2'
+    compile 'com.android.support:support-v13:27.1.0'
+    compile 'com.android.support:appcompat-v7:27.1.0'
+    compile 'com.android.support:recyclerview-v7:27.1.0'
+    compile 'com.android.support:design:27.1.0'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'org.greenrobot:greendao:3.2.2'
