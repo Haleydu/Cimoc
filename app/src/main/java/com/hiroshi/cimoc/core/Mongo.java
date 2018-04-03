@@ -91,6 +91,8 @@ public class Mongo {
         comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
     }
 
+    private int hourLimit = 12;//todo: add to setting
+
     public void UpdateComicBase(Comic comic, List<Chapter> list){
         try{
             //search
@@ -100,7 +102,7 @@ public class Mongo {
                 InsertBaseByDoc(comic,list);
             }else
                 //if update,refersh it
-                if(!d.get("lastcid").equals(list.get(0).getPath())) {
+                if(!d.get("lastcid").equals(list.get(0).getPath()) && getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
                     UpdateOneBase(comic.getSource(),comic.getCid(),list);
                 }
         }catch (Exception ex){
@@ -113,6 +115,9 @@ public class Mongo {
     }
 
     private int getDateDiffHour(Date fromDate,Date toDate){
+        if(fromDate == null || toDate == null){
+            return hourLimit + 1;
+        }
         long from = fromDate.getTime();
         long to = toDate.getTime();
         return (int)((to-from)/(60*60*1000));
@@ -122,11 +127,9 @@ public class Mongo {
         List<Chapter> list = new ArrayList<>();
         Document d = QueryBaseDoc(comic.getSource(),comic.getCid());
 
-        if(!d.isEmpty() && d.getDate("lastdate") != null){
-            Date date = d.getDate("lastdate");
-
+        if(!d.isEmpty()){
             //数据库数据只在一定时间内有效
-            if(getDateDiffHour(date) < 24) {//todo: add to setting
+            if(getDateDiffHour(d.getDate("lastdate")) < hourLimit) {
                 comic.setTitle(d.getString("title"));
                 comic.setUrl(d.getString("path"));
                 comic.setIntro(d.getString("intro"));
