@@ -5,6 +5,8 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -29,109 +31,121 @@ public class Mongo {
 //    private Document queryStr;
 //    private Document setStr;
 
-    public Mongo(){
+    public Mongo() {
 //        mongoUrl = new MongoClientURI("mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118/comic");
         mongoUrl = new MongoClientURI("mongodb://173.82.232.184:27017/comic");
-        mongoClient = new MongoClient(mongoUrl);
-        mongoBase = mongoClient.getDatabase("comic");
+        mongoClient = new MongoClient();
+        mongoBase = mongoClient.getDatabase(mongoUrl.getDatabase());
         comicBaseColl = mongoBase.getCollection("comic-base");
         comicChaColl = mongoBase.getCollection("comic-chapter");
     }
 
-    private List<Document> genDocumentListFromChapterList(List<Chapter> list){
+    private List<Document> genDocumentListFromChapterList(List<Chapter> list) {
         List<Document> chapterList = new ArrayList<>();
-        ListIterator<Chapter> iterator=list.listIterator(list.size());
-        while(iterator.hasPrevious()){
+        ListIterator<Chapter> iterator = list.listIterator(list.size());
+        while (iterator.hasPrevious()) {
             Chapter c = iterator.previous();
             chapterList.add(
                 new Document("title", c.getTitle())
-                    .append("cid",c.getPath())
+                    .append("cid", c.getPath())
             );
         }
         return chapterList;
     }
 
-    private List<Chapter> genChapterListFromDocumentList(List<Document> list){
+    private List<Chapter> genChapterListFromDocumentList(List<Document> list) {
         List<Chapter> chapterList = new ArrayList<>();
-        ListIterator<Document> iterator=list.listIterator(list.size());
-        while(iterator.hasPrevious()){
+        ListIterator<Document> iterator = list.listIterator(list.size());
+        while (iterator.hasPrevious()) {
             Document c = iterator.previous();
             chapterList.add(
-                new Chapter(c.getString("title"),c.getString("cid"))
+                new Chapter(c.getString("title"), c.getString("cid"))
             );
         }
         return chapterList;
     }
 
-    private Document QueryBaseDoc(int source,String mid){
-        Document queryStr = new Document("lid",source)
-            .append("mid",mid);
-        return comicBaseColl.find(queryStr).first();
+    private Document QueryBaseDoc(int source, String mid) {
+        Document queryStr = new Document("lid", source)
+            .append("mid", mid);
+        try {
+            return comicBaseColl.find(queryStr).first();
+        } catch (Exception ex) {
+            return new Document();
+        }
     }
 
-    private void InsertBaseByDoc(Comic comic, List<Chapter> list){
-        Document setStr = new Document("lid",comic.getSource())
-            .append("mid",comic.getCid())
-            .append("lastcid",list.get(0).getPath())
+    private void InsertBaseByDoc(Comic comic, List<Chapter> list) {
+        Document setStr = new Document("lid", comic.getSource())
+            .append("mid", comic.getCid())
+            .append("lastcid", list.get(0).getPath())
 //            .append("lastdate",getDate())
-            .append("lastdate",new Date())
-            .append("path",comic.getUrl())
-            .append("title",comic.getTitle())
-            .append("intro",comic.getIntro())
-            .append("author",comic.getAuthor())
+            .append("lastdate", new Date())
+            .append("path", comic.getUrl())
+            .append("title", comic.getTitle())
+            .append("intro", comic.getIntro())
+            .append("author", comic.getAuthor())
             .append("chapter", genDocumentListFromChapterList(list));
-        comicBaseColl.insertOne(setStr);
+        try {
+            comicBaseColl.insertOne(setStr);
+        } catch (Exception ex) {
+            //
+        }
     }
 
-    private void UpdateOneBase(int source,String mid,List<Chapter> list){
-        Document queryStr = new Document("lid",source)
-            .append("mid",mid);
-        Document setStr = new Document("lastcid",list.get(0).getPath())
-            .append("lastdate",new Date())
+    private void UpdateOneBase(int source, String mid, List<Chapter> list) {
+        Document queryStr = new Document("lid", source)
+            .append("mid", mid);
+        Document setStr = new Document("lastcid", list.get(0).getPath())
+            .append("lastdate", new Date())
             .append("chapter", genDocumentListFromChapterList(list));
-        comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
+        try {
+            comicBaseColl.updateOne(queryStr, new Document("$set", setStr));
+        } catch (Exception ex) {
+            //
+        }
     }
 
     private int hourLimit = 12;//todo: add to setting
 
-    public void UpdateComicBase(Comic comic, List<Chapter> list){
-        try{
+    public void UpdateComicBase(Comic comic, List<Chapter> list) {
+        try {
             //search
-            Document d = QueryBaseDoc(comic.getSource(),comic.getCid());
+            Document d = QueryBaseDoc(comic.getSource(), comic.getCid());
 
             //if not exist,create it
-            if(d == null){
-                InsertBaseByDoc(comic,list);
-            }else
+            if (d == null) {
+                InsertBaseByDoc(comic, list);
+            } else
                 //if update,refersh it
-                if(!d.get("lastcid").equals(list.get(0).getPath()) || getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
-                    UpdateOneBase(comic.getSource(),comic.getCid(),list);
+                if (!d.get("lastcid").equals(list.get(0).getPath()) || getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
+                    UpdateOneBase(comic.getSource(), comic.getCid(), list);
                 }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //connect to databases error
         }
     }
 
     private int getDateDiffHour(Date fromDate) {
-        return getDateDiffHour(fromDate,new Date());
+        return getDateDiffHour(fromDate, new Date());
     }
 
-    private int getDateDiffHour(Date fromDate,Date toDate){
-        if(fromDate == null || toDate == null){
+    private int getDateDiffHour(Date fromDate, Date toDate) {
+        if (fromDate == null || toDate == null) {
             return hourLimit + 1;
         }
         long from = fromDate.getTime();
         long to = toDate.getTime();
-        return (int)((to-from)/(60*60*1000));
+        return (int) ((to - from) / (60 * 60 * 1000));
     }
 
-    public List<Chapter> QueryComicBase(Comic comic){
+    public List<Chapter> QueryComicBase(Comic comic) {
         List<Chapter> list = new ArrayList<>();
-        Document d = QueryBaseDoc(comic.getSource(),comic.getCid());
+        Document d = QueryBaseDoc(comic.getSource(), comic.getCid());
 
-        if(!d.isEmpty()){
+        if (!d.isEmpty()) {
             //数据库数据只在一定时间内有效
-            if(getDateDiffHour(d.getDate("lastdate")) < hourLimit) {
+            if (getDateDiffHour(d.getDate("lastdate")) < hourLimit) {
                 comic.setTitle(d.getString("title"));
                 comic.setUrl(d.getString("path"));
                 comic.setIntro(d.getString("intro"));
@@ -144,10 +158,10 @@ public class Mongo {
         return list;
     }
 
-    private List<Document> genDocumentListFromImageUrlList(List<ImageUrl> list){
+    private List<Document> genDocumentListFromImageUrlList(List<ImageUrl> list) {
         List<Document> picList = new ArrayList<>();
         for (ImageUrl imageUrl : list) {
-            picList.add(new Document("src",imageUrl.getUrl()));
+            picList.add(new Document("src", imageUrl.getUrl()));
         }
         return picList;
     }
@@ -156,51 +170,51 @@ public class Mongo {
         List<ImageUrl> picList = new ArrayList<>();
         int i = 0;
         for (Document document : list) {
-            picList.add(new ImageUrl(++i,(String)document.get("src"),false));
+            picList.add(new ImageUrl(++i, (String) document.get("src"), false));
         }
         return picList;
     }
 
     public void InsertComicChapter(final Comic comic,
                                    final String cid,
-                                   List<ImageUrl> list){
-        InsertComicChapter(comic.getSource(),comic.getCid(),cid,list);
+                                   List<ImageUrl> list) {
+        InsertComicChapter(comic.getSource(), comic.getCid(), cid, list);
     }
 
     public void InsertComicChapter(final int source,
                                    final String mid,
                                    final String cid,
-                                   List<ImageUrl> list){
-        try{
+                                   List<ImageUrl> list) {
+        try {
             //search
-            Document d = QueryCollDoc(source,mid,cid);
+            Document d = QueryCollDoc(source, mid, cid);
             //if not exist,create it
-            if(d == null){
-                Document setStr = new Document("lid",source)
-                    .append("mid",mid)
-                    .append("cid",cid)
+            if (d == null) {
+                Document setStr = new Document("lid", source)
+                    .append("mid", mid)
+                    .append("cid", cid)
                     .append("pic", genDocumentListFromImageUrlList(list));
                 comicChaColl.insertOne(setStr);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //connect to databases error
         }
     }
 
     public List<ImageUrl> QueryComicChapter(final Comic comic,
-                                   final String cid){
-        return QueryComicChapter(comic.getSource(),comic.getCid(),cid);
+                                            final String cid) {
+        return QueryComicChapter(comic.getSource(), comic.getCid(), cid);
     }
 
     public List<ImageUrl> QueryComicChapter(final int source,
-                             final String mid,
-                             final String cid) {
+                                            final String mid,
+                                            final String cid) {
         try {
-            Document d = QueryCollDoc(source,mid,cid);
-            if(d==null){
+            Document d = QueryCollDoc(source, mid, cid);
+            if (d == null) {
                 return new ArrayList<>();
-            }else{
-                List<Document> listdoc = (List<Document>)d.get("pic");
+            } else {
+                List<Document> listdoc = (List<Document>) d.get("pic");
                 return genImageUrlListFromDocumentList(listdoc);
             }
         } catch (Exception ex) {
@@ -209,10 +223,14 @@ public class Mongo {
         }
     }
 
-    private Document QueryCollDoc(int source,String mid,String cid){
-        Document queryStr = new Document("lid",source)
-            .append("mid",mid)
-            .append("cid",cid);
-        return comicChaColl.find(queryStr).first();
+    private Document QueryCollDoc(int source, String mid, String cid) {
+        Document queryStr = new Document("lid", source)
+            .append("mid", mid)
+            .append("cid", cid);
+        try {
+            return comicChaColl.find(queryStr).first();
+        } catch (Exception ex) {
+            return new Document();
+        }
     }
 }
