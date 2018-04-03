@@ -87,6 +87,7 @@ public class Mongo {
         Document queryStr = new Document("lid",source)
             .append("mid",mid);
         Document setStr = new Document("lastcid",list.get(0).getPath())
+            .append("lastdate",new Date())
             .append("chapter", genDocumentListFromChapterList(list));
         comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
     }
@@ -97,12 +98,13 @@ public class Mongo {
         try{
             //search
             Document d = QueryBaseDoc(comic.getSource(),comic.getCid());
+
             //if not exist,create it
             if(d == null){
                 InsertBaseByDoc(comic,list);
             }else
                 //if update,refersh it
-                if(!d.get("lastcid").equals(list.get(0).getPath()) && getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
+                if(!d.get("lastcid").equals(list.get(0).getPath()) || getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
                     UpdateOneBase(comic.getSource(),comic.getCid(),list);
                 }
         }catch (Exception ex){
