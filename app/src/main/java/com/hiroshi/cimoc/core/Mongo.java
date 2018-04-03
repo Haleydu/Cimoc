@@ -114,7 +114,7 @@ public class Mongo {
             Document d = QueryBaseDoc(comic.getSource(), comic.getCid());
 
             //if not exist,create it
-            if (d == null) {
+            if (d.isEmpty()) {
                 InsertBaseByDoc(comic, list);
             } else
                 //if update,refersh it
@@ -189,7 +189,7 @@ public class Mongo {
             //search
             Document d = QueryCollDoc(source, mid, cid);
             //if not exist,create it
-            if (d == null) {
+            if (d.isEmpty()) {
                 Document setStr = new Document("lid", source)
                     .append("mid", mid)
                     .append("cid", cid)
@@ -211,7 +211,7 @@ public class Mongo {
                                             final String cid) {
         try {
             Document d = QueryCollDoc(source, mid, cid);
-            if (d == null) {
+            if (d.isEmpty()) {
                 return new ArrayList<>();
             } else {
                 List<Document> listdoc = (List<Document>) d.get("pic");
