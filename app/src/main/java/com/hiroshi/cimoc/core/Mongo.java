@@ -104,23 +104,7 @@ public class Mongo {
     public void InsertComicChapter(final Comic comic,
                                    final String cid,
                                    List<ImageUrl> list){
-        try{
-            //search
-            queryStr = new Document("lid",comic.getSource())
-                .append("mid",comic.getCid())
-                .append("cid",cid);
-            Document d = comicChaColl.find(queryStr).first();
-            //if not exist,create it
-            if(d == null){
-                setStr = new Document("lid",comic.getSource())
-                    .append("mid",comic.getCid())
-                    .append("cid",cid)
-                    .append("pic",genImageList(list));
-                comicChaColl.insertOne(setStr);
-            }
-        }catch (Exception ex){
-            //connect to databases error
-        }
+        InsertComicChapter(comic.getSource(),comic.getCid(),cid,list);
     }
 
     public void InsertComicChapter(final int source,

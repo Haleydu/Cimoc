@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--optimizationpasses 3
+-optimizationpasses 5
 
 -keepattributes SourceFile, LineNumberTable
 
@@ -107,5 +107,5 @@ public static java.lang.String TABLENAME;
 -keep class io.netty.** { *; }
 -keep class org.ietf.jgss.** { *; }
 -keep class org.slf4j.** { *; }
--keep org.xerial.snappy.** { *; }
+-keep class org.xerial.snappy.** { *; }
 
