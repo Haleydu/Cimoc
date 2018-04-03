@@ -18,16 +18,18 @@ import butterknife.BindView;
 
 public class ReaderConfigActivity extends BackActivity {
 
-    @BindView(R.id.reader_config_tab_layout) TabLayout mTabLayout;
-    @BindView(R.id.reader_config_view_pager) ViewPager mViewPager;
+    @BindView(R.id.reader_config_tab_layout)
+    TabLayout mTabLayout;
+    @BindView(R.id.reader_config_view_pager)
+    ViewPager mViewPager;
 
     @Override
     protected void initView() {
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.reader_config_page));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.reader_config_stream));
         TabPagerAdapter tabAdapter = new TabPagerAdapter(getFragmentManager(),
-                new BaseFragment[]{ new PageConfigFragment(), new StreamConfigFragment() },
-                new String[]{ getString(R.string.reader_config_page), getString(R.string.reader_config_stream)});
+            new BaseFragment[]{new PageConfigFragment(), new StreamConfigFragment()},
+            new String[]{getString(R.string.reader_config_page), getString(R.string.reader_config_stream)});
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setAdapter(tabAdapter);
         mTabLayout.setupWithViewPager(mViewPager);

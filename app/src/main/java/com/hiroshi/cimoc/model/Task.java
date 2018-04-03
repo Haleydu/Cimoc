@@ -21,17 +21,35 @@ public class Task implements Parcelable {
     public static final int STATE_DOING = 3;
     public static final int STATE_WAIT = 4;
     public static final int STATE_ERROR = 5;
+    public final static Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
+        @Override
+        public Task createFromParcel(Parcel source) {
+            return new Task(source);
+        }
 
-    @Id(autoincrement = true) private Long id;
-    @NotNull private long key;      // 漫画主键
-    @NotNull private String path;
-    @NotNull private String title;
-    @NotNull private int progress;
-    @NotNull private int max;
-
-    @Transient private int source;
-    @Transient private String cid;  // 漫画 ID
-    @Transient private int state;
+        @Override
+        public Task[] newArray(int size) {
+            return new Task[size];
+        }
+    };
+    @Id(autoincrement = true)
+    private Long id;
+    @NotNull
+    private long key;      // 漫画主键
+    @NotNull
+    private String path;
+    @NotNull
+    private String title;
+    @NotNull
+    private int progress;
+    @NotNull
+    private int max;
+    @Transient
+    private int source;
+    @Transient
+    private String cid;  // 漫画 ID
+    @Transient
+    private int state;
 
     public Task(Parcel source) {
         this.id = source.readLong();
@@ -47,7 +65,7 @@ public class Task implements Parcelable {
 
     @Generated(hash = 1668809946)
     public Task(Long id, long key, @NotNull String path, @NotNull String title, int progress,
-            int max) {
+                int max) {
         this.id = id;
         this.key = key;
         this.path = path;
@@ -163,17 +181,5 @@ public class Task implements Parcelable {
         dest.writeString(cid);
         dest.writeInt(state);
     }
-
-    public final static Parcelable.Creator<Task> CREATOR = new Parcelable.Creator<Task>() {
-        @Override
-        public Task createFromParcel(Parcel source) {
-            return new Task(source);
-        }
-
-        @Override
-        public Task[] newArray(int size) {
-            return new Task[size];
-        }
-    };
 
 }

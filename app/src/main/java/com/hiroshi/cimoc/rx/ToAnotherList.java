@@ -26,5 +26,5 @@ public class ToAnotherList<T, R> implements Observable.Transformer<List<T>, List
             }
         }).map(func).toList();
     }
-    
+
 }

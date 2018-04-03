@@ -20,20 +20,6 @@ public class RxBus {
         bus = new SerializedSubject<>(PublishSubject.create());
     }
 
-    public void post(RxEvent event) {
-        bus.onNext(event);
-    }
-
-    public Observable<RxEvent> toObservable(@RxEvent.EventType final int type) {
-        return bus.ofType(RxEvent.class)
-                .filter(new Func1<RxEvent, Boolean>() {
-                    @Override
-                    public Boolean call(RxEvent rxEvent) {
-                        return rxEvent.getType() == type;
-                    }
-                }).onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread());
-    }
-
     public static RxBus getInstance() {
         if (instance == null) {
             synchronized (RxBus.class) {
@@ -43,6 +29,20 @@ public class RxBus {
             }
         }
         return instance;
+    }
+
+    public void post(RxEvent event) {
+        bus.onNext(event);
+    }
+
+    public Observable<RxEvent> toObservable(@RxEvent.EventType final int type) {
+        return bus.ofType(RxEvent.class)
+            .filter(new Func1<RxEvent, Boolean>() {
+                @Override
+                public Boolean call(RxEvent rxEvent) {
+                    return rxEvent.getType() == type;
+                }
+            }).onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread());
     }
 
 }

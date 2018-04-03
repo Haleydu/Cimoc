@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -18,8 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,12 +30,12 @@ public class Tencent extends MangaParser {
     public static final int TYPE = 51;
     public static final String DEFAULT_TITLE = "腾讯动漫";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public Tencent(Source source) {
         init(source, null);
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -55,7 +50,7 @@ public class Tencent extends MangaParser {
         return new NodeIterator(body.list(".comic-item")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.attr("a","href");
+                String cid = node.attr("a", "href");
                 cid = cid.substring("/comic/index/id/".length());
                 String title = node.text(".comic-title");
                 String cover = node.attr(".cover-image", "src");
@@ -67,7 +62,7 @@ public class Tencent extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://ac.qq.com/Comic/ComicInfo/id/".concat(cid);
     }
 
@@ -90,7 +85,7 @@ public class Tencent extends MangaParser {
     }
 
     @Override
-    public Request getChapterRequest(String html, String cid){
+    public Request getChapterRequest(String html, String cid) {
         String url = "https://m.ac.qq.com/comic/chapterList/id/".concat(cid);
         return new Request.Builder()
             .url(url)

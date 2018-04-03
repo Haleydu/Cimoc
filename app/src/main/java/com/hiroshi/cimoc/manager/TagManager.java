@@ -25,21 +25,32 @@ public class TagManager {
         mTagDao = getter.getAppInstance().getDaoSession().getTagDao();
     }
 
+    public static TagManager getInstance(AppGetter getter) {
+        if (mInstance == null) {
+            synchronized (TagManager.class) {
+                if (mInstance == null) {
+                    mInstance = new TagManager(getter);
+                }
+            }
+        }
+        return mInstance;
+    }
+
     public List<Tag> list() {
         return mTagDao.queryBuilder().list();
     }
 
     public Observable<List<Tag>> listInRx() {
         return mTagDao.queryBuilder()
-                .rx()
-                .list();
+            .rx()
+            .list();
     }
 
     public Tag load(String title) {
         return mTagDao.queryBuilder()
-                .where(TagDao.Properties.Title.eq(title))
-                .limit(1)
-                .unique();
+            .where(TagDao.Properties.Title.eq(title))
+            .limit(1)
+            .unique();
     }
 
     public void insert(Tag tag) {
@@ -53,17 +64,6 @@ public class TagManager {
 
     public void delete(Tag entity) {
         mTagDao.delete(entity);
-    }
-
-    public static TagManager getInstance(AppGetter getter) {
-        if (mInstance == null) {
-            synchronized (TagManager.class) {
-                if (mInstance == null) {
-                    mInstance = new TagManager(getter);
-                }
-            }
-        }
-        return mInstance;
     }
 
 }

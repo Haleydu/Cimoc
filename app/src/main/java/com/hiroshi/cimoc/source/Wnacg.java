@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.source;
 /**
  * Created by Hiroshi on 2016/8/9.
  */
-public class Wnacg/* extends MangaParser */{
+public class Wnacg/* extends MangaParser */ {
 /*
     @Override
     public Request getSearchRequest(String keyword, int page) {

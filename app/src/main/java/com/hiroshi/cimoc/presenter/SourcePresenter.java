@@ -23,18 +23,18 @@ public class SourcePresenter extends BasePresenter<SourceView> {
 
     public void load() {
         mCompositeSubscription.add(mSourceManager.list()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Source>>() {
-                    @Override
-                    public void call(List<Source> list) {
-                        mBaseView.onSourceLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onSourceLoadFail();
-                    }
-                }));
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Source>>() {
+                @Override
+                public void call(List<Source> list) {
+                    mBaseView.onSourceLoadSuccess(list);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onSourceLoadFail();
+                }
+            }));
     }
 
     public void update(Source source) {

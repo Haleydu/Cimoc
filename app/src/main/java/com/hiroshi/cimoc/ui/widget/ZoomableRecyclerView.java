@@ -17,7 +17,7 @@ import android.view.MotionEvent;
  */
 
 public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGestureListener,
-        FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
+    FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
 
     public static final float MIN_SCALE = 1.0f;
     public static final float MAX_SCALE = 3.0f;
@@ -121,7 +121,7 @@ public class ZoomableRecyclerView extends RecyclerView implements OnScaleDragGes
         RectF rect = getDisplayRect(mMatrix);
         mCurrentFlingRunnable = new FlingRunnable(getContext(), this, this);
         mCurrentFlingRunnable.fling(rect, ViewUtils.getViewWidth(this),
-                ViewUtils.getViewHeight(this), (int) velocityX, (int) velocityY);
+            ViewUtils.getViewHeight(this), (int) velocityX, (int) velocityY);
         post(mCurrentFlingRunnable);
     }
 

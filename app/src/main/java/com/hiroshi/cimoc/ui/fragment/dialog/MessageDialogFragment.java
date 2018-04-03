@@ -15,32 +15,6 @@ import com.hiroshi.cimoc.component.DialogCaller;
 
 public class MessageDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        String content = getArguments().getString(DialogCaller.EXTRA_DIALOG_CONTENT_TEXT);
-        if (content == null) {
-            content = getString(getArguments().getInt(DialogCaller.EXTRA_DIALOG_CONTENT));
-        }
-        builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-                .setMessage(content)
-                .setPositiveButton(R.string.dialog_positive, this);
-        if (getArguments().getBoolean(DialogCaller.EXTRA_DIALOG_NEGATIVE, false)) {
-            setCancelable(true);
-            builder.setNegativeButton(R.string.dialog_negative, null);
-        } else {
-            setCancelable(false);
-        }
-        return builder.create();
-    }
-
-    @Override
-    public void onClick(DialogInterface dialogInterface, int which) {
-        int requestCode = getArguments().getInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE);
-        DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
-        target.onDialogResult(requestCode, null);
-    }
-
     public static MessageDialogFragment newInstance(int title, int content, boolean negative, int requestCode) {
         MessageDialogFragment fragment = new MessageDialogFragment();
         Bundle bundle = new Bundle();
@@ -61,6 +35,32 @@ public class MessageDialogFragment extends DialogFragment implements DialogInter
         bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        String content = getArguments().getString(DialogCaller.EXTRA_DIALOG_CONTENT_TEXT);
+        if (content == null) {
+            content = getString(getArguments().getInt(DialogCaller.EXTRA_DIALOG_CONTENT));
+        }
+        builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
+            .setMessage(content)
+            .setPositiveButton(R.string.dialog_positive, this);
+        if (getArguments().getBoolean(DialogCaller.EXTRA_DIALOG_NEGATIVE, false)) {
+            setCancelable(true);
+            builder.setNegativeButton(R.string.dialog_negative, null);
+        } else {
+            setCancelable(false);
+        }
+        return builder.create();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialogInterface, int which) {
+        int requestCode = getArguments().getInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE);
+        DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
+        target.onDialogResult(requestCode, null);
     }
 
 }

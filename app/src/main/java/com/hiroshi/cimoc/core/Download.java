@@ -31,51 +31,51 @@ import rx.schedulers.Schedulers;
 public class Download {
 
     /**
-     *  version 1 [1.4.3.0, ...)
-     *  comic:
-     *  {
-     *      list: 章节列表 array
-     *      [{
-     *          title: 章节名称 string
-     *          path: 章节路径 string
-     *      }]
-     *      source: 图源 int
-     *      cid: 漫画ID string
-     *      title: 标题 string
-     *      cover: 封面 string
-     *      type: 类型 string ("comic")
-     *      version: 版本 string ("1")
-     *  }
-     *  chapter:
-     *  {
-     *      title: 章节名称 string
-     *      path: 章节路径 string
-     *      type: 类型 string ("chapter")
-     *      version: 版本 string ("1")
-     *  }
-     *
-     *  version 2 [遥遥无期, 遥遥无期)
-     *  comic:
-     *  {
-     *      list: 章节列表 array
-     *      [ 章节路径 string ]
-     *      source: 图源 int
-     *      cid: 漫画ID string
-     *      title: 标题 string
-     *      cover: 封面 string
-     *      type: 类型 int (1)
-     *      version: 版本 int (2)
-     *  }
-     *  chapter:
-     *  {
-     *      title: 章节名称 string
-     *      path: 章节路径 string
-     *      max: 总页数 int
-     *      list: 图片列表 array
-     *      [ 文件名 string ]
-     *      type: 类型 int (2)
-     *      version: 版本 int (2)
-     *  }
+     * version 1 [1.4.3.0, ...)
+     * comic:
+     * {
+     * list: 章节列表 array
+     * [{
+     * title: 章节名称 string
+     * path: 章节路径 string
+     * }]
+     * source: 图源 int
+     * cid: 漫画ID string
+     * title: 标题 string
+     * cover: 封面 string
+     * type: 类型 string ("comic")
+     * version: 版本 string ("1")
+     * }
+     * chapter:
+     * {
+     * title: 章节名称 string
+     * path: 章节路径 string
+     * type: 类型 string ("chapter")
+     * version: 版本 string ("1")
+     * }
+     * <p>
+     * version 2 [遥遥无期, 遥遥无期)
+     * comic:
+     * {
+     * list: 章节列表 array
+     * [ 章节路径 string ]
+     * source: 图源 int
+     * cid: 漫画ID string
+     * title: 标题 string
+     * cover: 封面 string
+     * type: 类型 int (1)
+     * version: 版本 int (2)
+     * }
+     * chapter:
+     * {
+     * title: 章节名称 string
+     * path: 章节路径 string
+     * max: 总页数 int
+     * list: 图片列表 array
+     * [ 文件名 string ]
+     * type: 类型 int (2)
+     * version: 版本 int (2)
+     * }
      */
 
     private static final String JSON_KEY_VERSION = "version";
@@ -111,6 +111,7 @@ public class Download {
 
     /**
      * 写漫画索引，不关心是否成功，若没有索引文件，则不能排序章节及扫描恢复漫画，但不影响下载及观看
+     *
      * @param list
      * @param comic
      */
@@ -174,7 +175,8 @@ public class Download {
     /**
      * 1.4.4 以前位于 存储目录/download/图源名称/漫画名称
      * 1.4.4 以后位于 存储目录/download/图源ID/漫画ID
-     * @param root 存储目录
+     *
+     * @param root  存储目录
      * @param comic
      * @return
      */
@@ -221,7 +223,7 @@ public class Download {
 
     public static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter, String title) {
         DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()),
-                comic.getCid(), DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-")));
+            comic.getCid(), DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-")));
         if (result == null) {
             result = DocumentUtils.findFile(root, DOWNLOAD, title, comic.getTitle(), chapter.getTitle());
         }
@@ -306,8 +308,8 @@ public class Download {
     }
 
     /**
-     *  1.4.3 之后，因为有在章节文件夹内写索引文件，所以恢复起来简单
-     *  1.4.3 之前，章节文件夹内没有索引文件，需要比较文件夹名称，有点麻烦，暂不实现
+     * 1.4.3 之后，因为有在章节文件夹内写索引文件，所以恢复起来简单
+     * 1.4.3 之前，章节文件夹内没有索引文件，需要比较文件夹名称，有点麻烦，暂不实现
      */
     private static Comic buildComicFromDir(ContentResolver resolver, DocumentFile dir) {
         String jsonString = getIndexJsonFromDir(resolver, dir);

@@ -49,6 +49,14 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     private boolean mAutoBackup;
     private int mBackupCount;
 
+    public static Intent createIntent(Context context, Long id, int source, String cid) {
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_SOURCE, source);
+        intent.putExtra(Extra.EXTRA_CID, cid);
+        return intent;
+    }
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new DetailPresenter();
@@ -154,7 +162,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     startActivity(Intent.createChooser(intent, url));
                     break;
                 case R.id.detail_disqus:
-                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_cimqus_url) + "/cimoc/" +  mPresenter.getComic().getTitle()));
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_cimqus_url) + "/cimoc/" + mPresenter.getComic().getTitle()));
                     try {
                         startActivity(intent);
                     } catch (Exception e) {
@@ -180,7 +188,8 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         }
     }
 
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button)
+    void onActionButtonClick() {
         //todo: add comic to mangodb
         if (mPresenter.getComic().getFavorite() != null) {
             mPresenter.unfavoriteComic();
@@ -195,7 +204,8 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         }
     }
 
-    @OnClick(R.id.coordinator_action_button2) void onActionButton2Click() {
+    @OnClick(R.id.coordinator_action_button2)
+    void onActionButton2Click() {
         if (!mDetailAdapter.getDateSet().isEmpty()) {
             String path = mPresenter.getComic().getLast();
             if (path == null) {
@@ -256,7 +266,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @Override
     public void onComicLoadSuccess(Comic comic) {
         mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
-                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
+            comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
             mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader(), false);
@@ -294,14 +304,6 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.detail);
-    }
-
-    public static Intent createIntent(Context context, Long id, int source, String cid) {
-        Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(Extra.EXTRA_ID, id);
-        intent.putExtra(Extra.EXTRA_SOURCE, source);
-        intent.putExtra(Extra.EXTRA_CID, cid);
-        return intent;
     }
 
 }

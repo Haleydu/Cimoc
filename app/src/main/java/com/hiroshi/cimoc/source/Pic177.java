@@ -4,7 +4,7 @@ package com.hiroshi.cimoc.source;
  * Created by Hiroshi on 2016/10/5.
  */
 
-public class  Pic177/* extends MangaParser */{
+public class Pic177/* extends MangaParser */ {
 /*
     @Override
     public Request getSearchRequest(String keyword, int page) {

@@ -26,9 +26,13 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity implements BaseView {
 
-    @Nullable @BindView(R.id.custom_night_mask) View mNightMask;
-    @Nullable @BindView(R.id.custom_toolbar) Toolbar mToolbar;
     protected PreferenceManager mPreference;
+    @Nullable
+    @BindView(R.id.custom_night_mask)
+    View mNightMask;
+    @Nullable
+    @BindView(R.id.custom_toolbar)
+    Toolbar mToolbar;
     private ProgressDialogFragment mProgressDialog;
     private BasePresenter mBasePresenter;
 
@@ -108,11 +112,14 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
         return null;
     }
 
-    protected void initView() {}
+    protected void initView() {
+    }
 
-    protected void initData() {}
+    protected void initData() {
+    }
 
-    protected void initUser() {}
+    protected void initUser() {
+    }
 
     protected abstract int getLayoutRes();
 

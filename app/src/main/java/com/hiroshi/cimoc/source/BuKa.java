@@ -1,26 +1,19 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
-import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.JsonIterator;
+import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,12 +33,12 @@ public class BuKa extends MangaParser {
     public static final int TYPE = 52;
     public static final String DEFAULT_TITLE = "布卡漫画";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public BuKa(Source source) {
         init(source, null);
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -77,18 +70,18 @@ public class BuKa extends MangaParser {
                         String cover = object.getString("logo");
                         String author = object.getString("author");
                         return new Comic(TYPE, cid, title, cover, null, author);
-                    }catch (Exception ex) {
+                    } catch (Exception ex) {
                         return null;
                     }
                 }
             };
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return null;
         }
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://m.buka.cn/m/".concat(cid);
     }
 
@@ -147,8 +140,8 @@ public class BuKa extends MangaParser {
         if (m.find()) {
             try {
                 int i = 0;
-                do{
-                    list.add(new ImageUrl(++i, StringUtils.match("http.*jpg", m.group(0),0), false));
+                do {
+                    list.add(new ImageUrl(++i, StringUtils.match("http.*jpg", m.group(0), 0), false));
                 } while (m.find());
             } catch (Exception e) {
                 e.printStackTrace();

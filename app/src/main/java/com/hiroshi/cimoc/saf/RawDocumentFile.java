@@ -19,12 +19,41 @@ import java.util.List;
  */
 
 class RawDocumentFile extends DocumentFile {
-    
+
     private File mFile;
 
     RawDocumentFile(DocumentFile parent, File file) {
         super(parent);
         mFile = file;
+    }
+
+    private static String getTypeForName(String name) {
+        final int lastDot = name.lastIndexOf('.');
+        if (lastDot >= 0) {
+            final String extension = name.substring(lastDot + 1).toLowerCase();
+            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (mime != null) {
+                return mime;
+            }
+        }
+
+        return "application/octet-stream";
+    }
+
+    private static boolean deleteContents(File dir) {
+        File[] files = dir.listFiles();
+        boolean success = true;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    success &= deleteContents(file);
+                }
+                if (!file.delete()) {
+                    success = false;
+                }
+            }
+        }
+        return success;
     }
 
     @Override
@@ -139,7 +168,8 @@ class RawDocumentFile extends DocumentFile {
     }
 
     @Override
-    public void refresh() {}
+    public void refresh() {
+    }
 
     @Override
     public DocumentFile findFile(String displayName) {
@@ -162,33 +192,4 @@ class RawDocumentFile extends DocumentFile {
         }
     }
 
-    private static String getTypeForName(String name) {
-        final int lastDot = name.lastIndexOf('.');
-        if (lastDot >= 0) {
-            final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-            if (mime != null) {
-                return mime;
-            }
-        }
-
-        return "application/octet-stream";
-    }
-
-    private static boolean deleteContents(File dir) {
-        File[] files = dir.listFiles();
-        boolean success = true;
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    success &= deleteContents(file);
-                }
-                if (!file.delete()) {
-                    success = false;
-                }
-            }
-        }
-        return success;
-    }
-    
 }

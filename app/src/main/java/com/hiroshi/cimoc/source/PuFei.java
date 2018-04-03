@@ -32,12 +32,12 @@ public class PuFei extends MangaParser {
     public static final int TYPE = 50;
     public static final String DEFAULT_TITLE = "扑飞漫画";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public PuFei(Source source) {
         init(source, new PuFei.Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PuFei extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://m.pufei.net/manhua/".concat(cid);
     }
 
@@ -146,6 +146,11 @@ public class PuFei extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.pufei.net");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -190,11 +195,6 @@ public class PuFei extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.pufei.net");
     }
 
 }

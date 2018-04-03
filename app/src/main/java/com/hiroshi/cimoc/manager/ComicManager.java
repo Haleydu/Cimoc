@@ -28,6 +28,17 @@ public class ComicManager {
         mComicDao = getter.getAppInstance().getDaoSession().getComicDao();
     }
 
+    public static ComicManager getInstance(AppGetter getter) {
+        if (mInstance == null) {
+            synchronized (ComicManager.class) {
+                if (mInstance == null) {
+                    mInstance = new ComicManager(getter);
+                }
+            }
+        }
+        return mInstance;
+    }
+
     public void runInTx(Runnable runnable) {
         mComicDao.getSession().runInTx(runnable);
     }
@@ -38,95 +49,95 @@ public class ComicManager {
 
     public List<Comic> listDownload() {
         return mComicDao.queryBuilder()
-                .where(Properties.Download.isNotNull())
-                .list();
+            .where(Properties.Download.isNotNull())
+            .list();
     }
 
     public List<Comic> listLocal() {
         return mComicDao.queryBuilder()
-                .where(Properties.Local.eq(true))
-                .list();
+            .where(Properties.Local.eq(true))
+            .list();
     }
 
     public Observable<List<Comic>> listLocalInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Local.eq(true))
-                .rx()
-                .list();
+            .where(Properties.Local.eq(true))
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listFavoriteOrHistoryInRx() {
         return mComicDao.queryBuilder()
-                .whereOr(Properties.Favorite.isNotNull(), Properties.History.isNotNull())
-                .rx()
-                .list();
+            .whereOr(Properties.Favorite.isNotNull(), Properties.History.isNotNull())
+            .rx()
+            .list();
     }
 
     public List<Comic> listFavorite() {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull())
-                .list();
+            .where(Properties.Favorite.isNotNull())
+            .list();
     }
 
     public Observable<List<Comic>> listFavoriteInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull())
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
+            .where(Properties.Favorite.isNotNull())
+            .orderDesc(Properties.Highlight, Properties.Favorite)
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listFinishInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull(), Properties.Finish.eq(true))
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
+            .where(Properties.Favorite.isNotNull(), Properties.Finish.eq(true))
+            .orderDesc(Properties.Highlight, Properties.Favorite)
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listContinueInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull(), Properties.Finish.notEq(true))
-                .orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
+            .where(Properties.Favorite.isNotNull(), Properties.Finish.notEq(true))
+            .orderDesc(Properties.Highlight, Properties.Favorite)
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listHistoryInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.History.isNotNull())
-                .orderDesc(Properties.History)
-                .rx()
-                .list();
+            .where(Properties.History.isNotNull())
+            .orderDesc(Properties.History)
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listDownloadInRx() {
         return mComicDao.queryBuilder()
-                .where(Properties.Download.isNotNull())
-                .orderDesc(Properties.Download)
-                .rx()
-                .list();
+            .where(Properties.Download.isNotNull())
+            .orderDesc(Properties.Download)
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listFavoriteByTag(long id) {
         QueryBuilder<Comic> queryBuilder = mComicDao.queryBuilder();
         queryBuilder.join(TagRef.class, TagRefDao.Properties.Cid).where(TagRefDao.Properties.Tid.eq(id));
         return queryBuilder.orderDesc(Properties.Highlight, Properties.Favorite)
-                .rx()
-                .list();
+            .rx()
+            .list();
     }
 
     public Observable<List<Comic>> listFavoriteNotIn(Collection<Long> collections) {
         return mComicDao.queryBuilder()
-                .where(Properties.Favorite.isNotNull(), Properties.Id.notIn(collections))
-                .rx()
-                .list();
+            .where(Properties.Favorite.isNotNull(), Properties.Id.notIn(collections))
+            .rx()
+            .list();
     }
 
     public long countBySource(int type) {
         return mComicDao.queryBuilder()
-                .where(Properties.Source.eq(type), Properties.Favorite.isNotNull())
-                .count();
+            .where(Properties.Source.eq(type), Properties.Favorite.isNotNull())
+            .count();
     }
 
     public Comic load(long id) {
@@ -135,8 +146,8 @@ public class ComicManager {
 
     public Comic load(int source, String cid) {
         return mComicDao.queryBuilder()
-                .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
-                .unique();
+            .where(Properties.Source.eq(source), Properties.Cid.eq(cid))
+            .unique();
     }
 
     public Comic loadOrCreate(int source, String cid) {
@@ -146,11 +157,11 @@ public class ComicManager {
 
     public Observable<Comic> loadLast() {
         return mComicDao.queryBuilder()
-                .where(Properties.History.isNotNull())
-                .orderDesc(Properties.History)
-                .limit(1)
-                .rx()
-                .unique();
+            .where(Properties.History.isNotNull())
+            .orderDesc(Properties.History)
+            .limit(1)
+            .rx()
+            .unique();
     }
 
     public void cancelHighlight() {
@@ -185,17 +196,6 @@ public class ComicManager {
     public void insert(Comic comic) {
         long id = mComicDao.insert(comic);
         comic.setId(id);
-    }
-
-    public static ComicManager getInstance(AppGetter getter) {
-        if (mInstance == null) {
-            synchronized (ComicManager.class) {
-                if (mInstance == null) {
-                    mInstance = new ComicManager(getter);
-                }
-            }
-        }
-        return mInstance;
     }
 
 }

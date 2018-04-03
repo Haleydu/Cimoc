@@ -19,11 +19,19 @@ import butterknife.OnClick;
 
 public class SourceDetailActivity extends BackActivity implements SourceDetailView {
 
+    @BindView(R.id.source_detail_type)
+    Option mSourceType;
+    @BindView(R.id.source_detail_title)
+    Option mSourceTitle;
+    @BindView(R.id.source_detail_favorite)
+    Option mSourceFavorite;
     private SourceDetailPresenter mPresenter;
 
-    @BindView(R.id.source_detail_type) Option mSourceType;
-    @BindView(R.id.source_detail_title) Option mSourceTitle;
-    @BindView(R.id.source_detail_favorite) Option mSourceFavorite;
+    public static Intent createIntent(Context context, int type) {
+        Intent intent = new Intent(context, SourceDetailActivity.class);
+        intent.putExtra(Extra.EXTRA_SOURCE, type);
+        return intent;
+    }
 
     @Override
     protected BasePresenter initPresenter() {
@@ -37,7 +45,8 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
         mPresenter.load(getIntent().getIntExtra(Extra.EXTRA_SOURCE, -1));
     }
 
-    @OnClick(R.id.source_detail_favorite) void onSourceFavoriteClick() {
+    @OnClick(R.id.source_detail_favorite)
+    void onSourceFavoriteClick() {
         // TODO 显示这个图源的漫画
     }
 
@@ -56,12 +65,6 @@ public class SourceDetailActivity extends BackActivity implements SourceDetailVi
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.source_detail);
-    }
-
-    public static Intent createIntent(Context context, int type) {
-        Intent intent = new Intent(context, SourceDetailActivity.class);
-        intent.putExtra(Extra.EXTRA_SOURCE, type);
-        return intent;
     }
 
 }

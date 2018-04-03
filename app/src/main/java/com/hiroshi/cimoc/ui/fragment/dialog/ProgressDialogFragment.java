@@ -29,11 +29,17 @@ import rx.subscriptions.CompositeSubscription;
 
 public class ProgressDialogFragment extends DialogFragment {
 
-    @BindView(R.id.dialog_progress_bar) ProgressBar mProgressBar;
-    @BindView(R.id.dialog_progress_text) TextView mTextView;
+    @BindView(R.id.dialog_progress_bar)
+    ProgressBar mProgressBar;
+    @BindView(R.id.dialog_progress_text)
+    TextView mTextView;
 
     private Unbinder unbinder;
     private CompositeSubscription mCompositeSubscription;
+
+    public static ProgressDialogFragment newInstance() {
+        return new ProgressDialogFragment();
+    }
 
     @Nullable
     @Override
@@ -61,10 +67,6 @@ public class ProgressDialogFragment extends DialogFragment {
         }
         super.onDestroyView();
         unbinder.unbind();
-    }
-
-    public static ProgressDialogFragment newInstance() {
-        return new ProgressDialogFragment();
     }
 
 }

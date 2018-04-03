@@ -7,12 +7,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ImageUrl {
 
-    private static AtomicInteger count = new AtomicInteger(0);
-
     public static final int STATE_NULL = 0;
     public static final int STATE_PAGE_1 = 1;
     public static final int STATE_PAGE_2 = 2;
-
+    private static AtomicInteger count = new AtomicInteger(0);
     private int id; // 唯一标识
     private int num;    // 章节的第几页
     private String[] urls;
@@ -26,7 +24,7 @@ public class ImageUrl {
     private boolean download;   // 下载的图片
 
     public ImageUrl(int num, String url, boolean lazy) {
-        this(num, new String[]{ url }, lazy);
+        this(num, new String[]{url}, lazy);
     }
 
     public ImageUrl(int num, String[] urls, boolean lazy) {
@@ -58,10 +56,6 @@ public class ImageUrl {
         return num;
     }
 
-    public void setUrl(String url) {
-        this.urls = new String[]{ url };
-    }
-
     public String[] getUrls() {
         return urls;
     }
@@ -70,72 +64,76 @@ public class ImageUrl {
         return urls[0];
     }
 
-    public void setChapter(String chapter) {
-        this.chapter = chapter;
+    public void setUrl(String url) {
+        this.urls = new String[]{url};
     }
 
     public String getChapter() {
         return chapter;
     }
 
-    public void setState(int state) {
-        this.state = state;
+    public void setChapter(String chapter) {
+        this.chapter = chapter;
     }
 
     public int getState() {
         return state;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public void setState(int state) {
+        this.state = state;
     }
 
     public int getHeight() {
         return height;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public int getWidth() {
         return width;
     }
 
-    public long getSize() {
-        return height * width;
+    public void setWidth(int width) {
+        this.width = width;
     }
 
-    public void setLazy(boolean lazy) {
-        this.lazy = lazy;
+    public long getSize() {
+        return height * width;
     }
 
     public boolean isLazy() {
         return lazy;
     }
 
-    public void setLoading(boolean loading) {
-        this.loading = loading;
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 
     public boolean isLoading() {
         return loading;
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public void setLoading(boolean loading) {
+        this.loading = loading;
     }
 
     public boolean isSuccess() {
         return success;
     }
 
-    public void setDownload(boolean download) {
-        this.download = download;
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public boolean isDownload() {
         return download;
+    }
+
+    public void setDownload(boolean download) {
+        this.download = download;
     }
 
     @Override

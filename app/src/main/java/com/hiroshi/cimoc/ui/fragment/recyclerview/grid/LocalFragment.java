@@ -108,7 +108,7 @@ public class LocalFragment extends GridFragment implements LocalView {
                         break;
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                                R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                            R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
                 }
@@ -146,7 +146,7 @@ public class LocalFragment extends GridFragment implements LocalView {
 
     @Override
     protected String[] getOperationItems() {
-        return new String[]{ getString(R.string.comic_info), getString(R.string.local_delete) };
+        return new String[]{getString(R.string.comic_info), getString(R.string.local_delete)};
     }
 
 }

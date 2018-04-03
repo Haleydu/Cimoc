@@ -34,12 +34,12 @@ public class U17 extends MangaParser {
     public static final int TYPE = 4;
     public static final String DEFAULT_TITLE = "有妖气";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public U17(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class U17 extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return StringUtils.format("http://www.u17.com/comic/%s.html", cid);
     }
 
@@ -149,17 +149,17 @@ public class U17 extends MangaParser {
         String[] args = format.split(" ");
         String url = "http://www.u17.com/comic/ajax.php?mod=comic_list&act=comic_list_new_fun&a=get_comic_list";
         RequestBody body = new FormBody.Builder()
-                .add("data[group_id]", args[0])
-                .add("data[theme_id]", args[1])
-                .add("data[is_vip]", "no")
-                .add("data[accredit]", "no")
-                .add("data[color]", "no")
-                .add("data[comic_type]", "no")
-                .add("data[series_status]", args[2])
-                .add("data[order]", args[3])
-                .add("data[page_num]", String.valueOf(page))
-                .add("data[read_mode]", "no")
-                .build();
+            .add("data[group_id]", args[0])
+            .add("data[theme_id]", args[1])
+            .add("data[is_vip]", "no")
+            .add("data[accredit]", "no")
+            .add("data[color]", "no")
+            .add("data[comic_type]", "no")
+            .add("data[series_status]", args[2])
+            .add("data[order]", args[3])
+            .add("data[page_num]", String.valueOf(page))
+            .add("data[read_mode]", "no")
+            .build();
         return new Request.Builder().url(url).post(body).addHeader("Referer", "http://www.u17.com").build();
     }
 
@@ -181,6 +181,11 @@ public class U17 extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://www.u17.com");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -191,7 +196,7 @@ public class U17 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("%s %s %s %s",
-                    args[CATEGORY_READER], args[CATEGORY_SUBJECT], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
+                args[CATEGORY_READER], args[CATEGORY_SUBJECT], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override
@@ -257,11 +262,6 @@ public class U17 extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://www.u17.com");
     }
 
 }

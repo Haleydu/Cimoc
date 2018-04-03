@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.adapter;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -28,23 +27,6 @@ public class ChapterAdapter extends BaseAdapter<Switcher<Chapter>> {
     private static final int TYPE_BUTTON = 2017030223;
 
     private boolean isButtonMode = false;
-
-    static class ItemHolder extends BaseAdapter.BaseViewHolder {
-        @BindView(R.id.item_select_title) TextView chapterTitle;
-        @BindView(R.id.item_select_checkbox) CheckBox chapterChoice;
-
-        ItemHolder(View view) {
-            super(view);
-        }
-    }
-
-    static class ButtonHolder extends BaseAdapter.BaseViewHolder {
-        @BindView(R.id.item_chapter_button) ChapterButton chapterButton;
-
-        ButtonHolder(View view) {
-            super(view);
-        }
-    }
 
     public ChapterAdapter(Context context, List<Switcher<Chapter>> list) {
         super(context, list);
@@ -105,6 +87,26 @@ public class ChapterAdapter extends BaseAdapter<Switcher<Chapter>> {
     @Override
     protected boolean isClickValid() {
         return true;
+    }
+
+    static class ItemHolder extends BaseAdapter.BaseViewHolder {
+        @BindView(R.id.item_select_title)
+        TextView chapterTitle;
+        @BindView(R.id.item_select_checkbox)
+        CheckBox chapterChoice;
+
+        ItemHolder(View view) {
+            super(view);
+        }
+    }
+
+    static class ButtonHolder extends BaseAdapter.BaseViewHolder {
+        @BindView(R.id.item_chapter_button)
+        ChapterButton chapterButton;
+
+        ButtonHolder(View view) {
+            super(view);
+        }
     }
 
 }

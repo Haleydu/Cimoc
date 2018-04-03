@@ -106,87 +106,87 @@ public class TaskPresenter extends BasePresenter<TaskView> {
     public void load(long id, final boolean asc) {
         mComic = mComicManager.load(id);
         mCompositeSubscription.add(mTaskManager.listInRx(id)
-                .doOnNext(new Action1<List<Task>>() {
-                    @Override
-                    public void call(List<Task> list) {
-                        updateTaskList(list);
-                        if (!mComic.getLocal()) {
-                            final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
-                                    mBaseView.getAppInstance().getDocumentFile(), mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
-                            if (sList != null) {
-                                Collections.sort(list, new Comparator<Task>() {
-                                    @Override
-                                    public int compare(Task lhs, Task rhs) {
-                                        return asc ? sList.indexOf(rhs.getPath()) - sList.indexOf(lhs.getPath()) :
-                                                sList.indexOf(lhs.getPath()) - sList.indexOf(rhs.getPath());
-                                    }
-                                });
-                            }
-                        } else {
+            .doOnNext(new Action1<List<Task>>() {
+                @Override
+                public void call(List<Task> list) {
+                    updateTaskList(list);
+                    if (!mComic.getLocal()) {
+                        final List<String> sList = Download.getComicIndex(mBaseView.getAppInstance().getContentResolver(),
+                            mBaseView.getAppInstance().getDocumentFile(), mComic, mSourceManager.getParser(mComic.getSource()).getTitle());
+                        if (sList != null) {
                             Collections.sort(list, new Comparator<Task>() {
                                 @Override
                                 public int compare(Task lhs, Task rhs) {
-                                    return asc ? lhs.getTitle().compareTo(rhs.getTitle()) :
-                                            rhs.getTitle().compareTo(lhs.getTitle());
+                                    return asc ? sList.indexOf(rhs.getPath()) - sList.indexOf(lhs.getPath()) :
+                                        sList.indexOf(lhs.getPath()) - sList.indexOf(rhs.getPath());
                                 }
                             });
                         }
+                    } else {
+                        Collections.sort(list, new Comparator<Task>() {
+                            @Override
+                            public int compare(Task lhs, Task rhs) {
+                                return asc ? lhs.getTitle().compareTo(rhs.getTitle()) :
+                                    rhs.getTitle().compareTo(lhs.getTitle());
+                            }
+                        });
                     }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Task>>() {
-                    @Override
-                    public void call(List<Task> list) {
-                        mBaseView.onTaskLoadSuccess(list, mComic.getLocal());
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onTaskLoadFail();
-                    }
-                }));
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Task>>() {
+                @Override
+                public void call(List<Task> list) {
+                    mBaseView.onTaskLoadSuccess(list, mComic.getLocal());
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onTaskLoadFail();
+                }
+            }));
     }
 
     public void deleteTask(List<Chapter> list, final boolean isEmpty) {
         final long id = mComic.getId();
         mCompositeSubscription.add(Observable.just(list)
-                .subscribeOn(Schedulers.io())
-                .doOnNext(new Action1<List<Chapter>>() {
-                    @Override
-                    public void call(List<Chapter> list) {
-                        deleteFromDatabase(list, isEmpty);
-                        if (!mComic.getLocal()) {
-                            if (isEmpty) {
-                                Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                                        mSourceManager.getParser(mComic.getSource()).getTitle());
-                            } else {
-                                Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                                        list, mSourceManager.getParser(mComic.getSource()).getTitle());
-                            }
-                        }
-                    }
-                })
-                .compose(new ToAnotherList<>(new Func1<Chapter, Long>() {
-                    @Override
-                    public Long call(Chapter chapter) {
-                        return chapter.getTid();
-                    }
-                }))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Long>>() {
-                    @Override
-                    public void call(List<Long> list) {
+            .subscribeOn(Schedulers.io())
+            .doOnNext(new Action1<List<Chapter>>() {
+                @Override
+                public void call(List<Chapter> list) {
+                    deleteFromDatabase(list, isEmpty);
+                    if (!mComic.getLocal()) {
                         if (isEmpty) {
-                            RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
+                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                mSourceManager.getParser(mComic.getSource()).getTitle());
+                        } else {
+                            Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
+                                list, mSourceManager.getParser(mComic.getSource()).getTitle());
                         }
-                        mBaseView.onTaskDeleteSuccess(list);
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onTaskDeleteFail();
+                }
+            })
+            .compose(new ToAnotherList<>(new Func1<Chapter, Long>() {
+                @Override
+                public Long call(Chapter chapter) {
+                    return chapter.getTid();
+                }
+            }))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Long>>() {
+                @Override
+                public void call(List<Long> list) {
+                    if (isEmpty) {
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_REMOVE, id));
                     }
-                }));
+                    mBaseView.onTaskDeleteSuccess(list);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onTaskDeleteFail();
+                }
+            }));
     }
 
     private void deleteFromDatabase(final List<Chapter> list, final boolean isEmpty) {
@@ -200,7 +200,7 @@ public class TaskPresenter extends BasePresenter<TaskView> {
                     mComic.setDownload(null);
                     mComicManager.updateOrDelete(mComic);
                     Download.delete(mBaseView.getAppInstance().getDocumentFile(), mComic,
-                            mSourceManager.getParser(mComic.getSource()).getTitle());
+                        mSourceManager.getParser(mComic.getSource()).getTitle());
                 }
             }
         });

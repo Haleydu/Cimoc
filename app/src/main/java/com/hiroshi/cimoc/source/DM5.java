@@ -40,22 +40,22 @@ public class DM5 extends MangaParser {
     public static final int TYPE = 5;
     public static final String DEFAULT_TITLE = "动漫屋";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public DM5(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = "http://m.dm5.com/pagerdata.ashx";
         RequestBody body = new FormBody.Builder()
-                .add("t", "7")
-                .add("pageindex", String.valueOf(page))
-                .add("title", keyword)
-                .build();
+            .add("t", "7")
+            .add("pageindex", String.valueOf(page))
+            .add("title", keyword)
+            .build();
         return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.dm5.com").build();
     }
 
@@ -88,7 +88,7 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://www.dm5.com/".concat(cid);
     }
 
@@ -151,7 +151,7 @@ public class DM5 extends MangaParser {
         String url = "http://m.dm5.com/".concat(path);
         return new Request
             .Builder()
-            .addHeader("Referer",StringUtils.format("http://m.dm5.com/%s", path))
+            .addHeader("Referer", StringUtils.format("http://m.dm5.com/%s", path))
             .url(url).build();
     }
 
@@ -161,7 +161,7 @@ public class DM5 extends MangaParser {
         String str = StringUtils.match("eval\\(.*\\)", html, 0);
         if (str != null) {
             try {
-                str = DecryptionUtils.evalDecrypt(str,"newImgs");
+                str = DecryptionUtils.evalDecrypt(str, "newImgs");
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
                     list.add(new ImageUrl(i + 1, array[i], false));
@@ -176,8 +176,8 @@ public class DM5 extends MangaParser {
     @Override
     public Request getLazyRequest(String url) {
         return new Request.Builder().url(url)
-                .addHeader("Referer", "http://www.dm5.com")
-                .build();
+            .addHeader("Referer", "http://www.dm5.com")
+            .build();
     }
 
     @Override
@@ -214,6 +214,21 @@ public class DM5 extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader(String url) {
+        String cid = "m".concat(StringUtils.match("cid=(\\d+)", url, 1));
+        return Headers.of("Referer", "http://m.dm5.com/".concat(cid));
+    }
+
+    @Override
+    public Headers getHeader(List<ImageUrl> list) {
+        String cid = "";
+        if (list != null) {
+            cid = list.get(0).getChapter();
+        }
+        return Headers.of("Referer", "http://m.dm5.com/".concat(cid));
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -224,7 +239,7 @@ public class DM5 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             String path = args[CATEGORY_SUBJECT].concat(" ").concat(args[CATEGORY_AREA]).concat(" ").concat(args[CATEGORY_PROGRESS])
-                    .concat(" ").concat(args[CATEGORY_ORDER]).trim();
+                .concat(" ").concat(args[CATEGORY_ORDER]).trim();
             path = path.replaceAll("\\s+", "-");
             return StringUtils.format("http://www.dm5.com/manhua-list-%s-p%%d", path);
         }
@@ -301,21 +316,6 @@ public class DM5 extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader(String url) {
-        String cid = "m".concat(StringUtils.match("cid=(\\d+)",url,1));
-        return Headers.of("Referer", "http://m.dm5.com/".concat(cid));
-    }
-
-    @Override
-    public Headers getHeader(List<ImageUrl> list){
-        String cid = "";
-        if(list != null){
-            cid = list.get(0).getChapter();
-        }
-        return Headers.of("Referer", "http://m.dm5.com/".concat(cid));
     }
 
 }

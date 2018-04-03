@@ -44,7 +44,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
             return;
         }
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.history_clear_confirm, true, DIALOG_REQUEST_CLEAR);
+            R.string.history_clear_confirm, true, DIALOG_REQUEST_CLEAR);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -60,7 +60,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
                         break;
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                                R.string.history_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                            R.string.history_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
                 }
@@ -109,7 +109,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
 
     @Override
     protected String[] getOperationItems() {
-        return new String[]{ getString(R.string.comic_info), getString(R.string.history_delete) };
+        return new String[]{getString(R.string.comic_info), getString(R.string.history_delete)};
     }
 
 }

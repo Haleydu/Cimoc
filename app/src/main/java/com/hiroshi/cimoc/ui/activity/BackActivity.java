@@ -16,7 +16,9 @@ import butterknife.BindView;
  */
 public abstract class BackActivity extends BaseActivity {
 
-    @Nullable @BindView(R.id.custom_progress_bar) ProgressBar mProgressBar;
+    @Nullable
+    @BindView(R.id.custom_progress_bar)
+    ProgressBar mProgressBar;
 
     @Override
     protected void initToolbar() {

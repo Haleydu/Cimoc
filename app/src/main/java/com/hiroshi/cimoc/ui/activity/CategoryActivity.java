@@ -3,10 +3,8 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.AppCompatSpinner;
-import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
@@ -26,13 +24,20 @@ import butterknife.OnClick;
 public class CategoryActivity extends BackActivity implements AdapterView.OnItemSelectedListener {
 
     @BindViews({R.id.category_spinner_subject, R.id.category_spinner_area, R.id.category_spinner_reader,
-            R.id.category_spinner_year, R.id.category_spinner_progress, R.id.category_spinner_order})
+        R.id.category_spinner_year, R.id.category_spinner_progress, R.id.category_spinner_order})
     List<AppCompatSpinner> mSpinnerList;
     @BindViews({R.id.category_subject, R.id.category_area, R.id.category_reader,
-            R.id.category_year, R.id.category_progress, R.id.category_order})
+        R.id.category_year, R.id.category_progress, R.id.category_order})
     List<View> mCategoryView;
 
     private Category mCategory;
+
+    public static Intent createIntent(Context context, int source, String title) {
+        Intent intent = new Intent(context, CategoryActivity.class);
+        intent.putExtra(Extra.EXTRA_SOURCE, source);
+        intent.putExtra(Extra.EXTRA_KEYWORD, title);
+        return intent;
+    }
 
     @Override
     protected void initView() {
@@ -46,14 +51,14 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
 
     private void initSpinner() {
         int[] type = new int[]{Category.CATEGORY_SUBJECT, Category.CATEGORY_AREA, Category.CATEGORY_READER,
-                Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};
+            Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};
         for (int i = 0; i != type.length; ++i) {
-             if (mCategory.hasAttribute(type[i])) {
-                 mCategoryView.get(i).setVisibility(View.VISIBLE);
-                 if (!mCategory.isComposite()) {
-                     mSpinnerList.get(i).setOnItemSelectedListener(this);
-                 }
-                 mSpinnerList.get(i).setAdapter(new CategoryAdapter(this, mCategory.getAttrList(type[i])));
+            if (mCategory.hasAttribute(type[i])) {
+                mCategoryView.get(i).setVisibility(View.VISIBLE);
+                if (!mCategory.isComposite()) {
+                    mSpinnerList.get(i).setOnItemSelectedListener(this);
+                }
+                mSpinnerList.get(i).setAdapter(new CategoryAdapter(this, mCategory.getAttrList(type[i])));
             }
         }
     }
@@ -70,9 +75,11 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
 
-    @OnClick(R.id.category_action_button) void onActionButtonClick() {
+    @OnClick(R.id.category_action_button)
+    void onActionButtonClick() {
         String[] args = new String[mSpinnerList.size()];
         for (int i = 0; i != args.length; ++i) {
             args[i] = getSpinnerValue(mSpinnerList.get(i));
@@ -98,13 +105,6 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_category;
-    }
-
-    public static Intent createIntent(Context context, int source, String title) {
-        Intent intent = new Intent(context, CategoryActivity.class);
-        intent.putExtra(Extra.EXTRA_SOURCE, source);
-        intent.putExtra(Extra.EXTRA_KEYWORD, title);
-        return intent;
     }
 
 }

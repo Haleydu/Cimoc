@@ -46,6 +46,13 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     private DaoSession mDaoSession;
     private ActivityLifecycle mActivityLifecycle;
 
+    public static OkHttpClient getHttpClient() {
+        if (mHttpClient == null) {
+            mHttpClient = new OkHttpClient();
+        }
+        return mHttpClient;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -128,16 +135,9 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
             mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(),
-                    SourceManager.getInstance(this).new HeaderGetter(), true);
+                SourceManager.getInstance(this).new HeaderGetter(), true);
         }
         return mBuilderProvider;
-    }
-
-    public static OkHttpClient getHttpClient() {
-        if (mHttpClient == null) {
-            mHttpClient = new OkHttpClient();
-        }
-        return mHttpClient;
     }
 
 }

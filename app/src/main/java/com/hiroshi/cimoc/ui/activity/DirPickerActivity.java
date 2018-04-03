@@ -45,7 +45,8 @@ public class DirPickerActivity extends CoordinatorActivity {
         hideProgressBar();
     }
 
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button)
+    void onActionButtonClick() {
         Intent intent = new Intent();
         intent.putExtra(Extra.EXTRA_PICKER_PATH, mFile.getAbsolutePath());
         setResult(Activity.RESULT_OK, intent);

@@ -27,16 +27,6 @@ import rx.schedulers.Schedulers;
 
 public class Local {
 
-    private static class ScanInfo {
-        DocumentFile dir = null;
-        String cover = null;
-        int count = 0;
-
-        ScanInfo(DocumentFile dir) {
-            this.dir = dir;
-        }
-    }
-
     private static Pattern chapterPattern = null;
 
     public static Observable<List<Pair<Comic, ArrayList<Task>>>> scan(final DocumentFile root) {
@@ -127,8 +117,8 @@ public class Local {
     }
 
     private static List<DocumentFile> classify(List<ScanInfo> chapter,
-                                              List<ScanInfo> comic,
-                                              DocumentFile dir) {
+                                               List<ScanInfo> comic,
+                                               DocumentFile dir) {
         List<DocumentFile> other = new LinkedList<>();
         for (DocumentFile file : dir.listFiles()) {
             if (file.isDirectory()) {
@@ -158,12 +148,12 @@ public class Local {
 
     private static Comic buildComic(DocumentFile dir, String cover) {
         return new Comic(null, Locality.TYPE, dir.getUri().toString(), dir.getName(), cover,
-                false, true, null, null, null, null, null, null, null, null,null);
+            false, true, null, null, null, null, null, null, null, null, null);
     }
 
     private static Task buildTask(DocumentFile dir, int count, boolean single) {
         return single ? new Task(null, -1, dir.getUri().toString(), "第01话", count, count) :
-                new Task(null, -1, dir.getUri().toString(), dir.getName(), count, count);
+            new Task(null, -1, dir.getUri().toString(), dir.getName(), count, count);
     }
 
     private static Pair<Comic, ArrayList<Task>> merge(DocumentFile dir, List<ScanInfo> list1, List<ScanInfo> list2) {
@@ -182,6 +172,16 @@ public class Local {
             Pair<Comic, ArrayList<Task>> pair = Pair.create(buildComic(info.dir, info.cover), new ArrayList<Task>());
             pair.second.add(buildTask(info.dir, info.count, true));
             result.add(pair);
+        }
+    }
+
+    private static class ScanInfo {
+        DocumentFile dir = null;
+        String cover = null;
+        int count = 0;
+
+        ScanInfo(DocumentFile dir) {
+            this.dir = dir;
         }
     }
 

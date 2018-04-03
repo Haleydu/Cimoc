@@ -79,34 +79,34 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     public void deleteComic(long id) {
         mCompositeSubscription.add(Observable.just(id)
-                .doOnNext(new Action1<Long>() {
-                    @Override
-                    public void call(final Long id) {
-                        Comic comic = mComicManager.callInTx(new Callable<Comic>() {
-                            @Override
-                            public Comic call() throws Exception {
-                                Comic comic = mComicManager.load(id);
-                                mTaskManager.deleteByComicId(id);
-                                comic.setDownload(null);
-                                mComicManager.updateOrDelete(comic);
-                                return comic;
-                            }
-                        });
-                        Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic, mSourceManager.getParser(comic.getSource()).getTitle());
-                    }
-                }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Long>() {
-                    @Override
-                    public void call(Long id) {
-                        mBaseView.onDownloadDeleteSuccess(id);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onExecuteFail();
-                    }
-                }));
+            .doOnNext(new Action1<Long>() {
+                @Override
+                public void call(final Long id) {
+                    Comic comic = mComicManager.callInTx(new Callable<Comic>() {
+                        @Override
+                        public Comic call() throws Exception {
+                            Comic comic = mComicManager.load(id);
+                            mTaskManager.deleteByComicId(id);
+                            comic.setDownload(null);
+                            mComicManager.updateOrDelete(comic);
+                            return comic;
+                        }
+                    });
+                    Download.delete(mBaseView.getAppInstance().getDocumentFile(), comic, mSourceManager.getParser(comic.getSource()).getTitle());
+                }
+            }).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<Long>() {
+                @Override
+                public void call(Long id) {
+                    mBaseView.onDownloadDeleteSuccess(id);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onExecuteFail();
+                }
+            }));
     }
 
     public Comic load(long id) {
@@ -115,67 +115,67 @@ public class DownloadPresenter extends BasePresenter<DownloadView> {
 
     public void load() {
         mCompositeSubscription.add(mComicManager.listDownloadInRx()
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
-                    @Override
-                    public MiniComic call(Comic comic) {
-                        return new MiniComic(comic);
-                    }
-                }))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
-                    @Override
-                    public void call(List<MiniComic> list) {
-                        mBaseView.onComicLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onComicLoadFail();
-                    }
-                }));
+            .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                @Override
+                public MiniComic call(Comic comic) {
+                    return new MiniComic(comic);
+                }
+            }))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<MiniComic>>() {
+                @Override
+                public void call(List<MiniComic> list) {
+                    mBaseView.onComicLoadSuccess(list);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onComicLoadFail();
+                }
+            }));
     }
 
     public void loadTask() {
         mCompositeSubscription.add(mTaskManager.listInRx()
-                .flatMap(new Func1<List<Task>, Observable<Task>>() {
-                    @Override
-                    public Observable<Task> call(List<Task> list) {
-                        return Observable.from(list);
-                    }
-                })
-                .filter(new Func1<Task, Boolean>() {
-                    @Override
-                    public Boolean call(Task task) {
-                        return !task.isFinish();
-                    }
-                })
-                .toList()
-                .doOnNext(new Action1<List<Task>>() {
-                    @Override
-                    public void call(List<Task> list) {
-                        LongSparseArray<Comic> array = ComicUtils.buildComicMap(mComicManager.listDownload());
-                        for (Task task : list) {
-                            Comic comic = array.get(task.getKey());
-                            if (comic != null) {
-                                task.setSource(comic.getSource());
-                                task.setCid(comic.getCid());
-                            }
-                            task.setState(Task.STATE_WAIT);
+            .flatMap(new Func1<List<Task>, Observable<Task>>() {
+                @Override
+                public Observable<Task> call(List<Task> list) {
+                    return Observable.from(list);
+                }
+            })
+            .filter(new Func1<Task, Boolean>() {
+                @Override
+                public Boolean call(Task task) {
+                    return !task.isFinish();
+                }
+            })
+            .toList()
+            .doOnNext(new Action1<List<Task>>() {
+                @Override
+                public void call(List<Task> list) {
+                    LongSparseArray<Comic> array = ComicUtils.buildComicMap(mComicManager.listDownload());
+                    for (Task task : list) {
+                        Comic comic = array.get(task.getKey());
+                        if (comic != null) {
+                            task.setSource(comic.getSource());
+                            task.setCid(comic.getCid());
                         }
+                        task.setState(Task.STATE_WAIT);
                     }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Task>>() {
-                    @Override
-                    public void call(List<Task> list) {
-                        mBaseView.onTaskLoadSuccess(new ArrayList<>(list));
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onExecuteFail();
-                    }
-                }));
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Task>>() {
+                @Override
+                public void call(List<Task> list) {
+                    mBaseView.onTaskLoadSuccess(new ArrayList<>(list));
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onExecuteFail();
+                }
+            }));
     }
 
 }

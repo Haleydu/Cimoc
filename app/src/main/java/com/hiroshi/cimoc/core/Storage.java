@@ -100,7 +100,7 @@ public class Storage {
 
     private static boolean isDirSame(DocumentFile root, DocumentFile dst) {
         return root.getUri().getScheme().equals("file") && dst.getUri().getPath().endsWith("primary:Cimoc") ||
-                root.getUri().getPath().equals(dst.getUri().getPath());
+            root.getUri().getPath().equals(dst.getUri().getPath());
     }
 
     public static Observable<String> moveRootDir(final ContentResolver resolver, final DocumentFile root, final DocumentFile dst) {
@@ -110,8 +110,8 @@ public class Storage {
                 if (dst.canRead() && !isDirSame(root, dst)) {
                     root.refresh();
                     if (copyDir(resolver, root, dst, BACKUP, subscriber) &&
-                            copyDir(resolver, root, dst, DOWNLOAD, subscriber) &&
-                            copyDir(resolver, root, dst, PICTURE, subscriber)) {
+                        copyDir(resolver, root, dst, DOWNLOAD, subscriber) &&
+                        copyDir(resolver, root, dst, PICTURE, subscriber)) {
                         deleteDir(root, BACKUP, subscriber);
                         deleteDir(root, DOWNLOAD, subscriber);
                         deleteDir(root, PICTURE, subscriber);
@@ -124,7 +124,7 @@ public class Storage {
     }
 
     public static Observable<Uri> savePicture(final ContentResolver resolver, final DocumentFile root,
-                                                 final InputStream stream, final String filename) {
+                                              final InputStream stream, final String filename) {
         return Observable.create(new Observable.OnSubscribe<Uri>() {
             @Override
             public void call(Subscriber<? super Uri> subscriber) {

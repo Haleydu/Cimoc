@@ -12,13 +12,20 @@ import org.greenrobot.greendao.annotation.Transient;
 @Entity
 public class Comic {
 
-    @Id(autoincrement = true) private Long id;
-    @NotNull private int source;
-    @NotNull private String cid;
-    @NotNull private String title;
-    @NotNull private String cover;
-    @NotNull private boolean highlight;
-    @NotNull private boolean local;
+    @Id(autoincrement = true)
+    private Long id;
+    @NotNull
+    private int source;
+    @NotNull
+    private String cid;
+    @NotNull
+    private String title;
+    @NotNull
+    private String cover;
+    @NotNull
+    private boolean highlight;
+    @NotNull
+    private boolean local;
     private String update;
     private Boolean finish;
     private Long favorite;
@@ -29,12 +36,14 @@ public class Comic {
     private String chapter;
     private String url;
 
-    @Transient private String intro;
-    @Transient private String author;
+    @Transient
+    private String intro;
+    @Transient
+    private String author;
 
     public Comic(int source, String cid, String title, String cover, String update, String author) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, update,
-                null, null, null, null, null, null, null, null);
+            null, null, null, null, null, null, null, null);
         this.author = author;
     }
 
@@ -45,13 +54,13 @@ public class Comic {
 
     public Comic(int source, String cid, String title, String cover, long download) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, null,
-                null, null, null, download, null, null, null, null);
+            null, null, null, download, null, null, null, null);
     }
 
     @Generated(hash = 2020487280)
     public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover, boolean highlight,
-            boolean local, String update, Boolean finish, Long favorite, Long history, Long download, String last, Integer page,
-            String chapter, String url) {
+                 boolean local, String update, Boolean finish, Long favorite, Long history, Long download, String last, Integer page,
+                 String chapter, String url) {
         this.id = id;
         this.source = source;
         this.cid = cid;
@@ -233,7 +242,11 @@ public class Comic {
         this.chapter = chapter;
     }
 
-    public String getUrl() { return this.url; }
+    public String getUrl() {
+        return this.url;
+    }
 
-    public void setUrl(String url) { this.url = url; }
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

@@ -22,6 +22,16 @@ public class SliderDialogFragment extends DialogFragment implements DialogInterf
 
     private DiscreteSeekBar mSeekBar;
 
+    public static SliderDialogFragment newInstance(int title, int min, int max, int progress, int requestCode) {
+        SliderDialogFragment fragment = new SliderDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
+        bundle.putIntArray(DialogCaller.EXTRA_DIALOG_ITEMS, new int[]{min, max, progress});
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_slider, null);
@@ -33,8 +43,8 @@ public class SliderDialogFragment extends DialogFragment implements DialogInterf
         mSeekBar.setProgress(item[2]);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-                .setView(view)
-                .setPositiveButton(R.string.dialog_positive, this);
+            .setView(view)
+            .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 
@@ -45,16 +55,6 @@ public class SliderDialogFragment extends DialogFragment implements DialogInterf
         bundle.putInt(DialogCaller.EXTRA_DIALOG_RESULT_VALUE, mSeekBar.getProgress());
         DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
-    }
-
-    public static SliderDialogFragment newInstance(int title, int min, int max, int progress, int requestCode) {
-        SliderDialogFragment fragment = new SliderDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
-        bundle.putIntArray(DialogCaller.EXTRA_DIALOG_ITEMS, new int[]{ min, max, progress });
-        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
-        fragment.setArguments(bundle);
-        return fragment;
     }
 
 }

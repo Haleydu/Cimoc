@@ -64,22 +64,22 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void lazyLoad(final ImageUrl imageUrl) {
         mCompositeSubscription.add(Manga.loadLazyUrl(mSourceManager.getParser(mComic.getSource()), imageUrl.getUrl())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
-                    @Override
-                    public void call(String url) {
-                        if (url == null) {
-                            mBaseView.onImageLoadFail(imageUrl.getId());
-                        } else {
-                            mBaseView.onImageLoadSuccess(imageUrl.getId(), url);
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<String>() {
+                @Override
+                public void call(String url) {
+                    if (url == null) {
                         mBaseView.onImageLoadFail(imageUrl.getId());
+                    } else {
+                        mBaseView.onImageLoadSuccess(imageUrl.getId(), url);
                     }
-                }));
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onImageLoadFail(imageUrl.getId());
+                }
+            }));
     }
 
     public void loadInit(long id, Chapter[] array) {
@@ -123,13 +123,13 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private Observable<List<ImageUrl>> getObservable(Chapter chapter) {
         if (mComic.getLocal()) {
             DocumentFile dir = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ?
-                    DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
-                    DocumentFile.fromFile(new File(Uri.parse(chapter.getPath()).getPath()));
+                DocumentFile.fromSubTreeUri(mBaseView.getAppInstance(), Uri.parse(chapter.getPath())) :
+                DocumentFile.fromFile(new File(Uri.parse(chapter.getPath()).getPath()));
             return Local.images(dir, chapter);
         }
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
-                mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
-                Manga.getChapterImage(mComic,mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
+            mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
+            Manga.getChapterImage(mComic, mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
     }
 
     public void toNextChapter() {
@@ -157,20 +157,20 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void savePicture(InputStream inputStream, String url, String title, int page) {
         mCompositeSubscription.add(Storage.savePicture(mBaseView.getAppInstance().getContentResolver(),
-                mBaseView.getAppInstance().getDocumentFile(), inputStream, buildPictureName(title, page, url))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Uri>() {
-                    @Override
-                    public void call(Uri uri) {
-                        mBaseView.onPictureSaveSuccess(uri);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                        mBaseView.onPictureSaveFail();
-                    }
-                }));
+            mBaseView.getAppInstance().getDocumentFile(), inputStream, buildPictureName(title, page, url))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<Uri>() {
+                @Override
+                public void call(Uri uri) {
+                    mBaseView.onPictureSaveSuccess(uri);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    throwable.printStackTrace();
+                    mBaseView.onPictureSaveFail();
+                }
+            }));
     }
 
     private String buildPictureName(String title, int page, String url) {
@@ -193,44 +193,44 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private void images(Observable<List<ImageUrl>> observable) {
         mCompositeSubscription.add(observable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<ImageUrl>>() {
-                    @Override
-                    public void call(List<ImageUrl> list) {
-                        Chapter chapter;
-                        switch (status) {
-                            case LOAD_INIT:
-                                chapter = mChapterManger.moveNext();
-                                chapter.setCount(list.size());
-                                if (!chapter.getTitle().equals(mComic.getTitle())) {
-                                    mComic.setChapter(chapter.getTitle());
-                                    mComicManager.update(mComic);
-                                }
-                                mBaseView.onChapterChange(chapter);
-                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
-                                break;
-                            case LOAD_PREV:
-                                chapter = mChapterManger.movePrev();
-                                chapter.setCount(list.size());
-                                mBaseView.onPrevLoadSuccess(list);
-                                break;
-                            case LOAD_NEXT:
-                                chapter = mChapterManger.moveNext();
-                                chapter.setCount(list.size());
-                                mBaseView.onNextLoadSuccess(list);
-                                break;
-                        }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<ImageUrl>>() {
+                @Override
+                public void call(List<ImageUrl> list) {
+                    Chapter chapter;
+                    switch (status) {
+                        case LOAD_INIT:
+                            chapter = mChapterManger.moveNext();
+                            chapter.setCount(list.size());
+                            if (!chapter.getTitle().equals(mComic.getTitle())) {
+                                mComic.setChapter(chapter.getTitle());
+                                mComicManager.update(mComic);
+                            }
+                            mBaseView.onChapterChange(chapter);
+                            mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
+                            break;
+                        case LOAD_PREV:
+                            chapter = mChapterManger.movePrev();
+                            chapter.setCount(list.size());
+                            mBaseView.onPrevLoadSuccess(list);
+                            break;
+                        case LOAD_NEXT:
+                            chapter = mChapterManger.moveNext();
+                            chapter.setCount(list.size());
+                            mBaseView.onNextLoadSuccess(list);
+                            break;
+                    }
+                    status = LOAD_NULL;
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onParseError();
+                    if (status != LOAD_INIT && ++count < 2) {
                         status = LOAD_NULL;
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onParseError();
-                        if (status != LOAD_INIT && ++count < 2) {
-                            status = LOAD_NULL;
-                        }
-                    }
-                }));
+                }
+            }));
     }
 
     private class ChapterManger {

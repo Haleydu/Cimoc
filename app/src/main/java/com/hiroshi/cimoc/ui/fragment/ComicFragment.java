@@ -43,8 +43,10 @@ public class ComicFragment extends BaseFragment implements ComicView {
 
     private static final int DIALOG_REQUEST_FILTER = 0;
 
-    @BindView(R.id.comic_tab_layout) TabLayout mTabLayout;
-    @BindView(R.id.comic_view_pager) ViewPager mViewPager;
+    @BindView(R.id.comic_tab_layout)
+    TabLayout mTabLayout;
+    @BindView(R.id.comic_view_pager)
+    ViewPager mViewPager;
 
     private ComicPresenter mPresenter;
     private TabPagerAdapter mTabAdapter;
@@ -65,8 +67,8 @@ public class ComicFragment extends BaseFragment implements ComicView {
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_download));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.comic_tab_local));
         mTabAdapter = new TabPagerAdapter(getFragmentManager(),
-                new GridFragment[]{ new HistoryFragment(), new FavoriteFragment(), new DownloadFragment(), new LocalFragment() },
-                new String[]{ getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download), getString(R.string.comic_tab_local) });
+            new GridFragment[]{new HistoryFragment(), new FavoriteFragment(), new DownloadFragment(), new LocalFragment()},
+            new String[]{getString(R.string.comic_tab_history), getString(R.string.comic_tab_favorite), getString(R.string.comic_tab_download), getString(R.string.comic_tab_local)});
         mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(mTabAdapter);
         int home = mPreference.getInt(PreferenceManager.PREF_OTHER_LAUNCH, PreferenceManager.HOME_FAVORITE);
@@ -112,7 +114,8 @@ public class ComicFragment extends BaseFragment implements ComicView {
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_cimqus_url) + "/cimoc/cimoc-bbs"));
                 try {
                     startActivity(intent);
-                } catch (Exception e) { }
+                } catch (Exception e) {
+                }
                 break;
             case R.id.comic_cancel_highlight:
                 ((FavoriteFragment) mTabAdapter.getItem(1)).cancelAllHighlight();
@@ -134,7 +137,7 @@ public class ComicFragment extends BaseFragment implements ComicView {
             case DIALOG_REQUEST_FILTER:
                 int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
                 Intent intent = PartFavoriteActivity.createIntent(getActivity(),
-                        mTagList.get(index).getId(), mTagList.get(index).getTitle());
+                    mTagList.get(index).getId(), mTagList.get(index).getTitle());
                 startActivity(intent);
                 break;
         }

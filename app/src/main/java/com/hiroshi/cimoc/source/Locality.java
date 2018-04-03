@@ -35,7 +35,7 @@ public class Locality extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return null;
     }
 
@@ -45,7 +45,8 @@ public class Locality extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {}
+    public void parseInfo(String html, Comic comic) {
+    }
 
     @Override
     public List<Chapter> parseChapter(String html) {

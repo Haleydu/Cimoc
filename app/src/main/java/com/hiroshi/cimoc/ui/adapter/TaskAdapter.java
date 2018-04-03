@@ -29,19 +29,6 @@ public class TaskAdapter extends BaseAdapter<Task> {
     private String last;
     private int colorId;
 
-    static class TaskHolder extends BaseViewHolder {
-        @BindView(R.id.task_page) TextView taskPage;
-        @BindView(R.id.task_title) TextView taskTitle;
-        @BindView(R.id.task_state) TextView taskState;
-        @BindView(R.id.task_progress) ProgressBar taskProgress;
-        @BindView(R.id.task_last) View taskLast;
-
-        TaskHolder(View view, int color) {
-            super(view);
-            taskProgress.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-        }
-    }
-
     public TaskAdapter(Context context, List<Task> list) {
         super(context, list);
     }
@@ -139,6 +126,24 @@ public class TaskAdapter extends BaseAdapter<Task> {
                 return R.string.task_wait;
             case Task.STATE_ERROR:
                 return R.string.task_error;
+        }
+    }
+
+    static class TaskHolder extends BaseViewHolder {
+        @BindView(R.id.task_page)
+        TextView taskPage;
+        @BindView(R.id.task_title)
+        TextView taskTitle;
+        @BindView(R.id.task_state)
+        TextView taskState;
+        @BindView(R.id.task_progress)
+        ProgressBar taskProgress;
+        @BindView(R.id.task_last)
+        View taskLast;
+
+        TaskHolder(View view, int color) {
+            super(view);
+            taskProgress.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         }
     }
 

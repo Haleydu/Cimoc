@@ -11,9 +11,12 @@ import org.greenrobot.greendao.annotation.NotNull;
 @Entity
 public class TagRef {
 
-    @Id(autoincrement = true) private Long id;
-    @NotNull private long tid;
-    @NotNull private long cid;
+    @Id(autoincrement = true)
+    private Long id;
+    @NotNull
+    private long tid;
+    @NotNull
+    private long cid;
 
     @Generated(hash = 1744842042)
     public TagRef(Long id, long tid, long cid) {

@@ -33,21 +33,21 @@ public class IKanman extends MangaParser {
     public static final int TYPE = 0;
     public static final String DEFAULT_TITLE = "看漫画";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public IKanman(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("http://m.manhuagui.com/s/%s.html?page=%d&ajax=1", keyword, page);
         return new Request.Builder()
-                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-                .url(url)
-                .build();
+            .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+            .url(url)
+            .build();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://www.manhuagui.com/comic/".concat(cid);
     }
 
@@ -75,9 +75,9 @@ public class IKanman extends MangaParser {
     public Request getInfoRequest(String cid) {
         String url = "http://www.manhuagui.com/comic/".concat(cid);
         return new Request.Builder()
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
-                .url(url)
-                .build();
+            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
+            .url(url)
+            .build();
     }
 
     @Override
@@ -119,9 +119,9 @@ public class IKanman extends MangaParser {
         String url = StringUtils.format("http://m.manhuagui.com/comic/%s/%s.html", cid, path);
         return new Request.Builder()
 //                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-                .addHeader("Referer",StringUtils.format("http://m.manhuagui.com/comic/%s/%s.html", cid, path))
-                .url(url)
-                .build();
+            .addHeader("Referer", StringUtils.format("http://m.manhuagui.com/comic/%s/%s.html", cid, path))
+            .url(url)
+            .build();
     }
 
     @Override
@@ -188,6 +188,12 @@ public class IKanman extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.manhuagui.com/comic/1/1.html",
+            "User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -198,7 +204,7 @@ public class IKanman extends MangaParser {
         @Override
         public String getFormat(String... args) {
             String path = args[CATEGORY_AREA].concat(" ").concat(args[CATEGORY_SUBJECT]).concat(" ").concat(args[CATEGORY_READER])
-                    .concat(" ").concat(args[CATEGORY_YEAR]).concat(" ").concat(args[CATEGORY_PROGRESS]).trim();
+                .concat(" ").concat(args[CATEGORY_YEAR]).concat(" ").concat(args[CATEGORY_PROGRESS]).trim();
             path = path.replaceAll("\\s+", "_");
             return StringUtils.format("http://www.manhuagui.com/list/%s/%s_p%%d.html", path, args[CATEGORY_ORDER]);
         }
@@ -336,12 +342,6 @@ public class IKanman extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.manhuagui.com/comic/1/1.html",
-                "User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile");
     }
 
 }

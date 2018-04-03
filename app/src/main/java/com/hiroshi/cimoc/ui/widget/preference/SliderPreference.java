@@ -84,14 +84,14 @@ public class SliderPreference extends Option implements View.OnClickListener {
         mSummaryView.setText(String.valueOf(mValue));
     }
 
+    public int getValue() {
+        return mValue;
+    }
+
     public void setValue(int value) {
         mPreferenceManager.putInt(mPreferenceKey, value);
         mValue = value;
         mSummaryView.setText(String.valueOf(mValue));
-    }
-
-    public int getValue() {
-        return mValue;
     }
 
 }

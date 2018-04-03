@@ -34,17 +34,6 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
     private SourceManager.TitleGetter mTitleGetter;
     private boolean symbol = false;
 
-    static class GridHolder extends BaseViewHolder {
-        @BindView(R.id.item_grid_image) SimpleDraweeView comicImage;
-        @BindView(R.id.item_grid_title) TextView comicTitle;
-        @BindView(R.id.item_grid_subtitle) TextView comicSource;
-        @BindView(R.id.item_grid_symbol) View comicHighlight;
-
-        GridHolder(View view) {
-            super(view);
-        }
-    }
-
     public GridAdapter(Context context, List<MiniComic> list) {
         super(context, list);
     }
@@ -69,13 +58,13 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         if (mProvider != null) {
             ImageRequest request = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(comic.getCover()))
-                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
-                    .build();
+                .newBuilderWithSource(Uri.parse(comic.getCover()))
+                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+                .build();
             DraweeController controller = mProvider.get(comic.getSource())
-                    .setOldController(gridHolder.comicImage.getController())
-                    .setImageRequest(request)
-                    .build();
+                .setOldController(gridHolder.comicImage.getController())
+                .setImageRequest(request)
+                .build();
             gridHolder.comicImage.setController(controller);
         }
         gridHolder.comicHighlight.setVisibility(symbol && comic.isHighlight() ? View.VISIBLE : View.INVISIBLE);
@@ -141,6 +130,21 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
     public void moveItemTop(MiniComic comic) {
         if (remove(comic)) {
             add(findFirstNotHighlight(), comic);
+        }
+    }
+
+    static class GridHolder extends BaseViewHolder {
+        @BindView(R.id.item_grid_image)
+        SimpleDraweeView comicImage;
+        @BindView(R.id.item_grid_title)
+        TextView comicTitle;
+        @BindView(R.id.item_grid_subtitle)
+        TextView comicSource;
+        @BindView(R.id.item_grid_symbol)
+        View comicHighlight;
+
+        GridHolder(View view) {
+            super(view);
         }
     }
 

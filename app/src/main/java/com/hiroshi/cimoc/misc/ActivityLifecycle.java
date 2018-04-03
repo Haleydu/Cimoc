@@ -21,7 +21,7 @@ public class ActivityLifecycle implements Application.ActivityLifecycleCallbacks
 
     public void clear() {
         for (Activity activity : mActivityList) {
-           activity.finish();
+            activity.finish();
         }
         mActivityList.clear();
     }

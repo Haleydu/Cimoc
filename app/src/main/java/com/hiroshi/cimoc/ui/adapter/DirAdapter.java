@@ -18,14 +18,6 @@ import butterknife.BindView;
 
 public class DirAdapter extends BaseAdapter<String> {
 
-    static class DirHolder extends BaseAdapter.BaseViewHolder {
-        @BindView(R.id.item_dir_title) TextView mDirTitle;
-
-        DirHolder(View view) {
-            super(view);
-        }
-    }
-
     public DirAdapter(Context context, List<String> list) {
         super(context, list);
     }
@@ -46,6 +38,15 @@ public class DirAdapter extends BaseAdapter<String> {
     @Override
     public RecyclerView.ItemDecoration getItemDecoration() {
         return null;
+    }
+
+    static class DirHolder extends BaseAdapter.BaseViewHolder {
+        @BindView(R.id.item_dir_title)
+        TextView mDirTitle;
+
+        DirHolder(View view) {
+            super(view);
+        }
     }
 
 }

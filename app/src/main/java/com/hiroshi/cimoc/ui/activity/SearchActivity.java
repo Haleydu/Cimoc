@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
-import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,9 +41,12 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
 
     private final static int DIALOG_REQUEST_SOURCE = 0;
 
-    @BindView(R.id.search_text_layout) TextInputLayout mInputLayout;
-    @BindView(R.id.search_keyword_input) AppCompatAutoCompleteTextView mEditText;
-    @BindView(R.id.search_action_button) FloatingActionButton mActionButton;
+    @BindView(R.id.search_text_layout)
+    TextInputLayout mInputLayout;
+    @BindView(R.id.search_keyword_input)
+    AppCompatAutoCompleteTextView mEditText;
+    @BindView(R.id.search_action_button)
+    FloatingActionButton mActionButton;
 
     private ArrayAdapter<String> mArrayAdapter;
 
@@ -76,8 +77,11 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 mInputLayout.setError(null);
             }
+
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
             public void afterTextChanged(Editable s) {
                 if (mAutoComplete) {
@@ -120,7 +124,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                         arr2[i] = mSourceList.get(i).isEnable();
                     }
                     MultiDialogFragment fragment =
-                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
+                        MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
                     fragment.show(getFragmentManager(), null);
                     break;
                 }
@@ -152,7 +156,8 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
         return false;
     }
 
-    @OnClick(R.id.search_action_button) void onSearchButtonClick() {
+    @OnClick(R.id.search_action_button)
+    void onSearchButtonClick() {
         String keyword = mEditText.getText().toString();
         if (StringUtils.isEmpty(keyword)) {
             mInputLayout.setError(getString(R.string.search_keyword_empty));
@@ -167,7 +172,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                 HintUtils.showToast(this, R.string.search_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(this, keyword,
-                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
+                    CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
             }
         }
     }

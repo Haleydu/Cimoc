@@ -63,7 +63,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                         break;
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                                R.string.download_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                            R.string.download_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
                         break;
@@ -95,7 +95,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
             return;
         }
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.download_action_confirm, true, DIALOG_REQUEST_SWITCH);
+            R.string.download_action_confirm, true, DIALOG_REQUEST_SWITCH);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -161,7 +161,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
 
     @Override
     protected String[] getOperationItems() {
-        return new String[]{ getString(R.string.comic_info), getString(R.string.download_delete) };
+        return new String[]{getString(R.string.comic_info), getString(R.string.download_delete)};
     }
 
 }

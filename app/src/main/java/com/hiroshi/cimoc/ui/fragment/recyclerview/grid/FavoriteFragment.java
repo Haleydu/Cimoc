@@ -71,7 +71,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
                         break;
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                                R.string.favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                            R.string.favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
                         break;
@@ -96,7 +96,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         if (mNotification == null) {
             mPresenter.checkUpdate();
             mNotification = new NotificationWrapper(getActivity(), NOTIFICATION_CHECK_UPDATE,
-                    R.drawable.ic_sync_white_24dp, true);
+                R.drawable.ic_sync_white_24dp, true);
             mNotification.post(getString(R.string.favorite_check_update_doing), 0, 0);
         } else {
             HintUtils.showToast(getActivity(), R.string.favorite_check_update_doing);
@@ -109,7 +109,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
             return;
         }
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.favorite_check_update_confirm, true, DIALOG_REQUEST_UPDATE);
+            R.string.favorite_check_update_confirm, true, DIALOG_REQUEST_UPDATE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }
@@ -118,9 +118,9 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     public void onComicLoadSuccess(List<MiniComic> list) {
         super.onComicLoadSuccess(list);
         WifiManager manager =
-                (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (manager.isWifiEnabled() &&
-                mPreference.getBoolean(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false)) {
+            mPreference.getBoolean(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false)) {
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_YEAR);
             calendar.setTimeInMillis(mPreference.getLong(PreferenceManager.PREF_OTHER_CHECK_UPDATE_LAST, 0));
@@ -185,7 +185,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
 
     @Override
     protected String[] getOperationItems() {
-        return new String[]{ getString(R.string.comic_info), getString(R.string.favorite_delete) };
+        return new String[]{getString(R.string.comic_info), getString(R.string.favorite_delete)};
     }
 
 }

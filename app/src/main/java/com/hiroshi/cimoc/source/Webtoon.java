@@ -35,12 +35,12 @@ public class Webtoon extends MangaParser {
     public static final int TYPE = 6;
     public static final String DEFAULT_TITLE = "Webtoon";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public Webtoon(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://m.webtoons.com/episodeList?titleNo=".concat(cid);
     }
 
@@ -168,6 +168,11 @@ public class Webtoon extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.webtoons.com");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -182,11 +187,6 @@ public class Webtoon extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.webtoons.com");
     }
 
 }

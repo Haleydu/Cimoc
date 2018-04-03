@@ -27,12 +27,20 @@ import butterknife.BindViews;
 
 public class EventSettingsActivity extends BaseActivity implements DialogCaller {
 
-    @BindViews({ R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right })
+    @BindViews({R.id.event_left, R.id.event_top, R.id.event_middle, R.id.event_bottom, R.id.event_right})
     List<Button> mButtonList;
 
     private int[] mChoiceArray;
     private String[] mKeyArray;
     private boolean isLong;
+
+    public static Intent createIntent(Context context, boolean isLong, boolean isPortrait, boolean isStream) {
+        Intent intent = new Intent(context, EventSettingsActivity.class);
+        intent.putExtra(Extra.EXTRA_IS_LONG, isLong);
+        intent.putExtra(Extra.EXTRA_IS_PORTRAIT, isPortrait);
+        intent.putExtra(Extra.EXTRA_IS_STREAM, isStream);
+        return intent;
+    }
 
     @Override
     protected void initTheme() {
@@ -42,7 +50,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
         int value = getIntent().getBooleanExtra(Extra.EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         setRequestedOrientation(value);
     }
 
@@ -53,11 +61,11 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         if (isStream) {
             mKeyArray = isLong ? ClickEvents.getStreamLongClickEvents() : ClickEvents.getStreamClickEvents();
             mChoiceArray = isLong ? ClickEvents.getStreamLongClickEventChoice(mPreference) :
-                    ClickEvents.getStreamClickEventChoice(mPreference);
+                ClickEvents.getStreamClickEventChoice(mPreference);
         } else {
             mKeyArray = isLong ? ClickEvents.getPageLongClickEvents() : ClickEvents.getPageClickEvents();
             mChoiceArray = isLong ? ClickEvents.getPageLongClickEventChoice(mPreference) :
-                    ClickEvents.getPageClickEventChoice(mPreference);
+                ClickEvents.getPageClickEventChoice(mPreference);
         }
 
         for (int i = 0; i != 5; ++i) {
@@ -89,7 +97,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
-                ClickEvents.getEventTitleArray(this), mChoiceArray[index], index);
+            ClickEvents.getEventTitleArray(this), mChoiceArray[index], index);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -106,16 +114,6 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_event;
-    }
-
-
-
-    public static Intent createIntent(Context context, boolean isLong, boolean isPortrait, boolean isStream) {
-        Intent intent = new Intent(context, EventSettingsActivity.class);
-        intent.putExtra(Extra.EXTRA_IS_LONG, isLong);
-        intent.putExtra(Extra.EXTRA_IS_PORTRAIT, isPortrait);
-        intent.putExtra(Extra.EXTRA_IS_STREAM, isStream);
-        return intent;
     }
 
 }

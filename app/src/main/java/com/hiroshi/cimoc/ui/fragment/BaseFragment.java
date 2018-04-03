@@ -28,8 +28,10 @@ import butterknife.Unbinder;
  */
 public abstract class BaseFragment extends Fragment implements BaseView {
 
-    @Nullable @BindView(R.id.custom_progress_bar) ProgressBar mProgressBar;
     protected PreferenceManager mPreference;
+    @Nullable
+    @BindView(R.id.custom_progress_bar)
+    ProgressBar mProgressBar;
     private Unbinder unbinder;
     private BasePresenter mBasePresenter;
 
@@ -60,7 +62,8 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     }
 
     @Override
-    public void onNightSwitch() {}
+    public void onNightSwitch() {
+    }
 
     private void initProgressBar() {
         if (mProgressBar != null) {
@@ -69,15 +72,18 @@ public abstract class BaseFragment extends Fragment implements BaseView {
         }
     }
 
-    protected void initView() {}
+    protected void initView() {
+    }
 
-    protected void initData() {}
+    protected void initData() {
+    }
 
     protected BasePresenter initPresenter() {
         return null;
     }
 
-    protected abstract @LayoutRes int getLayoutRes();
+    protected abstract @LayoutRes
+    int getLayoutRes();
 
     protected void showProgressDialog() {
         ((BaseActivity) getActivity()).showProgressDialog();

@@ -34,18 +34,26 @@ import butterknife.BindView;
  */
 
 public class PartFavoriteActivity extends BackActivity implements PartFavoriteView, BaseAdapter.OnItemClickListener,
-        BaseAdapter.OnItemLongClickListener {
+    BaseAdapter.OnItemLongClickListener {
 
     private static final int DIALOG_REQUEST_DELETE = 0;
     private static final int DIALOG_REQUEST_ADD = 1;
 
-    @BindView(R.id.part_favorite_recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.part_favorite_recycler_view)
+    RecyclerView mRecyclerView;
 
     private PartFavoritePresenter mPresenter;
     private GridAdapter mGridAdapter;
 
     private MiniComic mSavedComic;
     private boolean isDeletable;
+
+    public static Intent createIntent(Context context, long id, String title) {
+        Intent intent = new Intent(context, PartFavoriteActivity.class);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        intent.putExtra(Extra.EXTRA_KEYWORD, title);
+        return intent;
+    }
 
     @Override
     protected BasePresenter initPresenter() {
@@ -108,7 +116,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
         if (isDeletable) {
             mSavedComic = mGridAdapter.getItem(position);
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                    R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -146,7 +154,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     public void onComicTitleLoadSuccess(List<String> list) {
         hideProgressDialog();
         MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select,
-                list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
+            list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -204,13 +212,6 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     protected boolean isNavTranslation() {
         return true;
-    }
-
-    public static Intent createIntent(Context context, long id, String title) {
-        Intent intent = new Intent(context, PartFavoriteActivity.class);
-        intent.putExtra(Extra.EXTRA_ID, id);
-        intent.putExtra(Extra.EXTRA_KEYWORD, title);
-        return intent;
     }
 
 }

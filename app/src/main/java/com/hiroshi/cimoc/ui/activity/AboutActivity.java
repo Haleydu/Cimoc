@@ -1,8 +1,5 @@
 package com.hiroshi.cimoc.ui.activity;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
@@ -24,9 +21,12 @@ import butterknife.OnClick;
 
 public class AboutActivity extends BackActivity implements AboutView {
 
-    @BindView(R.id.about_update_summary) TextView mUpdateText;
-    @BindView(R.id.about_version_name) TextView mVersionName;
-    @BindView(R.id.about_layout) View mLayoutView;
+    @BindView(R.id.about_update_summary)
+    TextView mUpdateText;
+    @BindView(R.id.about_version_name)
+    TextView mVersionName;
+    @BindView(R.id.about_layout)
+    View mLayoutView;
 
     private AboutPresenter mPresenter;
     private boolean update = false;
@@ -44,12 +44,13 @@ public class AboutActivity extends BackActivity implements AboutView {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
             mVersionName.setText(StringUtils.format("version: %s", info.versionName));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @OnClick(R.id.home_page_btn) void onHomeClick() {
+    @OnClick(R.id.home_page_btn)
+    void onHomeClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_url)));
         try {
             startActivity(intent);
@@ -58,7 +59,8 @@ public class AboutActivity extends BackActivity implements AboutView {
         }
     }
 
-    @OnClick(R.id.home_page_cimqus_btn) void onCimqusClick() {
+    @OnClick(R.id.home_page_cimqus_btn)
+    void onCimqusClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_cimqus_url)));
         try {
             startActivity(intent);
@@ -67,7 +69,8 @@ public class AboutActivity extends BackActivity implements AboutView {
         }
     }
 
-    @OnClick(R.id.about_support_btn) void onSupportClick() {
+    @OnClick(R.id.about_support_btn)
+    void onSupportClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_support_url)));
         try {
             startActivity(intent);
@@ -76,7 +79,8 @@ public class AboutActivity extends BackActivity implements AboutView {
         }
     }
 
-    @OnClick(R.id.about_resource_btn) void onResourceClick() {
+    @OnClick(R.id.about_resource_btn)
+    void onResourceClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_resource_url)));
         try {
             startActivity(intent);
@@ -85,7 +89,8 @@ public class AboutActivity extends BackActivity implements AboutView {
         }
     }
 
-    @OnClick(R.id.about_resource_ori_btn) void onOriResourceClick() {
+    @OnClick(R.id.about_resource_ori_btn)
+    void onOriResourceClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_resource_ori_url)));
         try {
             startActivity(intent);
@@ -94,14 +99,15 @@ public class AboutActivity extends BackActivity implements AboutView {
         }
     }
 
-    @OnClick(R.id.about_update_btn) void onUpdateClick() {
+    @OnClick(R.id.about_update_btn)
+    void onUpdateClick() {
 //        if (update) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
-            try {
-                startActivity(intent);
-            } catch (Exception e) {
-                showSnackbar(R.string.about_resource_fail);
-            }
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
+        try {
+            startActivity(intent);
+        } catch (Exception e) {
+            showSnackbar(R.string.about_resource_fail);
+        }
 //        } else if (!checking) {
 //            try {
 //                PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);

@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.SourceManager;
@@ -14,7 +12,6 @@ import com.hiroshi.cimoc.ui.view.FavoriteView;
 
 import java.util.List;
 
-import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -79,24 +76,24 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     public void load() {
         mCompositeSubscription.add(mComicManager.listFavoriteInRx()
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
-                    @Override
-                    public MiniComic call(Comic comic) {
-                        return new MiniComic(comic);
-                    }
-                }))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
-                    @Override
-                    public void call(List<MiniComic> list) {
-                        mBaseView.onComicLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onComicLoadFail();
-                    }
-                }));
+            .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                @Override
+                public MiniComic call(Comic comic) {
+                    return new MiniComic(comic);
+                }
+            }))
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<MiniComic>>() {
+                @Override
+                public void call(List<MiniComic> list) {
+                    mBaseView.onComicLoadSuccess(list);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onComicLoadFail();
+                }
+            }));
     }
 
     public void cancelAllHighlight() {
@@ -114,36 +111,36 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     public void checkUpdate() {
         final List<Comic> list = mComicManager.listFavorite();
         mCompositeSubscription.add(Manga.checkUpdate(mSourceManager, list)
-                .doOnNext(new Action1<Comic>() {
-                    @Override
-                    public void call(Comic comic) {
-                        if (comic != null) {
-                            mComicManager.update(comic);
-                        }
+            .doOnNext(new Action1<Comic>() {
+                @Override
+                public void call(Comic comic) {
+                    if (comic != null) {
+                        mComicManager.update(comic);
                     }
-                })
-                .onBackpressureBuffer()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Comic>() {
-                    private int count = 0;
+                }
+            })
+            .onBackpressureBuffer()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Observer<Comic>() {
+                private int count = 0;
 
-                    @Override
-                    public void onCompleted() {
-                        mBaseView.onComicCheckComplete();
-                    }
+                @Override
+                public void onCompleted() {
+                    mBaseView.onComicCheckComplete();
+                }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        mBaseView.onComicCheckFail();
-                    }
+                @Override
+                public void onError(Throwable e) {
+                    mBaseView.onComicCheckFail();
+                }
 
-                    @Override
-                    public void onNext(Comic comic) {
-                        ++count;
-                        MiniComic miniComic = comic == null ? null : new MiniComic(comic);
-                        mBaseView.onComicCheckSuccess(miniComic, count, list.size());
-                    }
-                }));
+                @Override
+                public void onNext(Comic comic) {
+                    ++count;
+                    MiniComic miniComic = comic == null ? null : new MiniComic(comic);
+                    mBaseView.onComicCheckSuccess(miniComic, count, list.size());
+                }
+            }));
     }
 
 }

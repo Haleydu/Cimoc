@@ -24,10 +24,6 @@ public interface Category {
     int CATEGORY_PROGRESS = 4;
     int CATEGORY_ORDER = 5;
 
-    @IntDef({CATEGORY_SUBJECT, CATEGORY_AREA, CATEGORY_READER, CATEGORY_YEAR, CATEGORY_PROGRESS, CATEGORY_ORDER})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Attribute {}
-
     /**
      * 选项是否可以组合，例如有些网站可以根据几个选项一起搜索
      */
@@ -36,6 +32,7 @@ public interface Category {
     /**
      * 获取最终的格式化字符串，一般需要含有一个 %d 用于填充页码
      * TODO 这里不要返回 String 返回数组
+     *
      * @param args 各个选项的值，按照定义的顺序
      */
     String getFormat(String... args);
@@ -50,5 +47,10 @@ public interface Category {
      * 左边的 String 为显示的名称，右边的 String 为用来构造 url 的值
      */
     List<Pair<String, String>> getAttrList(@Attribute int attr);
+
+    @IntDef({CATEGORY_SUBJECT, CATEGORY_AREA, CATEGORY_READER, CATEGORY_YEAR, CATEGORY_PROGRESS, CATEGORY_ORDER})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Attribute {
+    }
 
 }

@@ -21,15 +21,8 @@ import butterknife.BindView;
 
 public class TagAdapter extends BaseAdapter<Tag> {
 
-    private @ColorInt int color = -1;
-
-    static class TagHolder extends BaseViewHolder {
-        @BindView(R.id.item_tag_title) TextView tagTitle;
-
-        TagHolder(final View view) {
-            super(view);
-        }
-    }
+    private @ColorInt
+    int color = -1;
 
     public TagAdapter(Context context, List<Tag> list) {
         super(context, list);
@@ -65,6 +58,15 @@ public class TagAdapter extends BaseAdapter<Tag> {
 
     public void setColor(@ColorInt int color) {
         this.color = color;
+    }
+
+    static class TagHolder extends BaseViewHolder {
+        @BindView(R.id.item_tag_title)
+        TextView tagTitle;
+
+        TagHolder(final View view) {
+            super(view);
+        }
     }
 
 }

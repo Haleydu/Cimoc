@@ -12,10 +12,14 @@ import org.greenrobot.greendao.annotation.Unique;
 @Entity
 public class Source {
 
-    @Id private Long id;
-    @NotNull private String title;
-    @Unique private int type;
-    @NotNull private boolean enable;
+    @Id
+    private Long id;
+    @NotNull
+    private String title;
+    @Unique
+    private int type;
+    @NotNull
+    private boolean enable;
 
     @Generated(hash = 615387317)
     public Source() {

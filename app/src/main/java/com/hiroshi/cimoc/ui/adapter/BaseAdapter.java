@@ -118,14 +118,6 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     public abstract RecyclerView.ItemDecoration getItemDecoration();
 
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
-    }
-
-    public interface OnItemLongClickListener {
-        void onItemLongClick(View view, int position);
-    }
-
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -150,6 +142,14 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
 
     protected boolean isClickValid() {
         return FastClick.isClickValid();
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    public interface OnItemLongClickListener {
+        void onItemLongClick(View view, int position);
     }
 
     static class BaseViewHolder extends RecyclerView.ViewHolder {

@@ -28,9 +28,11 @@ public abstract class BasePresenter<T extends BaseView> {
         initSubscription();
     }
 
-    protected void onViewAttach() {}
+    protected void onViewAttach() {
+    }
 
-    protected void initSubscription() {}
+    protected void initSubscription() {
+    }
 
     protected void addSubscription(@RxEvent.EventType int type, Action1<RxEvent> action) {
         mCompositeSubscription.add(RxBus.getInstance().toObservable(type).subscribe(action, new Action1<Throwable>() {

@@ -28,12 +28,12 @@ public class HHSSEE extends MangaParser {
     public static final int TYPE = 7;
     public static final String DEFAULT_TITLE = "汗汗漫画";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public HHSSEE(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return StringUtils.format("http://www.hhmmoo.com/manhua%s.html", cid);
     }
 
@@ -185,6 +185,11 @@ public class HHSSEE extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://www.hhmmoo.com");
+    }
+
     private static class Category extends MangaCategory {
         @Override
         public String getFormat(String... args) {
@@ -237,11 +242,6 @@ public class HHSSEE extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://www.hhmmoo.com");
     }
 
 }

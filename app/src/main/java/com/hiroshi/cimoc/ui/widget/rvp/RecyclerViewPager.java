@@ -20,22 +20,12 @@ import java.lang.reflect.Field;
  * RecyclerViewPager
  *
  * @author Green
- *
- * https://github.com/lsjwzh/RecyclerViewPager
+ *         <p>
+ *         https://github.com/lsjwzh/RecyclerViewPager
  */
 public class RecyclerViewPager extends RecyclerView {
 
     private static final float FLING_FACTOR = 0.10f;
-
-    private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
-    private float mTouchSpan;
-    private OnPageChangedListener mOnPageChangedListener;
-    private GlobalLayoutListener mGlobalLayoutListener = new GlobalLayoutListener();
-    private int mSmoothScrollTargetPosition = -1;
-    private int mPositionBeforeScroll = -1;
-    private float mTriggerOffset = 0.05f;
-    private Float mScrollSpeed;
-
     boolean mNeedAdjust;
     int mFirstLeftWhenDragging;
     int mFirstTopWhenDragging;
@@ -44,6 +34,14 @@ public class RecyclerViewPager extends RecyclerView {
     int mMinLeftWhenDragging = Integer.MAX_VALUE;
     int mMaxTopWhenDragging = Integer.MIN_VALUE;
     int mMinTopWhenDragging = Integer.MAX_VALUE;
+    private RecyclerViewPagerAdapter<?> mViewPagerAdapter;
+    private float mTouchSpan;
+    private OnPageChangedListener mOnPageChangedListener;
+    private GlobalLayoutListener mGlobalLayoutListener = new GlobalLayoutListener();
+    private int mSmoothScrollTargetPosition = -1;
+    private int mPositionBeforeScroll = -1;
+    private float mTriggerOffset = 0.05f;
+    private Float mScrollSpeed;
     private int mPositionOnTouchDown = -1;
     private boolean mHasCalledOnPageChanged = true;
     private boolean reverseLayout = false;
@@ -84,12 +82,6 @@ public class RecyclerViewPager extends RecyclerView {
     }
 
     @Override
-    public void setAdapter(Adapter adapter) {
-        mViewPagerAdapter = ensureRecyclerViewPagerAdapter(adapter);
-        super.setAdapter(mViewPagerAdapter);
-    }
-
-    @Override
     public void swapAdapter(Adapter adapter, boolean removeAndRecycleExistingViews) {
         mViewPagerAdapter = ensureRecyclerViewPagerAdapter(adapter);
         super.swapAdapter(mViewPagerAdapter, removeAndRecycleExistingViews);
@@ -101,6 +93,12 @@ public class RecyclerViewPager extends RecyclerView {
             return mViewPagerAdapter.mAdapter;
         }
         return null;
+    }
+
+    @Override
+    public void setAdapter(Adapter adapter) {
+        mViewPagerAdapter = ensureRecyclerViewPagerAdapter(adapter);
+        super.setAdapter(mViewPagerAdapter);
     }
 
     @Override
@@ -127,22 +125,22 @@ public class RecyclerViewPager extends RecyclerView {
     public void startSmoothScroll(int position) {
         mSmoothScrollTargetPosition = position;
         LinearSmoothScroller linearSmoothScroller =
-                new LinearSmoothScroller(getContext()) {
-                    @Override
-                    public PointF computeScrollVectorForPosition(int targetPosition) {
-                        if (getLayoutManager() == null) {
-                            return null;
-                        }
-                        return ((LinearLayoutManager) getLayoutManager())
-                                .computeScrollVectorForPosition(targetPosition);
+            new LinearSmoothScroller(getContext()) {
+                @Override
+                public PointF computeScrollVectorForPosition(int targetPosition) {
+                    if (getLayoutManager() == null) {
+                        return null;
                     }
+                    return ((LinearLayoutManager) getLayoutManager())
+                        .computeScrollVectorForPosition(targetPosition);
+                }
 
-                    @Override
-                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                        return getContext().getResources().getDisplayMetrics().density
-                                * mScrollSpeed / displayMetrics.density;
-                    }
-                };
+                @Override
+                protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                    return getContext().getResources().getDisplayMetrics().density
+                        * mScrollSpeed / displayMetrics.density;
+                }
+            };
         linearSmoothScroller.setTargetPosition(position);
         if (position == RecyclerView.NO_POSITION) {
             return;
@@ -158,7 +156,7 @@ public class RecyclerViewPager extends RecyclerView {
         startSmoothScroll(position);
 
         if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
-                mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
+            mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
             getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }
@@ -170,7 +168,7 @@ public class RecyclerViewPager extends RecyclerView {
         super.scrollToPosition(position);
 
         if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
-                mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
+            mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
             getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }
@@ -280,8 +278,8 @@ public class RecyclerViewPager extends RecyclerView {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN && getLayoutManager() != null) {
             mPositionOnTouchDown = getLayoutManager().canScrollHorizontally()
-                    ? RecyclerViewUtils.getCenterXChildPosition(this)
-                    : RecyclerViewUtils.getCenterYChildPosition(this);
+                ? RecyclerViewUtils.getCenterXChildPosition(this)
+                : RecyclerViewUtils.getCenterYChildPosition(this);
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -314,7 +312,7 @@ public class RecyclerViewPager extends RecyclerView {
         if (state == SCROLL_STATE_DRAGGING) {
             mNeedAdjust = true;
             mCurView = getLayoutManager().canScrollHorizontally() ? RecyclerViewUtils.getCenterXChild(this) :
-                    RecyclerViewUtils.getCenterYChild(this);
+                RecyclerViewUtils.getCenterYChild(this);
             if (mCurView != null) {
                 if (mHasCalledOnPageChanged) {
                     // While rvp is scrolling, mPositionBeforeScroll will be previous value.
@@ -342,7 +340,7 @@ public class RecyclerViewPager extends RecyclerView {
         } else if (state == SCROLL_STATE_IDLE) {
             if (mNeedAdjust) {
                 int targetPosition = getLayoutManager().canScrollHorizontally() ? RecyclerViewUtils.getCenterXChildPosition(this) :
-                        RecyclerViewUtils.getCenterYChildPosition(this);
+                    RecyclerViewUtils.getCenterYChildPosition(this);
                 if (mCurView != null) {
                     targetPosition = getChildAdapterPosition(mCurView);
                     if (getLayoutManager().canScrollHorizontally()) {
@@ -387,8 +385,8 @@ public class RecyclerViewPager extends RecyclerView {
     @NonNull
     protected RecyclerViewPagerAdapter ensureRecyclerViewPagerAdapter(Adapter adapter) {
         return (adapter instanceof RecyclerViewPagerAdapter)
-                ? (RecyclerViewPagerAdapter) adapter
-                : new RecyclerViewPagerAdapter(this, adapter);
+            ? (RecyclerViewPagerAdapter) adapter
+            : new RecyclerViewPagerAdapter(this, adapter);
     }
 
     private int getFlingCount(int velocity, int cellSize) {
@@ -397,7 +395,7 @@ public class RecyclerViewPager extends RecyclerView {
         }
         int sign = velocity > 0 ? 1 : -1;
         return (int) (sign * Math.ceil((velocity * sign * FLING_FACTOR / cellSize)
-                - mTriggerOffset));
+            - mTriggerOffset));
     }
 
     private int safeTargetPosition(int position, int count) {

@@ -21,7 +21,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
@@ -67,7 +66,7 @@ public class Manga {
                     List<Chapter> list = new ArrayList<>();
 
                     list.addAll(mongo.QueryComicBase(comic));
-                    if(list.isEmpty()) {
+                    if (list.isEmpty()) {
                         comic.setUrl(parser.getUrl(comic.getCid()));
                         Request request = parser.getInfoRequest(comic.getCid());
                         String html = getResponseBody(App.getHttpClient(), request);
@@ -77,7 +76,7 @@ public class Manga {
                             html = getResponseBody(App.getHttpClient(), request);
                         }
                         list = parser.parseChapter(html);
-                        mongo.UpdateComicBase(comic,list);
+                        mongo.UpdateComicBase(comic, list);
                     }
                     if (!list.isEmpty()) {
                         subscriber.onNext(list);
@@ -126,13 +125,13 @@ public class Manga {
                 List<ImageUrl> list = new ArrayList<>();
                 try {
 //                    List<ImageUrl> listdoc = new ArrayList<>();
-                    list.addAll(mongo.QueryComicChapter(mComic,path));
-                    if(list.isEmpty()){
+                    list.addAll(mongo.QueryComicChapter(mComic, path));
+                    if (list.isEmpty()) {
                         Request request = parser.getImagesRequest(cid, path);
                         html = getResponseBody(App.getHttpClient(), request);
                         list = parser.parseImages(html);
                         if (!list.isEmpty()) {
-                            mongo.InsertComicChapter(mComic,path,list);
+                            mongo.InsertComicChapter(mComic, path, list);
                         }
                     }
 
@@ -152,20 +151,20 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static List<ImageUrl> getImageUrls(Parser parser,int source, String cid, String path) throws InterruptedIOException {
+    public static List<ImageUrl> getImageUrls(Parser parser, int source, String cid, String path) throws InterruptedIOException {
         List<ImageUrl> list = new ArrayList<>();
         Mongo mongo = new Mongo();
         Response response = null;
         try {
-            list.addAll(mongo.QueryComicChapter(source,cid,path));
-            if(!list.isEmpty()){
+            list.addAll(mongo.QueryComicChapter(source, cid, path));
+            if (!list.isEmpty()) {
                 return list;
             }
-            Request request  = parser.getImagesRequest(cid, path);
+            Request request = parser.getImagesRequest(cid, path);
             response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
                 list.addAll(parser.parseImages(response.body().string()));
-                mongo.InsertComicChapter(source,cid,path,list);
+                mongo.InsertComicChapter(source, cid, path, list);
             } else {
                 throw new NetworkErrorException();
             }
@@ -225,13 +224,13 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
                 RequestBody body = new FormBody.Builder()
-                        .add("key", keyword)
-                        .add("s", "1")
-                        .build();
+                    .add("key", keyword)
+                    .add("s", "1")
+                    .build();
                 Request request = new Request.Builder()
-                        .url("http://m.ikanman.com/support/word.ashx")
-                        .post(body)
-                        .build();
+                    .url("http://m.ikanman.com/support/word.ashx")
+                    .post(body)
+                    .build();
                 try {
                     String jsonString = getResponseBody(App.getHttpClient(), request);
                     JSONArray array = new JSONArray(jsonString);
@@ -249,14 +248,14 @@ public class Manga {
     }
 
     public static Observable<Comic> checkUpdate(
-            final SourceManager manager, final List<Comic> list) {
+        final SourceManager manager, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
                 OkHttpClient client = new OkHttpClient.Builder()
-                        .connectTimeout(1500, TimeUnit.MILLISECONDS)
-                        .readTimeout(1500, TimeUnit.MILLISECONDS)
-                        .build();
+                    .connectTimeout(1500, TimeUnit.MILLISECONDS)
+                    .readTimeout(1500, TimeUnit.MILLISECONDS)
+                    .build();
                 for (Comic comic : list) {
                     Parser parser = manager.getParser(comic.getSource());
                     Request request = parser.getCheckRequest(comic.getCid());
@@ -300,8 +299,10 @@ public class Manga {
         throw new NetworkErrorException();
     }
 
-    public static class ParseErrorException extends Exception {}
+    public static class ParseErrorException extends Exception {
+    }
 
-    public static class NetworkErrorException extends Exception {}
+    public static class NetworkErrorException extends Exception {
+    }
 
 }

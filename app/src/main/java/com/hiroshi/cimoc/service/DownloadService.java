@@ -59,6 +59,18 @@ public class DownloadService extends Service implements AppGetter {
     private SourceManager mSourceManager;
     private ContentResolver mContentResolver;
 
+    public static Intent createIntent(Context context, Task task) {
+        ArrayList<Task> list = new ArrayList<>(1);
+        list.add(task);
+        return createIntent(context, list);
+    }
+
+    public static Intent createIntent(Context context, ArrayList<Task> list) {
+        Intent intent = new Intent(context, DownloadService.class);
+        intent.putParcelableArrayListExtra(Extra.EXTRA_TASK, list);
+        return intent;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -84,10 +96,10 @@ public class DownloadService extends Service implements AppGetter {
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_START));
             if (mNotification == null) {
                 mNotification = new NotificationWrapper(this, NOTIFICATION_DOWNLOAD,
-                        R.drawable.ic_file_download_white_24dp, true);
+                    R.drawable.ic_file_download_white_24dp, true);
                 mNotification.post(getString(R.string.download_service_doing), true);
             }
-            List<Task> list =  intent.getParcelableArrayListExtra(Extra.EXTRA_TASK);
+            List<Task> list = intent.getParcelableArrayListExtra(Extra.EXTRA_TASK);
             for (Task task : list) {
                 Worker worker = new Worker(task);
                 Future future = mExecutorService.submit(worker);
@@ -240,11 +252,11 @@ public class DownloadService extends Service implements AppGetter {
             }
 
             return new Request.Builder()
-                    .cacheControl(new CacheControl.Builder().noStore().build())
-                    .headers(headers)
-                    .url(url)
-                    .get()
-                    .build();
+                .cacheControl(new CacheControl.Builder().noStore().build())
+                .headers(headers)
+                .url(url)
+                .get()
+                .build();
         }
 
         private String buildFileName(int num, String url) {
@@ -260,7 +272,7 @@ public class DownloadService extends Service implements AppGetter {
         private List<ImageUrl> onDownloadParse() throws InterruptedIOException {
             mTask.setState(Task.STATE_PARSE);
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PARSE, mTask.getId()));
-            return Manga.getImageUrls(mParse, mTask.getSource(),mTask.getCid(), mTask.getPath());
+            return Manga.getImageUrls(mParse, mTask.getSource(), mTask.getCid(), mTask.getPath());
         }
 
         private void onDownloadProgress(int progress) {
@@ -277,18 +289,6 @@ public class DownloadService extends Service implements AppGetter {
             return DownloadService.this;
         }
 
-    }
-
-    public static Intent createIntent(Context context, Task task) {
-        ArrayList<Task> list = new ArrayList<>(1);
-        list.add(task);
-        return createIntent(context, list);
-    }
-
-    public static Intent createIntent(Context context, ArrayList<Task> list) {
-        Intent intent = new Intent(context, DownloadService.class);
-        intent.putParcelableArrayListExtra(Extra.EXTRA_TASK, list);
-        return intent;
     }
 
 }

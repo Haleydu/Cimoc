@@ -25,8 +25,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.auth0.android.Auth0;
 import com.auth0.android.authentication.AuthenticationAPIClient;
+import com.auth0.android.authentication.AuthenticationException;
 import com.auth0.android.callback.BaseCallback;
+import com.auth0.android.provider.AuthCallback;
+import com.auth0.android.provider.WebAuthProvider;
+import com.auth0.android.result.Credentials;
 import com.auth0.android.result.UserProfile;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -55,11 +60,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 //auth0
-import com.auth0.android.Auth0;
-import com.auth0.android.authentication.AuthenticationException;
-import com.auth0.android.provider.AuthCallback;
-import com.auth0.android.provider.WebAuthProvider;
-import com.auth0.android.result.Credentials;
 
 /**
  * Created by Hiroshi on 2016/7/1.
@@ -73,9 +73,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private static final int FRAGMENT_NUM = 3;
 
-    @BindView(R.id.main_layout) DrawerLayout mDrawerLayout;
-    @BindView(R.id.main_navigation_view) NavigationView mNavigationView;
-    @BindView(R.id.main_fragment_container) FrameLayout mFrameLayout;
+    @BindView(R.id.main_layout)
+    DrawerLayout mDrawerLayout;
+    @BindView(R.id.main_navigation_view)
+    NavigationView mNavigationView;
+    @BindView(R.id.main_fragment_container)
+    FrameLayout mFrameLayout;
 
     private TextView mLastText;
     private SimpleDraweeView mDraweeView;
@@ -111,7 +114,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void login() {
-        if(mPreference.getString(PreferenceManager.PREFERENCES_USER_ID,"") == "") {
+        if (mPreference.getString(PreferenceManager.PREFERENCES_USER_ID, "") == "") {
             HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
             WebAuthProvider.init(auth0)
                 .withScheme("demo")
@@ -152,7 +155,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         });
                     }
                 });
-        }else{
+        } else {
             HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
             mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
             mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
@@ -182,7 +185,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         //user information received
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
                         mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
-                        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, (String)information.getExtraInfo().get("sub"));
+                        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, (String) information.getExtraInfo().get("sub"));
                     }
 
                     @Override
@@ -191,14 +194,13 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
                     }
                 });
-        }
-        else {
+        } else {
             HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
         }
     }
 
     @Override
-    protected void initUser () {
+    protected void initUser() {
         //auth0
         auth0 = new Auth0(this);
         auth0.setOIDCConformant(true);
@@ -224,9 +226,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
         mNavigationView.getMenu().findItem(R.id.user_info)
             .setTitle(
-                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,"") == ""?
-                getString(R.string.user_login_item) :
-                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME,"User")
+                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "") == "" ?
+                    getString(R.string.user_login_item) :
+                    mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "User")
             );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
@@ -247,7 +249,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
         });
         mControllerBuilderProvider = new ControllerBuilderProvider(this,
-                SourceManager.getInstance(this).new HeaderGetter(), false);
+            SourceManager.getInstance(this).new HeaderGetter(), false);
     }
 
     private void initFragment() {
@@ -307,7 +309,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {}
+    protected void onSaveInstanceState(Bundle outState) {
+    }
 
     @Override
     public void onBackPressed() {
@@ -419,7 +422,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     public void onLastLoadSuccess(long id, int source, String cid, String title, String cover) {
-        onLastChange(id, source, cid, title,cover);
+        onLastChange(id, source, cid, title, cover);
     }
 
     @Override
@@ -434,25 +437,25 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastCid = cid;
         mLastText.setText(title);
         ImageRequest request = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(cover))
-                .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
-                .build();
+            .newBuilderWithSource(Uri.parse(cover))
+            .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
+            .build();
         DraweeController controller = mControllerBuilderProvider.get(source)
-                .setOldController(mDraweeView.getController())
-                .setImageRequest(request)
-                .build();
+            .setOldController(mDraweeView.getController())
+            .setImageRequest(request)
+            .build();
         mDraweeView.setController(controller);
     }
 
     private void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
-        ColorStateList itemList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked },
-                { android.R.attr.state_checked }},
-                new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
+        ColorStateList itemList = new ColorStateList(new int[][]{{-android.R.attr.state_checked},
+            {android.R.attr.state_checked}},
+            new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemTextColor(itemList);
-        ColorStateList iconList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked },
-                { android.R.attr.state_checked }},
-                new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
+        ColorStateList iconList = new ColorStateList(new int[][]{{-android.R.attr.state_checked},
+            {android.R.attr.state_checked}},
+            new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemIconTintList(iconList);
         mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));
         if (mToolbar != null) {
@@ -467,7 +470,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private boolean showAuthorNotice() {
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
-                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
+                R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
             fragment.show(getFragmentManager(), null);
             return true;
         }
@@ -477,7 +480,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void showPermission() {
         if (!PermissionUtils.hasStoragePermission(this)) {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission,
-                    R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
+                R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -486,7 +489,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
             mPresenter.checkUpdate(info.versionName);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

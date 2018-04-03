@@ -14,9 +14,10 @@ import butterknife.BindView;
  */
 
 public abstract class RecyclerViewFragment extends BaseFragment implements BaseAdapter.OnItemClickListener,
-        BaseAdapter.OnItemLongClickListener {
+    BaseAdapter.OnItemLongClickListener {
 
-    @BindView(R.id.recycler_view_content) protected RecyclerView mRecyclerView;
+    @BindView(R.id.recycler_view_content)
+    protected RecyclerView mRecyclerView;
 
     @Override
     protected void initView() {
@@ -37,10 +38,12 @@ public abstract class RecyclerViewFragment extends BaseFragment implements BaseA
     protected abstract RecyclerView.LayoutManager initLayoutManager();
 
     @Override
-    public void onItemClick(View view, int position) {}
+    public void onItemClick(View view, int position) {
+    }
 
     @Override
-    public void onItemLongClick(View view, int position) {}
+    public void onItemLongClick(View view, int position) {
+    }
 
     @Override
     protected int getLayoutRes() {

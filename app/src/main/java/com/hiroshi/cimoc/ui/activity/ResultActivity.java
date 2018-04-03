@@ -28,15 +28,37 @@ import butterknife.BindView;
  */
 public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
 
-    @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.result_layout) FrameLayout mLayoutView;
-
+    /**
+     * 根据用户输入的关键词搜索
+     * Extra: 关键词 图源列表
+     */
+    public static final int LAUNCH_MODE_SEARCH = 0;
+    /**
+     * 根据分类搜索，关键词字段存放 url 格式
+     * Extra: 格式 图源
+     */
+    public static final int LAUNCH_MODE_CATEGORY = 1;
+    @BindView(R.id.result_recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.result_layout)
+    FrameLayout mLayoutView;
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
     private ResultPresenter mPresenter;
     private ControllerBuilderProvider mProvider;
-
     private int type;
+
+    public static Intent createIntent(Context context, String keyword, int source, int type) {
+        return createIntent(context, keyword, new int[]{source}, type);
+    }
+
+    public static Intent createIntent(Context context, String keyword, int[] array, int type) {
+        Intent intent = new Intent(context, ResultActivity.class);
+        intent.putExtra(Extra.EXTRA_MODE, type);
+        intent.putExtra(Extra.EXTRA_SOURCE, array);
+        intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
+        return intent;
+    }
 
     @Override
     protected BasePresenter initPresenter() {
@@ -69,7 +91,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                switch (newState){
+                switch (newState) {
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         mProvider.pause();
                         break;
@@ -156,30 +178,6 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     @Override
     protected boolean isNavTranslation() {
         return true;
-    }
-
-    /**
-     * 根据用户输入的关键词搜索
-     * Extra: 关键词 图源列表
-     */
-    public static final int LAUNCH_MODE_SEARCH = 0;
-
-    /**
-     * 根据分类搜索，关键词字段存放 url 格式
-     * Extra: 格式 图源
-     */
-    public static final int LAUNCH_MODE_CATEGORY = 1;
-
-    public static Intent createIntent(Context context, String keyword, int source, int type) {
-        return createIntent(context, keyword, new int[]{source}, type);
-    }
-
-    public static Intent createIntent(Context context, String keyword, int[] array, int type) {
-        Intent intent = new Intent(context, ResultActivity.class);
-        intent.putExtra(Extra.EXTRA_MODE, type);
-        intent.putExtra(Extra.EXTRA_SOURCE, array);
-        intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
-        return intent;
     }
 
 }

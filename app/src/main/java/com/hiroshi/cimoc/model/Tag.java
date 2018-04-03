@@ -11,8 +11,10 @@ import org.greenrobot.greendao.annotation.NotNull;
 @Entity
 public class Tag {
 
-    @Id(autoincrement = true) private Long id;
-    @NotNull private String title;
+    @Id(autoincrement = true)
+    private Long id;
+    @NotNull
+    private String title;
 
     @Generated(hash = 836804519)
     public Tag(Long id, @NotNull String title) {

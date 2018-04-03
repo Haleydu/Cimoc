@@ -5,8 +5,6 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
-import com.mongodb.client.ListDatabasesIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -28,8 +26,7 @@ public class Mongo {
     private MongoCollection<Document> comicBaseColl;
     private MongoCollection<Document> comicChaColl;
 
-//    private Document queryStr;
-//    private Document setStr;
+    private int hourLimit = 12;//todo: add to setting
 
     public Mongo() {
 //        mongoUrl = new MongoClientURI("mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118/comic");
@@ -105,8 +102,6 @@ public class Mongo {
             //
         }
     }
-
-    private int hourLimit = 12;//todo: add to setting
 
     public void UpdateComicBase(Comic comic, List<Chapter> list) {
         try {

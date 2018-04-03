@@ -13,7 +13,7 @@ public class PermissionUtils {
 
     public static boolean hasStoragePermission(Activity activity) {
         return ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED;
+            == PackageManager.PERMISSION_GRANTED;
     }
 
 }

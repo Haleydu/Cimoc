@@ -47,132 +47,132 @@ public class BackupPresenter extends BasePresenter<BackupView> {
 
     public void loadComicFile() {
         mCompositeSubscription.add(Backup.loadFavorite(mBaseView.getAppInstance().getDocumentFile())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String[]>() {
-                    @Override
-                    public void call(String[] file) {
-                        mBaseView.onComicFileLoadSuccess(file);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onFileLoadFail();
-                    }
-                }));
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<String[]>() {
+                @Override
+                public void call(String[] file) {
+                    mBaseView.onComicFileLoadSuccess(file);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onFileLoadFail();
+                }
+            }));
     }
 
     public void loadTagFile() {
         mCompositeSubscription.add(Backup.loadTag(mBaseView.getAppInstance().getDocumentFile())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String[]>() {
-                    @Override
-                    public void call(String[] file) {
-                        mBaseView.onTagFileLoadSuccess(file);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onFileLoadFail();
-                    }
-                }));
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<String[]>() {
+                @Override
+                public void call(String[] file) {
+                    mBaseView.onTagFileLoadSuccess(file);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onFileLoadFail();
+                }
+            }));
     }
 
     public void saveComic() {
         mCompositeSubscription.add(mComicManager.listFavoriteOrHistoryInRx()
-                .map(new Func1<List<Comic>, Integer>() {
-                    @Override
-                    public Integer call(List<Comic> list) {
-                        return Backup.saveComic(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), list);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer size) {
-                        if (size == -1) {
-                            mBaseView.onBackupSaveFail();
-                        } else {
-                            mBaseView.onBackupSaveSuccess(size);
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
+            .map(new Func1<List<Comic>, Integer>() {
+                @Override
+                public Integer call(List<Comic> list) {
+                    return Backup.saveComic(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), list);
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer size) {
+                    if (size == -1) {
                         mBaseView.onBackupSaveFail();
+                    } else {
+                        mBaseView.onBackupSaveSuccess(size);
                     }
-                }));
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onBackupSaveFail();
+                }
+            }));
     }
 
     public void saveTag() {
         mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Integer>() {
-                    @Override
-                    public void call(Subscriber<? super Integer> subscriber) {
-                        int size = groupAndSaveComicByTag();
-                        subscriber.onNext(size);
-                        subscriber.onCompleted();
-                    }
-                }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Integer>() {
-                    @Override
-                    public void call(Integer size) {
-                        if (size == -1) {
-                            mBaseView.onBackupSaveFail();
-                        } else {
-                            mBaseView.onBackupSaveSuccess(size);
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                int size = groupAndSaveComicByTag();
+                subscriber.onNext(size);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer size) {
+                    if (size == -1) {
                         mBaseView.onBackupSaveFail();
+                    } else {
+                        mBaseView.onBackupSaveSuccess(size);
                     }
-                }));
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onBackupSaveFail();
+                }
+            }));
     }
 
     public void restoreComic(String filename) {
         mCompositeSubscription.add(Backup.restoreComic(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), filename)
-                .doOnNext(new Action1<List<Comic>>() {
-                    @Override
-                    public void call(List<Comic> list) {
-                        filterAndPostComic(list);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Comic>>() {
-                    @Override
-                    public void call(List<Comic> list) {
-                        mBaseView.onBackupRestoreSuccess();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                        mBaseView.onBackupRestoreFail();
-                    }
-                }));
+            .doOnNext(new Action1<List<Comic>>() {
+                @Override
+                public void call(List<Comic> list) {
+                    filterAndPostComic(list);
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Comic>>() {
+                @Override
+                public void call(List<Comic> list) {
+                    mBaseView.onBackupRestoreSuccess();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    throwable.printStackTrace();
+                    mBaseView.onBackupRestoreFail();
+                }
+            }));
     }
 
     public void restoreTag(String filename) {
         mCompositeSubscription.add(Backup.restoreTag(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), filename)
-                .doOnNext(new Action1<List<Pair<Tag, List<Comic>>>>() {
-                    @Override
-                    public void call(List<Pair<Tag, List<Comic>>> list) {
-                        updateAndPostTag(list);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Pair<Tag, List<Comic>>>>() {
-                    @Override
-                    public void call(List<Pair<Tag, List<Comic>>> pair) {
-                        mBaseView.onBackupRestoreSuccess();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onBackupRestoreFail();
-                    }
-                }));
+            .doOnNext(new Action1<List<Pair<Tag, List<Comic>>>>() {
+                @Override
+                public void call(List<Pair<Tag, List<Comic>>> list) {
+                    updateAndPostTag(list);
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Pair<Tag, List<Comic>>>>() {
+                @Override
+                public void call(List<Pair<Tag, List<Comic>>> pair) {
+                    mBaseView.onBackupRestoreSuccess();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onBackupRestoreFail();
+                }
+            }));
     }
 
     private List<Tag> setTagsId(final List<Pair<Tag, List<Comic>>> list) {
@@ -290,9 +290,9 @@ public class BackupPresenter extends BasePresenter<BackupView> {
             }
         }); */
         RxBus.getInstance().post(
-                new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, convertToMiniComic(favorite)));
+            new RxEvent(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, convertToMiniComic(favorite)));
         RxBus.getInstance().post(
-                new RxEvent(RxEvent.EVENT_COMIC_HISTORY_RESTORE, convertToMiniComic(history)));
+            new RxEvent(RxEvent.EVENT_COMIC_HISTORY_RESTORE, convertToMiniComic(history)));
     }
 
     private List<MiniComic> convertToMiniComic(List<Comic> list) {

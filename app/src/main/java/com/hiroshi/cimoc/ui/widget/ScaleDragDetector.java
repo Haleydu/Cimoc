@@ -10,13 +10,13 @@ import android.view.ViewConfiguration;
 /**
  * ****************************************************************************
  * Copyright 2011, 2012 Chris Banes.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,22 +27,20 @@ import android.view.ViewConfiguration;
 public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureListener {
 
     private static final int INVALID_POINTER_ID = -1;
-
+    private final ScaleGestureDetector mDetector;
+    private final float mTouchSlop;
+    private final float mMinimumVelocity;
     private int mActivePointerId = INVALID_POINTER_ID;
     private int mActivePointerIndex = 0;
-    private final ScaleGestureDetector mDetector;
-
     private VelocityTracker mVelocityTracker;
     private boolean mIsDragging;
     private float mLastTouchX;
     private float mLastTouchY;
-    private final float mTouchSlop;
-    private final float mMinimumVelocity;
     private OnScaleDragGestureListener mListener;
 
     public ScaleDragDetector(Context context, OnScaleDragGestureListener listener) {
         final ViewConfiguration configuration = ViewConfiguration
-                .get(context);
+            .get(context);
         mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
         mTouchSlop = configuration.getScaledTouchSlop();
         mListener = listener;
@@ -52,7 +50,8 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
         }
     }
 
-    @Override public boolean onScale(ScaleGestureDetector detector) {
+    @Override
+    public boolean onScale(ScaleGestureDetector detector) {
         float scaleFactor = detector.getScaleFactor();
 
         if (Float.isNaN(scaleFactor) || Float.isInfinite(scaleFactor))
@@ -62,11 +61,13 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
         return true;
     }
 
-    @Override public boolean onScaleBegin(ScaleGestureDetector detector) {
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
         return true;
     }
 
-    @Override public void onScaleEnd(ScaleGestureDetector detector) {
+    @Override
+    public void onScaleEnd(ScaleGestureDetector detector) {
         mListener.onScaleEnd();
     }
 
@@ -155,11 +156,11 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
                         mVelocityTracker.computeCurrentVelocity(1000);
 
                         final float vX = mVelocityTracker.getXVelocity(), vY = mVelocityTracker
-                                .getYVelocity();
+                            .getYVelocity();
 
                         if (Math.max(Math.abs(vX), Math.abs(vY)) >= mMinimumVelocity) {
                             mListener.onFling(mLastTouchX, mLastTouchY, -vX,
-                                    -vY);
+                                -vY);
                         }
                     }
                 }
@@ -170,7 +171,7 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 final int pointerIndex = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
-                        MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                    MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 final int pointerId = ev.getPointerId(pointerIndex);
                 if (pointerId == mActivePointerId) {
                     final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
@@ -182,8 +183,8 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
         }
 
         mActivePointerIndex = ev
-                .findPointerIndex(mActivePointerId != INVALID_POINTER_ID ? mActivePointerId
-                        : 0);
+            .findPointerIndex(mActivePointerId != INVALID_POINTER_ID ? mActivePointerId
+                : 0);
         return true;
     }
 

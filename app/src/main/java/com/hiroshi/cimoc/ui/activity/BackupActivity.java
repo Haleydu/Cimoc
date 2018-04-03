@@ -25,8 +25,10 @@ public class BackupActivity extends BackActivity implements BackupView {
     private static final int DIALOG_REQUEST_RESTORE_COMIC = 0;
     private static final int DIALOG_REQUEST_RESTORE_TAG = 1;
 
-    @BindView(R.id.backup_layout) View mLayoutView;
-    @BindView(R.id.backup_save_comic_auto) CheckBoxPreference mSaveComicAuto;
+    @BindView(R.id.backup_layout)
+    View mLayoutView;
+    @BindView(R.id.backup_save_comic_auto)
+    CheckBoxPreference mSaveComicAuto;
 
     private BackupPresenter mPresenter;
 
@@ -43,7 +45,8 @@ public class BackupActivity extends BackActivity implements BackupView {
         mSaveComicAuto.bindPreference(PreferenceManager.PREF_BACKUP_SAVE_COMIC, true);
     }
 
-    @OnClick(R.id.backup_save_comic) void onSaveFavoriteClick() {
+    @OnClick(R.id.backup_save_comic)
+    void onSaveFavoriteClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.saveComic();
@@ -52,7 +55,8 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_save_tag) void onSaveTagClick() {
+    @OnClick(R.id.backup_save_tag)
+    void onSaveTagClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.saveTag();
@@ -61,7 +65,8 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_restore_comic) void onRestoreFavoriteClick() {
+    @OnClick(R.id.backup_restore_comic)
+    void onRestoreFavoriteClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadComicFile();
@@ -70,7 +75,8 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_restore_tag) void onRestoreTagClick() {
+    @OnClick(R.id.backup_restore_tag)
+    void onRestoreTagClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadTagFile();

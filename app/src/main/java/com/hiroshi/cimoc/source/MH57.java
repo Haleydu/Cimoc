@@ -33,15 +33,15 @@ public class MH57 extends MangaParser {
     public static final String DEFAULT_TITLE = "57漫画";
 
     private static final String[] servers = {
-            "http://images.720rs.com"
+        "http://images.720rs.com"
     };
-
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
 
     public MH57(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://m.57mh.com/".concat(cid);
     }
 
@@ -169,6 +169,11 @@ public class MH57 extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.57mh.com/");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -179,7 +184,7 @@ public class MH57 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://www.57mh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
-                    args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
+                args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override
@@ -301,11 +306,6 @@ public class MH57 extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.57mh.com/");
     }
 
 }

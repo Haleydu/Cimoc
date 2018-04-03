@@ -8,6 +8,17 @@ import android.os.Parcelable;
  */
 public class Chapter implements Parcelable {
 
+    public final static Parcelable.Creator<Chapter> CREATOR = new Parcelable.Creator<Chapter>() {
+        @Override
+        public Chapter createFromParcel(Parcel source) {
+            return new Chapter(source);
+        }
+
+        @Override
+        public Chapter[] newArray(int size) {
+            return new Chapter[size];
+        }
+    };
     private String title;
     private String path;
     private int count;
@@ -100,17 +111,5 @@ public class Chapter implements Parcelable {
         dest.writeByte((byte) (download ? 1 : 0));
         dest.writeLong(tid);
     }
-
-    public final static Parcelable.Creator<Chapter> CREATOR = new Parcelable.Creator<Chapter>() {
-        @Override
-        public Chapter createFromParcel(Parcel source) {
-            return new Chapter(source);
-        }
-
-        @Override
-        public Chapter[] newArray(int size) {
-            return new Chapter[size];
-        }
-    };
 
 }

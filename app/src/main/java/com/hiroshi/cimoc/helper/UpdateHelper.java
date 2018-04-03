@@ -23,8 +23,6 @@ import com.hiroshi.cimoc.source.Webtoon;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-
 /**
  * Created by Hiroshi on 2017/1/18.
  */

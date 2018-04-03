@@ -24,18 +24,18 @@ public class ComicPresenter extends BasePresenter<ComicView> {
 
     public void loadTag() {
         mCompositeSubscription.add(mTagManager.listInRx()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<Tag>>() {
-                    @Override
-                    public void call(List<Tag> list) {
-                        mBaseView.onTagLoadSuccess(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBaseView.onTagLoadFail();
-                    }
-                }));
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Action1<List<Tag>>() {
+                @Override
+                public void call(List<Tag> list) {
+                    mBaseView.onTagLoadSuccess(list);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable throwable) {
+                    mBaseView.onTagLoadFail();
+                }
+            }));
     }
 
 }

@@ -14,12 +14,22 @@ import com.hiroshi.cimoc.component.DialogCaller;
 
 public class ItemDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
+    public static ItemDialogFragment newInstance(int title, String[] item, int requestCode) {
+        ItemDialogFragment fragment = new ItemDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
+        bundle.putStringArray(DialogCaller.EXTRA_DIALOG_ITEMS, item);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String[] item = getArguments().getStringArray(DialogCaller.EXTRA_DIALOG_ITEMS);
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-                .setItems(item, this);
+            .setItems(item, this);
         return builder.create();
     }
 
@@ -30,16 +40,6 @@ public class ItemDialogFragment extends DialogFragment implements DialogInterfac
         bundle.putInt(DialogCaller.EXTRA_DIALOG_RESULT_INDEX, which);
         DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
-    }
-
-    public static ItemDialogFragment newInstance(int title, String[] item, int requestCode) {
-        ItemDialogFragment fragment = new ItemDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
-        bundle.putStringArray(DialogCaller.EXTRA_DIALOG_ITEMS, item);
-        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
-        fragment.setArguments(bundle);
-        return fragment;
     }
 
 }

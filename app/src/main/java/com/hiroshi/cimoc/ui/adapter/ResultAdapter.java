@@ -31,18 +31,6 @@ public class ResultAdapter extends BaseAdapter<Comic> {
     private ControllerBuilderProvider mProvider;
     private SourceManager.TitleGetter mTitleGetter;
 
-    class ResultViewHolder extends BaseViewHolder {
-        @BindView(R.id.result_comic_image) SimpleDraweeView comicImage;
-        @BindView(R.id.result_comic_title) TextView comicTitle;
-        @BindView(R.id.result_comic_author) TextView comicAuthor;
-        @BindView(R.id.result_comic_update) TextView comicUpdate;
-        @BindView(R.id.result_comic_source) TextView comicSource;
-
-        ResultViewHolder(View view) {
-            super(view);
-        }
-    }
-
     public ResultAdapter(Context context, List<Comic> list) {
         super(context, list);
     }
@@ -63,9 +51,9 @@ public class ResultAdapter extends BaseAdapter<Comic> {
         viewHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         viewHolder.comicUpdate.setText(comic.getUpdate());
         ImageRequest request = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(comic.getCover()))
-                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
-                .build();
+            .newBuilderWithSource(Uri.parse(comic.getCover()))
+            .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+            .build();
         viewHolder.comicImage.setController(mProvider.get(comic.getSource()).setImageRequest(request).build());
     }
 
@@ -86,6 +74,23 @@ public class ResultAdapter extends BaseAdapter<Comic> {
                 outRect.set(0, 0, 0, offset);
             }
         };
+    }
+
+    class ResultViewHolder extends BaseViewHolder {
+        @BindView(R.id.result_comic_image)
+        SimpleDraweeView comicImage;
+        @BindView(R.id.result_comic_title)
+        TextView comicTitle;
+        @BindView(R.id.result_comic_author)
+        TextView comicAuthor;
+        @BindView(R.id.result_comic_update)
+        TextView comicUpdate;
+        @BindView(R.id.result_comic_source)
+        TextView comicSource;
+
+        ResultViewHolder(View view) {
+            super(view);
+        }
     }
 
 }

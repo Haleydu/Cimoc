@@ -53,6 +53,12 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
 
     private Task mSavedTask;
 
+    public static Intent createIntent(Context context, Long id) {
+        Intent intent = new Intent(context, TaskActivity.class);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        return intent;
+    }
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new TaskPresenter();
@@ -93,9 +99,10 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         return super.onCreateOptionsMenu(menu);
     }
 
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button)
+    void onActionButtonClick() {
         Intent intent = DetailActivity.createIntent(this, mPresenter.getComic().getId(),
-                mPresenter.getComic().getSource(), mPresenter.getComic().getCid());
+            mPresenter.getComic().getSource(), mPresenter.getComic().getCid());
         startActivity(intent);
     }
 
@@ -133,9 +140,9 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     public void onItemLongClick(View view, int position) {
         mSavedTask = mTaskAdapter.getItem(position);
-        String[] item = { getString(R.string.task_read), getString(R.string.task_delete) };
+        String[] item = {getString(R.string.task_read), getString(R.string.task_delete)};
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
-                item, DIALOG_REQUEST_OPERATION);
+            item, DIALOG_REQUEST_OPERATION);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -170,7 +177,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     String path = mPresenter.getComic().getLast();
                     if (path == null) {
                         path = mTaskAdapter.getItem(mTaskOrder ?
-                                0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                            0 : mTaskAdapter.getDateSet().size() - 1).getPath();
                     }
                     startReader(path, true);
                     break;
@@ -185,7 +192,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 case R.id.detail_search_title:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(),
-                                null, ResultActivity.LAUNCH_MODE_SEARCH);
+                            null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
@@ -194,7 +201,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 case R.id.detail_search_author:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(),
-                                null, ResultActivity.LAUNCH_MODE_SEARCH);
+                            null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
@@ -278,7 +285,8 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 }
 
                 @Override
-                public void onServiceDisconnected(ComponentName name) {}
+                public void onServiceDisconnected(ComponentName name) {
+                }
             };
             bindService(new Intent(this, DownloadService.class), mConnection, BIND_AUTO_CREATE);
         } else {
@@ -300,7 +308,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     /**
-     *  task state
+     * task state
      */
 
     @Override
@@ -360,12 +368,6 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.task_list);
-    }
-
-    public static Intent createIntent(Context context, Long id) {
-        Intent intent = new Intent(context, TaskActivity.class);
-        intent.putExtra(Extra.EXTRA_ID, id);
-        return intent;
     }
 
 }

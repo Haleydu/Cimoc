@@ -17,6 +17,17 @@ public class MultiDialogFragment extends DialogFragment implements DialogInterfa
 
     private boolean[] mCheckArray;
 
+    public static MultiDialogFragment newInstance(int title, String[] item, boolean[] check, int requestCode) {
+        MultiDialogFragment fragment = new MultiDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
+        bundle.putStringArray(DialogCaller.EXTRA_DIALOG_ITEMS, item);
+        bundle.putBooleanArray(DialogCaller.EXTRA_DIALOG_CHOICE_ITEMS, check);
+        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -26,8 +37,8 @@ public class MultiDialogFragment extends DialogFragment implements DialogInterfa
         }
         initCheckArray(item.length);
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-                .setMultiChoiceItems(item, mCheckArray, this)
-                .setPositiveButton(R.string.dialog_positive, this);
+            .setMultiChoiceItems(item, mCheckArray, this)
+            .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 
@@ -53,17 +64,6 @@ public class MultiDialogFragment extends DialogFragment implements DialogInterfa
         bundle.putBooleanArray(DialogCaller.EXTRA_DIALOG_RESULT_VALUE, mCheckArray);
         DialogCaller target = (DialogCaller) (getTargetFragment() != null ? getTargetFragment() : getActivity());
         target.onDialogResult(requestCode, bundle);
-    }
-
-    public static MultiDialogFragment newInstance(int title, String[] item, boolean[] check, int requestCode) {
-        MultiDialogFragment fragment = new MultiDialogFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt(DialogCaller.EXTRA_DIALOG_TITLE, title);
-        bundle.putStringArray(DialogCaller.EXTRA_DIALOG_ITEMS, item);
-        bundle.putBooleanArray(DialogCaller.EXTRA_DIALOG_CHOICE_ITEMS, check);
-        bundle.putInt(DialogCaller.EXTRA_DIALOG_REQUEST_CODE, requestCode);
-        fragment.setArguments(bundle);
-        return fragment;
     }
 
 }

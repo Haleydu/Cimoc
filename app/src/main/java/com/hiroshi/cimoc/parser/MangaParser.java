@@ -81,7 +81,7 @@ public abstract class MangaParser implements Parser {
     }
 
     protected boolean isFinish(String text) {
-        return text != null && (text.contains("完结") || text.contains("Completed")) ;
+        return text != null && (text.contains("完结") || text.contains("Completed"));
     }
 
     @Override
@@ -90,7 +90,7 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public Headers getHeader(){
+    public Headers getHeader() {
         return null;
     }
 
@@ -100,7 +100,7 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public Headers getHeader(List<ImageUrl> list){
+    public Headers getHeader(List<ImageUrl> list) {
         return getHeader();
     }
 

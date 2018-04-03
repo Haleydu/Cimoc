@@ -155,7 +155,7 @@ public class DocumentUtils {
 
                 int length;
                 byte[] buffer = new byte[8192];
-                while ((length = inputStream.read(buffer)) != -1){
+                while ((length = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, length);
                 }
                 output.flush();

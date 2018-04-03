@@ -19,8 +19,8 @@ public class CategoryAdapter extends ArrayAdapter<String> {
 
     private List<Pair<String, String>> mCategoryList;
 
-    public CategoryAdapter(Context context, List<Pair<String, String>> list){
-        super(context, R.layout.item_spinner, CollectionUtils.map(list, new Func1<Pair<String,String>, String>() {
+    public CategoryAdapter(Context context, List<Pair<String, String>> list) {
+        super(context, R.layout.item_spinner, CollectionUtils.map(list, new Func1<Pair<String, String>, String>() {
             @Override
             public String call(Pair<String, String> pair) {
                 return pair.first;

@@ -9,7 +9,6 @@ import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
-import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -44,32 +43,43 @@ public class SourceManager {
         mSourceDao = getter.getAppInstance().getDaoSession().getSourceDao();
     }
 
+    public static SourceManager getInstance(AppGetter getter) {
+        if (mInstance == null) {
+            synchronized (SourceManager.class) {
+                if (mInstance == null) {
+                    mInstance = new SourceManager(getter);
+                }
+            }
+        }
+        return mInstance;
+    }
+
     public Observable<List<Source>> list() {
         return mSourceDao.queryBuilder()
-                .orderAsc(Properties.Type)
-                .rx()
-                .list();
+            .orderAsc(Properties.Type)
+            .rx()
+            .list();
     }
 
     public Observable<List<Source>> listEnableInRx() {
         return mSourceDao.queryBuilder()
-                .where(Properties.Enable.eq(true))
-                .orderAsc(Properties.Type)
-                .rx()
-                .list();
+            .where(Properties.Enable.eq(true))
+            .orderAsc(Properties.Type)
+            .rx()
+            .list();
     }
 
     public List<Source> listEnable() {
         return mSourceDao.queryBuilder()
-                .where(Properties.Enable.eq(true))
-                .orderAsc(Properties.Type)
-                .list();
+            .where(Properties.Enable.eq(true))
+            .orderAsc(Properties.Type)
+            .list();
     }
 
     public Source load(int type) {
         return mSourceDao.queryBuilder()
-                .where(Properties.Type.eq(type))
-                .unique();
+            .where(Properties.Type.eq(type))
+            .unique();
     }
 
     public long insert(Source source) {
@@ -122,7 +132,7 @@ public class SourceManager {
                     parser = new MangaNel(source);
                     break;
 
-                    //feilong
+                //feilong
                 case PuFei.TYPE:
                     parser = new PuFei(source);
                     break;
@@ -156,17 +166,6 @@ public class SourceManager {
             return getParser(type).getHeader();
         }
 
-    }
-
-    public static SourceManager getInstance(AppGetter getter) {
-        if (mInstance == null) {
-            synchronized (SourceManager.class) {
-                if (mInstance == null) {
-                    mInstance = new SourceManager(getter);
-                }
-            }
-        }
-        return mInstance;
     }
 
 }

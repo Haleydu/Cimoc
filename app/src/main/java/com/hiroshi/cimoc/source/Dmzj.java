@@ -34,12 +34,12 @@ public class Dmzj extends MangaParser {
     public static final int TYPE = 1;
     public static final String DEFAULT_TITLE = "动漫之家";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public Dmzj(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
     }
 
@@ -197,6 +197,11 @@ public class Dmzj extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.dmzj.com/");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -207,7 +212,7 @@ public class Dmzj extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://m.dmzj.com/classify/%s-%s-%s-%s-%s-%%d.json",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_READER], args[CATEGORY_PROGRESS], args[CATEGORY_AREA], args[CATEGORY_ORDER]);
+                args[CATEGORY_SUBJECT], args[CATEGORY_READER], args[CATEGORY_PROGRESS], args[CATEGORY_AREA], args[CATEGORY_ORDER]);
         }
 
         @Override
@@ -300,11 +305,6 @@ public class Dmzj extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.dmzj.com/");
     }
 
 }

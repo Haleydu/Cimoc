@@ -18,6 +18,12 @@ import com.hiroshi.cimoc.ui.activity.DirPickerActivity;
 
 public class StorageEditorDialogFragment extends EditorDialogFragment {
 
+    public static StorageEditorDialogFragment newInstance(int title, String content, int requestCode) {
+        StorageEditorDialogFragment fragment = new StorageEditorDialogFragment();
+        fragment.setArguments(createBundle(title, content, requestCode));
+        return fragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog dialog = (AlertDialog) super.onCreateDialog(savedInstanceState);
@@ -41,12 +47,6 @@ public class StorageEditorDialogFragment extends EditorDialogFragment {
             }
         });
         return dialog;
-    }
-
-    public static StorageEditorDialogFragment newInstance(int title, String content, int requestCode) {
-        StorageEditorDialogFragment fragment = new StorageEditorDialogFragment();
-        fragment.setArguments(createBundle(title, content, requestCode));
-        return fragment;
     }
 
 }

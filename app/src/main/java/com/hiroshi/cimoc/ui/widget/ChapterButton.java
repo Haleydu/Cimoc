@@ -17,8 +17,8 @@ import com.hiroshi.cimoc.R;
 
 public class ChapterButton extends AppCompatTextView {
 
-    private static final int[] NORMAL_STATE = new int[] { -android.R.attr.state_selected };
-    private static final int[] SELECTED_STATE = new int[] { android.R.attr.state_selected };
+    private static final int[] NORMAL_STATE = new int[]{-android.R.attr.state_selected};
+    private static final int[] SELECTED_STATE = new int[]{android.R.attr.state_selected};
 
     private int normalColor;
     private int accentColor;
@@ -39,7 +39,7 @@ public class ChapterButton extends AppCompatTextView {
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.ChapterButton, 0, 0);
+            attrs, R.styleable.ChapterButton, 0, 0);
         accentColor = typedArray.getColor(R.styleable.ChapterButton_selected_color, Color.BLACK);
         typedArray.recycle();
 
@@ -52,8 +52,8 @@ public class ChapterButton extends AppCompatTextView {
     }
 
     private void initColorDrawableState() {
-        ColorStateList colorStateList = new ColorStateList(new int[][] {NORMAL_STATE, SELECTED_STATE},
-                new int[] { normalColor, Color.WHITE });
+        ColorStateList colorStateList = new ColorStateList(new int[][]{NORMAL_STATE, SELECTED_STATE},
+            new int[]{normalColor, Color.WHITE});
         setTextColor(colorStateList);
     }
 

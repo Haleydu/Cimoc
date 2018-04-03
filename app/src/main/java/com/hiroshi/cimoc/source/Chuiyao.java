@@ -31,12 +31,12 @@ public class Chuiyao extends MangaParser {
     public static final int TYPE = 9;
     public static final String DEFAULT_TITLE = "吹妖漫画";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public Chuiyao(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Chuiyao extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://m.chuiyao.com/manhua/".concat(cid);
     }
 
@@ -143,6 +143,11 @@ public class Chuiyao extends MangaParser {
         return list;
     }
 
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.chuiyao.com");
+    }
+
     private static class Category extends MangaCategory {
 
         @Override
@@ -153,7 +158,7 @@ public class Chuiyao extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://m.chuiyao.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
+                args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
         }
 
         @Override
@@ -187,11 +192,6 @@ public class Chuiyao extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.chuiyao.com");
     }
 
 }

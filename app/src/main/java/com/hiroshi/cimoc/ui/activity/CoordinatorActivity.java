@@ -16,12 +16,16 @@ import butterknife.BindView;
  */
 
 public abstract class CoordinatorActivity extends BackActivity implements
-        BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
+    BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
 
-    @BindView(R.id.coordinator_action_button) FloatingActionButton mActionButton;
-    @BindView(R.id.coordinator_action_button2) FloatingActionButton mActionButton2;
-    @BindView(R.id.coordinator_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.coordinator_layout) CoordinatorLayout mLayoutView;
+    @BindView(R.id.coordinator_action_button)
+    FloatingActionButton mActionButton;
+    @BindView(R.id.coordinator_action_button2)
+    FloatingActionButton mActionButton2;
+    @BindView(R.id.coordinator_recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.coordinator_layout)
+    CoordinatorLayout mLayoutView;
 
     @Override
     protected void initView() {
@@ -42,17 +46,20 @@ public abstract class CoordinatorActivity extends BackActivity implements
 
     protected abstract BaseAdapter initAdapter();
 
-    protected void initActionButton() {}
+    protected void initActionButton() {
+    }
 
     protected RecyclerView.LayoutManager initLayoutManager() {
         return new LinearLayoutManager(this);
     }
 
     @Override
-    public void onItemClick(View view, int position) {}
+    public void onItemClick(View view, int position) {
+    }
 
     @Override
-    public void onItemLongClick(View view, int position) {}
+    public void onItemLongClick(View view, int position) {
+    }
 
     @Override
     protected int getLayoutRes() {

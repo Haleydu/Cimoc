@@ -2,7 +2,6 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Pair;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -28,6 +27,12 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
 
     private TagEditorPresenter mPresenter;
     private TagEditorAdapter mTagAdapter;
+
+    public static Intent createIntent(Context context, long id) {
+        Intent intent = new Intent(context, TagEditorActivity.class);
+        intent.putExtra(Extra.EXTRA_ID, id);
+        return intent;
+    }
 
     @Override
     protected BasePresenter initPresenter() {
@@ -86,7 +91,8 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
         mTagAdapter.notifyItemChanged(position);
     }
 
-    @OnClick(R.id.coordinator_action_button) void onActionButtonClick() {
+    @OnClick(R.id.coordinator_action_button)
+    void onActionButtonClick() {
         showProgressDialog();
         List<Long> list = new ArrayList<>();
         for (Switcher<Tag> switcher : mTagAdapter.getDateSet()) {
@@ -100,12 +106,6 @@ public class TagEditorActivity extends CoordinatorActivity implements TagEditorV
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.tag_editor);
-    }
-
-    public static Intent createIntent(Context context, long id) {
-        Intent intent = new Intent(context, TagEditorActivity.class);
-        intent.putExtra(Extra.EXTRA_ID, id);
-        return intent;
     }
 
 }

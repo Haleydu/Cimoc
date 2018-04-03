@@ -34,27 +34,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
     private String last;
 
-    static class ChapterHolder extends BaseViewHolder {
-        @BindView(R.id.item_chapter_button) ChapterButton chapterButton;
-
-        ChapterHolder(View view) {
-            super(view);
-        }
-    }
-
-    class HeaderHolder extends BaseViewHolder {
-        @BindView(R.id.item_header_comic_image) SimpleDraweeView mComicImage;
-        @BindView(R.id.item_header_comic_title) TextView mComicTitle;
-        @BindView(R.id.item_header_comic_intro) TextView mComicIntro;
-        @BindView(R.id.item_header_comic_status) TextView mComicStatus;
-        @BindView(R.id.item_header_comic_update) TextView mComicUpdate;
-        @BindView(R.id.item_header_comic_author) TextView mComicAuthor;
-
-        HeaderHolder(View view) {
-            super(view);
-        }
-    }
-
     public DetailAdapter(Context context, List<Chapter> list) {
         super(context, list);
     }
@@ -166,6 +145,34 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
             } else if (path.equals(temp)) {
                 notifyItemChanged(i + 1);
             }
+        }
+    }
+
+    static class ChapterHolder extends BaseViewHolder {
+        @BindView(R.id.item_chapter_button)
+        ChapterButton chapterButton;
+
+        ChapterHolder(View view) {
+            super(view);
+        }
+    }
+
+    class HeaderHolder extends BaseViewHolder {
+        @BindView(R.id.item_header_comic_image)
+        SimpleDraweeView mComicImage;
+        @BindView(R.id.item_header_comic_title)
+        TextView mComicTitle;
+        @BindView(R.id.item_header_comic_intro)
+        TextView mComicIntro;
+        @BindView(R.id.item_header_comic_status)
+        TextView mComicStatus;
+        @BindView(R.id.item_header_comic_update)
+        TextView mComicUpdate;
+        @BindView(R.id.item_header_comic_author)
+        TextView mComicAuthor;
+
+        HeaderHolder(View view) {
+            super(view);
         }
     }
 

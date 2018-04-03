@@ -29,12 +29,12 @@ public class CCTuku extends MangaParser {
     public static final int TYPE = 3;
     public static final String DEFAULT_TITLE = "CC图库";
 
-    public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
-    }
-
     public CCTuku(Source source) {
         init(source, new Category());
+    }
+
+    public static Source getDefaultSource() {
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public String getUrl(String cid){
+    public String getUrl(String cid) {
         return "http://m.tuku.cc/comic/".concat(cid);
     }
 
@@ -66,9 +66,9 @@ public class CCTuku extends MangaParser {
     public Request getInfoRequest(String cid) {
         String url = "http://m.tuku.cc/comic/".concat(cid);
         return new Request.Builder()
-                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-                .url(url)
-                .build();
+            .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+            .url(url)
+            .build();
     }
 
     @Override
@@ -152,6 +152,11 @@ public class CCTuku extends MangaParser {
             }
         }
         return list;
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", "http://m.tuku.cc");
     }
 
     private static class Category extends MangaCategory {
@@ -241,11 +246,6 @@ public class CCTuku extends MangaParser {
             return list;
         }
 
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", "http://m.tuku.cc");
     }
 
 }

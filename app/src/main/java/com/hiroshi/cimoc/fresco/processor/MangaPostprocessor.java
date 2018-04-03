@@ -185,6 +185,7 @@ public class MangaPostprocessor extends BasePostprocessor {
 
     /**
      * 10 * 20 方格 按 2:3:3:2 划分为四个区域 权值分别为 0 1 2 3
+     *
      * @return 加权值 > 60 返回 false
      */
     private boolean twoDimensionScan(int[] pixels, int length, boolean vertical, boolean reverse) {

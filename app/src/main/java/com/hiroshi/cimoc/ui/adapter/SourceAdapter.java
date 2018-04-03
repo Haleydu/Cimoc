@@ -26,16 +26,8 @@ import butterknife.BindView;
 public class SourceAdapter extends BaseAdapter<Source> {
 
     private OnItemCheckedListener mOnItemCheckedListener;
-    private @ColorInt int color = -1;
-
-    static class SourceHolder extends BaseViewHolder {
-        @BindView(R.id.item_source_title) TextView sourceTitle;
-        @BindView(R.id.item_source_switch) SwitchCompat sourceSwitch;
-
-        SourceHolder(final View view) {
-            super(view);
-        }
-    }
+    private @ColorInt
+    int color = -1;
 
     public SourceAdapter(Context context, List<Source> list) {
         super(context, list);
@@ -63,11 +55,11 @@ public class SourceAdapter extends BaseAdapter<Source> {
             }
         });
         if (color != -1) {
-            ColorStateList thumbList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
-                    new int[]{Color.WHITE, color});
+            ColorStateList thumbList = new ColorStateList(new int[][]{{-android.R.attr.state_checked}, {android.R.attr.state_checked}},
+                new int[]{Color.WHITE, color});
             viewHolder.sourceSwitch.setThumbTintList(thumbList);
-            ColorStateList trackList = new ColorStateList(new int[][]{{ -android.R.attr.state_checked }, { android.R.attr.state_checked }},
-                    new int[]{0x4C000000, (0x00FFFFFF & color | 0x4C000000)});
+            ColorStateList trackList = new ColorStateList(new int[][]{{-android.R.attr.state_checked}, {android.R.attr.state_checked}},
+                new int[]{0x4C000000, (0x00FFFFFF & color | 0x4C000000)});
             viewHolder.sourceSwitch.setTrackTintList(trackList);
         }
     }
@@ -93,6 +85,17 @@ public class SourceAdapter extends BaseAdapter<Source> {
 
     public interface OnItemCheckedListener {
         void onItemCheckedListener(boolean isChecked, int position);
+    }
+
+    static class SourceHolder extends BaseViewHolder {
+        @BindView(R.id.item_source_title)
+        TextView sourceTitle;
+        @BindView(R.id.item_source_switch)
+        SwitchCompat sourceSwitch;
+
+        SourceHolder(final View view) {
+            super(view);
+        }
     }
 
 }

@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.source;
 /**
  * Created by Hiroshi on 2016/8/6.
  */
-public class ExHentai/* extends MangaParser */{
+public class ExHentai/* extends MangaParser */ {
 /*
     @Override
     public Request getSearchRequest(String keyword, int page) {

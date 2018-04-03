@@ -35,7 +35,8 @@ import butterknife.OnClick;
 
 public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemClickListener {
 
-    @BindView(R.id.chapter_recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.chapter_recycler_view)
+    RecyclerView mRecyclerView;
 
     private ChapterAdapter mChapterAdapter;
     private boolean isAscendMode;
@@ -43,6 +44,12 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
     private Handler mHandler = new Handler();
     private RecyclerView.OnItemTouchListener mListener = new CustomTouchListener();
     private RecyclerView.ItemDecoration mDecoration;
+
+    public static Intent createIntent(Context context, ArrayList<Chapter> list) {
+        Intent intent = new Intent(context, ChapterActivity.class);
+        intent.putExtra(Extra.EXTRA_CHAPTER, list);
+        return intent;
+    }
 
     @Override
     protected void initView() {
@@ -125,7 +132,8 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
         }
     }
 
-    @OnClick(R.id.chapter_action_button) void onActionButtonClick() {
+    @OnClick(R.id.chapter_action_button)
+    void onActionButtonClick() {
         ArrayList<Chapter> list = new ArrayList<>();
         for (Switcher<Chapter> switcher : mChapterAdapter.getDateSet()) {
             if (!switcher.getElement().isDownload() && switcher.isEnable()) {
@@ -153,12 +161,6 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
     @Override
     protected String getDefaultTitle() {
         return getString(R.string.chapter);
-    }
-
-    public static Intent createIntent(Context context, ArrayList<Chapter> list) {
-        Intent intent = new Intent(context, ChapterActivity.class);
-        intent.putExtra(Extra.EXTRA_CHAPTER, list);
-        return intent;
     }
 
     class CustomTouchListener implements RecyclerView.OnItemTouchListener {
@@ -203,7 +205,7 @@ public class ChapterActivity extends BackActivity implements BaseAdapter.OnItemC
         @Override
         public void onTouchEvent(RecyclerView rv, MotionEvent e) {
             int pos = rv.getChildAdapterPosition(rv.findChildViewUnder(e.getX(), e.getY()));
-            switch (e.getAction()){
+            switch (e.getAction()) {
                 case MotionEvent.ACTION_MOVE:
                     if (pos != -1 && mLastPosition != pos) {
                         update(pos);
