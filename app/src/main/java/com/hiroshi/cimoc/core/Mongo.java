@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.core;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.utils.StringUtils;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
@@ -11,9 +10,7 @@ import com.mongodb.client.MongoDatabase;
 
 import org.bson.Document;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
@@ -41,7 +38,7 @@ public class Mongo {
         comicChaColl = mongoBase.getCollection("comic-chapter");
     }
 
-    private List<Document> genChapterListFromDocumentList(List<Chapter> list){
+    private List<Document> genDocumentListFromChapterList(List<Chapter> list){
         List<Document> chapterList = new ArrayList<>();
         ListIterator<Chapter> iterator=list.listIterator(list.size());
         while(iterator.hasPrevious()){
@@ -54,25 +51,22 @@ public class Mongo {
         return chapterList;
     }
 
+    private List<Chapter> genChapterListFromDocumentList(List<Document> list){
+        List<Chapter> chapterList = new ArrayList<>();
+        ListIterator<Document> iterator=list.listIterator(list.size());
+        while(iterator.hasPrevious()){
+            Document c = iterator.previous();
+            chapterList.add(
+                new Chapter(c.getString("title"),c.getString("cid"))
+            );
+        }
+        return chapterList;
+    }
+
     private Document QueryBaseDoc(int source,String mid){
         Document queryStr = new Document("lid",source)
             .append("mid",mid);
         return comicBaseColl.find(queryStr).first();
-    }
-
-    private String getDate(){
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-//        int hour = c.get(Calendar.HOUR_OF_DAY);
-//        int minute = c.get(Calendar.MINUTE);
-//        int second = c.get(Calendar.SECOND);
-//        int week_month = c.get(Calendar.WEEK_OF_MONTH);
-//        int week_year = c.get(Calendar.WEEK_OF_YEAR);
-//        int week_day = c.get(Calendar.DAY_OF_WEEK);
-//        int week_day_month = c.get(Calendar.DAY_OF_WEEK_IN_MONTH);
-        return StringUtils.format("%d%d%d",year,month,day);
     }
 
     private void InsertBaseByDoc(Comic comic, List<Chapter> list){
@@ -85,7 +79,7 @@ public class Mongo {
             .append("title",comic.getTitle())
             .append("intro",comic.getIntro())
             .append("author",comic.getAuthor())
-            .append("chapter", genChapterListFromDocumentList(list));
+            .append("chapter", genDocumentListFromChapterList(list));
         comicBaseColl.insertOne(setStr);
     }
 
@@ -93,7 +87,7 @@ public class Mongo {
         Document queryStr = new Document("lid",source)
             .append("mid",mid);
         Document setStr = new Document("lastcid",list.get(0).getPath())
-            .append("chapter", genChapterListFromDocumentList(list));
+            .append("chapter", genDocumentListFromChapterList(list));
         comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
     }
 
@@ -112,6 +106,37 @@ public class Mongo {
         }catch (Exception ex){
             //connect to databases error
         }
+    }
+
+    private int getDateDiffHour(Date fromDate) {
+        return getDateDiffHour(fromDate,new Date());
+    }
+
+    private int getDateDiffHour(Date fromDate,Date toDate){
+        long from = fromDate.getTime();
+        long to = toDate.getTime();
+        return (int)((to-from)/(60*60*1000));
+    }
+
+    public List<Chapter> QueryComicBase(Comic comic){
+        List<Chapter> list = new ArrayList<>();
+        Document d = QueryBaseDoc(comic.getSource(),comic.getCid());
+
+        if(!d.isEmpty() && d.getDate("lastdate") != null){
+            Date date = d.getDate("lastdate");
+
+            //数据库数据只在一定时间内有效
+            if(getDateDiffHour(date) < 24) {//todo: add to setting
+                comic.setTitle(d.getString("title"));
+                comic.setUrl(d.getString("path"));
+                comic.setIntro(d.getString("intro"));
+                comic.setAuthor(d.getString("author"));
+
+                return genChapterListFromDocumentList((List<Document>) d.get("path"));
+            }
+        }
+
+        return list;
     }
 
     private List<Document> genDocumentListFromImageUrlList(List<ImageUrl> list){

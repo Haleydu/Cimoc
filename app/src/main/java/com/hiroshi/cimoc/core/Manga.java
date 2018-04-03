@@ -64,17 +64,22 @@ public class Manga {
             public void call(Subscriber<? super List<Chapter>> subscriber) {
                 try {
                     Mongo mongo = new Mongo();
-                    comic.setUrl(parser.getUrl(comic.getCid()));
-                    Request request = parser.getInfoRequest(comic.getCid());
-                    String html = getResponseBody(App.getHttpClient(), request);
-                    parser.parseInfo(html, comic);
-                    request = parser.getChapterRequest(html, comic.getCid());
-                    if (request != null) {
-                        html = getResponseBody(App.getHttpClient(), request);
-                    }
-                    List<Chapter> list = parser.parseChapter(html);
-                    if (!list.isEmpty()) {
+                    List<Chapter> list = new ArrayList<>();
+
+                    list.addAll(mongo.QueryComicBase(comic));
+                    if(list.isEmpty()) {
+                        comic.setUrl(parser.getUrl(comic.getCid()));
+                        Request request = parser.getInfoRequest(comic.getCid());
+                        String html = getResponseBody(App.getHttpClient(), request);
+                        parser.parseInfo(html, comic);
+                        request = parser.getChapterRequest(html, comic.getCid());
+                        if (request != null) {
+                            html = getResponseBody(App.getHttpClient(), request);
+                        }
+                        list = parser.parseChapter(html);
                         mongo.UpdateComicBase(comic,list);
+                    }
+                    if (!list.isEmpty()) {
                         subscriber.onNext(list);
                         subscriber.onCompleted();
                     } else {
