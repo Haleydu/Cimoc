@@ -137,7 +137,7 @@ public class Mongo {
                 comic.setIntro(d.getString("intro"));
                 comic.setAuthor(d.getString("author"));
 
-                return genChapterListFromDocumentList((List<Document>) d.get("path"));
+                return genChapterListFromDocumentList((List<Document>) d.get("chapter"));
             }
         }
 
