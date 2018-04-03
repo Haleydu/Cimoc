@@ -118,14 +118,22 @@ public class Manga {
             public void call(Subscriber<? super List<ImageUrl>> subscriber) {
                 String html;
                 Mongo mongo = new Mongo();
+                List<ImageUrl> list = new ArrayList<>();
                 try {
-                    Request request = parser.getImagesRequest(cid, path);
-                    html = getResponseBody(App.getHttpClient(), request);
-                    List<ImageUrl> list = parser.parseImages(html);
+//                    List<ImageUrl> listdoc = new ArrayList<>();
+                    list.addAll(mongo.QueryComicChapter(mComic,path));
+                    if(list.isEmpty()){
+                        Request request = parser.getImagesRequest(cid, path);
+                        html = getResponseBody(App.getHttpClient(), request);
+                        list = parser.parseImages(html);
+                        if (!list.isEmpty()) {
+                            mongo.InsertComicChapter(mComic,path,list);
+                        }
+                    }
+
                     if (list.isEmpty()) {
                         throw new Exception();
                     } else {
-                        mongo.InsertComicChapter(mComic,path,list);
                         for (ImageUrl imageUrl : list) {
                             imageUrl.setChapter(path);
                         }
@@ -144,6 +152,10 @@ public class Manga {
         Mongo mongo = new Mongo();
         Response response = null;
         try {
+            list.addAll(mongo.QueryComicChapter(source,cid,path));
+            if(!list.isEmpty()){
+                return list;
+            }
             Request request  = parser.getImagesRequest(cid, path);
             response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {

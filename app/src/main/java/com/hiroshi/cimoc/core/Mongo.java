@@ -1,30 +1,16 @@
 package com.hiroshi.cimoc.core;
 
-import android.content.res.Resources;
-import android.support.annotation.NonNull;
-
-import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
-import com.hiroshi.cimoc.parser.Parser;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-import org.bson.BsonDocument;
 import org.bson.Document;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -51,7 +37,7 @@ public class Mongo {
         comicChaColl = mongoBase.getCollection("comic-chapter");
     }
 
-    private List<Document> genChapterList(List<Chapter> list){
+    private List<Document> genChapterListFromDocumentList(List<Chapter> list){
         List<Document> chapterList = new ArrayList<>();
         ListIterator<Chapter> iterator=list.listIterator(list.size());
         while(iterator.hasPrevious()){
@@ -79,13 +65,13 @@ public class Mongo {
                     .append("title",comic.getTitle())
                     .append("intro",comic.getIntro())
                     .append("author",comic.getAuthor())
-                    .append("chapter",genChapterList(list));
+                    .append("chapter", genChapterListFromDocumentList(list));
                 comicBaseColl.insertOne(setStr);
             }else
                 //if update,refersh it
                 if(!d.get("lastcid").equals(list.get(0).getPath())) {
                     setStr = new Document("lastcid",list.get(0).getPath())
-                                .append("chapter",genChapterList(list));
+                                .append("chapter", genChapterListFromDocumentList(list));
                     comicBaseColl.updateOne(queryStr, new Document("$set",setStr));
                 }
         }catch (Exception ex){
@@ -93,10 +79,19 @@ public class Mongo {
         }
     }
 
-    private List<Document> genImageList(List<ImageUrl> list){
+    private List<Document> genDocumentListFromImageUrlList(List<ImageUrl> list){
         List<Document> picList = new ArrayList<>();
         for (ImageUrl imageUrl : list) {
             picList.add(new Document("src",imageUrl.getUrl()));
+        }
+        return picList;
+    }
+
+    private List<ImageUrl> genImageUrlListFromDocumentList(List<Document> list) {
+        List<ImageUrl> picList = new ArrayList<>();
+        int i = 0;
+        for (Document document : list) {
+            picList.add(new ImageUrl(++i,(String)document.get("src"),false));
         }
         return picList;
     }
@@ -122,11 +117,36 @@ public class Mongo {
                 setStr = new Document("lid",source)
                     .append("mid",mid)
                     .append("cid",cid)
-                    .append("pic",genImageList(list));
+                    .append("pic", genDocumentListFromImageUrlList(list));
                 comicChaColl.insertOne(setStr);
             }
         }catch (Exception ex){
             //connect to databases error
+        }
+    }
+
+    public List<ImageUrl> QueryComicChapter(final Comic comic,
+                                   final String cid){
+        return QueryComicChapter(comic.getSource(),comic.getCid(),cid);
+    }
+
+    public List<ImageUrl> QueryComicChapter(final int source,
+                             final String mid,
+                             final String cid) {
+        try {
+            queryStr = new Document("lid",source)
+                .append("mid",mid)
+                .append("cid",cid);
+            Document d = comicChaColl.find(queryStr).first();
+            if(d==null){
+                return new ArrayList<>();
+            }else{
+                List<Document> listdoc = (List<Document>)d.get("pic");
+                return genImageUrlListFromDocumentList(listdoc);
+            }
+        } catch (Exception ex) {
+            //connect to databases error
+            return new ArrayList<>();
         }
     }
 }
