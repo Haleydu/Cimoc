@@ -15,8 +15,8 @@ android {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode gitVersion + "(" + gitVersion + ")"
-        versionName version
+        versionCode gitVersion
+        versionName version + "(" + gitVersion + ")"
         resConfigs "en", "zh"
         manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
