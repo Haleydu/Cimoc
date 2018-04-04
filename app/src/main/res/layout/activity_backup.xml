@@ -78,6 +78,27 @@
                         app:title="@string/backup_restore_tag"
                         app:summary="@string/backup_restore_tag_summary"/>
                 </LinearLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:text="@string/backup_cloud"/>
+                    <com.hiroshi.cimoc.ui.widget.Option
+                        android:id="@+id/backup_cloud_restore"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/backup_cloud_restore_tag"
+                        app:summary="@string/backup_cloud_restore_tag_summary"/>
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

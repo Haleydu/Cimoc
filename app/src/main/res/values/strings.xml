@@ -181,6 +181,15 @@
     <string name="backup_restore_comic_summary">恢复收藏和历史漫画</string>
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
+    <string name="backup_cloud">云端</string>
+    <string name="backup_cloud_restore_tag">从云端恢复</string>
+    <string name="backup_cloud_restore_tag_summary">从云端恢复收藏的漫画</string>
+    <string name="backup_cloud_clear_tag">清除云端数据</string>
+    <string name="backup_cloud_clear_tag_summary">清除云端同步的漫画数据</string>
+    <string name="backup_cloud_backup_tag">备份到云端</string>
+    <string name="backup_cloud_backup_tag_summary">备份收藏漫画到云端</string>
+    <string name="backup_cloud_sync_tag">自动同步</string>
+    <string name="backup_cloud_sync_tag_summary">自动同步收藏到云</string>
 
     <string name="home_page">主页</string>
     <string name="home_page_url">https://cimqus.now.sh/cimoc</string>
@@ -274,5 +283,7 @@
     <string name="mongo_database_name">comic</string>
     <string name="mongo_comic_base">comic-base</string>
     <string name="mongo_comic_chapter">comic-chapter</string>
+
+    <string name="developing">此功能正在开发中</string>
 
 </resources>

@@ -85,6 +85,17 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
+    @OnClick(R.id.backup_cloud_restore)
+    void onCloudRestoreClick(){
+//        showProgressDialog();
+//        if (PermissionUtils.hasStoragePermission(this)) {
+//            mPresenter.loadComicFile();
+//        } else {
+//            onFileLoadFail();
+//        }
+        showSnackbar(R.string.developing);
+    }
+
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
