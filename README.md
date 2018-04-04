@@ -8,6 +8,8 @@ Online manga reader based on Android
 [![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-feilongfl-cimoc-release-tci)
 [![GitHub release](https://img.shields.io/github/release/feilongfl/Cimoc.svg)](https://github.com/feilongfl/Cimoc)
 
+# 下载
+> 所有release由travis-ci编译发布，如果在release界面某个版本没有apk，那么要么是正在编译，要么就是编译失败了
 
 # 功能简介
 - 翻页阅读（Page Reader）
@@ -16,18 +18,6 @@ Online manga reader based on Android
 - 下载漫画（Download Manga）
 - 本地漫画（Local Reader）
 - 本地备份恢复（Local Backup）
-
-# 支持网站
-- [看漫画](http://m.ikanman.com)
-- [动漫之家](http://m.dmzj.com)
-- [手机汗汗](http://hhaazz.com)
-- [CC图库](http://m.tuku.cc)
-- [有妖气](http://www.u17.com)
-- [动漫屋](http://www.dm5.com)
-- [Webtoon](http://m.webtoons.com)
-- [汗汗漫画](http://hhssee.com)
-- [57漫画](http://m.57mh.com)
-- [吹妖漫画](http://m.chuiyao.com/)
 
 # 感谢以下的开源项目及作者
 - [Android Open Source Project](http://source.android.com/)
@@ -51,20 +41,23 @@ Online manga reader based on Android
 - ~~更改下载路径~~
 - ~~扫描已下载漫画~~
 - ~~阅读状态自定义点击事件~~
+- 建立漫画数据库，加速部分漫画加载速度
+- 基于数据库的快速漫画更新检查
+- 云备份（google driver）
+- ~~评论系统~~[cimqus]（cimqus.now.sh)
+- 要是能多线程检查更新就好了，我本地收藏两百多，每次检查更新要好久
+
 
 # 应用截图
 <img src="./screenshot/01.png" width="250">
-<img src="./screenshot/02.png" width="250">
-<img src="./screenshot/03.png" width="250">
-<img src="./screenshot/04.png" width="250">
-<img src="./screenshot/05.png" width="250">
-<img src="./screenshot/06.png" width="250">
-<img src="./screenshot/07.png" width="250">
-<img src="./screenshot/08.png" width="250">
-<img src="./screenshot/09.png" width="250">
 
-# 增加图源
+# 增加图源（最好能自己写好代码pr过来）
 - 继承 MangaParser 类，参照 Parser 接口的注释
+> 在app\src\main\java\com\hiroshi\cimoc\source目录里面随便找一个复制一下
+> 注释是这个：app\src\main\java\com\hiroshi\cimoc\parser\MangaParser.java
 - 可选地继承 MangaCategory 类，参照 Category 接口的注释
+> 这个没什么大用的感觉，个人不常用，直接删掉不会有什么影响
 - 在 SourceManger 的 getParser() 方法中加入相应分支
+> case 里面无脑添加
 - 在 UpdateHelper 的 initSource() 方法中初始化图源
+> 同上
