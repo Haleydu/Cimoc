@@ -87,6 +87,7 @@ public class Mongo {
             .append("title", comic.getTitle())
             .append("intro", comic.getIntro())
             .append("author", comic.getAuthor())
+            .append("cover", comic.getCover())
             .append("chapter", genDocumentListFromChapterList(list));
         try {
             comicBaseColl.insertOne(setStr);
@@ -95,11 +96,12 @@ public class Mongo {
         }
     }
 
-    private void UpdateOneBase(int source, String mid, List<Chapter> list) {
+    private void UpdateOneBase(int source, String mid, String cover, List<Chapter> list) {
         Document queryStr = new Document("lid", source)
             .append("mid", mid);
         Document setStr = new Document("lastcid", list.get(0).getPath())
             .append("lastdate", new Date())
+            .append("cover", cover)
             .append("chapter", genDocumentListFromChapterList(list));
         try {
             comicBaseColl.updateOne(queryStr, new Document("$set", setStr));
@@ -118,8 +120,10 @@ public class Mongo {
                 InsertBaseByDoc(comic, list);
             } else
                 //if update,refersh it
-                if (!d.get("lastcid").equals(list.get(0).getPath()) || getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
-                    UpdateOneBase(comic.getSource(), comic.getCid(), list);
+                if (!d.get("lastcid").equals(list.get(0).getPath())
+                    || d.getString("cover") == null //兼容中...
+                    || getDateDiffHour(d.getDate("lastdate")) >= hourLimit) {
+                    UpdateOneBase(comic.getSource(), comic.getCid(),comic.getCover(), list);
                 }
         } catch (Exception ex) {
             //connect to databases error
@@ -143,13 +147,14 @@ public class Mongo {
         List<Chapter> list = new ArrayList<>();
         Document d = QueryBaseDoc(comic.getSource(), comic.getCid());
 
-        if (!d.isEmpty()) {
+        if (!d.isEmpty() && d.getString("cover") != null) {//之前忘记存了，兼容中...
             //数据库数据只在一定时间内有效
             if (getDateDiffHour(d.getDate("lastdate")) < hourLimit) {
                 comic.setTitle(d.getString("title"));
                 comic.setUrl(d.getString("path"));
                 comic.setIntro(d.getString("intro"));
                 comic.setAuthor(d.getString("author"));
+                comic.setCover(d.getString("cover"));
 
                 return genChapterListFromDocumentList((List<Document>) d.get("chapter"));
             }
