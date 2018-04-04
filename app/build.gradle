@@ -4,6 +4,9 @@ apply plugin: 'org.greenrobot.greendao'
 def cmd = 'git rev-list HEAD --count'
 def gitVersion = cmd.execute().text.trim().toInteger()
 
+cmd = 'git describe --tags'
+def version = cmd.execute().text.trim()
+
 android {
     compileSdkVersion 27
     buildToolsVersion "27.0.3"
@@ -13,7 +16,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode gitVersion
-        versionName "1.4.8.8032("+gitVersion+")"
+        versionName version
         resConfigs "en", "zh"
         manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
