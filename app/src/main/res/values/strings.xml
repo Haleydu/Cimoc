@@ -266,6 +266,8 @@
     <string name="user_login_failed">登陆失败</string>
     <string name="user_login_sucess">登陆成功</string>
     <string name="user_login_logout_sucess">注销成功</string>
+    <string name="user_login_logout_tips">您确定要注销么？</string>
+    <string name="user_login_logout">注销</string>
 
     <!--祝愿不被乱改，请大家手下留情，可以随意下载，不要乱加东西-->
     <string name="mongo_str">mongodb://comic:ba93Z5qUerhSJE3q@ds014118.mlab.com:14118</string>

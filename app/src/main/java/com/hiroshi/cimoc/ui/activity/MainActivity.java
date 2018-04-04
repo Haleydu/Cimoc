@@ -68,6 +68,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     private static final int DIALOG_REQUEST_NOTICE = 0;
     private static final int DIALOG_REQUEST_PERMISSION = 1;
+    private static final int DIALOG_REQUEST_LOGOUT = 2;
 
     private static final int REQUEST_ACTIVITY_SETTINGS = 0;
 
@@ -114,53 +115,67 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private void login() {
-        if (mPreference.getString(PreferenceManager.PREFERENCES_USER_ID, "") == "") {
-            HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
-            WebAuthProvider.init(auth0)
-                .withScheme("demo")
-                .withScope("openid profile email")
-                .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
-                .start(MainActivity.this, new AuthCallback() {
-                    @Override
-                    public void onFailure(@NonNull final Dialog dialog) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialog.show();
-                            }
-                        });
-                    }
+        HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
+        WebAuthProvider.init(auth0)
+            .withScheme("demo")
+            .withScope("openid profile email")
+            .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+            .start(MainActivity.this, new AuthCallback() {
+                @Override
+                public void onFailure(@NonNull final Dialog dialog) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.show();
+                        }
+                    });
+                }
 
-                    @Override
-                    public void onFailure(final AuthenticationException exception) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                @Override
+                public void onFailure(final AuthenticationException exception) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 //                            Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                                HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
-                            }
-                        });
-                    }
+                            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+                        }
+                    });
+                }
 
-                    @Override
-                    public void onSuccess(@NonNull final Credentials credentials) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
+                @Override
+                public void onSuccess(@NonNull final Credentials credentials) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 //                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
-                                HintUtils.showToast(MainActivity.this, R.string.user_login_sucess);
-                                mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, credentials.getAccessToken());
-                                getUesrInfo();
-                            }
-                        });
-                    }
-                });
+                            HintUtils.showToast(MainActivity.this, R.string.user_login_sucess);
+                            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, credentials.getAccessToken());
+                            getUesrInfo();
+                        }
+                    });
+                }
+            });
+    }
+
+    private void logoutShowDialog(){
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.user_login_logout,
+            R.string.user_login_logout_tips, true, DIALOG_REQUEST_LOGOUT);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    private void logout() {
+        HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
+        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
+        mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
+        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
+        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, "");
+    }
+
+    private void loginout() {
+        if (mPreference.getString(PreferenceManager.PREFERENCES_USER_ID, "") == "") {
+            login();
         } else {
-            HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
-            mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
-            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
-            mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
-            mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, "");
+            logoutShowDialog();
         }
     }
 
@@ -353,7 +368,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     startActivity(new Intent(MainActivity.this, BackupActivity.class));
                     break;
                 case R.id.user_info:
-                    login();
+                    loginout();
                     break;
             }
         }
@@ -387,6 +402,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 break;
             case DIALOG_REQUEST_PERMISSION:
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                break;
+            case DIALOG_REQUEST_LOGOUT:
+                logout();
                 break;
         }
     }
