@@ -46,7 +46,7 @@ public class BuKa extends MangaParser {
         String url = "http://m.buka.cn/search/ajax_search";
         RequestBody data = new FormBody.Builder()
             .add("key", keyword)
-            .add("start", "0")
+            .add("start", String.valueOf(15 * (page - 1)))
             .add("count", "15")
             .build();//key=%E4%B8%8D%E5%AE%9C%E5%AB%81&start=0&count=15
         return new Request.Builder()

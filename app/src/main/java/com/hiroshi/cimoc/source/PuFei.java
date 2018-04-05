@@ -42,8 +42,10 @@ public class PuFei extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
-        String url = StringUtils.format("http://m.pufei.net/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
-            URLEncoder.encode(keyword, "GB2312"));
+        String url = "";
+        if (page == 1)
+            url = StringUtils.format("http://m.pufei.net/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
+                URLEncoder.encode(keyword, "GB2312"));
         return new Request.Builder().url(url).build();
     }
 

@@ -40,7 +40,9 @@ public class Tencent extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
-        String url = "https://m.ac.qq.com/search/result?word=%s".concat(keyword);
+        String url = "";
+        if (page == 1)
+            url = "https://m.ac.qq.com/search/result?word=%s".concat(keyword);
         return new Request.Builder().url(url).build();
     }
 

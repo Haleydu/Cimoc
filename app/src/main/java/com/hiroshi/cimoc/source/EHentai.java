@@ -1,36 +1,24 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.JsonIterator;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.utils.StringUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
-import okhttp3.Headers;
 import okhttp3.Request;
+
 /**
  * Created by Hiroshi on 2016/7/26.
  */
-public class EHentai extends MangaParser  {
+public class EHentai extends MangaParser {
 
     public static final int TYPE = 60;
     public static final String DEFAULT_TITLE = "EHentai";
@@ -45,7 +33,9 @@ public class EHentai extends MangaParser  {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("https://e-hentai.org/?f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=%s&f_apply=Apply+Filter", keyword);
+        String url = "";
+        if (page == 1)
+            url = StringUtils.format("https://e-hentai.org/?f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=%s&f_apply=Apply+Filter", keyword);
         return new Request.Builder().url(url).build();
     }
 
