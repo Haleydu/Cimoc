@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
+import com.hiroshi.cimoc.source.EHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
@@ -104,6 +105,7 @@ public class UpdateHelper {
         list.add(PuFei.getDefaultSource());
         list.add(Tencent.getDefaultSource());
         list.add(BuKa.getDefaultSource());
+        list.add(EHentai.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

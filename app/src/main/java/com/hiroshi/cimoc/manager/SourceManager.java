@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
+import com.hiroshi.cimoc.source.EHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
@@ -141,6 +142,9 @@ public class SourceManager {
                     break;
                 case BuKa.TYPE:
                     parser = new BuKa(source);
+                    break;
+                case EHentai.TYPE:
+                    parser = new EHentai(source);
                     break;
 
                 default:
