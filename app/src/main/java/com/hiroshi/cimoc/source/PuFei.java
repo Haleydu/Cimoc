@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -68,6 +69,11 @@ public class PuFei extends MangaParser {
     @Override
     public String getUrl(String cid) {
         return "http://m.pufei.net/manhua/".concat(cid);
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("m.pufei.net"));
     }
 
     @Override

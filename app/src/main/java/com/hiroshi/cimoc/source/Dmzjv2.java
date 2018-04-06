@@ -45,7 +45,8 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     protected void initUrlFilterList(){
-        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)", 1));
+        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)"));
+        filter.add(new UrlFilter("m.dmzj.com","/info/(\\d+).html"));
     }
 
     public static Source getDefaultSource() {

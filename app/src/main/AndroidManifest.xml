@@ -77,18 +77,28 @@
 
         <service android:name=".service.DownloadService" />
 
-        <activity android:name=".ui.activity.BrowserFilter"
+        <activity
+            android:name=".ui.activity.BrowserFilter"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data
-                    android:host="manhua.dmzj.com"
-                    android:scheme="https"/>
-                <data
-                    android:host="manhua.dmzj.com"
-                    android:scheme="http"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="cimoc" />
+
+                <!--Generate By feilong-->
+                <data android:host="m.buka.cn" android:scheme="http"/><data android:host="m.buka.cn" android:scheme="https"/>
+                <data android:host="www.dm5.com" android:scheme="http"/><data android:host="www.dm5.com" android:scheme="https"/>
+                <data android:host="manhua.dmzj.com" android:scheme="http"/><data android:host="manhua.dmzj.com" android:scheme="https"/>
+                <data android:host="m.dmzj.com" android:scheme="http"/><data android:host="m.dmzj.com" android:scheme="https"/>
+                <data android:host="m.57mh.com" android:scheme="http"/><data android:host="m.57mh.com" android:scheme="https"/>
+                <data android:host="m.pufei.net" android:scheme="http"/><data android:host="m.pufei.net" android:scheme="https"/>
+                <data android:host="ac.qq.com" android:scheme="http"/><data android:host="ac.qq.com" android:scheme="https"/>
+                <data android:host="m.ac.qq.com" android:scheme="http"/><data android:host="m.ac.qq.com" android:scheme="https"/>
+                <data android:host="www.u17.com" android:scheme="http"/><data android:host="www.u17.com" android:scheme="https"/>
+                <!--Generate By feilong end-->
             </intent-filter>
         </activity>
     </application>

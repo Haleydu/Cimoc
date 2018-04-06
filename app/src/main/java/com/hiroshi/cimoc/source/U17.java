@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -67,6 +68,11 @@ public class U17 extends MangaParser {
     @Override
     public String getUrl(String cid) {
         return StringUtils.format("http://www.u17.com/comic/%s.html", cid);
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("www.u17.com"));
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -83,6 +84,11 @@ public class BuKa extends MangaParser {
     @Override
     public String getUrl(String cid) {
         return "http://m.buka.cn/m/".concat(cid);
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("m.buka.cn"));
     }
 
     @Override
