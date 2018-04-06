@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.parser;
 
+import android.net.Uri;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -153,4 +155,14 @@ public interface Parser {
     * 设置当前漫画url，以便分享使用。
     */
     String getUrl(String cid);
+
+    /**
+     * 检测host是否属于改漫画
+     */
+    boolean isHere(Uri uri);
+
+    /**
+     * 根据uri返回comic id
+     */
+    String getComicId(Uri uri);
 }

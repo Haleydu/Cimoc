@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.parser;
 
+import android.net.Uri;
+
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
@@ -102,6 +104,16 @@ public abstract class MangaParser implements Parser {
     @Override
     public Headers getHeader(List<ImageUrl> list) {
         return getHeader();
+    }
+
+    @Override
+    public boolean isHere(Uri uri) {
+        return false;
+    }
+
+    @Override
+    public String getComicId(Uri uri) {
+        return null;
     }
 
 }
