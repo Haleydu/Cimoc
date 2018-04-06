@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -90,6 +91,11 @@ public class DM5 extends MangaParser {
     @Override
     public String getUrl(String cid) {
         return "http://www.dm5.com/".concat(cid);
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("www.dm5.com","/(\\w+)"));
     }
 
     @Override

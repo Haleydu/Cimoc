@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.net.Uri;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -10,6 +11,7 @@ import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -35,8 +37,16 @@ public class Dmzjv2 extends MangaParser {
     public static final int TYPE = 10;
     public static final String DEFAULT_TITLE = "动漫之家v2";
 
+//    private List<UrlFilter> filter = new ArrayList<>();
+
     public Dmzjv2(Source source) {
         init(source, new Category());
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)"));
+        filter.add(new UrlFilter("m.dmzj.com","/info/(\\d+).html"));
     }
 
     public static Source getDefaultSource() {

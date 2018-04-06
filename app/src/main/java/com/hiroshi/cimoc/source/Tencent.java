@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
@@ -66,6 +67,12 @@ public class Tencent extends MangaParser {
     @Override
     public String getUrl(String cid) {
         return "http://ac.qq.com/Comic/ComicInfo/id/".concat(cid);
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("ac.qq.com"));
+        filter.add(new UrlFilter("m.ac.qq.com"));
     }
 
     @Override

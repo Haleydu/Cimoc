@@ -27,3 +27,4 @@ captures/
 
 
 /gradle.properties
+/app/src/main/BrowserFilter-data.xml
