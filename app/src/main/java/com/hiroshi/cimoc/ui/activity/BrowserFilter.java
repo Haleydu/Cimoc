@@ -6,7 +6,14 @@ import android.os.Bundle;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.SourceManager;
+import com.hiroshi.cimoc.source.BuKa;
+import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzjv2;
+import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.PuFei;
+import com.hiroshi.cimoc.source.Tencent;
+import com.hiroshi.cimoc.source.U17;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +47,13 @@ public class BrowserFilter extends BaseActivity {
         List<Integer> list = new ArrayList<>();
 
         list.add(Dmzjv2.TYPE);
+        list.add(BuKa.TYPE);
+        list.add(PuFei.TYPE);
+        list.add(Tencent.TYPE);
+        list.add(U17.TYPE);
+        list.add(MH57.TYPE);
+        list.add(DM5.TYPE);
+        list.add(IKanman.TYPE);
 
         return list;
     }

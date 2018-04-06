@@ -55,9 +55,12 @@ Online manga reader based on Android
 - 继承 MangaParser 类，参照 Parser 接口的注释
 > 在app\src\main\java\com\hiroshi\cimoc\source目录里面随便找一个复制一下
 > 注释是这个：app\src\main\java\com\hiroshi\cimoc\parser\MangaParser.java
-- 可选地继承 MangaCategory 类，参照 Category 接口的注释
+- （可选）继承 MangaCategory 类，参照 Category 接口的注释
 > 这个没什么大用的感觉，个人不常用，直接删掉不会有什么影响
 - 在 SourceManger 的 getParser() 方法中加入相应分支
 > case 里面无脑添加
 - 在 UpdateHelper 的 initSource() 方法中初始化图源
 > 同上
+- （可选）在BrowserFilter中registUrlListener添加相应type，实现关联浏览器操作
+> 在app\src\main\java\com\hiroshi\cimoc\ui\activity\BrowserFilter.java中
+> 修改后运行app\src\main\GenAndroidManifest.fish，使用自动生成的BrowserFilter-data.xml替换AndroidManifest.xml中相应部分
