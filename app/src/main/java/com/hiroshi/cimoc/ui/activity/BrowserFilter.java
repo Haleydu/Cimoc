@@ -49,7 +49,6 @@ public class BrowserFilter extends BaseActivity {
         String comicId;
 
         for (int i : registUrlListener()) {
-            comicId = mSourceManager.getParser(i).getComicId(uri);
             if (mSourceManager.getParser(i).isHere(uri)
                 && ((comicId = mSourceManager.getParser(i).getComicId(uri)) != null)) {
                 openDetailActivity(i, comicId);
@@ -71,5 +70,6 @@ public class BrowserFilter extends BaseActivity {
                 openReader(uri);
             }
         }
+        finish();
     }
 }
