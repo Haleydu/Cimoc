@@ -44,10 +44,10 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        if (page == 1) {
-            String url = "http://s.acg.dmzj.com/comicsum/search.php?s=".concat(keyword);
-            return new Request.Builder().url(url).build();
-        }
+//        if (page == 1) {
+//            String url = "http://s.acg.dmzj.com/comicsum/search.php?s=".concat(keyword);
+//            return new Request.Builder().url(url).build();
+//        }
         return null;
     }
 
