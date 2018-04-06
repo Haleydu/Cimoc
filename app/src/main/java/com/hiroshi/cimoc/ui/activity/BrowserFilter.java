@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.SourceManager;
@@ -70,20 +71,37 @@ public class BrowserFilter extends BaseActivity {
         }
     }
 
+    private void openReaderByIntent(Intent intent) {
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        //来自url
+        if (Intent.ACTION_VIEW.equals(action)) {
+            Uri uri = intent.getData();
+            if (uri != null) {
+                openReader(uri);
+            } else {
+                Toast.makeText(this, "url不合法", Toast.LENGTH_SHORT);
+            }
+        }
+
+        //来自分享
+        if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
+            try {
+                openReader(Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT)));
+            } catch (Exception ex) {
+                Toast.makeText(this, "url不合法", Toast.LENGTH_SHORT);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browser_filter);
 
-        Intent i_getvalue = getIntent();
-        String action = i_getvalue.getAction();
+        openReaderByIntent(getIntent());
 
-        if (Intent.ACTION_VIEW.equals(action)) {
-            Uri uri = i_getvalue.getData();
-            if (uri != null) {
-                openReader(uri);
-            }
-        }
         finish();
     }
 }
