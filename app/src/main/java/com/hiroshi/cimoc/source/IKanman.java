@@ -75,6 +75,7 @@ public class IKanman extends MangaParser {
     @Override
     protected void initUrlFilterList(){
         filter.add(new UrlFilter("www.manhuagui.com"));
+        filter.add(new UrlFilter("m.manhuagui.com"));
     }
 
     @Override
