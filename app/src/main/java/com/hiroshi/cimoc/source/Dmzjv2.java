@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -36,8 +37,15 @@ public class Dmzjv2 extends MangaParser {
     public static final int TYPE = 10;
     public static final String DEFAULT_TITLE = "动漫之家v2";
 
+//    private List<UrlFilter> filter = new ArrayList<>();
+
     public Dmzjv2(Source source) {
         init(source, new Category());
+    }
+
+    @Override
+    protected void initUrlFilterList(){
+        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)", 1));
     }
 
     public static Source getDefaultSource() {
@@ -186,18 +194,6 @@ public class Dmzjv2 extends MangaParser {
     @Override
     public Headers getHeader() {
         return Headers.of("Referer", "http://images.dmzj.com/");
-    }
-
-    @Override
-    public boolean isHere(Uri uri) {
-//        String s = uri.getPath();
-//        String h = uri.getHost();
-        return (uri.getHost().indexOf("manhua.dmzj.com") != -1);
-    }
-
-    @Override
-    public String getComicId(Uri uri) {
-        return StringUtils.match("/(\\w+)",uri.getPath(),1);
     }
 
     private static class Category extends MangaCategory {

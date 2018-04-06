@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Headers;
@@ -20,9 +21,17 @@ public abstract class MangaParser implements Parser {
     protected String mTitle;
     private Category mCategory;
 
+    protected List<UrlFilter> filter = new ArrayList<>();
+
     protected void init(Source source, Category category) {
         mTitle = source.getTitle();
         mCategory = category;
+
+        initUrlFilterList();
+    }
+
+    protected void initUrlFilterList(){
+//        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)", 1));
     }
 
     @Override
@@ -108,11 +117,20 @@ public abstract class MangaParser implements Parser {
 
     @Override
     public boolean isHere(Uri uri) {
-        return false;
+        boolean val = false;
+        for (UrlFilter uf : filter) {
+            val |= (uri.getHost().indexOf(uf.Filter) != -1);
+        }
+        return val;
     }
 
     @Override
     public String getComicId(Uri uri) {
+        for (UrlFilter uf : filter) {
+            if (uri.getHost().indexOf(uf.Filter) != -1){
+                return StringUtils.match(uf.Regex, uri.getPath(), uf.Group);
+            }
+        }
         return null;
     }
 
