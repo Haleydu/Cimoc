@@ -2,10 +2,14 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/task_history"
-        android:title="@string/task_history"
-        android:icon="@drawable/ic_history_white_24dp"
-        app:showAsAction="ifRoom" />
+    <item android:id="@+id/detail_search_title"
+        android:title="@string/detail_search_title"
+        android:icon="@drawable/ic_search_white_24dp"
+        app:showAsAction="ifRoom"/>
+    <!--<item android:id="@+id/task_history"-->
+        <!--android:title="@string/task_history"-->
+        <!--android:icon="@drawable/ic_history_white_24dp"-->
+        <!--app:showAsAction="never" />-->
     <item android:id="@+id/task_sort"
         android:title="@string/task_sort"
         android:icon="@drawable/ic_swap_vert_white_24dp"
@@ -13,9 +17,6 @@
     <item android:id="@+id/task_delete"
         android:title="@string/task_delete"
         app:showAsAction="never" />
-    <item android:id="@+id/detail_search_title"
-        android:title="@string/detail_search_title"
-        app:showAsAction="never"/>
     <item android:id="@+id/detail_search_author"
         android:title="@string/detail_search_author"
         app:showAsAction="never"/>
