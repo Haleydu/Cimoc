@@ -1,6 +1,8 @@
 <img src="./screenshot/icon.png">
 
 # 应用简介
+
+[![Join the chat at https://gitter.im/flcimoc/Lobby](https://badges.gitter.im/flcimoc/Lobby.svg)](https://gitter.im/flcimoc/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Android 平台在线漫画阅读器  
 Online manga reader based on Android
 
