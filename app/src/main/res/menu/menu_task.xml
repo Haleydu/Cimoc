@@ -6,10 +6,10 @@
         android:title="@string/detail_search_title"
         android:icon="@drawable/ic_search_white_24dp"
         app:showAsAction="ifRoom"/>
-    <!--<item android:id="@+id/task_history"-->
-        <!--android:title="@string/task_history"-->
-        <!--android:icon="@drawable/ic_history_white_24dp"-->
-        <!--app:showAsAction="never" />-->
+    <item android:id="@+id/task_history"
+        android:title="@string/task_history"
+        android:icon="@drawable/ic_history_white_24dp"
+        app:showAsAction="never" />
     <item android:id="@+id/task_sort"
         android:title="@string/task_sort"
         android:icon="@drawable/ic_swap_vert_white_24dp"

@@ -76,17 +76,21 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     protected void initActionButton() {
         mActionButton.setImageResource(R.drawable.ic_launch_white_24dp);
         mActionButton.show();
+        mActionButton2.setImageResource(R.drawable.ic_play_arrow_white_24dp);
         mActionButton2.show();
     }
 
     @OnClick(R.id.coordinator_action_button2)
     void onActionButton2Click() {
-        String path = mPresenter.getComic().getLast();
-        if (path == null) {
-            path = mTaskAdapter.getItem(mTaskOrder ?
-                0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+        for (int i = 0; i < mTaskAdapter.getDateSet().size(); i++) {
+            Task task = mTaskAdapter.getItem(i);
+            if (task.getState() == Task.STATE_PAUSE || task.getState() == Task.STATE_ERROR) {
+                task.setState(Task.STATE_WAIT);
+                mTaskAdapter.notifyItemChanged(i);
+                Intent taskIntent = DownloadService.createIntent(this, task);
+                startService(taskIntent);
+            }
         }
-        startReader(path, true);
     }
 
     @Override
@@ -184,14 +188,14 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (!mTaskAdapter.getDateSet().isEmpty()) {
             switch (item.getItemId()) {
-//                case R.id.task_history:
-//                    String path = mPresenter.getComic().getLast();
-//                    if (path == null) {
-//                        path = mTaskAdapter.getItem(mTaskOrder ?
-//                            0 : mTaskAdapter.getDateSet().size() - 1).getPath();
-//                    }
-//                    startReader(path, true);
-//                    break;
+                case R.id.task_history:
+                    String path = mPresenter.getComic().getLast();
+                    if (path == null) {
+                        path = mTaskAdapter.getItem(mTaskOrder ?
+                            0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                    }
+                    startReader(path, true);
+                    break;
                 case R.id.task_delete:
                     ArrayList<Chapter> list = new ArrayList<>(mTaskAdapter.getItemCount());
                     for (Task task : mTaskAdapter.getDateSet()) {
