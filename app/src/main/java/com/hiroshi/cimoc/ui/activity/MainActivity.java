@@ -276,12 +276,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             case PreferenceManager.HOME_DOWNLOAD:
                 mCheckItem = R.id.drawer_comic;
                 break;
-            case PreferenceManager.HOME_SOURCE:
-                mCheckItem = R.id.drawer_source;
-                break;
-            case PreferenceManager.HOME_TAG:
-                mCheckItem = R.id.drawer_tag;
-                break;
+//            case PreferenceManager.HOME_SOURCE:
+//                mCheckItem = R.id.drawer_source;
+//                break;
+//            case PreferenceManager.HOME_TAG:
+//                mCheckItem = R.id.drawer_tag;
+//                break;
         }
         mNavigationView.setCheckedItem(mCheckItem);
         mFragmentArray = new SparseArray<>(FRAGMENT_NUM);
@@ -296,12 +296,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 case R.id.drawer_comic:
                     mCurrentFragment = new ComicFragment();
                     break;
-                case R.id.drawer_source:
-                    mCurrentFragment = new SourceFragment();
-                    break;
-                case R.id.drawer_tag:
-                    mCurrentFragment = new TagFragment();
-                    break;
+//                case R.id.drawer_source:
+//                    mCurrentFragment = new SourceFragment();
+//                    break;
+//                case R.id.drawer_tag:
+//                    mCurrentFragment = new TagFragment();
+//                    break;
             }
             mFragmentArray.put(mCheckItem, mCurrentFragment);
             return false;
@@ -345,14 +345,22 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (itemId != mCheckItem) {
             switch (itemId) {
                 case R.id.drawer_comic:
-                case R.id.drawer_source:
-                case R.id.drawer_tag:
-                    mCheckItem = itemId;
-                    getFragmentManager().beginTransaction().hide(mCurrentFragment).commit();
-                    if (mToolbar != null) {
-                        mToolbar.setTitle(item.getTitle().toString());
+//                case R.id.drawer_source:
+//                case R.id.drawer_tag:
+//                    mCheckItem = itemId;
+//                    getFragmentManager().beginTransaction().hide(mCurrentFragment).commit();
+//                    if (mToolbar != null) {
+//                        mToolbar.setTitle(item.getTitle().toString());
+//                    }
+//                    mDrawerLayout.closeDrawer(GravityCompat.START);
+//                    break;
+                case R.id.drawer_comiclist:
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_comiclist_url)));
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        showSnackbar(R.string.about_resource_fail);
                     }
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.drawer_night:
                     onNightSwitch();

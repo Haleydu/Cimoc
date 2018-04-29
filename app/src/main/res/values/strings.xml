@@ -3,6 +3,7 @@
 
     <string name="drawer_comic">漫画</string>
     <string name="drawer_source">图源</string>
+    <string name="drawer_list">列表</string>
     <string name="drawer_tag">标签</string>
     <string name="drawer_picture">截图</string>
     <string name="drawer_settings">设置</string>
@@ -195,6 +196,8 @@
     <string name="home_page_url">https://cimqus.now.sh/cimoc</string>
     <string name="home_page_cimqus">Cimqus</string>
     <string name="home_page_cimqus_url">https://cimqus.now.sh</string>
+    <string name="home_page_comiclist">Comiclist</string>
+    <string name="home_page_comiclist_url">https://cimqus.now.sh/comiclist</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/feilongfl/Cimoc</string>
     <string name="about_resource_ori">原作仓库</string>
