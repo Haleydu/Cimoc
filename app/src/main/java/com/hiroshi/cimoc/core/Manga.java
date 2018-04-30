@@ -252,7 +252,7 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
+    public static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
         Response response = null;
         try {
             response = client.newCall(request).execute();

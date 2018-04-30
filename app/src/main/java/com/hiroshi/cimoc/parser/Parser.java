@@ -7,6 +7,8 @@ import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 
+import org.json.JSONException;
+
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public interface Parser {
      * @param html 页面源代码
      * @param page 页码，可能对于一些判断有用
      */
-    SearchIterator getSearchIterator(String html, int page);
+    SearchIterator getSearchIterator(String html, int page) throws JSONException;
 
     /**
      * 详情页的 HTTP 请求

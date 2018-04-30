@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
 android {
+    signingConfigs {
+        releaseConfig {
+            keyAlias KEYALIAS
+            keyPassword KEYPASSWORD
+            storeFile file(STOREFILE)
+            storePassword STOREPASSWORD
+        }
+    }
     compileSdkVersion 27
     buildToolsVersion "27.0.3"
 
@@ -19,6 +27,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             shrinkResources true
             zipAlignEnabled true
+            signingConfig signingConfigs.releaseConfig
         }
         android.applicationVariants.all { variant ->
             variant.outputs.all {
@@ -34,10 +43,10 @@ greendao {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "com.android.support:support-v13:27.0.2"
-    compile "com.android.support:appcompat-v7:27.0.2"
-    compile "com.android.support:recyclerview-v7:27.0.2"
-    compile "com.android.support:design:27.0.2"
+    compile "com.android.support:support-v13:${SUPPORT_LIB_VERSION}"
+    compile "com.android.support:appcompat-v7:${SUPPORT_LIB_VERSION}"
+    compile "com.android.support:recyclerview-v7:${SUPPORT_LIB_VERSION}"
+    compile "com.android.support:design:${SUPPORT_LIB_VERSION}"
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'org.greenrobot:greendao:3.2.2'
@@ -47,4 +56,6 @@ dependencies {
     compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile 'io.reactivex:rxjava:1.2.4'
     compile 'io.reactivex:rxandroid:1.2.1'
+    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation files('libs/commons-lang3-3.7.jar')
 }

@@ -28,6 +28,10 @@ public class Node {
         return new Node(element.getElementById(id));
     }
 
+    public Node getChild(String cssQuery) {
+        return new Node(get().select(cssQuery).first());
+    }
+
     public List<Node> list(String cssQuery) {
         List<Node> list = new LinkedList<>();
         Elements elements = element.select(cssQuery);
@@ -115,6 +119,10 @@ public class Node {
 
     public String src(String cssQuery) {
         return attr(cssQuery, "src");
+    }
+
+    public String dataUrl(String cssQuery) {
+        return attr(cssQuery, "data-url");
     }
 
     public String href() {
