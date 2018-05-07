@@ -4,9 +4,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
@@ -27,6 +30,7 @@ public class AboutActivity extends BackActivity implements AboutView {
     @BindView(R.id.about_update_summary) TextView mUpdateText;
     @BindView(R.id.about_version_name) TextView mVersionName;
     @BindView(R.id.about_layout) View mLayoutView;
+    @BindView(R.id.about_update_auto_switch) SwitchCompat aboutAutoUpdateSwitch;
 
     private AboutPresenter mPresenter;
     private boolean update = false;
@@ -44,9 +48,29 @@ public class AboutActivity extends BackActivity implements AboutView {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
             mVersionName.setText(StringUtils.format("version: %s", info.versionName));
+            autoUpdateSwitch();
+
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    //设置是否自动检查更新App
+    private void autoUpdateSwitch() {
+        //1、打开Preferences，名称为setting，如果存在则打开它，否则创建新的Preferences
+        final SharedPreferences settings = getSharedPreferences("setting", 0);
+        aboutAutoUpdateSwitch.setChecked(settings.getBoolean("isAutoUpdate", true));
+        aboutAutoUpdateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //2、让setting处于编辑状态
+                SharedPreferences.Editor editor = settings.edit();
+                //3、存放数据
+                editor.putBoolean("isAutoUpdate", isChecked);
+                //4、完成提交
+                editor.apply();
+            }
+        });
     }
 
     @OnClick(R.id.about_support_btn) void onSupportClick() {

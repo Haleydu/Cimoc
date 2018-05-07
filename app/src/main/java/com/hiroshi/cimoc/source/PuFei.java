@@ -69,9 +69,9 @@ public class PuFei extends MangaParser {
                 String cover = node.attr("a > div > img", "data-src");
                 String update = node.text("dl:eq(4) > dd");
                 String author = node.text("a > dl:eq(2) > dd");
-                System.out.println("\nComic-cid:" + cid);
-                System.out.println("Comic-update:" + update);
-                System.out.println("Comic-author:" + author);
+//                System.out.println("\nComic-cid:" + cid);
+//                System.out.println("Comic-update:" + update);
+//                System.out.println("Comic-author:" + author);
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };

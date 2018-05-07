@@ -189,6 +189,7 @@
     <string name="about_support_feedback">该邮箱也用于意见反馈</string>
     <string name="about_already_clip">邮箱已复制到剪切板</string>
     <string name="about_update">检查更新</string>
+    <string name="about_update_auto">自动检查更新</string>
     <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
     <string name="about_update_summary">点击检查更新</string>
     <string name="about_update_latest">当前已经是最新版本</string>

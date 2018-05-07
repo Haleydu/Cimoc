@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -98,7 +99,13 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
-        checkUpdate();
+
+        //检查App更新
+        final SharedPreferences settings = getSharedPreferences("setting", 0);
+        if (settings.getBoolean("isAutoUpdate", true)) {
+            checkUpdate();
+        }
+
         if (!showAuthorNotice()) {
             showPermission();
         }

@@ -32,29 +32,48 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"/>
         </RelativeLayout>
+
         <LinearLayout
-            android:id="@+id/about_update_btn"
-            android:orientation="vertical"
+            android:id="@+id/about_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:clickable="true"
-            android:background="?android:attr/selectableItemBackground">
-            <TextView
-                android:layout_width="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/about_update_btn"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
-                android:text="@string/about_update"/>
-            <TextView
-                android:id="@+id/about_update_summary"
-                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="16sp"
+                    android:text="@string/about_update_auto"/>
+                <TextView
+                    android:id="@+id/about_update_summary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="2dp"
+                    android:textSize="14sp"
+                    android:text="@string/about_update_summary"/>
+            </LinearLayout>
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/about_update_auto_switch"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:textSize="14sp"
-                android:text="@string/about_update_summary"/>
+                android:layout_gravity="center"
+                android:paddingRight="15dp"
+                android:paddingEnd="15dp" />
+
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/about_resource_btn"
             android:orientation="vertical"
