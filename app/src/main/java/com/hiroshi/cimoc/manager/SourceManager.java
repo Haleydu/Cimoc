@@ -21,6 +21,7 @@ import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.Manhuatai;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.PuFei;
+import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -125,6 +126,9 @@ public class SourceManager {
                     break;
                 case Manhuatai.TYPE:
                     parser = new Manhuatai(source);
+                    break;
+                case Tencent.TYPE:
+                    parser = new Tencent(source);
                     break;
                 default:
                     parser = new Null();
