@@ -103,7 +103,7 @@ public class UpdateHelper {
         list.add(MangaNel.getDefaultSource());
         list.add(PuFei.getDefaultSource());
         list.add(Manhuatai.getDefaultSource());
-        list.add(Tencent.getDefaultSource());
+//        list.add(Tencent.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

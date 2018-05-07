@@ -127,9 +127,9 @@ public class SourceManager {
                 case Manhuatai.TYPE:
                     parser = new Manhuatai(source);
                     break;
-                case Tencent.TYPE:
-                    parser = new Tencent(source);
-                    break;
+//                case Tencent.TYPE:
+//                    parser = new Tencent(source);
+//                    break;
                 default:
                     parser = new Null();
                     break;
