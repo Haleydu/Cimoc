@@ -59,6 +59,7 @@ public class Manhuatai extends MangaParser {
         String url = StringUtils.format(baseUrl + "/getjson.shtml?d=1516243591359&q=%s",
                 URLEncoder.encode(keyword, "UTF-8"), page);
 
+        //解决重复加载列表问题
         if (url.equals(searchUrl)) {
             return null;
         } else {

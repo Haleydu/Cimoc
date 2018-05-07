@@ -120,11 +120,9 @@ public class SourceManager {
                 case MangaNel.TYPE:
                     parser = new MangaNel(source);
                     break;
-/*
                 case PuFei.TYPE:
                     parser = new PuFei(source);
                     break;
-*/
                 case Manhuatai.TYPE:
                     parser = new Manhuatai(source);
                     break;

@@ -100,7 +100,7 @@ public class UpdateHelper {
         list.add(MH57.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
-        // list.add(PuFei.getDefaultSource());
+        list.add(PuFei.getDefaultSource());
         list.add(Manhuatai.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }

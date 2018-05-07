@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -32,6 +33,8 @@ public class PuFei extends MangaParser {
     public static final int TYPE = 50;
     public static final String DEFAULT_TITLE = "扑飞漫画";
 
+    public static String searchUrl = null;
+
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
@@ -43,21 +46,32 @@ public class PuFei extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = StringUtils.format("http://m.pufei.net/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
-            URLEncoder.encode(keyword, "GB2312"));
+                URLEncoder.encode(keyword, "GB2312"));
+//        return new Request.Builder().url(url).build();
+
+        //解决重复加载列表问题
+        if (url.equals(searchUrl)) {
+            return null;
+        } else {
+            searchUrl = url;
+        }
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("li > a")) {
+        return new NodeIterator(body.list("div.cont-list > ul > li")) {//li > a
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit(1);
-                String title = node.text("h3");
-                String cover = node.attr("div > img", "data-src");
-                String update = node.text("dl:eq(5) > dd");
-                String author = node.text("dl:eq(2) > dd");
+                String cid = node.getChild("a").hrefWithSplit(1);//node.hrefWithSplit(1);
+                String title = node.text("a > h3");
+                String cover = node.attr("a > div > img", "data-src");
+                String update = node.text("dl:eq(4) > dd");
+                String author = node.text("a > dl:eq(2) > dd");
+                System.out.println("\nComic-cid:" + cid);
+                System.out.println("Comic-update:" + update);
+                System.out.println("Comic-author:" + author);
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
@@ -151,7 +165,7 @@ public class PuFei extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://m.pufei.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
+                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
         }
 
         @Override
