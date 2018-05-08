@@ -101,8 +101,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mPresenter.loadLast();
 
         //检查App更新
-        final SharedPreferences settings = getSharedPreferences("setting", 0);
-        if (settings.getBoolean("isAutoUpdate", true)) {
+        if (mPreference.getBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, true)) {
             checkUpdate();
         }
 

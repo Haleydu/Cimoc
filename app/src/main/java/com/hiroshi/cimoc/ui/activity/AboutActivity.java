@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.view.AboutView;
@@ -57,18 +58,12 @@ public class AboutActivity extends BackActivity implements AboutView {
 
     //设置是否自动检查更新App
     private void autoUpdateSwitch() {
-        //1、打开Preferences，名称为setting，如果存在则打开它，否则创建新的Preferences
-        final SharedPreferences settings = getSharedPreferences("setting", 0);
-        aboutAutoUpdateSwitch.setChecked(settings.getBoolean("isAutoUpdate", true));
+        aboutAutoUpdateSwitch.setChecked(mPreference.getBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, true));
         aboutAutoUpdateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //2、让setting处于编辑状态
-                SharedPreferences.Editor editor = settings.edit();
-                //3、存放数据
-                editor.putBoolean("isAutoUpdate", isChecked);
-                //4、完成提交
-                editor.apply();
+                //存放数据
+                mPreference.putBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, isChecked);
             }
         });
     }

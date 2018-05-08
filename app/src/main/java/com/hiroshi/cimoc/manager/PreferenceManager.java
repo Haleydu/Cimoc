@@ -78,6 +78,8 @@ public class PreferenceManager {
 
     public static final String PREF_NIGHT = "pref_night";
 
+    public static final String PREF_UPDATE_APP_AUTO = "pref_update_app_auto";
+
     public static final String PREF_OTHER_CHECK_UPDATE = "pref_other_check_update";
     public static final String PREF_OTHER_CHECK_UPDATE_LAST = "pref_other_check_update_last";
     public static final String PREF_OTHER_STORAGE = "pref_other_storage";
