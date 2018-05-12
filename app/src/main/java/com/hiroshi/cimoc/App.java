@@ -1,7 +1,12 @@
 package com.hiroshi.cimoc;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.content.res.Resources;
+import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -40,11 +45,15 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     private static OkHttpClient mHttpClient;
 
     private DocumentFile mDocumentFile;
-    private PreferenceManager mPreferenceManager;
+    private static PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
     private RecyclerView.RecycledViewPool mRecycledPool;
     private DaoSession mDaoSession;
     private ActivityLifecycle mActivityLifecycle;
+
+    private static WifiManager manager_wifi;
+    private static App mApp;
+    private static Activity sActivity;
 
     @Override
     public void onCreate() {
@@ -58,6 +67,47 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         UpdateHelper.update(mPreferenceManager, getDaoSession());
         Fresco.initialize(this);
         initPixels();
+
+        manager_wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        mApp = this;
+        this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+//                Log.d("YWK",activity+"onActivityCreated");
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+//                Log.d("YWK",activity+"onActivityStarted");
+                sActivity=activity;
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
     @Override
@@ -87,6 +137,19 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         return this;
     }
 
+    public static Context getAppContext() {
+        return mApp;
+    }
+
+    public static Resources getAppResources() {
+        return mApp.getResources();
+    }
+
+    public static Activity getActivity() {
+        return sActivity;
+    }
+
+
     private void initPixels() {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
@@ -113,7 +176,7 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         return mDaoSession;
     }
 
-    public PreferenceManager getPreferenceManager() {
+    public static PreferenceManager getPreferenceManager() {
         return mPreferenceManager;
     }
 
@@ -137,6 +200,12 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         if (mHttpClient == null) {
             mHttpClient = new OkHttpClient();
         }
+
+        //OkHttpClient返回null实现"仅WiFi联网"，后面要注意空指针处理
+        if (!manager_wifi.isWifiEnabled() && mPreferenceManager.getBoolean(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false)) {
+            return null;
+        }
+
         return mHttpClient;
     }
 
