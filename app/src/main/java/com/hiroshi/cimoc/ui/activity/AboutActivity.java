@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.support.v7.widget.SwitchCompat;
@@ -17,6 +16,7 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.view.AboutView;
+import com.hiroshi.cimoc.ui.widget.CustomToast;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import butterknife.BindView;
@@ -64,6 +64,13 @@ public class AboutActivity extends BackActivity implements AboutView {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //存放数据
                 mPreference.putBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, isChecked);
+                if (isChecked) {
+//                    Toast.makeText(AboutActivity.this, "已开启自动检查App更新", Toast.LENGTH_SHORT).show();
+                    CustomToast.showToast(AboutActivity.this, "已开启自动检查App更新", 2000);
+                }else {
+//                    Toast.makeText(AboutActivity.this, "已关闭自动检查App更新", Toast.LENGTH_SHORT).show();
+                    CustomToast.showToast(AboutActivity.this, "已关闭自动检查App更新", 2000);
+                }
             }
         });
     }

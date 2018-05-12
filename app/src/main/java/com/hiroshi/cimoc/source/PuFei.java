@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -69,9 +68,6 @@ public class PuFei extends MangaParser {
                 String cover = node.attr("a > div > img", "data-src");
                 String update = node.text("dl:eq(4) > dd");
                 String author = node.text("a > dl:eq(2) > dd");
-//                System.out.println("\nComic-cid:" + cid);
-//                System.out.println("Comic-update:" + update);
-//                System.out.println("Comic-author:" + author);
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
@@ -166,7 +162,6 @@ public class PuFei extends MangaParser {
         public String getFormat(String... args) {
             //"http://m.pufei.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s"
             if (args[0].equals("manhua/update") || args[0].equals("manhua/paihang")) {
-//                Log.i("kehuan:", "true");
                 return StringUtils.format("http://m.pufei.net/%s.html",
                         args[CATEGORY_SUBJECT]);
             }
@@ -205,7 +200,6 @@ public class PuFei extends MangaParser {
             list.add(Pair.create("更新", "update"));
             list.add(Pair.create("人气", "view"));
             return list;
-//            return null;
         }
 
     }
