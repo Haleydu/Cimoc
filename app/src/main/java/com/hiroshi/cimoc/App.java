@@ -69,16 +69,17 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         initPixels();
 
         manager_wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        //获取栈顶Activity以及当前App上下文
         mApp = this;
         this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-//                Log.d("YWK",activity+"onActivityCreated");
+//                Log.d("ActivityLifecycle:",activity+"onActivityCreated");
             }
 
             @Override
             public void onActivityStarted(Activity activity) {
-//                Log.d("YWK",activity+"onActivityStarted");
+//                Log.d("ActivityLifecycle:",activity+"onActivityStarted");
                 sActivity=activity;
 
             }
@@ -149,6 +150,9 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         return sActivity;
     }
 
+    public static WifiManager getManager_wifi() {
+        return manager_wifi;
+    }
 
     private void initPixels() {
         DisplayMetrics metrics = new DisplayMetrics();
@@ -197,13 +201,14 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     }
 
     public static OkHttpClient getHttpClient() {
-        if (mHttpClient == null) {
-            mHttpClient = new OkHttpClient();
-        }
 
         //OkHttpClient返回null实现"仅WiFi联网"，后面要注意空指针处理
         if (!manager_wifi.isWifiEnabled() && mPreferenceManager.getBoolean(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false)) {
             return null;
+        }
+
+        if (mHttpClient == null) {
+            mHttpClient = new OkHttpClient();
         }
 
         return mHttpClient;
