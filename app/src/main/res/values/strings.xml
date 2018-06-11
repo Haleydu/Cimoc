@@ -155,6 +155,8 @@
     <string name="settings_other">应用设置</string>
     <string name="settings_other_connect_only_wifi">仅WiFi联网</string>
     <string name="settings_other_connect_only_wifi_summary">非 WIFI 环境下禁止联网</string>
+    <string name="settings_other_loadcover_only_wifi">禁止流量加载封面</string>
+    <string name="settings_other_loadcover_only_wifi_summary">非 WIFI 环境下使用缓存加载封面</string>
     <string name="settings_other_check_update">自动检查漫画更新</string>
     <string name="settings_other_check_update_summary">WIFI 环境下自动检查漫画更新</string>
     <string name="settings_other_launch">默认启动页</string>

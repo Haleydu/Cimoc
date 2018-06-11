@@ -31,7 +31,7 @@ android {
         }
         android.applicationVariants.all { variant ->
             variant.outputs.all {
-                outputFileName = "Cimoc v${variant.versionName}.apk"
+                outputFileName = "Cimoc v${variant.versionName} ${buildType.getName()}.apk"
             }
         }
     }

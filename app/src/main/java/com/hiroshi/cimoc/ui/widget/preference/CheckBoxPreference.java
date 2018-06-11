@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
+import com.hiroshi.cimoc.ui.widget.CustomToast;
 
 import butterknife.ButterKnife;
 
@@ -64,9 +65,14 @@ public class CheckBoxPreference extends FrameLayout implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if (mPreferenceKey != null) {
-            boolean checked = !mCheckBox.isChecked();
-            mCheckBox.setChecked(checked);
-            mPreferenceManager.putBoolean(mPreferenceKey, checked);
+            if (mPreferenceKey.equals(PreferenceManager.PREF_OTHER_LOADCOVER_ONLY_WIFI) && mPreferenceManager.getBoolean(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false)) {
+                CustomToast.showToast(v.getContext(), "仅WiFi联网已打开！模块中已包含此功能！", 2000);
+                mCheckBox.setChecked(false);
+            } else {
+                boolean checked = !mCheckBox.isChecked();
+                mCheckBox.setChecked(checked);
+                mPreferenceManager.putBoolean(mPreferenceKey, checked);
+            }
         }
     }
 
