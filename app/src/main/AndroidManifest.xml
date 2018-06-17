@@ -105,6 +105,7 @@
                 <data android:host="ac.qq.com" android:scheme="http"/><data android:host="ac.qq.com" android:scheme="https"/>
                 <data android:host="m.ac.qq.com" android:scheme="http"/><data android:host="m.ac.qq.com" android:scheme="https"/>
                 <data android:host="www.u17.com" android:scheme="http"/><data android:host="www.u17.com" android:scheme="https"/>
+                <data android:host="h5.manhua.163.com" android:scheme="http"/><data android:host="h5.manhua.163.com" android:scheme="https"/>
                 <!--Generate By feilong end-->
 
             </intent-filter>

@@ -16,6 +16,7 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
+import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.U17;
@@ -106,6 +107,7 @@ public class UpdateHelper {
         list.add(Tencent.getDefaultSource());
         list.add(BuKa.getDefaultSource());
         list.add(EHentai.getDefaultSource());
+        list.add(NetEase.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 

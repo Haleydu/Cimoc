@@ -19,6 +19,7 @@ import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
+import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
@@ -145,6 +146,9 @@ public class SourceManager {
                     break;
                 case EHentai.TYPE:
                     parser = new EHentai(source);
+                    break;
+                case NetEase.TYPE:
+                    parser = new NetEase(source);
                     break;
 
                 default:
