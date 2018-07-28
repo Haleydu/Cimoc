@@ -8,13 +8,13 @@ cmd = 'git describe --tags'
 def version = cmd.execute().text.trim()
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.1"
 
     defaultConfig {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode gitVersion
         versionName version + "(" + gitVersion + ")"
         resConfigs "en", "zh"

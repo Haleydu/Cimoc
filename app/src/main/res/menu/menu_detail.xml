@@ -20,10 +20,10 @@
     <item android:id="@+id/detail_search_author"
         android:title="@string/detail_search_author"
         app:showAsAction="never"/>
-    <item android:id="@+id/detail_disqus"
-        android:title="@string/detail_disqus"
-        android:icon="@drawable/ic_chat_bubble_white_24dp"
-        app:showAsAction="always"/>
+    <!--<item android:id="@+id/detail_disqus"-->
+        <!--android:title="@string/detail_disqus"-->
+        <!--android:icon="@drawable/ic_chat_bubble_white_24dp"-->
+        <!--app:showAsAction="always"/>-->
     <item android:id="@+id/detail_share_url"
         android:title="@string/detail_share_url"
         android:icon="@drawable/ic_share_white_24dp"
