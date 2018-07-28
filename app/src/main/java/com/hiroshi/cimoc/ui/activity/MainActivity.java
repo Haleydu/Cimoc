@@ -239,12 +239,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void initNavigation() {
         night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-        mNavigationView.getMenu().findItem(R.id.user_info)
-            .setTitle(
-                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "") == "" ?
-                    getString(R.string.user_login_item) :
-                    mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "User")
-            );
+//        mNavigationView.getMenu().findItem(R.id.user_info)
+//            .setTitle(
+//                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "") == "" ?
+//                    getString(R.string.user_login_item) :
+//                    mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "User")
+//            );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
         mLastText = ButterKnife.findById(header, R.id.drawer_last_title);
@@ -375,9 +375,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 case R.id.drawer_backup:
                     startActivity(new Intent(MainActivity.this, BackupActivity.class));
                     break;
-                case R.id.user_info:
-                    loginout();
-                    break;
+//                case R.id.user_info:
+//                    loginout();
+//                    break;
             }
         }
         return true;

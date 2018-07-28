@@ -10,10 +10,10 @@
         android:title="@string/comic_filter"
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="never" />
-    <item android:id="@+id/comic_bbs"
-        android:title="@string/comic_bbs"
-        android:icon="@drawable/ic_chat_bubble_white_24dp"
-        app:showAsAction="ifRoom" />
+    <!--<item android:id="@+id/comic_bbs"-->
+        <!--android:title="@string/comic_bbs"-->
+        <!--android:icon="@drawable/ic_chat_bubble_white_24dp"-->
+        <!--app:showAsAction="ifRoom" />-->
     <item android:id="@+id/comic_cancel_highlight"
         android:title="@string/comic_cancel_highlight"
         app:showAsAction="never" />
