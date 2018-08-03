@@ -278,6 +278,10 @@ public class Manga {
     }
 
     private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
+        return getResponseBody(client,request,true);
+    }
+
+    private static String getResponseBody(OkHttpClient client, Request request,boolean retry) throws NetworkErrorException {
         Response response = null;
         try {
             response = client.newCall(request).execute();
@@ -291,6 +295,8 @@ public class Manga {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if(retry)
+                return getResponseBody(client, request,false);
         } finally {
             if (response != null) {
                 response.close();
