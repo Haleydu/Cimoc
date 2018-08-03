@@ -69,18 +69,19 @@ public class IKanman extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "https://www.manhuagui.com/comic/".concat(cid);
+        return "https://tw.manhuagui.com/comic/".concat(cid);
     }
 
     @Override
     protected void initUrlFilterList(){
         filter.add(new UrlFilter("www.manhuagui.com"));
+        filter.add(new UrlFilter("tw.manhuagui.com"));
         filter.add(new UrlFilter("m.manhuagui.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://www.manhuagui.com/comic/".concat(cid);
+        String url = "https://tw.manhuagui.com/comic/".concat(cid);
         return new Request.Builder()
             .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
             .url(url)

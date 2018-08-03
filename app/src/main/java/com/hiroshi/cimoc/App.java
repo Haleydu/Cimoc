@@ -17,12 +17,16 @@ import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.misc.ActivityLifecycle;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
+import com.hiroshi.cimoc.network.HttpDns;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.utils.DocumentUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
+
+import java.net.Proxy;
+import java.net.InetSocketAddress;
 
 import okhttp3.OkHttpClient;
 
@@ -48,7 +52,18 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
 
     public static OkHttpClient getHttpClient() {
         if (mHttpClient == null) {
-            mHttpClient = new OkHttpClient();
+            if(false){
+                mHttpClient = new OkHttpClient.Builder()
+                        .dns(new HttpDns())
+//                https://t.me/proxy?server=sean.taipei&port=9487&secret=7c8b14f05c262263d245109fac1e38c8
+                        .proxy(new Proxy(Proxy.Type.SOCKS,new InetSocketAddress("sean.taipei", 9487)))
+                        .build();
+            }else{
+                mHttpClient = new OkHttpClient.Builder()
+                        .dns(new HttpDns())
+//                        .proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("proxy", proxyPort)))
+                        .build();
+            }
         }
         return mHttpClient;
     }
