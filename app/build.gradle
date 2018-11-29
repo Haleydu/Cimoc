@@ -36,6 +36,11 @@ android {
             zipAlignEnabled true
             signingConfig signingConfigs.release
         }
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            shrinkResources true
+        }
         android.applicationVariants.all { variant ->
             variant.outputs.all {
                 outputFileName = "Cimoc.apk"
