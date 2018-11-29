@@ -8,13 +8,13 @@ cmd = 'git describe --tags'
 def version = cmd.execute().text.trim()
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode gitVersion
         versionName version + "(" + gitVersion + ")"
         resConfigs "en", "zh"
@@ -51,10 +51,10 @@ greendao {
 dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:support-v13:27.1.0'
-    compile 'com.android.support:appcompat-v7:27.1.0'
-    compile 'com.android.support:recyclerview-v7:27.1.0'
-    compile 'com.android.support:design:27.1.0'
+    compile 'com.android.support:support-v13:28.1.0'
+    compile 'com.android.support:appcompat-v7:28.1.0'
+    compile 'com.android.support:recyclerview-v7:28.1.0'
+    compile 'com.android.support:design:28.1.0'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'org.greenrobot:greendao:3.2.2'
