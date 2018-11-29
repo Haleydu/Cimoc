@@ -36,11 +36,6 @@ android {
             zipAlignEnabled true
             signingConfig signingConfigs.release
         }
-        debug {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            shrinkResources true
-        }
         android.applicationVariants.all { variant ->
             variant.outputs.all {
                 outputFileName = "Cimoc.apk"
@@ -69,6 +64,7 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'io.reactivex:rxjava:1.2.4'
     implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.auth0.android:auth0:1.+'
-    implementation 'org.mongodb:mongo-java-driver:3.6.3'
+//    implementation 'com.google.code.gson:gson:2.8.5'
+//    implementation 'com.auth0.android:auth0:1.+'
+//    implementation 'org.mongodb:mongo-java-driver:3.6.3'
 }
