@@ -23,7 +23,7 @@ public class NotificationWrapper {
         String title = context.getString(R.string.app_name);
         mManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mManager.createNotificationChannel(new NotificationChannel(id, id, NotificationManager.IMPORTANCE_DEFAULT));
+            mManager.createNotificationChannel(new NotificationChannel(id, id, NotificationManager.IMPORTANCE_MIN));
         }
         mBuilder = new NotificationCompat.Builder(context, id);
         mBuilder.setContentTitle(title).setSmallIcon(icon).setOngoing(ongoing);
