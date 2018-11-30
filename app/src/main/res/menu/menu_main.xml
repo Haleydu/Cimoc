@@ -19,11 +19,11 @@
         <!--android:id="@+id/drawer_comiclist"-->
         <!--android:icon="@drawable/ic_widgets_black_24dp"-->
         <!--android:title="@string/drawer_list"/>-->
-        <!--<item-->
-            <!--android:id="@+id/drawer_source"-->
-            <!--android:checkable="true"-->
-            <!--android:icon="@drawable/ic_widgets_black_24dp"-->
-            <!--android:title="@string/drawer_source"/>-->
+        <item
+            android:id="@+id/drawer_source"
+            android:checkable="true"
+            android:icon="@drawable/ic_widgets_black_24dp"
+            android:title="@string/drawer_source"/>
         <!--<item-->
             <!--android:id="@+id/drawer_tag"-->
             <!--android:checkable="true"-->

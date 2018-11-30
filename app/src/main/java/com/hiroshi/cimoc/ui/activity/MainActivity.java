@@ -25,14 +25,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.auth0.android.Auth0;
-import com.auth0.android.authentication.AuthenticationAPIClient;
-import com.auth0.android.authentication.AuthenticationException;
-import com.auth0.android.callback.BaseCallback;
-import com.auth0.android.provider.AuthCallback;
-import com.auth0.android.provider.WebAuthProvider;
-import com.auth0.android.result.Credentials;
-import com.auth0.android.result.UserProfile;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
@@ -98,7 +90,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private boolean night;
 
     //auth0
-    private Auth0 auth0;
+//    private Auth0 auth0;
 
     @Override
     protected BasePresenter initPresenter() {
@@ -114,70 +106,70 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         initFragment();
     }
 
-    private void login() {
-        HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
-        WebAuthProvider.init(auth0)
-            .withScheme("demo")
-            .withScope("openid profile email")
-            .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
-            .start(MainActivity.this, new AuthCallback() {
-                @Override
-                public void onFailure(@NonNull final Dialog dialog) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialog.show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(final AuthenticationException exception) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
-                        }
-                    });
-                }
-
-                @Override
-                public void onSuccess(@NonNull final Credentials credentials) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
-                            HintUtils.showToast(MainActivity.this, R.string.user_login_sucess);
-                            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, credentials.getAccessToken());
-                            getUesrInfo();
-                        }
-                    });
-                }
-            });
-    }
-
-    private void logoutShowDialog(){
-        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.user_login_logout,
-            R.string.user_login_logout_tips, true, DIALOG_REQUEST_LOGOUT);
-        fragment.show(getFragmentManager(), null);
-    }
-
-    private void logout() {
-        HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
-        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
-        mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
-        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
-        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, "");
-    }
-
-    private void loginout() {
-        if (mPreference.getString(PreferenceManager.PREFERENCES_USER_ID, "") == "") {
-            login();
-        } else {
-            logoutShowDialog();
-        }
-    }
+//    private void login() {
+//        HintUtils.showToast(MainActivity.this, R.string.user_login_tips);
+//        WebAuthProvider.init(auth0)
+//            .withScheme("demo")
+//            .withScope("openid profile email")
+//            .withAudience(String.format("https://%s/userinfo", getString(R.string.com_auth0_domain)))
+//            .start(MainActivity.this, new AuthCallback() {
+//                @Override
+//                public void onFailure(@NonNull final Dialog dialog) {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            dialog.show();
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void onFailure(final AuthenticationException exception) {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+////                            Toast.makeText(MainActivity.this, "Error: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+//                            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void onSuccess(@NonNull final Credentials credentials) {
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+////                            Toast.makeText(MainActivity.this, "Logged in: " + credentials.getAccessToken(), Toast.LENGTH_LONG).show();
+//                            HintUtils.showToast(MainActivity.this, R.string.user_login_sucess);
+//                            mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, credentials.getAccessToken());
+//                            getUesrInfo();
+//                        }
+//                    });
+//                }
+//            });
+//    }
+//
+//    private void logoutShowDialog(){
+//        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.user_login_logout,
+//            R.string.user_login_logout_tips, true, DIALOG_REQUEST_LOGOUT);
+//        fragment.show(getFragmentManager(), null);
+//    }
+//
+//    private void logout() {
+//        HintUtils.showToast(MainActivity.this, R.string.user_login_logout_sucess);
+//        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, "");
+//        mPreference.putString(PreferenceManager.PREFERENCES_USER_TOCKEN, "");
+//        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, "");
+//        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, "");
+//    }
+//
+//    private void loginout() {
+//        if (mPreference.getString(PreferenceManager.PREFERENCES_USER_ID, "") == "") {
+//            login();
+//        } else {
+//            logoutShowDialog();
+//        }
+//    }
 
     @Override
     protected void initData() {
@@ -188,38 +180,38 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         }
     }
 
-    public void getUesrInfo() {
-        String accessTocken = mPreference.getString(PreferenceManager.PREFERENCES_USER_TOCKEN, null);
-        if (accessTocken != null) {
-            AuthenticationAPIClient authentication = new AuthenticationAPIClient(auth0);
-            authentication
-                .userInfo(accessTocken)
-                .start(new BaseCallback<UserProfile, AuthenticationException>() {
-                    @Override
-                    public void onSuccess(UserProfile information) {
-                        //user information received
-                        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
-                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
-                        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, (String) information.getExtraInfo().get("sub"));
-                    }
+//    public void getUesrInfo() {
+//        String accessTocken = mPreference.getString(PreferenceManager.PREFERENCES_USER_TOCKEN, null);
+//        if (accessTocken != null) {
+//            AuthenticationAPIClient authentication = new AuthenticationAPIClient(auth0);
+//            authentication
+//                .userInfo(accessTocken)
+//                .start(new BaseCallback<UserProfile, AuthenticationException>() {
+//                    @Override
+//                    public void onSuccess(UserProfile information) {
+//                        //user information received
+//                        mPreference.putString(PreferenceManager.PREFERENCES_USER_EMAIL, information.getEmail());
+//                        mPreference.putString(PreferenceManager.PREFERENCES_USER_NAME, information.getName());
+//                        mPreference.putString(PreferenceManager.PREFERENCES_USER_ID, (String) information.getExtraInfo().get("sub"));
+//                    }
+//
+//                    @Override
+//                    public void onFailure(AuthenticationException error) {
+//                        //user information request failed
+//                        HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+//                    }
+//                });
+//        } else {
+//            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
+//        }
+//    }
 
-                    @Override
-                    public void onFailure(AuthenticationException error) {
-                        //user information request failed
-                        HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
-                    }
-                });
-        } else {
-            HintUtils.showToast(MainActivity.this, R.string.user_login_failed);
-        }
-    }
-
-    @Override
-    protected void initUser() {
-        //auth0
-        auth0 = new Auth0(this);
-        auth0.setOIDCConformant(true);
-    }
+//    @Override
+//    protected void initUser() {
+//        //auth0
+//        auth0 = new Auth0(this);
+//        auth0.setOIDCConformant(true);
+//    }
 
     private void initDrawerToggle() {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, 0, 0) {
@@ -276,9 +268,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             case PreferenceManager.HOME_DOWNLOAD:
                 mCheckItem = R.id.drawer_comic;
                 break;
-//            case PreferenceManager.HOME_SOURCE:
-//                mCheckItem = R.id.drawer_source;
-//                break;
+            case PreferenceManager.HOME_SOURCE:
+                mCheckItem = R.id.drawer_source;
+                break;
 //            case PreferenceManager.HOME_TAG:
 //                mCheckItem = R.id.drawer_tag;
 //                break;
@@ -296,9 +288,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 case R.id.drawer_comic:
                     mCurrentFragment = new ComicFragment();
                     break;
-//                case R.id.drawer_source:
-//                    mCurrentFragment = new SourceFragment();
-//                    break;
+                case R.id.drawer_source:
+                    mCurrentFragment = new SourceFragment();
+                    break;
 //                case R.id.drawer_tag:
 //                    mCurrentFragment = new TagFragment();
 //                    break;
@@ -345,15 +337,15 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         if (itemId != mCheckItem) {
             switch (itemId) {
                 case R.id.drawer_comic:
-//                case R.id.drawer_source:
+                case R.id.drawer_source:
 //                case R.id.drawer_tag:
-//                    mCheckItem = itemId;
-//                    getFragmentManager().beginTransaction().hide(mCurrentFragment).commit();
-//                    if (mToolbar != null) {
-//                        mToolbar.setTitle(item.getTitle().toString());
-//                    }
-//                    mDrawerLayout.closeDrawer(GravityCompat.START);
-//                    break;
+                    mCheckItem = itemId;
+                    getFragmentManager().beginTransaction().hide(mCurrentFragment).commit();
+                    if (mToolbar != null) {
+                        mToolbar.setTitle(item.getTitle().toString());
+                    }
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                    break;
 //                case R.id.drawer_comiclist:
 //                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_comiclist_url)));
 //                    try {
@@ -411,9 +403,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             case DIALOG_REQUEST_PERMISSION:
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
                 break;
-            case DIALOG_REQUEST_LOGOUT:
-                logout();
-                break;
+//            case DIALOG_REQUEST_LOGOUT:
+//                logout();
+//                break;
         }
     }
 
