@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Pair;
 
-import com.google.gson.JsonObject;
+//import com.google.gson.JsonObject;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;

@@ -23,6 +23,7 @@ import okhttp3.Request;
 
 /**
  * Created by Hiroshi on 2016/7/28.
+ * neew fix
  */
 public class CCTuku extends MangaParser {
 

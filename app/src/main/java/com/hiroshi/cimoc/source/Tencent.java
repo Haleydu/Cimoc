@@ -16,14 +16,20 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Headers;
 import okhttp3.Request;
 
+import static java.lang.Integer.parseInt;
+
 /**
  * Created by FEILONG on 2017/12/21.
+ * need fix
  */
 
 public class Tencent extends MangaParser {
@@ -70,7 +76,7 @@ public class Tencent extends MangaParser {
     }
 
     @Override
-    protected void initUrlFilterList(){
+    protected void initUrlFilterList() {
         filter.add(new UrlFilter("ac.qq.com"));
         filter.add(new UrlFilter("m.ac.qq.com"));
     }
@@ -97,8 +103,8 @@ public class Tencent extends MangaParser {
     public Request getChapterRequest(String html, String cid) {
         String url = "https://m.ac.qq.com/comic/chapterList/id/".concat(cid);
         return new Request.Builder()
-            .url(url)
-            .build();
+                .url(url)
+                .build();
     }
 
     @Override
@@ -116,18 +122,39 @@ public class Tencent extends MangaParser {
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("https://m.ac.qq.com/chapter/index/id/%s/cid/%s", cid, path);
         return new Request.Builder()
-            .url(url)
-            .build();
+                .url(url)
+                .build();
+    }
+
+    private String splice(String str, int from, int length) {
+        return str.substring(0, from) + str.substring(from + length, str.length());
+    }
+
+    private String decodeData(String str, String nonce) {
+        Matcher m = Pattern.compile("\\d+[a-zA-Z]+").matcher(nonce);
+        final List<String> matches = new ArrayList<>();
+        while (m.find()) {
+            matches.add(m.group(0));
+        }
+        int len = matches.size();
+        while ((len--) != 0) {
+            str = splice(str,
+                    Integer.parseInt(StringUtils.match("^\\d+", matches.get(len), 0)) & 255,
+                    StringUtils.replaceAll(matches.get(len), "\\d+", "").length()
+            );
+        }
+        return str;
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String str = StringUtils.match("data: '([a-zA-Z0-9=/]+)',", html, 1);
+        String str = StringUtils.match("data:\\s*'(.*)?',", html, 1);
         if (str != null) {
             try {
-                //谜一般的加密，位于https://gtimg.ac.qq.com/h5/chapter/js/index_v2.2.js第1059行
-                str = DecryptionUtils.base64Decrypt(str.substring(1));
+                str = DecryptionUtils.base64Decrypt(
+                        decodeData(str, StringUtils.match("data-mpmvr=\"(.*?)\"", html, 1))
+                );
                 JSONObject object = new JSONObject(str);
                 JSONArray array = object.getJSONArray("picture");
                 for (int i = 0; i != array.length(); ++i) {
