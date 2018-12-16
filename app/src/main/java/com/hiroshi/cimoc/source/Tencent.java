@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import okhttp3.Headers;
 import okhttp3.Request;
 
+import static com.hiroshi.cimoc.utils.DecryptionUtils.evalDecrypt;
 import static java.lang.Integer.parseInt;
 
 /**
@@ -131,6 +132,7 @@ public class Tencent extends MangaParser {
     }
 
     private String decodeData(String str, String nonce) {
+        nonce = evalDecrypt(nonce);
         Matcher m = Pattern.compile("\\d+[a-zA-Z]+").matcher(nonce);
         final List<String> matches = new ArrayList<>();
         while (m.find()) {
@@ -153,7 +155,7 @@ public class Tencent extends MangaParser {
         if (str != null) {
             try {
                 str = DecryptionUtils.base64Decrypt(
-                        decodeData(str, StringUtils.match("data-mpmvr=\"(.*?)\"", html, 1))
+                        decodeData(str, StringUtils.match("<script>window.*?=(.*?)<\\/script>", html, 1))
                 );
                 JSONObject object = new JSONObject(str);
                 JSONArray array = object.getJSONArray("picture");
