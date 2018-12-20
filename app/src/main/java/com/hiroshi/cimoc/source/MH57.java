@@ -34,7 +34,7 @@ public class MH57 extends MangaParser {
     public static final String DEFAULT_TITLE = "57漫画";
 
     private static final String[] servers = {
-            "http://images.720rs.com"
+            "http://images.lancaier.com"
     };
 
     public MH57(Source source) {
