@@ -15,10 +15,10 @@
             android:checkable="true"
             android:icon="@drawable/ic_import_contacts_black_24dp"
             android:title="@string/drawer_comic" />
-        <!--<item-->
-        <!--android:id="@+id/drawer_comiclist"-->
-        <!--android:icon="@drawable/ic_widgets_black_24dp"-->
-        <!--android:title="@string/drawer_list"/>-->
+        <item
+        android:id="@+id/drawer_comiclist"
+        android:icon="@drawable/ic_class_black_24dp"
+        android:title="@string/drawer_list"/>
         <item
             android:id="@+id/drawer_source"
             android:checkable="true"

@@ -344,14 +344,14 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     }
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
-//                case R.id.drawer_comiclist:
-//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_comiclist_url)));
-//                    try {
-//                        startActivity(intent);
-//                    } catch (Exception e) {
-//                        showSnackbar(R.string.about_resource_fail);
-//                    }
-//                    break;
+                case R.id.drawer_comiclist:
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_comiclist_url)));
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        showSnackbar(R.string.about_resource_fail);
+                    }
+                    break;
                 case R.id.drawer_night:
                     onNightSwitch();
                     mPreference.putBoolean(PreferenceManager.PREF_NIGHT, night);
