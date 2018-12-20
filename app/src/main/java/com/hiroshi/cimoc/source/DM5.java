@@ -96,6 +96,7 @@ public class DM5 extends MangaParser {
     @Override
     protected void initUrlFilterList() {
         filter.add(new UrlFilter("www.dm5.com", "/([\\w\\-]+)"));
+        filter.add(new UrlFilter("tel.dm5.com", "/([\\w\\-]+)"));
     }
 
     @Override
