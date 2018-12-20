@@ -292,11 +292,12 @@ public class Manga {
                     body = new String(bodybytes, "GB2312");
                 }
                 return body;
-            }
+            } else if(retry)
+                return getResponseBody(client, request,false);
         } catch (Exception e) {
             e.printStackTrace();
             if(retry)
-                return getResponseBody(client, request,false);
+               return getResponseBody(client, request,false);
         } finally {
             if (response != null) {
                 response.close();

@@ -27,8 +27,11 @@ import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
 import java.net.Proxy;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Collections;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 
 /**
  * Created by Hiroshi on 2016/7/5.
@@ -60,8 +63,9 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
                         .build();
             }else{
                 mHttpClient = new OkHttpClient.Builder()
-                     //   .dns(new HttpDns())
+//                        .dns(new HttpDns())
 //                        .proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("proxy", proxyPort)))
+//                        .protocols(Collections.unmodifiableList(Arrays.asList(Protocol.HTTP_1_1)))//disable http2
                         .build();
             }
         }

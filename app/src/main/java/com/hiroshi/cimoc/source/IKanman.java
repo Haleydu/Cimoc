@@ -19,11 +19,14 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.CacheControl;
 import okhttp3.Headers;
+import okhttp3.Protocol;
 import okhttp3.Request;
 
 /**
@@ -47,9 +50,9 @@ public class IKanman extends MangaParser {
     public Request getSearchRequest(String keyword, int page) {
         String url = StringUtils.format("https://m.manhuagui.com/s/%s.html?page=%d&ajax=1", keyword, page);
         return new Request.Builder()
-            .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-            .url(url)
-            .build();
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19")
+                .url(url)
+                .build();
     }
 
     @Override
@@ -74,7 +77,7 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    protected void initUrlFilterList(){
+    protected void initUrlFilterList() {
         filter.add(new UrlFilter("www.manhuagui.com"));
         filter.add(new UrlFilter("tw.manhuagui.com"));
         filter.add(new UrlFilter("m.manhuagui.com"));
@@ -82,11 +85,11 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://tw.manhuagui.com/comic/".concat(cid);
+        String url = "https://tw.manhuagui.com/comic/".concat(cid).concat("/");
         return new Request.Builder()
-            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")
-            .url(url)
-            .build();
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19")
+                .url(url)
+                .build();
     }
 
     @Override
@@ -125,12 +128,12 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.manhuagui.com/comic/%s/%s.html", cid, path);
+        String url = StringUtils.format("https://tw.manhuagui.com/comic/%s/%s.html", cid, path);
         return new Request.Builder()
-//                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-            .addHeader("Referer", StringUtils.format("https://m.manhuagui.com/comic/%s/%s.html", cid, path))
-            .url(url)
-            .build();
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19")
+//            .addHeader("Referer", StringUtils.format("https://m.manhuagui.com/comic/%s/%s.html", cid, path))
+                .url(url)
+                .build();
     }
 
     @Override
@@ -145,13 +148,14 @@ public class IKanman extends MangaParser {
                 packed = packed.replace(replaceable, StringUtils.format("'%s'.split('|')", real));
                 String result = DecryptionUtils.evalDecrypt(packed);
 
-                String jsonString = result.substring(11, result.length() - 9);
+                String jsonString = result.substring(12, result.length() - 12);
                 JSONObject object = new JSONObject(jsonString);
-                String chapterId = object.getString("chapterId");
+                String chapterId = object.getString("cid");
+                String path = object.getString("path");
                 String md5 = object.getJSONObject("sl").getString("md5");
-                JSONArray array = object.getJSONArray("images");
+                JSONArray array = object.getJSONArray("files");
                 for (int i = 0; i != array.length(); ++i) {
-                    String url = StringUtils.format("https://i.hamreus.com%s?cid=%s&md5=%s", array.getString(i), chapterId, md5);
+                    String url = StringUtils.format("https://i.hamreus.com%s%s?cid=%s&md5=%s", path, array.getString(i), chapterId, md5);
                     list.add(new ImageUrl(i + 1, url, false));
                 }
             } catch (Exception e) {
@@ -200,7 +204,7 @@ public class IKanman extends MangaParser {
     @Override
     public Headers getHeader() {
         return Headers.of("Referer", "https://tw.manhuagui.com/comic/1/1.html",
-            "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
+                "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     }
 
 //    private static class Category extends MangaCategory {
