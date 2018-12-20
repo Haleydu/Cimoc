@@ -45,8 +45,8 @@ public class MessageDialogFragment extends DialogFragment implements DialogInter
             content = getString(getArguments().getInt(DialogCaller.EXTRA_DIALOG_CONTENT));
         }
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-            .setMessage(content)
-            .setPositiveButton(R.string.dialog_positive, this);
+                .setMessage(content)
+                .setPositiveButton(R.string.dialog_positive, this);
         if (getArguments().getBoolean(DialogCaller.EXTRA_DIALOG_NEGATIVE, false)) {
             setCancelable(true);
             builder.setNegativeButton(R.string.dialog_negative, null);

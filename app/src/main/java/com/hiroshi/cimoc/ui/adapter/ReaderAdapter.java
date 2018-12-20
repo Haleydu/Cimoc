@@ -53,6 +53,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isBanTurn;
     private boolean isDoubleTap;
     private float mScaleFactor;
+
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
     }
@@ -65,7 +66,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int resId = viewType == TYPE_IMAGE ? (reader == READER_PAGE ?
-            R.layout.item_picture : R.layout.item_picture_stream) : R.layout.item_loading;
+                R.layout.item_picture : R.layout.item_picture_stream) : R.layout.item_loading;
         View view = mInflater.inflate(resId, parent, false);
         return new ImageHolder(view);
     }
@@ -84,7 +85,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         final DraweeView draweeView = ((ImageHolder) holder).draweeView;
 
         PipelineDraweeControllerBuilder builder = isNeedResize(imageUrl) ?
-            mLargeControllerSupplier.get() : mControllerSupplier.get();
+                mLargeControllerSupplier.get() : mControllerSupplier.get();
         switch (reader) {
             case READER_PAGE:
                 ((PhotoDraweeView) draweeView).setTapListenerListener(mTapGestureListener);
@@ -92,7 +93,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                 ((PhotoDraweeView) draweeView).setDoubleTap(isDoubleTap);
                 ((PhotoDraweeView) draweeView).setScaleFactor(mScaleFactor);
                 ((PhotoDraweeView) draweeView).setScrollMode(isVertical ?
-                    PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
+                        PhotoDraweeView.MODE_VERTICAL : PhotoDraweeView.MODE_HORIZONTAL);
                 builder.setControllerListener(new BaseControllerListener<ImageInfo>() {
                     @Override
                     public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
@@ -126,7 +127,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         for (int i = 0; i != urls.length; ++i) {
             final String url = urls[i];
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(url));
+                    .newBuilderWithSource(Uri.parse(url));
 
             // TODO 切图后可能需要修改图片高度和宽度
             MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isWhiteEdge);

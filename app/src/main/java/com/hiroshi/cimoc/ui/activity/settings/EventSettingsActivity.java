@@ -50,7 +50,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
         int value = getIntent().getBooleanExtra(Extra.EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
         setRequestedOrientation(value);
     }
 
@@ -61,11 +61,11 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         if (isStream) {
             mKeyArray = isLong ? ClickEvents.getStreamLongClickEvents() : ClickEvents.getStreamClickEvents();
             mChoiceArray = isLong ? ClickEvents.getStreamLongClickEventChoice(mPreference) :
-                ClickEvents.getStreamClickEventChoice(mPreference);
+                    ClickEvents.getStreamClickEventChoice(mPreference);
         } else {
             mKeyArray = isLong ? ClickEvents.getPageLongClickEvents() : ClickEvents.getPageClickEvents();
             mChoiceArray = isLong ? ClickEvents.getPageLongClickEventChoice(mPreference) :
-                ClickEvents.getPageClickEventChoice(mPreference);
+                    ClickEvents.getPageClickEventChoice(mPreference);
         }
 
         for (int i = 0; i != 5; ++i) {
@@ -97,7 +97,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
-            ClickEvents.getEventTitleArray(this), mChoiceArray[index], index);
+                ClickEvents.getEventTitleArray(this), mChoiceArray[index], index);
         fragment.show(getFragmentManager(), null);
     }
 

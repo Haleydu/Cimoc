@@ -3,7 +3,6 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -266,7 +265,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @Override
     public void onComicLoadSuccess(Comic comic) {
         mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
-            comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
+                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
         if (comic.getTitle() != null && comic.getCover() != null) {
             mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader(), false);

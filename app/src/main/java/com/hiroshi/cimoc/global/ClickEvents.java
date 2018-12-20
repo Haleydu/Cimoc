@@ -30,15 +30,15 @@ public class ClickEvents {
 
     public static String[] getPageClickEvents() {
         return new String[]{PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
-            PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM,
-            PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, PreferenceManager.PREF_READER_PAGE_CLICK_UP,
-            PreferenceManager.PREF_READER_PAGE_CLICK_DOWN};
+                PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, PreferenceManager.PREF_READER_PAGE_CLICK_UP,
+                PreferenceManager.PREF_READER_PAGE_CLICK_DOWN};
     }
 
     public static String[] getPageLongClickEvents() {
         return new String[]{PreferenceManager.PREF_READER_PAGE_LONG_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_LONG_CLICK_TOP,
-            PreferenceManager.PREF_READER_PAGE_LONG_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_LONG_CLICK_BOTTOM,
-            PreferenceManager.PREF_READER_PAGE_LONG_CLICK_RIGHT};
+                PreferenceManager.PREF_READER_PAGE_LONG_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_LONG_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_PAGE_LONG_CLICK_RIGHT};
     }
 
     public static int[] getPageClickEventChoice(PreferenceManager manager) {
@@ -65,15 +65,15 @@ public class ClickEvents {
 
     public static String[] getStreamClickEvents() {
         return new String[]{PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, PreferenceManager.PREF_READER_STREAM_CLICK_TOP,
-            PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM,
-            PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, PreferenceManager.PREF_READER_STREAM_CLICK_UP,
-            PreferenceManager.PREF_READER_STREAM_CLICK_DOWN};
+                PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, PreferenceManager.PREF_READER_STREAM_CLICK_UP,
+                PreferenceManager.PREF_READER_STREAM_CLICK_DOWN};
     }
 
     public static String[] getStreamLongClickEvents() {
         return new String[]{PreferenceManager.PREF_READER_STREAM_LONG_CLICK_LEFT, PreferenceManager.PREF_READER_STREAM_LONG_CLICK_TOP,
-            PreferenceManager.PREF_READER_STREAM_LONG_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_LONG_CLICK_BOTTOM,
-            PreferenceManager.PREF_READER_STREAM_LONG_CLICK_RIGHT};
+                PreferenceManager.PREF_READER_STREAM_LONG_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_LONG_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_STREAM_LONG_CLICK_RIGHT};
     }
 
     public static int[] getStreamClickEventChoice(PreferenceManager manager) {

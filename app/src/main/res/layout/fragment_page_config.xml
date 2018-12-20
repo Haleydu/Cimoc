@@ -1,66 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none">
+
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
         <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
             android:id="@+id/settings_reader_turn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_turn"/>
+            app:title="@string/settings_reader_turn" />
+
         <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
             android:id="@+id/settings_reader_orientation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_orientation"/>
+            app:title="@string/settings_reader_orientation" />
+
         <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/settings_reader_click_event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_click_event"
-            app:summary="@string/settings_reader_click_event_summary"/>
+            app:summary="@string/settings_reader_click_event_summary"
+            app:title="@string/settings_reader_click_event" />
+
         <com.hiroshi.cimoc.ui.widget.Option
             android:id="@+id/settings_reader_long_click_event"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_long_click_event"
-            app:summary="@string/settings_reader_long_click_event_summary"/>
+            app:summary="@string/settings_reader_long_click_event_summary"
+            app:title="@string/settings_reader_long_click_event" />
+
         <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_load_prev"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_load_prev"
-            app:summary="@string/settings_reader_load_prev_summary"/>
+            app:summary="@string/settings_reader_load_prev_summary"
+            app:title="@string/settings_reader_load_prev" />
+
         <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_load_next"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_load_next"
-            app:summary="@string/settings_reader_load_next_summary"/>
+            app:summary="@string/settings_reader_load_next_summary"
+            app:title="@string/settings_reader_load_next" />
+
         <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_ban_turn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_ban_turn"
-            app:summary="@string/settings_reader_ban_turn_summary"/>
+            app:summary="@string/settings_reader_ban_turn_summary"
+            app:title="@string/settings_reader_ban_turn" />
+
         <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_quick_turn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_quick_turn"
-            app:summary="@string/settings_reader_quick_turn_summary"/>
+            app:summary="@string/settings_reader_quick_turn_summary"
+            app:title="@string/settings_reader_quick_turn" />
+
         <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
             android:id="@+id/settings_reader_trigger"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/settings_reader_trigger"
+            app:max="60"
             app:min="5"
-            app:max="60"/>
+            app:title="@string/settings_reader_trigger" />
     </LinearLayout>
 </ScrollView>

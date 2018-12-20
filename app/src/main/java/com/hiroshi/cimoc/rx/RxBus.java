@@ -37,12 +37,12 @@ public class RxBus {
 
     public Observable<RxEvent> toObservable(@RxEvent.EventType final int type) {
         return bus.ofType(RxEvent.class)
-            .filter(new Func1<RxEvent, Boolean>() {
-                @Override
-                public Boolean call(RxEvent rxEvent) {
-                    return rxEvent.getType() == type;
-                }
-            }).onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread());
+                .filter(new Func1<RxEvent, Boolean>() {
+                    @Override
+                    public Boolean call(RxEvent rxEvent) {
+                        return rxEvent.getType() == type;
+                    }
+                }).onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread());
     }
 
 }

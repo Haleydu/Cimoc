@@ -25,13 +25,10 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
-import java.net.Proxy;
 import java.net.InetSocketAddress;
-import java.util.Arrays;
-import java.util.Collections;
+import java.net.Proxy;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 
 /**
  * Created by Hiroshi on 2016/7/5.
@@ -55,13 +52,13 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
 
     public static OkHttpClient getHttpClient() {
         if (mHttpClient == null) {
-            if(false){
+            if (false) {
                 mHttpClient = new OkHttpClient.Builder()
                         .dns(new HttpDns())
 //                https://t.me/proxy?server=sean.taipei&port=9487&secret=7c8b14f05c262263d245109fac1e38c8
-                        .proxy(new Proxy(Proxy.Type.SOCKS,new InetSocketAddress("sean.taipei", 9487)))
+                        .proxy(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("sean.taipei", 9487)))
                         .build();
-            }else{
+            } else {
                 mHttpClient = new OkHttpClient.Builder()
 //                        .dns(new HttpDns())
 //                        .proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("proxy", proxyPort)))
@@ -154,7 +151,7 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     public ControllerBuilderProvider getBuilderProvider() {
         if (mBuilderProvider == null) {
             mBuilderProvider = new ControllerBuilderProvider(getApplicationContext(),
-                SourceManager.getInstance(this).new HeaderGetter(), true);
+                    SourceManager.getInstance(this).new HeaderGetter(), true);
         }
         return mBuilderProvider;
     }

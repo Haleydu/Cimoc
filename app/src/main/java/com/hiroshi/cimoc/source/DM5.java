@@ -53,10 +53,10 @@ public class DM5 extends MangaParser {
     public Request getSearchRequest(String keyword, int page) {
         String url = "http://m.dm5.com/pagerdata.ashx";
         RequestBody body = new FormBody.Builder()
-            .add("t", "7")
-            .add("pageindex", String.valueOf(page))
-            .add("title", keyword)
-            .build();
+                .add("t", "7")
+                .add("pageindex", String.valueOf(page))
+                .add("title", keyword)
+                .build();
         return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.dm5.com").build();
     }
 
@@ -94,8 +94,8 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    protected void initUrlFilterList(){
-        filter.add(new UrlFilter("www.dm5.com","/([\\w\\-]+)"));
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("www.dm5.com", "/([\\w\\-]+)"));
     }
 
     @Override
@@ -156,9 +156,9 @@ public class DM5 extends MangaParser {
     public Request getImagesRequest(String cid, String path) {
         String url = "http://m.dm5.com/".concat(path);
         return new Request
-            .Builder()
-            .addHeader("Referer", StringUtils.format("http://m.dm5.com/%s", path))
-            .url(url).build();
+                .Builder()
+                .addHeader("Referer", StringUtils.format("http://m.dm5.com/%s", path))
+                .url(url).build();
     }
 
     @Override
@@ -182,8 +182,8 @@ public class DM5 extends MangaParser {
     @Override
     public Request getLazyRequest(String url) {
         return new Request.Builder().url(url)
-            .addHeader("Referer", "http://www.dm5.com")
-            .build();
+                .addHeader("Referer", "http://www.dm5.com")
+                .build();
     }
 
     @Override
@@ -245,7 +245,7 @@ public class DM5 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             String path = args[CATEGORY_SUBJECT].concat(" ").concat(args[CATEGORY_AREA]).concat(" ").concat(args[CATEGORY_PROGRESS])
-                .concat(" ").concat(args[CATEGORY_ORDER]).trim();
+                    .concat(" ").concat(args[CATEGORY_ORDER]).trim();
             path = path.replaceAll("\\s+", "-");
             return StringUtils.format("http://www.dm5.com/manhua-list-%s-p%%d", path);
         }

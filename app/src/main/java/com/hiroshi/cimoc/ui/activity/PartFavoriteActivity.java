@@ -34,7 +34,7 @@ import butterknife.BindView;
  */
 
 public class PartFavoriteActivity extends BackActivity implements PartFavoriteView, BaseAdapter.OnItemClickListener,
-    BaseAdapter.OnItemLongClickListener {
+        BaseAdapter.OnItemLongClickListener {
 
     private static final int DIALOG_REQUEST_DELETE = 0;
     private static final int DIALOG_REQUEST_ADD = 1;
@@ -116,7 +116,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
         if (isDeletable) {
             mSavedComic = mGridAdapter.getItem(position);
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                    R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -154,7 +154,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     public void onComicTitleLoadSuccess(List<String> list) {
         hideProgressDialog();
         MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select,
-            list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
+                list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
         fragment.show(getFragmentManager(), null);
     }
 

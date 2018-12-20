@@ -29,7 +29,7 @@ public class MainPresenter extends BasePresenter<MainView> {
             public void call(RxEvent rxEvent) {
                 MiniComic comic = (MiniComic) rxEvent.getData();
                 mBaseView.onLastChange(comic.getId(), comic.getSource(), comic.getCid(),
-                    comic.getTitle(), comic.getCover());
+                        comic.getTitle(), comic.getCover());
             }
         });
     }
@@ -41,20 +41,20 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     public void loadLast() {
         mCompositeSubscription.add(mComicManager.loadLast()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<Comic>() {
-                @Override
-                public void call(Comic comic) {
-                    if (comic != null) {
-                        mBaseView.onLastLoadSuccess(comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Comic>() {
+                    @Override
+                    public void call(Comic comic) {
+                        if (comic != null) {
+                            mBaseView.onLastLoadSuccess(comic.getId(), comic.getSource(), comic.getCid(), comic.getTitle(), comic.getCover());
+                        }
                     }
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onLastLoadFail();
-                }
-            }));
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onLastLoadFail();
+                    }
+                }));
     }
 
     public void checkUpdate(final String version) {

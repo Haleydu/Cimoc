@@ -124,7 +124,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                         arr2[i] = mSourceList.get(i).isEnable();
                     }
                     MultiDialogFragment fragment =
-                        MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
+                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
                     fragment.show(getFragmentManager(), null);
                     break;
                 }
@@ -172,7 +172,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                 HintUtils.showToast(this, R.string.search_source_none);
             } else {
                 startActivity(ResultActivity.createIntent(this, keyword,
-                    CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
+                        CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
             }
         }
     }

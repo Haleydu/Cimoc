@@ -25,34 +25,34 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     public void loadSource() {
         mCompositeSubscription.add(mSourceManager.listEnableInRx()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<Source>>() {
-                @Override
-                public void call(List<Source> list) {
-                    mBaseView.onSourceLoadSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onSourceLoadFail();
-                }
-            }));
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Source>>() {
+                    @Override
+                    public void call(List<Source> list) {
+                        mBaseView.onSourceLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onSourceLoadFail();
+                    }
+                }));
     }
 
     public void loadAutoComplete(String keyword) {
         mCompositeSubscription.add(Manga.loadAutoComplete(keyword)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<String>>() {
-                @Override
-                public void call(List<String> list) {
-                    mBaseView.onAutoCompleteLoadSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }));
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> list) {
+                        mBaseView.onAutoCompleteLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                }));
     }
 
 }

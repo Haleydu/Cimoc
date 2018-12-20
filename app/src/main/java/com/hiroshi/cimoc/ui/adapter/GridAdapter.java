@@ -58,13 +58,13 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         if (mProvider != null) {
             ImageRequest request = ImageRequestBuilder
-                .newBuilderWithSource(Uri.parse(comic.getCover()))
-                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
-                .build();
+                    .newBuilderWithSource(Uri.parse(comic.getCover()))
+                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+                    .build();
             DraweeController controller = mProvider.get(comic.getSource())
-                .setOldController(gridHolder.comicImage.getController())
-                .setImageRequest(request)
-                .build();
+                    .setOldController(gridHolder.comicImage.getController())
+                    .setImageRequest(request)
+                    .build();
             gridHolder.comicImage.setController(controller);
         }
         gridHolder.comicHighlight.setVisibility(symbol && comic.isHighlight() ? View.VISIBLE : View.INVISIBLE);

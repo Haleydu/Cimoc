@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/reader_back_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentLeft="true"
     android:layout_alignParentTop="true"
-    android:visibility="invisible"
-    android:background="@color/trans_light_black">
+    android:background="@color/trans_light_black"
+    android:visibility="invisible">
+
     <ImageView
         android:id="@+id/reader_back_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="4dp"
         android:clickable="true"
-        android:src="@drawable/ic_navigate_before_white_24dp"/>
+        android:padding="4dp"
+        android:src="@drawable/ic_navigate_before_white_24dp" />
 </FrameLayout>

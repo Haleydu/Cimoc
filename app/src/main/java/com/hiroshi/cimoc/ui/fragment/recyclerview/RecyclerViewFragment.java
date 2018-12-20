@@ -14,7 +14,7 @@ import butterknife.BindView;
  */
 
 public abstract class RecyclerViewFragment extends BaseFragment implements BaseAdapter.OnItemClickListener,
-    BaseAdapter.OnItemLongClickListener {
+        BaseAdapter.OnItemLongClickListener {
 
     @BindView(R.id.recycler_view_content)
     protected RecyclerView mRecyclerView;

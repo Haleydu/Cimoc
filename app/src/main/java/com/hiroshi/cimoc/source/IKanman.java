@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -19,14 +16,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import okhttp3.CacheControl;
 import okhttp3.Headers;
-import okhttp3.Protocol;
 import okhttp3.Request;
 
 /**

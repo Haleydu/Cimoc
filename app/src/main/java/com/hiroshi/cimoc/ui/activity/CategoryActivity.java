@@ -24,10 +24,10 @@ import butterknife.OnClick;
 public class CategoryActivity extends BackActivity implements AdapterView.OnItemSelectedListener {
 
     @BindViews({R.id.category_spinner_subject, R.id.category_spinner_area, R.id.category_spinner_reader,
-        R.id.category_spinner_year, R.id.category_spinner_progress, R.id.category_spinner_order})
+            R.id.category_spinner_year, R.id.category_spinner_progress, R.id.category_spinner_order})
     List<AppCompatSpinner> mSpinnerList;
     @BindViews({R.id.category_subject, R.id.category_area, R.id.category_reader,
-        R.id.category_year, R.id.category_progress, R.id.category_order})
+            R.id.category_year, R.id.category_progress, R.id.category_order})
     List<View> mCategoryView;
 
     private Category mCategory;
@@ -51,7 +51,7 @@ public class CategoryActivity extends BackActivity implements AdapterView.OnItem
 
     private void initSpinner() {
         int[] type = new int[]{Category.CATEGORY_SUBJECT, Category.CATEGORY_AREA, Category.CATEGORY_READER,
-            Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};
+                Category.CATEGORY_YEAR, Category.CATEGORY_PROGRESS, Category.CATEGORY_ORDER};
         for (int i = 0; i != type.length; ++i) {
             if (mCategory.hasAttribute(type[i])) {
                 mCategoryView.get(i).setVisibility(View.VISIBLE);

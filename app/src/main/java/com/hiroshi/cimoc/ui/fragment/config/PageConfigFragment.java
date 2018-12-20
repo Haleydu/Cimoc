@@ -48,18 +48,18 @@ public class PageConfigFragment extends BaseFragment implements DialogCaller {
         mReaderBanTurn.bindPreference(PreferenceManager.PREF_READER_PAGE_BAN_TURN, false);
         mReaderQuickTurn.bindPreference(PreferenceManager.PREF_READER_PAGE_QUICK_TURN, false);
         mReaderOrientation.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_PAGE_ORIENTATION,
-            PreferenceManager.READER_ORIENTATION_PORTRAIT, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
+                PreferenceManager.READER_ORIENTATION_PORTRAIT, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
         mReaderTurn.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_PAGE_TURN,
-            PreferenceManager.READER_TURN_LTR, R.array.reader_turn_items, DIALOG_REQUEST_TURN);
+                PreferenceManager.READER_TURN_LTR, R.array.reader_turn_items, DIALOG_REQUEST_TURN);
         mReaderTrigger.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_PAGE_TRIGGER, 10,
-            R.string.settings_reader_trigger, DIALOG_REQUEST_TRIGGER);
+                R.string.settings_reader_trigger, DIALOG_REQUEST_TRIGGER);
     }
 
     @OnClick({R.id.settings_reader_click_event, R.id.settings_reader_long_click_event})
     void onReaderEventClick(View view) {
         boolean isLong = view.getId() == R.id.settings_reader_long_click_event;
         Intent intent = EventSettingsActivity.createIntent(getActivity(), isLong,
-            mReaderOrientation.getValue() == PreferenceManager.READER_ORIENTATION_PORTRAIT, false);
+                mReaderOrientation.getValue() == PreferenceManager.READER_ORIENTATION_PORTRAIT, false);
         startActivity(intent);
     }
 

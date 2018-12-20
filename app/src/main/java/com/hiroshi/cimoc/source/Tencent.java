@@ -26,7 +26,6 @@ import okhttp3.Headers;
 import okhttp3.Request;
 
 import static com.hiroshi.cimoc.utils.DecryptionUtils.evalDecrypt;
-import static java.lang.Integer.parseInt;
 
 /**
  * Created by FEILONG on 2017/12/21.

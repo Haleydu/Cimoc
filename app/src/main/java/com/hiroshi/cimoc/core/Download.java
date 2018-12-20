@@ -223,7 +223,7 @@ public class Download {
 
     public static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter, String title) {
         DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()),
-            comic.getCid(), DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-")));
+                comic.getCid(), DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-")));
         if (result == null) {
             result = DocumentUtils.findFile(root, DOWNLOAD, title, comic.getTitle(), chapter.getTitle());
         }

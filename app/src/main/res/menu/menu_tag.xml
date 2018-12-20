@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/comic_search"
-        android:title="@string/comic_search"
+    <item
+        android:id="@+id/comic_search"
         android:icon="@drawable/ic_search_white_24dp"
+        android:title="@string/comic_search"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/tag_add"
-        android:title="@string/tag_add"
+    <item
+        android:id="@+id/tag_add"
         android:icon="@drawable/ic_add_white_24dp"
+        android:title="@string/tag_add"
         app:showAsAction="ifRoom" />
 </menu>

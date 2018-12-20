@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<View
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<View xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/custom_night_mask"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="invisible"
     android:clickable="false"
-    android:focusable="false"/>
+    android:focusable="false"
+    android:visibility="invisible" />

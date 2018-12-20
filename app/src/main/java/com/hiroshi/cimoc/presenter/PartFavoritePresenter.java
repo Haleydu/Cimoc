@@ -87,24 +87,24 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
     public void load(long id) {
         mTagId = id;
         mCompositeSubscription.add(getObservable(id)
-            .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
-                @Override
-                public MiniComic call(Comic comic) {
-                    return new MiniComic(comic);
-                }
-            }))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<MiniComic>>() {
-                @Override
-                public void call(List<MiniComic> list) {
-                    mBaseView.onComicLoadSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onComicLoadFail();
-                }
-            }));
+                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                    @Override
+                    public MiniComic call(Comic comic) {
+                        return new MiniComic(comic);
+                    }
+                }))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<MiniComic>>() {
+                    @Override
+                    public void call(List<MiniComic> list) {
+                        mBaseView.onComicLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadFail();
+                    }
+                }));
     }
 
     private List<Long> buildIdList(List<MiniComic> list) {
@@ -118,25 +118,25 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
     public void loadComicTitle(List<MiniComic> list) {
         // TODO 不使用 in
         mCompositeSubscription.add(mComicManager.listFavoriteNotIn(buildIdList(list))
-            .compose(new ToAnotherList<>(new Func1<Comic, String>() {
-                @Override
-                public String call(Comic comic) {
-                    mSavedComic.put(comic.getId(), comic);
-                    return comic.getTitle();
-                }
-            }))
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<String>>() {
-                @Override
-                public void call(List<String> list) {
-                    mBaseView.onComicTitleLoadSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onComicTitleLoadFail();
-                }
-            }));
+                .compose(new ToAnotherList<>(new Func1<Comic, String>() {
+                    @Override
+                    public String call(Comic comic) {
+                        mSavedComic.put(comic.getId(), comic);
+                        return comic.getTitle();
+                    }
+                }))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<String>>() {
+                    @Override
+                    public void call(List<String> list) {
+                        mBaseView.onComicTitleLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicTitleLoadFail();
+                    }
+                }));
     }
 
     public void insert(boolean[] check) {

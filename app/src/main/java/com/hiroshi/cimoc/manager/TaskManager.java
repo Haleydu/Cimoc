@@ -41,27 +41,27 @@ public class TaskManager {
 
     public List<Task> listValid() {
         return mTaskDao.queryBuilder()
-            .where(Properties.Max.notEq(0))
-            .list();
+                .where(Properties.Max.notEq(0))
+                .list();
     }
 
     public List<Task> list(long key) {
         return mTaskDao.queryBuilder()
-            .where(Properties.Key.eq(key))
-            .list();
+                .where(Properties.Key.eq(key))
+                .list();
     }
 
     public Observable<List<Task>> listInRx(long key) {
         return mTaskDao.queryBuilder()
-            .where(Properties.Key.eq(key))
-            .rx()
-            .list();
+                .where(Properties.Key.eq(key))
+                .rx()
+                .list();
     }
 
     public Observable<List<Task>> listInRx() {
         return mTaskDao.queryBuilder()
-            .rx()
-            .list();
+                .rx()
+                .list();
     }
 
     public void insert(Task task) {
@@ -91,9 +91,9 @@ public class TaskManager {
 
     public void deleteByComicId(long id) {
         mTaskDao.queryBuilder()
-            .where(Properties.Key.eq(id))
-            .buildDelete()
-            .executeDeleteWithoutDetachingEntities();
+                .where(Properties.Key.eq(id))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
     }
 
     public void insertIfNotExist(final Iterable<Task> entities) {
@@ -102,7 +102,7 @@ public class TaskManager {
             public void run() {
                 for (Task task : entities) {
                     QueryBuilder<Task> builder = mTaskDao.queryBuilder()
-                        .where(Properties.Key.eq(task.getKey()), Properties.Path.eq(task.getPath()));
+                            .where(Properties.Key.eq(task.getKey()), Properties.Path.eq(task.getPath()));
                     if (builder.unique() == null) {
                         mTaskDao.insert(task);
                     }

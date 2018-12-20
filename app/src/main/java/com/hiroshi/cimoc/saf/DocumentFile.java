@@ -31,7 +31,7 @@ public abstract class DocumentFile {
     public static DocumentFile fromTreeUri(Context context, Uri treeUri) {
         if (Build.VERSION.SDK_INT >= 21) {
             Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri,
-                DocumentsContract.getTreeDocumentId(treeUri));
+                    DocumentsContract.getTreeDocumentId(treeUri));
             return new TreeDocumentFile(null, context, documentUri);
         }
         return null;

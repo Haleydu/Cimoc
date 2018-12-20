@@ -94,19 +94,84 @@
                 <data android:scheme="cimoc" />
 
                 <!--Generate By feilong-->
-                <data android:host="m.buka.cn" android:scheme="http"/><data android:host="m.buka.cn" android:scheme="https"/>
-                <data android:host="www.dm5.com" android:scheme="http"/><data android:host="www.dm5.com" android:scheme="https"/>
-                <data android:host="manhua.dmzj.com" android:scheme="http"/><data android:host="manhua.dmzj.com" android:scheme="https"/>
-                <data android:host="m.dmzj.com" android:scheme="http"/><data android:host="m.dmzj.com" android:scheme="https"/>
-                <data android:host="www.manhuagui.com" android:scheme="http"/><data android:host="www.manhuagui.com" android:scheme="https"/>
-                <data android:host="tw.manhuagui.com" android:scheme="http"/><data android:host="tw.manhuagui.com" android:scheme="https"/>
-                <data android:host="m.manhuagui.com" android:scheme="http"/><data android:host="m.manhuagui.com" android:scheme="https"/>
-                <data android:host="m.57mh.com" android:scheme="http"/><data android:host="m.57mh.com" android:scheme="https"/>
-                <data android:host="m.pufei.net" android:scheme="http"/><data android:host="m.pufei.net" android:scheme="https"/>
-                <data android:host="ac.qq.com" android:scheme="http"/><data android:host="ac.qq.com" android:scheme="https"/>
-                <data android:host="m.ac.qq.com" android:scheme="http"/><data android:host="m.ac.qq.com" android:scheme="https"/>
-                <data android:host="www.u17.com" android:scheme="http"/><data android:host="www.u17.com" android:scheme="https"/>
-                <data android:host="h5.manhua.163.com" android:scheme="http"/><data android:host="h5.manhua.163.com" android:scheme="https"/>
+                <data
+                    android:host="m.buka.cn"
+                    android:scheme="http" />
+                <data
+                    android:host="m.buka.cn"
+                    android:scheme="https" />
+                <data
+                    android:host="www.dm5.com"
+                    android:scheme="http" />
+                <data
+                    android:host="www.dm5.com"
+                    android:scheme="https" />
+                <data
+                    android:host="manhua.dmzj.com"
+                    android:scheme="http" />
+                <data
+                    android:host="manhua.dmzj.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.dmzj.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.dmzj.com"
+                    android:scheme="https" />
+                <data
+                    android:host="www.manhuagui.com"
+                    android:scheme="http" />
+                <data
+                    android:host="www.manhuagui.com"
+                    android:scheme="https" />
+                <data
+                    android:host="tw.manhuagui.com"
+                    android:scheme="http" />
+                <data
+                    android:host="tw.manhuagui.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.manhuagui.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.manhuagui.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.57mh.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.57mh.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.pufei.net"
+                    android:scheme="http" />
+                <data
+                    android:host="m.pufei.net"
+                    android:scheme="https" />
+                <data
+                    android:host="ac.qq.com"
+                    android:scheme="http" />
+                <data
+                    android:host="ac.qq.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.ac.qq.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.ac.qq.com"
+                    android:scheme="https" />
+                <data
+                    android:host="www.u17.com"
+                    android:scheme="http" />
+                <data
+                    android:host="www.u17.com"
+                    android:scheme="https" />
+                <data
+                    android:host="h5.manhua.163.com"
+                    android:scheme="http" />
+                <data
+                    android:host="h5.manhua.163.com"
+                    android:scheme="https" />
                 <!--Generate By feilong end-->
 
             </intent-filter>

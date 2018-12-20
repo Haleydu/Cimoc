@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical"
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <include layout="@layout/custom_toolbar"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/custom_toolbar" />
+
             <FrameLayout
                 android:id="@+id/main_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
         </LinearLayout>
+
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation_view"
             android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:headerLayout="@layout/custom_drawer_header"
-            app:menu="@menu/menu_main">
-        </android.support.design.widget.NavigationView>
+            app:menu="@menu/menu_main"></android.support.design.widget.NavigationView>
     </android.support.v4.widget.DrawerLayout>
-    <include layout="@layout/custom_night_mask"/>
+
+    <include layout="@layout/custom_night_mask" />
 </FrameLayout>

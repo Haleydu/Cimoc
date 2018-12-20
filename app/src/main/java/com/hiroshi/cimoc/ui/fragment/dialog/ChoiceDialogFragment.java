@@ -34,8 +34,8 @@ public class ChoiceDialogFragment extends DialogFragment implements DialogInterf
         mItems = getArguments().getStringArray(DialogCaller.EXTRA_DIALOG_ITEMS);
         int choice = getArguments().getInt(DialogCaller.EXTRA_DIALOG_CHOICE_ITEMS);
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-            .setSingleChoiceItems(mItems, choice, null)
-            .setPositiveButton(R.string.dialog_positive, this);
+                .setSingleChoiceItems(mItems, choice, null)
+                .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 

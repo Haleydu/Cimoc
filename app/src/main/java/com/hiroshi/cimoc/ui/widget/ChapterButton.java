@@ -39,7 +39,7 @@ public class ChapterButton extends AppCompatTextView {
 
     private void init(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.getTheme().obtainStyledAttributes(
-            attrs, R.styleable.ChapterButton, 0, 0);
+                attrs, R.styleable.ChapterButton, 0, 0);
         accentColor = typedArray.getColor(R.styleable.ChapterButton_selected_color, Color.BLACK);
         typedArray.recycle();
 
@@ -53,7 +53,7 @@ public class ChapterButton extends AppCompatTextView {
 
     private void initColorDrawableState() {
         ColorStateList colorStateList = new ColorStateList(new int[][]{NORMAL_STATE, SELECTED_STATE},
-            new int[]{normalColor, Color.WHITE});
+                new int[]{normalColor, Color.WHITE});
         setTextColor(colorStateList);
     }
 

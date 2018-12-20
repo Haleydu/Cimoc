@@ -1,68 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
     <RelativeLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:padding="10dp"
-        android:background="?attr/colorPrimary">
+        android:background="?attr/colorPrimary"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/item_header_comic_image"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginRight="10dp"
-            fresco:actualImageScaleType="centerCrop"/>
+            fresco:actualImageScaleType="centerCrop" />
+
         <TextView
             android:id="@+id/item_header_comic_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/item_header_comic_image"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/white"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
+
         <TextView
             android:id="@+id/item_header_comic_author"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/item_header_comic_title"
             android:layout_marginTop="6dp"
             android:layout_toRightOf="@id/item_header_comic_image"
-            android:layout_below="@id/item_header_comic_title"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/item_header_comic_intro"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/item_header_comic_title"
             android:layout_below="@id/item_header_comic_author"
+            android:layout_alignLeft="@id/item_header_comic_title"
             android:layout_marginTop="6dp"
-            android:maxLines="5"
             android:ellipsize="end"
+            android:maxLines="5"
             android:textColor="@color/white"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp">
+
         <TextView
             android:id="@+id/item_header_comic_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
+
         <TextView
             android:id="@+id/item_header_comic_update"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
     </RelativeLayout>
 </LinearLayout>

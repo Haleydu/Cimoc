@@ -56,9 +56,9 @@ public class MangaNel extends MangaParser {
         String url = "http://manganelo.com/home/getjson_searchstory";
 
         RequestBody formBody = new FormBody.Builder()
-            .add("searchword", keyword)
-            .add("search_style", "tentruyen")
-            .build();
+                .add("searchword", keyword)
+                .add("search_style", "tentruyen")
+                .build();
 
         return new Request.Builder().url(url).post(formBody).build();
     }
@@ -128,14 +128,14 @@ public class MangaNel extends MangaParser {
         String title = body.text("div.manga-info-top > ul.manga-info-text > li > h1");
         String cover = body.src("div.manga-info-pic > img");
         String update = body.list("div.manga-info-top >  ul.manga-info-text > li")
-            .get(3)
-            .text()
-            .replace("Last updated : ", "");
+                .get(3)
+                .text()
+                .replace("Last updated : ", "");
         String author = body.list("div.manga-info-top >  ul.manga-info-text > li").get(1).text("a");
         String intro = body.text("#noidungm");
         boolean status = isFinish(body.list("div.manga-info-top >  ul.manga-info-text > li")
-            .get(2)
-            .text());
+                .get(2)
+                .text());
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -204,8 +204,8 @@ public class MangaNel extends MangaParser {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
         int total = Integer.parseInt(StringUtils.match("\\d+", body.list("div.phan-trang > a")
-            .get(4)
-            .href(), 0));
+                .get(4)
+                .href(), 0));
         if (page <= total) {
             for (Node node : body.list("div.truyen-list > div.list-truyen-item-wrap")) {
                 String cid = node.href("h3 > a").replace("http://manganelo.com/manga/", "");
@@ -229,10 +229,10 @@ public class MangaNel extends MangaParser {
         @Override
         public String getFormat(String... args) {
             String path = "category=".concat(args[CATEGORY_SUBJECT])
-                .concat("&alpha=all&state=")
-                .concat(args[CATEGORY_PROGRESS])
-                .concat("&group=all")
-                .trim();
+                    .concat("&alpha=all&state=")
+                    .concat(args[CATEGORY_PROGRESS])
+                    .concat("&group=all")
+                    .trim();
             path = path.replaceAll("\\s+", "-");
             return StringUtils.format("http://manganel.com/manga_list?type=new&page=%%d&%s", path);
         }

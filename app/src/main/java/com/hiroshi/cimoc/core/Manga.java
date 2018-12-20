@@ -224,13 +224,13 @@ public class Manga {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
                 RequestBody body = new FormBody.Builder()
-                    .add("key", keyword)
-                    .add("s", "1")
-                    .build();
+                        .add("key", keyword)
+                        .add("s", "1")
+                        .build();
                 Request request = new Request.Builder()
-                    .url("http://m.ikanman.com/support/word.ashx")
-                    .post(body)
-                    .build();
+                        .url("http://m.ikanman.com/support/word.ashx")
+                        .post(body)
+                        .build();
                 try {
                     String jsonString = getResponseBody(App.getHttpClient(), request);
                     JSONArray array = new JSONArray(jsonString);
@@ -248,14 +248,14 @@ public class Manga {
     }
 
     public static Observable<Comic> checkUpdate(
-        final SourceManager manager, final List<Comic> list) {
+            final SourceManager manager, final List<Comic> list) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
                 OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(1500, TimeUnit.MILLISECONDS)
-                    .readTimeout(1500, TimeUnit.MILLISECONDS)
-                    .build();
+                        .connectTimeout(1500, TimeUnit.MILLISECONDS)
+                        .readTimeout(1500, TimeUnit.MILLISECONDS)
+                        .build();
                 for (Comic comic : list) {
                     Parser parser = manager.getParser(comic.getSource());
                     Request request = parser.getCheckRequest(comic.getCid());
@@ -278,10 +278,10 @@ public class Manga {
     }
 
     private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
-        return getResponseBody(client,request,true);
+        return getResponseBody(client, request, true);
     }
 
-    private static String getResponseBody(OkHttpClient client, Request request,boolean retry) throws NetworkErrorException {
+    private static String getResponseBody(OkHttpClient client, Request request, boolean retry) throws NetworkErrorException {
         Response response = null;
         try {
             response = client.newCall(request).execute();
@@ -292,12 +292,12 @@ public class Manga {
                     body = new String(bodybytes, "GB2312");
                 }
                 return body;
-            } else if(retry)
-                return getResponseBody(client, request,false);
+            } else if (retry)
+                return getResponseBody(client, request, false);
         } catch (Exception e) {
             e.printStackTrace();
-            if(retry)
-               return getResponseBody(client, request,false);
+            if (retry)
+                return getResponseBody(client, request, false);
         } finally {
             if (response != null) {
                 response.close();

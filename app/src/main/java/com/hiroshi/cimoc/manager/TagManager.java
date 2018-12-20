@@ -42,15 +42,15 @@ public class TagManager {
 
     public Observable<List<Tag>> listInRx() {
         return mTagDao.queryBuilder()
-            .rx()
-            .list();
+                .rx()
+                .list();
     }
 
     public Tag load(String title) {
         return mTagDao.queryBuilder()
-            .where(TagDao.Properties.Title.eq(title))
-            .limit(1)
-            .unique();
+                .where(TagDao.Properties.Title.eq(title))
+                .limit(1)
+                .unique();
     }
 
     public void insert(Tag tag) {

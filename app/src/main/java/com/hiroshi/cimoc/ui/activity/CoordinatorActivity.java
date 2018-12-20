@@ -16,7 +16,7 @@ import butterknife.BindView;
  */
 
 public abstract class CoordinatorActivity extends BackActivity implements
-    BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
+        BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener {
 
     @BindView(R.id.coordinator_action_button)
     FloatingActionButton mActionButton;

@@ -19,9 +19,8 @@ import okhttp3.Request;
 public abstract class MangaParser implements Parser {
 
     protected String mTitle;
-    private Category mCategory;
-
     protected List<UrlFilter> filter = new ArrayList<>();
+    private Category mCategory;
 
     protected void init(Source source, Category category) {
         mTitle = source.getTitle();
@@ -30,7 +29,7 @@ public abstract class MangaParser implements Parser {
         initUrlFilterList();
     }
 
-    protected void initUrlFilterList(){
+    protected void initUrlFilterList() {
 //        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)", 1));
     }
 
@@ -127,7 +126,7 @@ public abstract class MangaParser implements Parser {
     @Override
     public String getComicId(Uri uri) {
         for (UrlFilter uf : filter) {
-            if (uri.getHost().indexOf(uf.Filter) != -1){
+            if (uri.getHost().indexOf(uf.Filter) != -1) {
                 return StringUtils.match(uf.Regex, uri.getPath(), uf.Group);
             }
         }

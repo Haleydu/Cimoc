@@ -46,14 +46,14 @@ public class BuKa extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "http://m.buka.cn/search/ajax_search";
         RequestBody data = new FormBody.Builder()
-            .add("key", keyword)
-            .add("start", String.valueOf(15 * (page - 1)))
-            .add("count", "15")
-            .build();//key=%E4%B8%8D%E5%AE%9C%E5%AB%81&start=0&count=15
+                .add("key", keyword)
+                .add("start", String.valueOf(15 * (page - 1)))
+                .add("count", "15")
+                .build();//key=%E4%B8%8D%E5%AE%9C%E5%AB%81&start=0&count=15
         return new Request.Builder()
-            .url(url)
-            .post(data)
-            .build();
+                .url(url)
+                .post(data)
+                .build();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BuKa extends MangaParser {
     }
 
     @Override
-    protected void initUrlFilterList(){
+    protected void initUrlFilterList() {
         filter.add(new UrlFilter("m.buka.cn"));
     }
 
@@ -95,8 +95,8 @@ public class BuKa extends MangaParser {
     public Request getInfoRequest(String cid) {
         String url = "http://m.buka.cn/m/".concat(cid);
         return new Request.Builder()
-            .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-            .url(url).build();
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url).build();
     }
 
     @Override
@@ -134,9 +134,9 @@ public class BuKa extends MangaParser {
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("http://m.buka.cn/read/%s/%s", cid, path);
         return new Request.Builder()
-            .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-            .url(url)
-            .build();
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url)
+                .build();
     }
 
     @Override

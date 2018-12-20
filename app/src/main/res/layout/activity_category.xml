@@ -1,169 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/category_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <include layout="@layout/custom_toolbar"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/custom_toolbar" />
+
             <LinearLayout
                 android:id="@+id/category_subject"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:orientation="horizontal"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="10dp"
+                    android:text="@string/category_subject"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="16sp"
-                    android:text="@string/category_subject" />
+                    android:textSize="16sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_subject"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/category_area"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:orientation="horizontal"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="10dp"
+                    android:text="@string/category_area"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="16sp"
-                    android:text="@string/category_area" />
+                    android:textSize="16sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_area"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/category_reader"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:orientation="horizontal"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="10dp"
+                    android:text="@string/category_reader"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="16sp"
-                    android:text="@string/category_reader" />
+                    android:textSize="16sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_reader"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/category_progress"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:orientation="horizontal"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="10dp"
+                    android:text="@string/category_progress"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="16sp"
-                    android:text="@string/category_progress" />
+                    android:textSize="16sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_progress"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/category_year"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
                 android:gravity="center_vertical"
+                android:orientation="horizontal"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="10dp"
+                    android:text="@string/category_year"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="16sp"
-                    android:text="@string/category_year" />
+                    android:textSize="16sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_year"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/category_order"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:orientation="horizontal"
                 android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:paddingTop="6dp"
-                android:paddingBottom="6dp">
+                android:paddingRight="10dp"
+                android:paddingBottom="6dp"
+                android:visibility="gone">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginRight="10dp"
+                    android:text="@string/category_order"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="16sp"
-                    android:text="@string/category_order" />
+                    android:textSize="16sp" />
+
                 <android.support.v7.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_order"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/category_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:layout_gravity="bottom|end"
-            android:src="@drawable/ic_search_white_24dp"/>
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_search_white_24dp" />
     </android.support.design.widget.CoordinatorLayout>
-    <include layout="@layout/custom_night_mask"/>
+
+    <include layout="@layout/custom_night_mask" />
 </FrameLayout>

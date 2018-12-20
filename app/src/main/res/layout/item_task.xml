@@ -1,53 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:clickable="true"
     android:background="@color/white"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:padding="10dp">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <TextView
             android:id="@+id/task_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/task_page"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_below="@id/task_title"
-            android:textSize="12sp"/>
+            android:layout_alignParentRight="true"
+            android:textSize="12sp" />
+
         <TextView
             android:id="@+id/task_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_below="@id/task_title"
+            android:layout_alignParentLeft="true"
             android:textColor="?colorAccent"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
+
         <ProgressBar
             android:id="@+id/task_progress"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="12dp"
             android:layout_below="@id/task_state"
-            android:layout_marginTop="6dp"
-            style="?android:attr/progressBarStyleHorizontal"/>
+            android:layout_marginTop="6dp" />
+
         <View
             android:id="@+id/task_last"
             android:layout_width="12dp"
             android:layout_height="12dp"
-            android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:visibility="invisible"
-            android:background="?attr/colorAccent"/>
+            android:layout_alignParentRight="true"
+            android:background="?attr/colorAccent"
+            android:visibility="invisible" />
     </RelativeLayout>
 </FrameLayout>

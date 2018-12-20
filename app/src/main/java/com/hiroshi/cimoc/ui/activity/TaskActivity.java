@@ -117,7 +117,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     @OnClick(R.id.coordinator_action_button)
     void onActionButtonClick() {
         Intent intent = DetailActivity.createIntent(this, mPresenter.getComic().getId(),
-            mPresenter.getComic().getSource(), mPresenter.getComic().getCid());
+                mPresenter.getComic().getSource(), mPresenter.getComic().getCid());
         startActivity(intent);
     }
 
@@ -157,7 +157,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         mSavedTask = mTaskAdapter.getItem(position);
         String[] item = {getString(R.string.task_read), getString(R.string.task_delete)};
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
-            item, DIALOG_REQUEST_OPERATION);
+                item, DIALOG_REQUEST_OPERATION);
         fragment.show(getFragmentManager(), null);
     }
 
@@ -192,7 +192,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     String path = mPresenter.getComic().getLast();
                     if (path == null) {
                         path = mTaskAdapter.getItem(mTaskOrder ?
-                            0 : mTaskAdapter.getDateSet().size() - 1).getPath();
+                                0 : mTaskAdapter.getDateSet().size() - 1).getPath();
                     }
                     startReader(path, true);
                     break;
@@ -207,7 +207,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 case R.id.detail_search_title:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getTitle())) {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getTitle(),
-                            null, ResultActivity.LAUNCH_MODE_SEARCH);
+                                null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);
@@ -216,7 +216,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                 case R.id.detail_search_author:
                     if (!StringUtils.isEmpty(mPresenter.getComic().getAuthor())) {
                         intent = ResultActivity.createIntent(this, mPresenter.getComic().getAuthor(),
-                            null, ResultActivity.LAUNCH_MODE_SEARCH);
+                                null, ResultActivity.LAUNCH_MODE_SEARCH);
                         startActivity(intent);
                     } else {
                         showSnackbar(R.string.common_keyword_empty);

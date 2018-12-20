@@ -67,9 +67,9 @@ public class CCTuku extends MangaParser {
     public Request getInfoRequest(String cid) {
         String url = "http://m.tuku.cc/comic/".concat(cid);
         return new Request.Builder()
-            .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-            .url(url)
-            .build();
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url)
+                .build();
     }
 
     @Override

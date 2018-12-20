@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/chapter_all"
-        android:title="@string/chapter_all"
+    <item
+        android:id="@+id/chapter_all"
         android:icon="@drawable/ic_done_all_white_24dp"
+        android:title="@string/chapter_all"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/chapter_sort"
-        android:title="@string/chapter_sort"
+    <item
+        android:id="@+id/chapter_sort"
         android:icon="@drawable/ic_swap_vert_white_24dp"
+        android:title="@string/chapter_sort"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/chapter_switch_view"
+    <item
+        android:id="@+id/chapter_switch_view"
         android:title="@string/chapter_switch_view"
         app:showAsAction="never" />
 </menu>

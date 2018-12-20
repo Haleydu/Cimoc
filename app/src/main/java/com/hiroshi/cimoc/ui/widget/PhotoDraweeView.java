@@ -19,7 +19,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
  * https://github.com/ongakuer/PhotoDraweeView
  */
 public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestureListener,
-    FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
+        FlingRunnable.OnFlingRunningListener, GestureDetector.OnDoubleTapListener {
 
     public static final float MIN_SCALE = 1.0f;
     public static final float MAX_SCALE = 3.0f;
@@ -198,13 +198,13 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
                 switch (mScrollMode) {
                     case MODE_HORIZONTAL:
                         if (mScrollEdge == EDGE_BOTH || (mScrollEdge == EDGE_LEFT && dx >= 1f) || (
-                            mScrollEdge == EDGE_RIGHT && dx <= -1f)) {
+                                mScrollEdge == EDGE_RIGHT && dx <= -1f)) {
                             parent.requestDisallowInterceptTouchEvent(false);
                         }
                         break;
                     case MODE_VERTICAL:
                         if (mScrollEdge == EDGE_BOTH || (mScrollEdge == EDGE_TOP && dy >= 1f) || (
-                            mScrollEdge == EDGE_BOTTOM && dy <= -1f)) {
+                                mScrollEdge == EDGE_BOTTOM && dy <= -1f)) {
                             parent.requestDisallowInterceptTouchEvent(false);
                         }
                         break;
@@ -219,7 +219,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
     public void onFling(float startX, float startY, float velocityX, float velocityY) {
         mCurrentFlingRunnable = new FlingRunnable(getContext(), this, this);
         mCurrentFlingRunnable.fling(checkAndGetDisplayRect(), ViewUtils.getViewWidth(this),
-            ViewUtils.getViewHeight(this), (int) velocityX, (int) velocityY);
+                ViewUtils.getViewHeight(this), (int) velocityX, (int) velocityY);
         post(mCurrentFlingRunnable);
     }
 

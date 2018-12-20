@@ -37,8 +37,8 @@ public class MultiDialogFragment extends DialogFragment implements DialogInterfa
         }
         initCheckArray(item.length);
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-            .setMultiChoiceItems(item, mCheckArray, this)
-            .setPositiveButton(R.string.dialog_positive, this);
+                .setMultiChoiceItems(item, mCheckArray, this)
+                .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 

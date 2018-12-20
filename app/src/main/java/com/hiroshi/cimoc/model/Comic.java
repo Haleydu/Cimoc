@@ -43,7 +43,7 @@ public class Comic {
 
     public Comic(int source, String cid, String title, String cover, String update, String author) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, update,
-            null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
         this.author = author;
     }
 
@@ -54,7 +54,7 @@ public class Comic {
 
     public Comic(int source, String cid, String title, String cover, long download) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, null,
-            null, null, null, download, null, null, null, null);
+                null, null, null, download, null, null, null, null);
     }
 
     @Generated(hash = 2020487280)

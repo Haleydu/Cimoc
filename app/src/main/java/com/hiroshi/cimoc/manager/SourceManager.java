@@ -58,30 +58,30 @@ public class SourceManager {
 
     public Observable<List<Source>> list() {
         return mSourceDao.queryBuilder()
-            .orderAsc(Properties.Type)
-            .rx()
-            .list();
+                .orderAsc(Properties.Type)
+                .rx()
+                .list();
     }
 
     public Observable<List<Source>> listEnableInRx() {
         return mSourceDao.queryBuilder()
-            .where(Properties.Enable.eq(true))
-            .orderAsc(Properties.Type)
-            .rx()
-            .list();
+                .where(Properties.Enable.eq(true))
+                .orderAsc(Properties.Type)
+                .rx()
+                .list();
     }
 
     public List<Source> listEnable() {
         return mSourceDao.queryBuilder()
-            .where(Properties.Enable.eq(true))
-            .orderAsc(Properties.Type)
-            .list();
+                .where(Properties.Enable.eq(true))
+                .orderAsc(Properties.Type)
+                .list();
     }
 
     public Source load(int type) {
         return mSourceDao.queryBuilder()
-            .where(Properties.Type.eq(type))
-            .unique();
+                .where(Properties.Type.eq(type))
+                .unique();
     }
 
     public long insert(Source source) {

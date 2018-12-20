@@ -198,8 +198,8 @@ public class Backup {
                     switch (object.getInt(JSON_KEY_VERSION)) {
                         case 1:
                             result.add(Pair.create(
-                                new Tag(null, object.getJSONObject(JSON_KEY_TAG_ARRAY).getString(JSON_KEY_TAG_TITLE)),
-                                loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF)));
+                                    new Tag(null, object.getJSONObject(JSON_KEY_TAG_ARRAY).getString(JSON_KEY_TAG_TITLE)),
+                                    loadComicArray(object.getJSONArray(JSON_KEY_COMIC_ARRAY), SUFFIX_CTBF)));
                             break;
                         case 2:
                             result.addAll(loadTagArray(object.getJSONArray(JSON_KEY_TAG_ARRAY)));
@@ -258,12 +258,12 @@ public class Backup {
                     String cover = object.getString(JSON_CIMOC_KEY_COMIC_COVER);
                     String update = object.optString(JSON_CIMOC_KEY_COMIC_UPDATE, null);
                     Boolean finish = object.has(JSON_CIMOC_KEY_COMIC_FINISH) ?
-                        object.getBoolean(JSON_CIMOC_KEY_COMIC_FINISH) : null;
+                            object.getBoolean(JSON_CIMOC_KEY_COMIC_FINISH) : null;
                     String last = object.optString(JSON_CIMOC_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_CIMOC_KEY_COMIC_PAGE) ?
-                        object.getInt(JSON_CIMOC_KEY_COMIC_PAGE) : null;
+                            object.getInt(JSON_CIMOC_KEY_COMIC_PAGE) : null;
                     list.add(new Comic(null, source, cid, title, cover, false, false, update,
-                        finish, null, null, null, last, page, null, null));
+                            finish, null, null, null, last, page, null, null));
                 }
                 break;
             case SUFFIX_CFBF:
@@ -276,21 +276,21 @@ public class Backup {
                     String cover = object.getString(JSON_KEY_COMIC_COVER);
                     String update = object.optString(JSON_KEY_COMIC_UPDATE, null);
                     Boolean finish = object.has(JSON_KEY_COMIC_FINISH) ?
-                        object.getBoolean(JSON_KEY_COMIC_FINISH) : null;
+                            object.getBoolean(JSON_KEY_COMIC_FINISH) : null;
                     String last = object.optString(JSON_KEY_COMIC_LAST, null);
                     Integer page = object.has(JSON_KEY_COMIC_PAGE) ?
-                        object.getInt(JSON_KEY_COMIC_PAGE) : null;
+                            object.getInt(JSON_KEY_COMIC_PAGE) : null;
                     String chapter = object.optString(JSON_KEY_COMIC_CHAPTER, null);
                     Long favorite = object.has(JSON_KEY_COMIC_FAVORITE) ?
-                        object.getLong(JSON_KEY_COMIC_FAVORITE) : null;
+                            object.getLong(JSON_KEY_COMIC_FAVORITE) : null;
                     Long history = object.has(JSON_KEY_COMIC_HISTORY) ?
-                        object.getLong(JSON_KEY_COMIC_HISTORY) : null;
+                            object.getLong(JSON_KEY_COMIC_HISTORY) : null;
                     if (favorite == null && history == null) {
                         // 以前只备份收藏 没有保存 favorite history
                         favorite = System.currentTimeMillis();
                     }
                     list.add(new Comic(null, source, cid, title, cover, false, false, update,
-                        finish, favorite, history, null, last, page, chapter, null));
+                            finish, favorite, history, null, last, page, chapter, null));
                 }
                 break;
         }

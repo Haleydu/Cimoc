@@ -91,28 +91,28 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     private void load() {
         mCompositeSubscription.add(Manga.getComicInfo(mSourceManager.getParser(mComic.getSource()), mComic)
-            .doOnNext(new Action1<List<Chapter>>() {
-                @Override
-                public void call(List<Chapter> list) {
-                    if (mComic.getId() != null) {
-                        updateChapterList(list);
+                .doOnNext(new Action1<List<Chapter>>() {
+                    @Override
+                    public void call(List<Chapter> list) {
+                        if (mComic.getId() != null) {
+                            updateChapterList(list);
+                        }
                     }
-                }
-            })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<Chapter>>() {
-                @Override
-                public void call(List<Chapter> list) {
-                    mBaseView.onComicLoadSuccess(mComic);
-                    mBaseView.onChapterLoadSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onComicLoadSuccess(mComic);
-                    mBaseView.onParseError();
-                }
-            }));
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Chapter>>() {
+                    @Override
+                    public void call(List<Chapter> list) {
+                        mBaseView.onComicLoadSuccess(mComic);
+                        mBaseView.onChapterLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadSuccess(mComic);
+                        mBaseView.onParseError();
+                    }
+                }));
     }
 
     private void cancelHighlight() {
@@ -150,14 +150,14 @@ public class DetailPresenter extends BasePresenter<DetailView> {
 
     public void backup() {
         mComicManager.listFavoriteOrHistoryInRx()
-            .doOnNext(new Action1<List<Comic>>() {
-                @Override
-                public void call(List<Comic> list) {
-                    Backup.saveComicAuto(mBaseView.getAppInstance().getContentResolver(),
-                        mBaseView.getAppInstance().getDocumentFile(), list);
-                }
-            })
-            .subscribe();
+                .doOnNext(new Action1<List<Comic>>() {
+                    @Override
+                    public void call(List<Comic> list) {
+                        Backup.saveComicAuto(mBaseView.getAppInstance().getContentResolver(),
+                                mBaseView.getAppInstance().getDocumentFile(), list);
+                    }
+                })
+                .subscribe();
     }
 
     public void favoriteComic() {
@@ -209,25 +209,25 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     }
                 });
                 Download.updateComicIndex(mBaseView.getAppInstance().getContentResolver(),
-                    mBaseView.getAppInstance().getDocumentFile(), cList, mComic);
+                        mBaseView.getAppInstance().getDocumentFile(), cList, mComic);
                 subscriber.onNext(result);
                 subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<ArrayList<Task>>() {
-                @Override
-                public void call(ArrayList<Task> list) {
-                    RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(mComic), list));
-                    mBaseView.onTaskAddSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<ArrayList<Task>>() {
+                    @Override
+                    public void call(ArrayList<Task> list) {
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_INSERT, new MiniComic(mComic), list));
+                        mBaseView.onTaskAddSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
 
-                    mBaseView.onTaskAddFail();
-                }
-            }));
+                        mBaseView.onTaskAddFail();
+                    }
+                }));
     }
 
 }

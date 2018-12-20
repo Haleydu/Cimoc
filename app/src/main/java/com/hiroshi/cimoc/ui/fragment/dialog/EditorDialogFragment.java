@@ -42,8 +42,8 @@ public class EditorDialogFragment extends DialogFragment implements DialogInterf
         mEditText.setText(getArguments().getString(DialogCaller.EXTRA_DIALOG_CONTENT));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-            .setView(view)
-            .setPositiveButton(R.string.dialog_positive, this);
+                .setView(view)
+                .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 

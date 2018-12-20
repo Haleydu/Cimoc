@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black">
+
         <com.hiroshi.cimoc.ui.widget.rvp.RecyclerViewPager
             android:id="@+id/reader_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="invisible"/>
+            android:visibility="invisible" />
+
         <TextView
             android:id="@+id/reader_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="@string/reader_picture_loading"
-            android:textColor="@color/white"/>
-        <include layout="@layout/custom_reader_info"/>
-        <include layout="@layout/custom_back_btn"/>
-        <include layout="@layout/custom_seek_bar"/>
+            android:textColor="@color/white" />
+
+        <include layout="@layout/custom_reader_info" />
+
+        <include layout="@layout/custom_back_btn" />
+
+        <include layout="@layout/custom_seek_bar" />
     </RelativeLayout>
-    <include layout="@layout/custom_night_mask"/>
+
+    <include layout="@layout/custom_night_mask" />
 </FrameLayout>

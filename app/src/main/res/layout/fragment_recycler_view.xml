@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="6dp"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
         android:clipChildren="false"
-        android:clipToPadding="false"/>
-    <include layout="@layout/custom_progress_bar"/>
+        android:clipToPadding="false"
+        android:paddingLeft="4dp"
+        android:paddingTop="6dp"
+        android:paddingRight="4dp" />
+
+    <include layout="@layout/custom_progress_bar" />
 </FrameLayout>

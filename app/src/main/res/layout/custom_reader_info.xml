@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/reader_info_layout"
-    android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentRight="true"
+    android:background="@color/trans_light_black"
+    android:orientation="horizontal"
     android:paddingTop="2dp"
-    android:paddingBottom="2dp"
-    android:background="@color/trans_light_black">
+    android:paddingBottom="2dp">
+
     <TextView
         android:id="@+id/reader_chapter_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:maxLines="1"
-        android:ellipsize="end"
         android:textColor="@color/white"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
+
     <TextView
         android:id="@+id/reader_chapter_page"
         android:layout_width="wrap_content"
@@ -26,14 +27,16 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textColor="@color/white"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
+
     <com.hiroshi.cimoc.ui.widget.MiniClockText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textColor="@color/white"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
+
     <TextView
         android:id="@+id/reader_battery"
         android:layout_width="wrap_content"
@@ -41,5 +44,5 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textColor="@color/white"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
 </LinearLayout>

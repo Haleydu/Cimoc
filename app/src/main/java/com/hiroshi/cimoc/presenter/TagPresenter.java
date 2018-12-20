@@ -39,18 +39,18 @@ public class TagPresenter extends BasePresenter<TagView> {
 
     public void load() {
         mCompositeSubscription.add(mTagManager.listInRx()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<Tag>>() {
-                @Override
-                public void call(List<Tag> list) {
-                    mBaseView.onTagLoadSuccess(list);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onTagLoadFail();
-                }
-            }));
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Tag>>() {
+                    @Override
+                    public void call(List<Tag> list) {
+                        mBaseView.onTagLoadSuccess(list);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTagLoadFail();
+                    }
+                }));
     }
 
     public void insert(Tag tag) {
@@ -65,17 +65,17 @@ public class TagPresenter extends BasePresenter<TagView> {
                 mTagManager.delete(tag);
             }
         }).observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<Void>() {
-                @Override
-                public void call(Void aVoid) {
-                    mBaseView.onTagDeleteSuccess(tag);
-                }
-            }, new Action1<Throwable>() {
-                @Override
-                public void call(Throwable throwable) {
-                    mBaseView.onTagDeleteFail();
-                }
-            }));
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+                        mBaseView.onTagDeleteSuccess(tag);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onTagDeleteFail();
+                    }
+                }));
     }
 
 }

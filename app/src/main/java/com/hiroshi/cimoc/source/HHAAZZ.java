@@ -29,18 +29,18 @@ public class HHAAZZ extends MangaParser {
     public static final String DEFAULT_TITLE = "手机汗汗";
 
     private static final String[] servers = {
-        "http://x8.1112223333.com/dm01/",
-        "http://x8.1112223333.com/dm02/",
-        "http://x8.1112223333.com/dm03/",
-        "http://x8.1112223333.com/dm04/",
-        "http://x8.1112223333.com/dm05/",
-        "http://x8.1112223333.com/dm06/",
-        "http://x8.1112223333.com/dm07/",
-        "http://x8.1112223333.com/dm08/",
-        "http://x8.1112223333.com/dm09/",
-        "http://x8.1112223333.com/dm10/",
-        "http://x8.1112223333.com/dm11/",
-        "http://x8.1112223333.com/dm12/"
+            "http://x8.1112223333.com/dm01/",
+            "http://x8.1112223333.com/dm02/",
+            "http://x8.1112223333.com/dm03/",
+            "http://x8.1112223333.com/dm04/",
+            "http://x8.1112223333.com/dm05/",
+            "http://x8.1112223333.com/dm06/",
+            "http://x8.1112223333.com/dm07/",
+            "http://x8.1112223333.com/dm08/",
+            "http://x8.1112223333.com/dm09/",
+            "http://x8.1112223333.com/dm10/",
+            "http://x8.1112223333.com/dm11/",
+            "http://x8.1112223333.com/dm12/"
     };
 
     public HHAAZZ(Source source) {

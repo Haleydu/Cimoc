@@ -104,7 +104,7 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
     public void onItemLongClick(View view, int position) {
         mSavedTag = mTagAdapter.getItem(position);
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-            R.string.tag_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                R.string.tag_delete_confirm, true, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
     }

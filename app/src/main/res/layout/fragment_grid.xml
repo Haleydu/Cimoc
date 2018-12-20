@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="6dp"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
         android:clipChildren="false"
-        android:clipToPadding="false"/>
+        android:clipToPadding="false"
+        android:paddingLeft="4dp"
+        android:paddingTop="6dp"
+        android:paddingRight="4dp" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/grid_action_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:layout_gravity="bottom|end"
-        app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior"/>
+        android:layout_margin="16dp"
+        app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior" />
 </android.support.design.widget.CoordinatorLayout>

@@ -43,8 +43,8 @@ public class SliderDialogFragment extends DialogFragment implements DialogInterf
         mSeekBar.setProgress(item[2]);
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-            .setView(view)
-            .setPositiveButton(R.string.dialog_positive, this);
+                .setView(view)
+                .setPositiveButton(R.string.dialog_positive, this);
         return builder.create();
     }
 

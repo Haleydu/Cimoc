@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -43,7 +42,6 @@ import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.ComicFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.recyclerview.SourceFragment;
-import com.hiroshi.cimoc.ui.fragment.recyclerview.TagFragment;
 import com.hiroshi.cimoc.ui.view.MainView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.PermissionUtils;
@@ -256,7 +254,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
         });
         mControllerBuilderProvider = new ControllerBuilderProvider(this,
-            SourceManager.getInstance(this).new HeaderGetter(), false);
+                SourceManager.getInstance(this).new HeaderGetter(), false);
     }
 
     private void initFragment() {
@@ -455,25 +453,25 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastCid = cid;
         mLastText.setText(title);
         ImageRequest request = ImageRequestBuilder
-            .newBuilderWithSource(Uri.parse(cover))
-            .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
-            .build();
+                .newBuilderWithSource(Uri.parse(cover))
+                .setResizeOptions(new ResizeOptions(App.mWidthPixels, App.mHeightPixels))
+                .build();
         DraweeController controller = mControllerBuilderProvider.get(source)
-            .setOldController(mDraweeView.getController())
-            .setImageRequest(request)
-            .build();
+                .setOldController(mDraweeView.getController())
+                .setImageRequest(request)
+                .build();
         mDraweeView.setController(controller);
     }
 
     private void changeTheme(@StyleRes int theme, @ColorRes int primary, @ColorRes int accent) {
         setTheme(theme);
         ColorStateList itemList = new ColorStateList(new int[][]{{-android.R.attr.state_checked},
-            {android.R.attr.state_checked}},
-            new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
+                {android.R.attr.state_checked}},
+                new int[]{Color.BLACK, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemTextColor(itemList);
         ColorStateList iconList = new ColorStateList(new int[][]{{-android.R.attr.state_checked},
-            {android.R.attr.state_checked}},
-            new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
+                {android.R.attr.state_checked}},
+                new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mNavigationView.setItemIconTintList(iconList);
         mNavigationView.getHeaderView(0).setBackgroundColor(ContextCompat.getColor(this, primary));
         if (mToolbar != null) {
@@ -488,7 +486,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private boolean showAuthorNotice() {
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
-                R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
+                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
             fragment.show(getFragmentManager(), null);
             return true;
         }
@@ -498,7 +496,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void showPermission() {
         if (!PermissionUtils.hasStoragePermission(this)) {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_permission,
-                R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
+                    R.string.main_permission_content, false, DIALOG_REQUEST_PERMISSION);
             fragment.show(getFragmentManager(), null);
         }
     }

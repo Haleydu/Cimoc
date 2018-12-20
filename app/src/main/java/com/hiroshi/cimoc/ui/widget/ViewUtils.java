@@ -45,7 +45,7 @@ public class ViewUtils {
         float[] values = new float[9];
         matrix.getValues(values);
         return (float) Math.sqrt((float) Math.pow(values[Matrix.MSCALE_X], 2) +
-            (float) Math.pow(values[Matrix.MSKEW_Y], 2));
+                (float) Math.pow(values[Matrix.MSKEW_Y], 2));
     }
 
     public static int getViewWidth(View view) {

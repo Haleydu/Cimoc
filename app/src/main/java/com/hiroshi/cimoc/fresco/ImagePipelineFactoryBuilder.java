@@ -16,9 +16,9 @@ public class ImagePipelineFactoryBuilder {
 
     public static ImagePipelineFactory build(Context context, Headers header, boolean down) {
         ImagePipelineConfig.Builder builder =
-            ImagePipelineConfig.newBuilder(context.getApplicationContext())
-                .setDownsampleEnabled(down)
-                .setBitmapsConfig(down ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888);
+                ImagePipelineConfig.newBuilder(context.getApplicationContext())
+                        .setDownsampleEnabled(down)
+                        .setBitmapsConfig(down ? Bitmap.Config.RGB_565 : Bitmap.Config.ARGB_8888);
         if (header != null) {
             builder.setNetworkFetcher(new OkHttpNetworkFetcher(App.getHttpClient(), header));
         }

@@ -38,7 +38,7 @@ import okhttp3.ResponseBody;
  * Network fetcher that uses OkHttp 3 as a backend.
  */
 public class OkHttpNetworkFetcher extends
-    BaseNetworkFetcher<OkHttpNetworkFetcher.OkHttpNetworkFetchState> {
+        BaseNetworkFetcher<OkHttpNetworkFetcher.OkHttpNetworkFetchState> {
 
     private static final String TAG = "OkHttpNetworkFetchProducer";
     private static final String QUEUE_TIME = "queue_time";
@@ -60,8 +60,8 @@ public class OkHttpNetworkFetcher extends
 
     @Override
     public OkHttpNetworkFetchState createFetchState(
-        Consumer<EncodedImage> consumer,
-        ProducerContext context) {
+            Consumer<EncodedImage> consumer,
+            ProducerContext context) {
         return new OkHttpNetworkFetchState(consumer, context);
     }
 
@@ -70,66 +70,66 @@ public class OkHttpNetworkFetcher extends
         fetchState.submitTime = SystemClock.elapsedRealtime();
         final Uri uri = fetchState.getUri();
         Request request = new Request.Builder()
-            .cacheControl(new CacheControl.Builder().noStore().build())
-            .headers(mHeaders)
-            .url(uri.toString())
-            .get()
-            .build();
+                .cacheControl(new CacheControl.Builder().noStore().build())
+                .headers(mHeaders)
+                .url(uri.toString())
+                .get()
+                .build();
         final Call call = mOkHttpClient.newCall(request);
 
         fetchState.getContext().addCallbacks(
-            new BaseProducerContextCallbacks() {
-                @Override
-                public void onCancellationRequested() {
-                    if (Looper.myLooper() != Looper.getMainLooper()) {
-                        call.cancel();
-                    } else {
-                        mCancellationExecutor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                call.cancel();
-                            }
-                        });
+                new BaseProducerContextCallbacks() {
+                    @Override
+                    public void onCancellationRequested() {
+                        if (Looper.myLooper() != Looper.getMainLooper()) {
+                            call.cancel();
+                        } else {
+                            mCancellationExecutor.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    call.cancel();
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
 
         call.enqueue(
-            new okhttp3.Callback() {
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    fetchState.responseTime = SystemClock.elapsedRealtime();
-                    final ResponseBody body = response.body();
-                    try {
-                        if (!response.isSuccessful()) {
-                            handleException(
-                                call,
-                                new IOException("Unexpected HTTP code " + response),
-                                callback);
-                            return;
-                        }
-
-                        long contentLength = body.contentLength();
-                        if (contentLength < 0) {
-                            contentLength = 0;
-                        }
-                        callback.onResponse(body.byteStream(), (int) contentLength);
-                    } catch (Exception e) {
-                        handleException(call, e, callback);
-                    } finally {
+                new okhttp3.Callback() {
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        fetchState.responseTime = SystemClock.elapsedRealtime();
+                        final ResponseBody body = response.body();
                         try {
-                            body.close();
+                            if (!response.isSuccessful()) {
+                                handleException(
+                                        call,
+                                        new IOException("Unexpected HTTP code " + response),
+                                        callback);
+                                return;
+                            }
+
+                            long contentLength = body.contentLength();
+                            if (contentLength < 0) {
+                                contentLength = 0;
+                            }
+                            callback.onResponse(body.byteStream(), (int) contentLength);
                         } catch (Exception e) {
-                            FLog.w(TAG, "Exception when closing response body", e);
+                            handleException(call, e, callback);
+                        } finally {
+                            try {
+                                body.close();
+                            } catch (Exception e) {
+                                FLog.w(TAG, "Exception when closing response body", e);
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    handleException(call, e, callback);
-                }
-            });
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        handleException(call, e, callback);
+                    }
+                });
     }
 
     @Override
@@ -168,8 +168,8 @@ public class OkHttpNetworkFetcher extends
         public long fetchCompleteTime;
 
         public OkHttpNetworkFetchState(
-            Consumer<EncodedImage> consumer,
-            ProducerContext producerContext) {
+                Consumer<EncodedImage> consumer,
+                ProducerContext producerContext) {
             super(consumer, producerContext);
         }
     }

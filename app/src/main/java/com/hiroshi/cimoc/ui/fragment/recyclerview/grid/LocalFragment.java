@@ -108,7 +108,7 @@ public class LocalFragment extends GridFragment implements LocalView {
                         break;
                     case OPERATION_DELETE:
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                            R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
+                                R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
                 }

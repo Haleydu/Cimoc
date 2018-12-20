@@ -34,7 +34,7 @@ public class MH57 extends MangaParser {
     public static final String DEFAULT_TITLE = "57漫画";
 
     private static final String[] servers = {
-        "http://images.720rs.com"
+            "http://images.720rs.com"
     };
 
     public MH57(Source source) {
@@ -82,7 +82,7 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    protected void initUrlFilterList(){
+    protected void initUrlFilterList() {
         filter.add(new UrlFilter("m.57mh.com"));
     }
 
@@ -190,7 +190,7 @@ public class MH57 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             return StringUtils.format("http://www.57mh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
-                args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
+                    args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
         @Override

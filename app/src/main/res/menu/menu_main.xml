@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <!--<group-->
-        <!--android:id="@+id/drawer_group_user">-->
-        <!--<item-->
-            <!--android:id="@+id/user_info"-->
-            <!--android:checkable="true"-->
-            <!--android:icon="@drawable/ic_account_box_black_24dp"/>-->
+    <!--android:id="@+id/drawer_group_user">-->
+    <!--<item-->
+    <!--android:id="@+id/user_info"-->
+    <!--android:checkable="true"-->
+    <!--android:icon="@drawable/ic_account_box_black_24dp"/>-->
     <!--</group>-->
     <group
         android:id="@+id/drawer_group_fragment"
@@ -14,7 +14,7 @@
             android:id="@+id/drawer_comic"
             android:checkable="true"
             android:icon="@drawable/ic_import_contacts_black_24dp"
-            android:title="@string/drawer_comic"/>
+            android:title="@string/drawer_comic" />
         <!--<item-->
         <!--android:id="@+id/drawer_comiclist"-->
         <!--android:icon="@drawable/ic_widgets_black_24dp"-->
@@ -23,29 +23,28 @@
             android:id="@+id/drawer_source"
             android:checkable="true"
             android:icon="@drawable/ic_widgets_black_24dp"
-            android:title="@string/drawer_source"/>
+            android:title="@string/drawer_source" />
         <!--<item-->
-            <!--android:id="@+id/drawer_tag"-->
-            <!--android:checkable="true"-->
-            <!--android:icon="@drawable/ic_class_black_24dp"-->
-            <!--android:title="@string/drawer_tag"/>-->
+        <!--android:id="@+id/drawer_tag"-->
+        <!--android:checkable="true"-->
+        <!--android:icon="@drawable/ic_class_black_24dp"-->
+        <!--android:title="@string/drawer_tag"/>-->
     </group>
-    <group
-        android:id="@+id/drawer_group_system">
+    <group android:id="@+id/drawer_group_system">
         <item
             android:id="@+id/drawer_night"
-            android:icon="@drawable/ic_brightness_4_black_24dp"/>
+            android:icon="@drawable/ic_brightness_4_black_24dp" />
         <item
             android:id="@+id/drawer_backup"
             android:icon="@drawable/ic_save_black_24dp"
-            android:title="@string/drawer_backup"/>
+            android:title="@string/drawer_backup" />
         <item
             android:id="@+id/drawer_settings"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="@string/drawer_settings"/>
+            android:title="@string/drawer_settings" />
         <item
             android:id="@+id/drawer_about"
             android:icon="@drawable/ic_about_black_24dp"
-            android:title="@string/drawer_about"/>
+            android:title="@string/drawer_about" />
     </group>
 </menu>

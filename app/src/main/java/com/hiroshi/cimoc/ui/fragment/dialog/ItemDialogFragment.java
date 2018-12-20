@@ -29,7 +29,7 @@ public class ItemDialogFragment extends DialogFragment implements DialogInterfac
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         String[] item = getArguments().getStringArray(DialogCaller.EXTRA_DIALOG_ITEMS);
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
-            .setItems(item, this);
+                .setItems(item, this);
         return builder.create();
     }
 

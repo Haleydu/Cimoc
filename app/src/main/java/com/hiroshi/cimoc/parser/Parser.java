@@ -152,8 +152,8 @@ public interface Parser {
     Headers getHeader(List<ImageUrl> list);
 
     /*
-    * 设置当前漫画url，以便分享使用。
-    */
+     * 设置当前漫画url，以便分享使用。
+     */
     String getUrl(String cid);
 
     /**

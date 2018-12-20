@@ -1,177 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/settings_layout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <include layout="@layout/custom_toolbar"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/custom_toolbar" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none">
+
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/settings_reader_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginBottom="10dp"
+                    android:text="@string/settings_reader"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="14sp"
-                    android:text="@string/settings_reader"/>
+                    android:textSize="14sp" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_reader_mode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_mode"/>
+                    app:title="@string/settings_reader_mode" />
+
                 <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_reader_config"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_config"
-                    app:summary="@string/settings_reader_config_summary"/>
+                    app:summary="@string/settings_reader_config_summary"
+                    app:title="@string/settings_reader_config" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_keep_bright"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_keep_bright"
-                    app:summary="@string/settings_reader_keep_bright_summary"/>
+                    app:summary="@string/settings_reader_keep_bright_summary"
+                    app:title="@string/settings_reader_keep_bright" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_hide_info"
-                    app:summary="@string/settings_reader_hide_info_summary"/>
+                    app:summary="@string/settings_reader_hide_info_summary"
+                    app:title="@string/settings_reader_hide_info" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_nav"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_hide_nav"
-                    app:summary="@string/settings_reader_hide_nav_summary"/>
+                    app:summary="@string/settings_reader_hide_nav_summary"
+                    app:title="@string/settings_reader_hide_nav" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_ban_double_click"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_ban_double_click"
-                    app:summary="@string/settings_reader_ban_double_click_summary"/>
+                    app:summary="@string/settings_reader_ban_double_click_summary"
+                    app:title="@string/settings_reader_ban_double_click" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_paging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_paging"
-                    app:summary="@string/settings_reader_paging_summary"/>
+                    app:summary="@string/settings_reader_paging_summary"
+                    app:title="@string/settings_reader_paging" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_white_edge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_white_edge"
-                    app:summary="@string/settings_reader_white_edge_summary"/>
+                    app:summary="@string/settings_reader_white_edge_summary"
+                    app:title="@string/settings_reader_white_edge" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_reader_scale_factor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_reader_scale_factor"
+                    app:max="300"
                     app:min="100"
-                    app:max="300"/>
+                    app:title="@string/settings_reader_scale_factor" />
+
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginBottom="10dp"
+                    android:text="@string/settings_download"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="14sp"
-                    android:text="@string/settings_download"/>
+                    android:textSize="14sp" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_download_thread"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_download_thread"
+                    app:max="10"
                     app:min="1"
-                    app:max="10"/>
+                    app:title="@string/settings_download_thread" />
+
                 <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_download_scan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_download_scan"
-                    app:summary="@string/settings_download_scan_summary"/>
+                    app:summary="@string/settings_download_scan_summary"
+                    app:title="@string/settings_download_scan" />
+
                 <TextView
                     android:id="@+id/settings_search_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginBottom="10dp"
+                    android:text="@string/settings_search"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="14sp"
-                    android:text="@string/settings_search"/>
+                    android:textSize="14sp" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_search_auto_complete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_search_auto_complete"
-                    app:summary="@string/settings_search_auto_complete_summary"/>
+                    app:summary="@string/settings_search_auto_complete_summary"
+                    app:title="@string/settings_search_auto_complete" />
+
                 <TextView
                     android:id="@+id/settings_other_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="16dp"
                     android:layout_marginBottom="10dp"
+                    android:text="@string/settings_other"
                     android:textColor="?attr/colorPrimary"
-                    android:textSize="14sp"
-                    android:text="@string/settings_other"/>
+                    android:textSize="14sp" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_check_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_check_update"
-                    app:summary="@string/settings_other_check_update_summary"/>
+                    app:summary="@string/settings_other_check_update_summary"
+                    app:title="@string/settings_other_check_update" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_launch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_launch"/>
+                    app:title="@string/settings_other_launch" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_theme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_theme"/>
+                    app:title="@string/settings_other_theme" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_other_night_alpha"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_night_alpha"
+                    app:max="200"
                     app:min="100"
-                    app:max="200"/>
+                    app:title="@string/settings_other_night_alpha" />
+
                 <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_other_storage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_storage"
-                    app:summary="@string/settings_other_storage_summary"/>
+                    app:summary="@string/settings_other_storage_summary"
+                    app:title="@string/settings_other_storage" />
+
                 <com.hiroshi.cimoc.ui.widget.Option
                     android:id="@+id/settings_other_clear_cache"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_clear_cache"
-                    app:summary="@string/settings_other_clear_cache_summary"/>
+                    app:summary="@string/settings_other_clear_cache_summary"
+                    app:title="@string/settings_other_clear_cache" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
-    <include layout="@layout/custom_night_mask"/>
+
+    <include layout="@layout/custom_night_mask" />
 </FrameLayout>

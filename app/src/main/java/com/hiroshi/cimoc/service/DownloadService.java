@@ -96,7 +96,7 @@ public class DownloadService extends Service implements AppGetter {
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_DOWNLOAD_START));
             if (mNotification == null) {
                 mNotification = new NotificationWrapper(this, NOTIFICATION_DOWNLOAD,
-                    R.drawable.ic_file_download_white_24dp, true);
+                        R.drawable.ic_file_download_white_24dp, true);
                 mNotification.post(getString(R.string.download_service_doing), true);
             }
             List<Task> list = intent.getParcelableArrayListExtra(Extra.EXTRA_TASK);
@@ -252,11 +252,11 @@ public class DownloadService extends Service implements AppGetter {
             }
 
             return new Request.Builder()
-                .cacheControl(new CacheControl.Builder().noStore().build())
-                .headers(headers)
-                .url(url)
-                .get()
-                .build();
+                    .cacheControl(new CacheControl.Builder().noStore().build())
+                    .headers(headers)
+                    .url(url)
+                    .get()
+                    .build();
         }
 
         private String buildFileName(int num, String url) {

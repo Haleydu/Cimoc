@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="140dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground">
+
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/item_grid_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        fresco:actualImageScaleType="centerCrop"/>
+        fresco:actualImageScaleType="centerCrop" />
+
     <View
         android:id="@+id/item_grid_symbol"
         android:layout_width="14dp"
         android:layout_height="14dp"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:visibility="invisible"
-        android:background="?attr/colorAccent"/>
+        android:layout_alignParentRight="true"
+        android:background="?attr/colorAccent"
+        android:visibility="invisible" />
+
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="6dp"
-        android:background="@color/colorBackgroundTrans">
+        android:background="@color/colorBackgroundTrans"
+        android:orientation="vertical"
+        android:padding="6dp">
+
         <TextView
             android:id="@+id/item_grid_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
+
         <TextView
             android:id="@+id/item_grid_subtitle"
             android:layout_width="wrap_content"
@@ -42,6 +46,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="2dp"
             android:maxLines="1"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
     </LinearLayout>
 </RelativeLayout>

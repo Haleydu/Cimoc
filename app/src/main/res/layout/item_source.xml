@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
+    android:background="@color/white"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    android:background="@color/white">
+    android:padding="10dp">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/item_source_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+
         <TextView
             android:id="@+id/item_source_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/item_source_switch"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
     </RelativeLayout>
 </FrameLayout>

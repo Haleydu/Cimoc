@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/part_favorite_layout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <include layout="@layout/custom_toolbar"/>
-        <include layout="@layout/custom_progress_bar"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/custom_toolbar" />
+
+        <include layout="@layout/custom_progress_bar" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/part_favorite_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="6dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
             android:clipChildren="false"
-            android:clipToPadding="false"/>
+            android:clipToPadding="false"
+            android:paddingLeft="4dp"
+            android:paddingTop="6dp"
+            android:paddingRight="4dp" />
     </LinearLayout>
-    <include layout="@layout/custom_night_mask"/>
+
+    <include layout="@layout/custom_night_mask" />
 </FrameLayout>

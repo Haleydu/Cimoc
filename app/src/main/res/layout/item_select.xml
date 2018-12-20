@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="18dp"
-    android:paddingRight="18dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
-    android:background="?android:attr/selectableItemBackground">
+    android:paddingLeft="18dp"
+    android:paddingTop="10dp"
+    android:paddingRight="18dp"
+    android:paddingBottom="10dp">
+
     <CheckBox
         android:id="@+id/item_select_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        android:background="@null"
         android:clickable="false"
-        android:focusable="false"
-        android:background="@null"/>
+        android:focusable="false" />
+
     <TextView
         android:id="@+id/item_select_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/item_select_checkbox"
         android:layout_centerVertical="true"
-        android:maxLines="1"
+        android:layout_toLeftOf="@id/item_select_checkbox"
         android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 </RelativeLayout>

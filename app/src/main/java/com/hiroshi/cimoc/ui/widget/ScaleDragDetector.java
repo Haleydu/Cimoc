@@ -40,7 +40,7 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
 
     public ScaleDragDetector(Context context, OnScaleDragGestureListener listener) {
         final ViewConfiguration configuration = ViewConfiguration
-            .get(context);
+                .get(context);
         mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
         mTouchSlop = configuration.getScaledTouchSlop();
         mListener = listener;
@@ -156,11 +156,11 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
                         mVelocityTracker.computeCurrentVelocity(1000);
 
                         final float vX = mVelocityTracker.getXVelocity(), vY = mVelocityTracker
-                            .getYVelocity();
+                                .getYVelocity();
 
                         if (Math.max(Math.abs(vX), Math.abs(vY)) >= mMinimumVelocity) {
                             mListener.onFling(mLastTouchX, mLastTouchY, -vX,
-                                -vY);
+                                    -vY);
                         }
                     }
                 }
@@ -171,7 +171,7 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
                 break;
             case MotionEvent.ACTION_POINTER_UP:
                 final int pointerIndex = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >>
-                    MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                        MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                 final int pointerId = ev.getPointerId(pointerIndex);
                 if (pointerId == mActivePointerId) {
                     final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
@@ -183,8 +183,8 @@ public class ScaleDragDetector implements ScaleGestureDetector.OnScaleGestureLis
         }
 
         mActivePointerIndex = ev
-            .findPointerIndex(mActivePointerId != INVALID_POINTER_ID ? mActivePointerId
-                : 0);
+                .findPointerIndex(mActivePointerId != INVALID_POINTER_ID ? mActivePointerId
+                        : 0);
         return true;
     }
 

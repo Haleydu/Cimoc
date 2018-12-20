@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/reader_progress_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
-    android:visibility="gone"
+    android:background="@color/trans_light_black"
     android:padding="8dp"
-    android:background="@color/trans_light_black">
+    android:visibility="gone">
+
     <com.hiroshi.cimoc.ui.widget.ReverseSeekBar
         android:id="@+id/reader_seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        app:dsb_min="1"
-        app:dsb_trackColor="@color/white"
-        app:dsb_rippleColor="?attr/colorPrimary"
-        app:dsb_progressColor="?attr/colorPrimary"
         app:dsb_indicatorColor="?attr/colorPrimary"
-        app:dsb_trackHeight="4dp"
-        app:dsb_thumbSize="12dp"/>
+        app:dsb_min="1"
+        app:dsb_progressColor="?attr/colorPrimary"
+        app:dsb_rippleColor="?attr/colorPrimary"
+        app:dsb_thumbSize="12dp"
+        app:dsb_trackColor="@color/white"
+        app:dsb_trackHeight="4dp" />
 </FrameLayout>

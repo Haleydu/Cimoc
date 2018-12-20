@@ -56,10 +56,10 @@ public class SourceAdapter extends BaseAdapter<Source> {
         });
         if (color != -1) {
             ColorStateList thumbList = new ColorStateList(new int[][]{{-android.R.attr.state_checked}, {android.R.attr.state_checked}},
-                new int[]{Color.WHITE, color});
+                    new int[]{Color.WHITE, color});
             viewHolder.sourceSwitch.setThumbTintList(thumbList);
             ColorStateList trackList = new ColorStateList(new int[][]{{-android.R.attr.state_checked}, {android.R.attr.state_checked}},
-                new int[]{0x4C000000, (0x00FFFFFF & color | 0x4C000000)});
+                    new int[]{0x4C000000, (0x00FFFFFF & color | 0x4C000000)});
             viewHolder.sourceSwitch.setTrackTintList(trackList);
         }
     }

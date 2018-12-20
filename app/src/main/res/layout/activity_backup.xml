@@ -1,106 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/backup_layout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <include layout="@layout/custom_toolbar"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/custom_toolbar" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none">
+
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
+                        android:layout_marginRight="16dp"
                         android:layout_marginBottom="10dp"
+                        android:text="@string/backup_save"
                         android:textColor="?attr/colorPrimary"
-                        android:textSize="14sp"
-                        android:text="@string/backup_save"/>
+                        android:textSize="14sp" />
+
                     <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                         android:id="@+id/backup_save_comic_auto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:title="@string/backup_save_comic_auto"
-                        app:summary="@string/backup_save_comic_auto_summary"/>
+                        app:summary="@string/backup_save_comic_auto_summary"
+                        app:title="@string/backup_save_comic_auto" />
+
                     <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_save_comic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:title="@string/backup_save_comic"
-                        app:summary="@string/backup_save_comic_summary"/>
+                        app:summary="@string/backup_save_comic_summary"
+                        app:title="@string/backup_save_comic" />
+
                     <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_save_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:title="@string/backup_save_tag"
-                        app:summary="@string/backup_save_tag_summary"/>
+                        app:summary="@string/backup_save_tag_summary"
+                        app:title="@string/backup_save_tag" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
+                        android:layout_marginRight="16dp"
                         android:layout_marginBottom="10dp"
+                        android:text="@string/backup_restore"
                         android:textColor="?attr/colorPrimary"
-                        android:textSize="14sp"
-                        android:text="@string/backup_restore"/>
+                        android:textSize="14sp" />
+
                     <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_restore_comic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:title="@string/backup_restore_comic"
-                        app:summary="@string/backup_restore_comic_summary"/>
+                        app:summary="@string/backup_restore_comic_summary"
+                        app:title="@string/backup_restore_comic" />
+
                     <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_restore_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:title="@string/backup_restore_tag"
-                        app:summary="@string/backup_restore_tag_summary"/>
+                        app:summary="@string/backup_restore_tag_summary"
+                        app:title="@string/backup_restore_tag" />
                 </LinearLayout>
+
                 <LinearLayout
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
+                        android:layout_marginRight="16dp"
                         android:layout_marginBottom="10dp"
+                        android:text="@string/backup_cloud"
                         android:textColor="?attr/colorPrimary"
-                        android:textSize="14sp"
-                        android:text="@string/backup_cloud"/>
+                        android:textSize="14sp" />
+
                     <com.hiroshi.cimoc.ui.widget.Option
                         android:id="@+id/backup_cloud_restore"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:title="@string/backup_cloud_restore_tag"
-                        app:summary="@string/backup_cloud_restore_tag_summary"/>
+                        app:summary="@string/backup_cloud_restore_tag_summary"
+                        app:title="@string/backup_cloud_restore_tag" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
-    <include layout="@layout/custom_night_mask"/>
+
+    <include layout="@layout/custom_night_mask" />
 </FrameLayout>

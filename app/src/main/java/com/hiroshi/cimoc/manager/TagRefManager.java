@@ -43,20 +43,20 @@ public class TagRefManager {
 
     public List<TagRef> listByTag(long tid) {
         return mRefDao.queryBuilder()
-            .where(TagRefDao.Properties.Tid.eq(tid))
-            .list();
+                .where(TagRefDao.Properties.Tid.eq(tid))
+                .list();
     }
 
     public List<TagRef> listByComic(long cid) {
         return mRefDao.queryBuilder()
-            .where(TagRefDao.Properties.Cid.eq(cid))
-            .list();
+                .where(TagRefDao.Properties.Cid.eq(cid))
+                .list();
     }
 
     public TagRef load(long tid, long cid) {
         return mRefDao.queryBuilder()
-            .where(TagRefDao.Properties.Tid.eq(tid), TagRefDao.Properties.Cid.eq(cid))
-            .unique();
+                .where(TagRefDao.Properties.Tid.eq(tid), TagRefDao.Properties.Cid.eq(cid))
+                .unique();
     }
 
     public long insert(TagRef ref) {
@@ -73,23 +73,23 @@ public class TagRefManager {
 
     public void deleteByTag(long tid) {
         mRefDao.queryBuilder()
-            .where(TagRefDao.Properties.Tid.eq(tid))
-            .buildDelete()
-            .executeDeleteWithoutDetachingEntities();
+                .where(TagRefDao.Properties.Tid.eq(tid))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
     }
 
     public void deleteByComic(long cid) {
         mRefDao.queryBuilder()
-            .where(TagRefDao.Properties.Cid.eq(cid))
-            .buildDelete()
-            .executeDeleteWithoutDetachingEntities();
+                .where(TagRefDao.Properties.Cid.eq(cid))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
     }
 
     public void delete(long tid, long cid) {
         mRefDao.queryBuilder()
-            .where(TagRefDao.Properties.Tid.eq(tid), TagRefDao.Properties.Cid.eq(cid))
-            .buildDelete()
-            .executeDeleteWithoutDetachingEntities();
+                .where(TagRefDao.Properties.Tid.eq(tid), TagRefDao.Properties.Cid.eq(cid))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
     }
 
 }

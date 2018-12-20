@@ -69,7 +69,7 @@ class TreeDocumentFile extends DocumentFile {
         Cursor c = null;
         try {
             c = resolver.query(childrenUri, new String[]{DocumentsContract.Document.COLUMN_DOCUMENT_ID,
-                DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE}, null, null, null);
+                    DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE}, null, null, null);
             while (c.moveToNext()) {
                 Uri documentUri = DocumentsContract.buildDocumentUriUsingTree(mUri, c.getString(0));
                 String displayName = c.getString(1);
@@ -84,7 +84,7 @@ class TreeDocumentFile extends DocumentFile {
         Cursor c = null;
         try {
             c = mContext.getContentResolver().query(mUri, new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME,
-                DocumentsContract.Document.COLUMN_MIME_TYPE}, null, null, null);
+                    DocumentsContract.Document.COLUMN_MIME_TYPE}, null, null, null);
             if (c != null && c.moveToNext()) {
                 mDisplayName = c.getString(0);
                 mMimeType = c.getString(1);
@@ -132,7 +132,7 @@ class TreeDocumentFile extends DocumentFile {
 
         try {
             Uri result = DocumentsContract.createDocument(mContext.getContentResolver(), mUri,
-                DocumentsContract.Document.MIME_TYPE_DIR, displayName);
+                    DocumentsContract.Document.MIME_TYPE_DIR, displayName);
             if (result != null) {
                 doc = new TreeDocumentFile(this, mContext, result, displayName, DocumentsContract.Document.MIME_TYPE_DIR);
                 mSubFiles.put(displayName, doc);
@@ -173,7 +173,7 @@ class TreeDocumentFile extends DocumentFile {
         Cursor c = null;
         try {
             c = mContext.getContentResolver().query(mUri,
-                new String[]{DocumentsContract.Document.COLUMN_SIZE}, null, null, null);
+                    new String[]{DocumentsContract.Document.COLUMN_SIZE}, null, null, null);
             if (c.moveToFirst() && !c.isNull(0)) {
                 return c.getLong(0);
             } else {
@@ -190,13 +190,13 @@ class TreeDocumentFile extends DocumentFile {
     @Override
     public boolean canRead() {
         return mContext.checkCallingOrSelfUriPermission(mUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            == PackageManager.PERMISSION_GRANTED;
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
     public boolean canWrite() {
         return mContext.checkCallingOrSelfUriPermission(mUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-            == PackageManager.PERMISSION_GRANTED;
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override

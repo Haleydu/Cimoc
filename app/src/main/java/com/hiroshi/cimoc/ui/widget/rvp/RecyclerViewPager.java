@@ -20,8 +20,8 @@ import java.lang.reflect.Field;
  * RecyclerViewPager
  *
  * @author Green
- *         <p>
- *         https://github.com/lsjwzh/RecyclerViewPager
+ * <p>
+ * https://github.com/lsjwzh/RecyclerViewPager
  */
 public class RecyclerViewPager extends RecyclerView {
 
@@ -125,22 +125,22 @@ public class RecyclerViewPager extends RecyclerView {
     public void startSmoothScroll(int position) {
         mSmoothScrollTargetPosition = position;
         LinearSmoothScroller linearSmoothScroller =
-            new LinearSmoothScroller(getContext()) {
-                @Override
-                public PointF computeScrollVectorForPosition(int targetPosition) {
-                    if (getLayoutManager() == null) {
-                        return null;
+                new LinearSmoothScroller(getContext()) {
+                    @Override
+                    public PointF computeScrollVectorForPosition(int targetPosition) {
+                        if (getLayoutManager() == null) {
+                            return null;
+                        }
+                        return ((LinearLayoutManager) getLayoutManager())
+                                .computeScrollVectorForPosition(targetPosition);
                     }
-                    return ((LinearLayoutManager) getLayoutManager())
-                        .computeScrollVectorForPosition(targetPosition);
-                }
 
-                @Override
-                protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                    return getContext().getResources().getDisplayMetrics().density
-                        * mScrollSpeed / displayMetrics.density;
-                }
-            };
+                    @Override
+                    protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                        return getContext().getResources().getDisplayMetrics().density
+                                * mScrollSpeed / displayMetrics.density;
+                    }
+                };
         linearSmoothScroller.setTargetPosition(position);
         if (position == RecyclerView.NO_POSITION) {
             return;
@@ -156,7 +156,7 @@ public class RecyclerViewPager extends RecyclerView {
         startSmoothScroll(position);
 
         if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
-            mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
+                mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
             getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }
@@ -168,7 +168,7 @@ public class RecyclerViewPager extends RecyclerView {
         super.scrollToPosition(position);
 
         if (mSmoothScrollTargetPosition >= 0 && mSmoothScrollTargetPosition < getItemCount() &&
-            mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
+                mSmoothScrollTargetPosition != mPositionBeforeScroll && mOnPageChangedListener != null) {
             getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }
@@ -278,8 +278,8 @@ public class RecyclerViewPager extends RecyclerView {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN && getLayoutManager() != null) {
             mPositionOnTouchDown = getLayoutManager().canScrollHorizontally()
-                ? RecyclerViewUtils.getCenterXChildPosition(this)
-                : RecyclerViewUtils.getCenterYChildPosition(this);
+                    ? RecyclerViewUtils.getCenterXChildPosition(this)
+                    : RecyclerViewUtils.getCenterYChildPosition(this);
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -312,7 +312,7 @@ public class RecyclerViewPager extends RecyclerView {
         if (state == SCROLL_STATE_DRAGGING) {
             mNeedAdjust = true;
             mCurView = getLayoutManager().canScrollHorizontally() ? RecyclerViewUtils.getCenterXChild(this) :
-                RecyclerViewUtils.getCenterYChild(this);
+                    RecyclerViewUtils.getCenterYChild(this);
             if (mCurView != null) {
                 if (mHasCalledOnPageChanged) {
                     // While rvp is scrolling, mPositionBeforeScroll will be previous value.
@@ -340,7 +340,7 @@ public class RecyclerViewPager extends RecyclerView {
         } else if (state == SCROLL_STATE_IDLE) {
             if (mNeedAdjust) {
                 int targetPosition = getLayoutManager().canScrollHorizontally() ? RecyclerViewUtils.getCenterXChildPosition(this) :
-                    RecyclerViewUtils.getCenterYChildPosition(this);
+                        RecyclerViewUtils.getCenterYChildPosition(this);
                 if (mCurView != null) {
                     targetPosition = getChildAdapterPosition(mCurView);
                     if (getLayoutManager().canScrollHorizontally()) {
@@ -385,8 +385,8 @@ public class RecyclerViewPager extends RecyclerView {
     @NonNull
     protected RecyclerViewPagerAdapter ensureRecyclerViewPagerAdapter(Adapter adapter) {
         return (adapter instanceof RecyclerViewPagerAdapter)
-            ? (RecyclerViewPagerAdapter) adapter
-            : new RecyclerViewPagerAdapter(this, adapter);
+                ? (RecyclerViewPagerAdapter) adapter
+                : new RecyclerViewPagerAdapter(this, adapter);
     }
 
     private int getFlingCount(int velocity, int cellSize) {
@@ -395,7 +395,7 @@ public class RecyclerViewPager extends RecyclerView {
         }
         int sign = velocity > 0 ? 1 : -1;
         return (int) (sign * Math.ceil((velocity * sign * FLING_FACTOR / cellSize)
-            - mTriggerOffset));
+                - mTriggerOffset));
     }
 
     private int safeTargetPosition(int position, int count) {

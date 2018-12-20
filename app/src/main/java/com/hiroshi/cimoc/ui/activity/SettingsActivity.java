@@ -112,17 +112,17 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
-            PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
+                PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
         mOtherLaunch.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_LAUNCH,
-            PreferenceManager.HOME_FAVORITE, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
+                PreferenceManager.HOME_FAVORITE, R.array.launch_items, DIALOG_REQUEST_OTHER_LAUNCH);
         mOtherTheme.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_THEME,
-            ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
+                ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
         mReaderScaleFactor.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_SCALE_FACTOR, 200,
-            R.string.settings_reader_scale_factor, DIALOG_REQUEST_READER_SCALE_FACTOR);
+                R.string.settings_reader_scale_factor, DIALOG_REQUEST_READER_SCALE_FACTOR);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
-            R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
+                R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
         mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
-            R.string.settings_download_thread, DIALOG_REQUEST_DOWNLOAD_THREAD);
+                R.string.settings_download_thread, DIALOG_REQUEST_DOWNLOAD_THREAD);
     }
 
     @OnClick(R.id.settings_reader_config)
@@ -219,7 +219,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             textView.setTextColor(ContextCompat.getColor(this, primary));
         }
         ColorStateList stateList = new ColorStateList(new int[][]{{-android.R.attr.state_checked}, {android.R.attr.state_checked}},
-            new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
+                new int[]{0x8A000000, ContextCompat.getColor(this, accent)});
         mReaderKeepBright.setColorStateList(stateList);
         mReaderHideInfo.setColorStateList(stateList);
         mReaderHideNav.setColorStateList(stateList);
@@ -236,7 +236,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             showSnackbar(R.string.download_ask_stop);
         } else {
             StorageEditorDialogFragment fragment = StorageEditorDialogFragment.newInstance(R.string.settings_other_storage,
-                mStoragePath, DIALOG_REQUEST_OTHER_STORAGE);
+                    mStoragePath, DIALOG_REQUEST_OTHER_STORAGE);
             fragment.show(getFragmentManager(), null);
         }
     }
@@ -247,7 +247,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
             showSnackbar(R.string.download_ask_stop);
         } else {
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
-                R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
+                    R.string.settings_download_scan_confirm, true, DIALOG_REQUEST_DOWNLOAD_SCAN);
             fragment.show(getFragmentManager(), null);
         }
     }

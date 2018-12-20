@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.net.Uri;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -43,14 +42,14 @@ public class Dmzjv2 extends MangaParser {
         init(source, new Category());
     }
 
-    @Override
-    protected void initUrlFilterList(){
-        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)"));
-        filter.add(new UrlFilter("m.dmzj.com","/info/(\\w+).html"));
-    }
-
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
+    }
+
+    @Override
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("manhua.dmzj.com", "/(\\w+)"));
+        filter.add(new UrlFilter("m.dmzj.com", "/info/(\\w+).html"));
     }
 
     @Override
@@ -207,7 +206,7 @@ public class Dmzjv2 extends MangaParser {
         @Override
         public String getFormat(String... args) {
             String path = args[CATEGORY_SUBJECT].concat(" ").concat(args[CATEGORY_READER]).concat(" ").concat(args[CATEGORY_PROGRESS])
-                .concat(" ").concat(args[CATEGORY_AREA]).trim();
+                    .concat(" ").concat(args[CATEGORY_AREA]).trim();
             if (path.isEmpty()) {
                 path = String.valueOf(0);
             } else {
