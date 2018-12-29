@@ -40,19 +40,19 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://tuku.cc/search/index/nickname/%s/p/%d.html", keyword, page);
+        String url = StringUtils.format("http://m.tuku.cc/search-%s/?language=1", keyword);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("div.updateList > div.bookList_3 > div")) {
+        return new NodeIterator(body.list("ul.searchResultList > li")) {
             @Override
             protected Comic parse(Node node) {
                 String cid = node.hrefWithSplit("a", 1);
-                String title = node.text("p.title > a");
-                String cover = node.src("div.book > a > img");
+                String title = node.text("p.title");
+                String cover = node.src("a > img");
                 return new Comic(TYPE, cid, title, cover, null, null);
             }
         };
