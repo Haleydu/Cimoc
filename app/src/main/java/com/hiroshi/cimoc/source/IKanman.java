@@ -31,6 +31,8 @@ public class IKanman extends MangaParser {
     public static final int TYPE = 0;
     public static final String DEFAULT_TITLE = "看漫画";
 
+    private String referer = "";
+
     public IKanman(Source source) {
         init(source, null);
 //        init(source, new Category());
@@ -123,6 +125,7 @@ public class IKanman extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("https://tw.manhuagui.com/comic/%s/%s.html", cid, path);
+        referer = url;
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19")
 //            .addHeader("Referer", StringUtils.format("https://m.manhuagui.com/comic/%s/%s.html", cid, path))
@@ -197,7 +200,8 @@ public class IKanman extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://tw.manhuagui.com/comic/1/1.html",
+//        return Headers.of("Referer", "https://tw.manhuagui.com/comic/30449/408812.html",
+        return Headers.of("Referer", referer,
                 "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36");
     }
 
