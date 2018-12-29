@@ -11,7 +11,6 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -91,40 +90,51 @@ public class CCTuku extends MangaParser {
         Node body = new Node(html);
         for (Node node : body.list("#chapter > div > div > ul > li > a")) {
             String title = node.text();
-            String path = StringUtils.split(node.href(), "/", 3);
+//            String path = StringUtils.split(node.href(), "/", 3);
+            String path = node.hrefWithSplit(2);
             list.add(new Chapter(title, path));
         }
         return list;
     }
 
+    private String _cid, _path;
+
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.tuku.cc/comic/%s/%s", cid, path);
-        return new Request.Builder().url(url).build();
+        String url = StringUtils.format("http://m.tuku.cc/comic/%s/%s/", cid, path);
+        _cid = cid;
+        _path = path;
+        return new Request.Builder()
+                .addHeader("Referer", StringUtils.format("http://m.tuku.cc/comic/%s/", cid))
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         // TODO 好像拿不到总页数 GG
-        List<ImageUrl> list = new LinkedList<>();
-        String[] rs = StringUtils.match("serverUrl = '(.*?)'[\\s\\S]*?eval(.*?)\\n;", html, 1, 2);
-        if (rs != null) {
-            try {
-                String result = DecryptionUtils.evalDecrypt(rs[1]);
-                String[] array = StringUtils.match("pic_url='(.*?)';.*?tpf=(\\d+?);.*pages=(\\d+?);.*?pid=(.*?);.*?pic_extname='(.*?)';", result, 1, 2, 3, 4, 5);
-                if (array != null) {
-                    int tpf = Integer.parseInt(array[1]) + 1;
-                    int pages = Integer.parseInt(array[2]);
-                    String format = rs[0] + "/" + array[3] + "/" + array[0] + "/%0" + tpf + "d." + array[4];
-                    for (int i = 0; i != pages; ++i) {
-                        list.add(new ImageUrl(i + 1, StringUtils.format(format, i + 1), false));
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        List<ImageUrl> list = new ArrayList<>();
+//        Node body = new Node(html);
+//        int page = Integer.parseInt(body.attr("#hdPageCount", "value"));//max pages unknow...
+        int page = 10;
+        for (int i = 1; i <= page; ++i) {
+            list.add(new ImageUrl(i, StringUtils.format("http://m.tuku.cc/comic/%s/%s/p%s/", _cid, _path, i), true));
         }
         return list;
+    }
+
+    public Request getLazyRequest(String url) {
+        return new Request.Builder()
+                .addHeader("Referer", StringUtils.format("http://m.tuku.cc/comic/%s/%s/", _cid, _path))
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url).build();
+    }
+
+    @Override
+    public String parseLazy(String html, String url) {
+        Node body = new Node(html);
+        String src = body.href("div.readForm > a");
+        return src;
     }
 
     @Override
