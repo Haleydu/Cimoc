@@ -36,7 +36,7 @@ public class Hhxxee extends MangaParser {
     public static final String DEFAULT_TITLE = "997700";
 
     public Hhxxee(Source source) {
-        init(source, new Hhxxee.Category());
+        init(source, null);
     }
 
     public static Source getDefaultSource() {
@@ -61,11 +61,12 @@ public class Hhxxee extends MangaParser {
         return new NodeIterator(body.list(".cInfoItem")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.href(".cListTitle > a");
+                String cid = node.href(".cListTitle > a").substring("http://99770.hhxxee.com/comic/".length());
                 String title = node.text(".cListTitle > span");
-                String cover = node.attr(".cListSlt > img", "src");
-                String update = node.text(".cListh2 > span");
-                String author = node.text(".cl1_2");
+                title = title.substring(1, title.length() - 1);
+                String cover = node.src(".cListSlt > img");
+                String update = node.text(".cListh2 > span").substring(8);
+                String author = node.text(".cl1_2").substring(3);
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
@@ -73,39 +74,41 @@ public class Hhxxee extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "http://m.pufei.net/manhua/".concat(cid);
+        return "http://99770.hhxxee.com/comic/".concat(cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.pufei.net"));
+        filter.add(new UrlFilter("99770.hhxxee.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.pufei.net/manhua/".concat(cid);
+        String url = "http://99770.hhxxee.com/comic/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String title = body.text("div.main-bar > h1");
-        String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
-        String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-        String author = body.text("div.book-detail > div.cont-list > dl:eq(3) > dd");
-        String intro = body.text("#bookIntro");
-        boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
+        String title = body.text(".cTitle");
+        String cover = body.src(".cDefaultImg > img");
+        String update = "";
+        String author = "";
+        String intro = body.text(".cCon");
+        boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapterList2 > ul > li > a")) {
-            String title = node.attr("title");
-            String path = node.hrefWithSplit(2);
-            list.add(new Chapter(title, path));
+        for (Node nodeFather : new Node(html).list(".cVolList")) {
+            for (Node node : nodeFather.list("div")) {
+                String title = node.text("a").replace();
+                String path = node.hrefWithSplit("a", 2);
+                list.add(new Chapter(title, path));
+            }
         }
         return list;
     }
@@ -161,53 +164,8 @@ public class Hhxxee extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.pufei.net");
+        return Headers.of("Referer", "http://99770.hhxxee.com");
     }
 
-    private static class Category extends MangaCategory {
-
-        @Override
-        public boolean isComposite() {
-            return true;
-        }
-
-        @Override
-        public String getFormat(String... args) {
-            return StringUtils.format("http://m.pufei.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
-        }
-
-        @Override
-        protected List<Pair<String, String>> getSubject() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("最近更新", "0"));
-            list.add(Pair.create("少年热血", "1"));
-            list.add(Pair.create("武侠格斗", "2"));
-            list.add(Pair.create("科幻魔幻", "3"));
-            list.add(Pair.create("竞技体育", "4"));
-            list.add(Pair.create("爆笑喜剧", "5"));
-            list.add(Pair.create("侦探推理", "6"));
-            list.add(Pair.create("恐怖灵异", "7"));
-            list.add(Pair.create("少女爱情", "8"));
-            list.add(Pair.create("恋爱生活", "9"));
-            return list;
-        }
-
-        @Override
-        protected boolean hasOrder() {
-            return true;
-        }
-
-        @Override
-        protected List<Pair<String, String>> getOrder() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "3"));
-            list.add(Pair.create("发布", "1"));
-            list.add(Pair.create("人气", "2"));
-            return list;
-        }
-
-    }
 
 }

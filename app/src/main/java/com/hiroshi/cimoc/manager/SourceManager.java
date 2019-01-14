@@ -152,7 +152,7 @@ public class SourceManager {
                     parser = new NetEase(source);
                     break;
                 case Hhxxee.TYPE:
-                    parser = new NetEase(source);
+                    parser = new Hhxxee(source);
                     break;
 
                 default:
