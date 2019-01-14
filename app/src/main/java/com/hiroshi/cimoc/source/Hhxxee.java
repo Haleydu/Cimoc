@@ -98,7 +98,7 @@ public class Hhxxee extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("99770.hhxxee.com"));
+        filter.add(new UrlFilter("99770.hhxxee.com","(\\d+)$"));
     }
 
     @Override
