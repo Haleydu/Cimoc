@@ -122,12 +122,10 @@ public class Hhxxee extends MangaParser {
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node nodeFather : new Node(html).list(".cVolList")) {
-            for (Node node : nodeFather.list("div")) {
-                String title = node.text("a");
-                String path = node.hrefWithSplit("a", 2);
-                list.add(new Chapter(title, path));
-            }
+        for (Node node : new Node(html).list("#subBookListAct > div")) {
+            String title = node.text("a");
+            String path = node.hrefWithSplit("a", 2);
+            list.add(new Chapter(title, path));
         }
         return list;
     }
@@ -138,16 +136,17 @@ public class Hhxxee extends MangaParser {
         return new Request.Builder().url(url).build();
     }
 
-    private int getPictureServers (String url){
-        return Integer.parseInt(StringUtils.match("ok\\-comic(\\d+)", url, 1));
+    private int getPictureServers(String url) {
+        return Integer.parseInt(StringUtils.match("ok\\-comic(\\d+)", url, 1)) - 1;
     }
+
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("var sFiles=\"(.*?)\"", html, 1);
         if (str != null) {
             try {
-                String[] array = str.split("|");
+                String[] array = str.split("\\|");
                 for (int i = 0; i != array.length; ++i) {
                     list.add(new ImageUrl(i + 1, servers[getPictureServers(array[i])] + array[i], false));
                 }
