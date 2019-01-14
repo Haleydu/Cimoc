@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.EHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
+import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
@@ -149,6 +150,9 @@ public class SourceManager {
                     break;
                 case NetEase.TYPE:
                     parser = new NetEase(source);
+                    break;
+                case Hhxxee.TYPE:
+                    parser = new Hhxxee(source);
                     break;
 
                 default:

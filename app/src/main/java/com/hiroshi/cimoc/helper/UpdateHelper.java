@@ -13,6 +13,7 @@ import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.EHentai;
 import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
+import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
@@ -108,6 +109,7 @@ public class UpdateHelper {
         list.add(BuKa.getDefaultSource());
         list.add(EHentai.getDefaultSource());
         list.add(NetEase.getDefaultSource());
+        list.add(Hhxxee.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 
