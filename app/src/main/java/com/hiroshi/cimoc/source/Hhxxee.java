@@ -39,6 +39,25 @@ public class Hhxxee extends MangaParser {
         init(source, null);
     }
 
+    private static final String[] servers = {
+            "http://165.94201314.net/dm01/",
+            "http://165.94201314.net/dm02/",
+            "http://165.94201314.net/dm03/",
+            "http://165.94201314.net/dm04/",
+            "http://165.94201314.net/dm05/",
+            "http://165.94201314.net/dm06/",
+            "http://165.94201314.net/dm07/",
+            "http://165.94201314.net/dm08/",
+            "http://165.94201314.net/dm09/",
+            "http://165.94201314.net/dm10/",
+            "http://165.94201314.net/dm11/",
+            "http://165.94201314.net/dm12/",
+            "http://165.94201314.net/dm13/",
+            "http://173.231.57.238/dm14/",
+            "http://165.94201314.net/dm15/",
+            "http://142.4.34.102/dm16/"
+    };
+
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
@@ -105,7 +124,7 @@ public class Hhxxee extends MangaParser {
         List<Chapter> list = new LinkedList<>();
         for (Node nodeFather : new Node(html).list(".cVolList")) {
             for (Node node : nodeFather.list("div")) {
-                String title = node.text("a").replace();
+                String title = node.text("a");
                 String path = node.hrefWithSplit("a", 2);
                 list.add(new Chapter(title, path));
             }
@@ -115,20 +134,22 @@ public class Hhxxee extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.pufei.net/manhua/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://99770.hhxxee.com/comic/%s/%s/", cid, path);
         return new Request.Builder().url(url).build();
     }
 
+    private int getPictureServers (String url){
+        return Integer.parseInt(StringUtils.match("ok\\-comic(\\d+)", url, 1));
+    }
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String str = StringUtils.match("cp=\"(.*?)\"", html, 1);
+        String str = StringUtils.match("var sFiles=\"(.*?)\"", html, 1);
         if (str != null) {
             try {
-                str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
-                String[] array = str.split(",");
+                String[] array = str.split("|");
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://f.pufei.net/" + array[i], false));
+                    list.add(new ImageUrl(i + 1, servers[getPictureServers(array[i])] + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
