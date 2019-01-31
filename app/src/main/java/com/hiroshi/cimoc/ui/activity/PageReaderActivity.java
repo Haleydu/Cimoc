@@ -27,7 +27,7 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
         int offset = mPreference.getInt(PreferenceManager.PREF_READER_PAGE_TRIGGER, 10);
         mReaderAdapter.setReaderMode(ReaderAdapter.READER_PAGE);
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_PAGE_QUICK_TURN, false)) {
-            ((RecyclerViewPager) mRecyclerView).setScrollSpeed(0.02f);
+            ((RecyclerViewPager) mRecyclerView).setScrollSpeed(0.000001f);
         } else {
             ((RecyclerViewPager) mRecyclerView).setScrollSpeed(0.12f);
         }
