@@ -48,6 +48,7 @@ public class Cartoonmad extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
+        if (page != 1) return null;
         String url = "https://www.cartoonmad.com/search.html";
         RequestBody body = new FormBody.Builder()
                 .add("keyword", URLEncoder.encode(keyword, "BIG5"))
