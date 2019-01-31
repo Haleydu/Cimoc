@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
+import com.hiroshi.cimoc.source.Animx2;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
@@ -157,6 +158,9 @@ public class SourceManager {
                     break;
                 case Cartoonmad.TYPE:
                     parser = new Cartoonmad(source);
+                    break;
+                case Animx2.TYPE:
+                    parser = new Animx2(source);
                     break;
 
                 default:
