@@ -47,7 +47,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://m.57mh.com/search/q_%s-p-%d", keyword, page);
+        String url = StringUtils.format("http://m.5qmh.com/search/q_%s-p-%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -78,17 +78,17 @@ public class MH57 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "http://m.57mh.com/".concat(cid);
+        return "http://m.5qmh.com/".concat(cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.57mh.com"));
+        filter.add(new UrlFilter("m.5qmh.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.57mh.com/".concat(cid);
+        String url = "http://m.5qmh.com/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -118,7 +118,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.57mh.com/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.5qmh.com/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -177,7 +177,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.57mh.com/");
+        return Headers.of("Referer", "http://m.5qmh.com/");
     }
 
     private static class Category extends MangaCategory {
@@ -189,7 +189,7 @@ public class MH57 extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return StringUtils.format("http://www.57mh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
+            return StringUtils.format("http://www.5qmh.com/list/area-%s-smid-%s-year-%s-lz-%s-order-%s-p-%%d",
                     args[CATEGORY_AREA], args[CATEGORY_SUBJECT], args[CATEGORY_YEAR], args[CATEGORY_PROGRESS], args[CATEGORY_ORDER]);
         }
 
