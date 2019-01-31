@@ -39,8 +39,10 @@ public class CCTuku extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://m.tuku.cc/search-%s/?language=1", keyword);
-        return new Request.Builder().url(url).build();
+        if(page == 1) {
+            String url = StringUtils.format("http://m.tuku.cc/search-%s/?language=1", keyword);
+            return new Request.Builder().url(url).build();
+        } else return null;
     }
 
     @Override

@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.source.BuKa;
+import com.hiroshi.cimoc.source.Cartoonmad;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.Hhxxee;
@@ -52,6 +53,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(Dmzjv2.TYPE);
         list.add(BuKa.TYPE);
         list.add(PuFei.TYPE);
+        list.add(Cartoonmad.TYPE);
         list.add(Tencent.TYPE);
         list.add(U17.TYPE);
         list.add(MH57.TYPE);

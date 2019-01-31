@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.Cartoonmad;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -153,6 +154,9 @@ public class SourceManager {
                     break;
                 case Hhxxee.TYPE:
                     parser = new Hhxxee(source);
+                    break;
+                case Cartoonmad.TYPE:
+                    parser = new Cartoonmad(source);
                     break;
 
                 default:
