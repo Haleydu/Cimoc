@@ -64,7 +64,5 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'io.reactivex:rxjava:1.3.6'
     implementation 'io.reactivex:rxandroid:1.2.1'
-//    implementation 'com.google.code.gson:gson:2.8.5'
-//    implementation 'com.auth0.android:auth0:1.+'
-//    implementation 'org.mongodb:mongo-java-driver:3.6.3'
+    api 'com.google.guava:guava:27.0.1-android'
 }

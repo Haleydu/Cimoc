@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Pair;
 
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -81,65 +82,84 @@ public class Cartoonmad extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "http://m.pufei.net/manhua/".concat(cid);
+        return "https://www.cartoonmad.com/comic/".concat(cid).concat(".html");
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.pufei.net"));
+        filter.add(new UrlFilter("www.cartoonmad.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.pufei.net/manhua/".concat(cid);
+        String url = "https://www.cartoonmad.com/comic/".concat(cid).concat(".html");
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String title = body.text("div.main-bar > h1");
-        String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
-        String update = body.text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-        String author = body.text("div.book-detail > div.cont-list > dl:eq(3) > dd");
-        String intro = body.text("#bookIntro");
-        boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
+        Matcher mTitle = Pattern.compile("<meta name=\"Keywords\" content=\"(.*?),").matcher(html);
+        String title = mTitle.find()? mTitle.group(1) : "";
+        Matcher mCover = Pattern.compile("<div class=\"cover\"><\\/div><img src=\"(.*?)\"").matcher(html);
+        String cover = mCover.find()? "https://www.cartoonmad.com" + mCover.group(1) : "";
+        String update = "";
+        String author = "";
+        Matcher mInro = Pattern.compile("<META name=\"description\" content=\"(.*?)\">").matcher(html);
+        String intro = mInro.find()? mInro.group(1) : "";
+        boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapterList2 > ul > li > a")) {
-            String title = node.attr("title");
-            String path = node.hrefWithSplit(2);
+        Matcher mChapter = Pattern.compile("<a href=(.*?) target=_blank>(.*?)<\\/a>&nbsp;").matcher(html);
+        while (mChapter.find()) {
+            String title = mChapter.group(2);
+            String path = mChapter.group(1);
             list.add(new Chapter(title, path));
         }
-        return list;
+        return Lists.reverse(list);
     }
+
+    private String _cid, _path;
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.pufei.net/manhua/%s/%s.html", cid, path);
+        String url = StringUtils.format("https://www.cartoonmad.com%s", path);
+        _cid = cid;
+        _path = path;
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
-        List<ImageUrl> list = new LinkedList<>();
-        String str = StringUtils.match("cp=\"(.*?)\"", html, 1);
-        if (str != null) {
-            try {
-                str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
-                String[] array = str.split(",");
-                for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://f.pufei.net/" + array[i], false));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        List<ImageUrl> list = new ArrayList<>();
+        Matcher pageMatcher = Pattern.compile("<a class=onpage>.*<a class=pages href=(.*)\\d{3}\\.html>(.*?)<\\/a>").matcher(html);
+        if(!pageMatcher.find()) return null;
+        int page = Integer.parseInt(pageMatcher.group(2));
+        for (int i = 1; i <= page; ++i) {
+            list.add(new ImageUrl(i, StringUtils.format("https://www.cartoonmad.com/comic/%s%03d.html", pageMatcher.group(1), i), true));
         }
         return list;
+    }
+
+    @Override
+    public Request getLazyRequest(String url) {
+        return new Request.Builder()
+                .addHeader("Referer", url)
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url).build();
+    }
+
+    @Override
+    public String parseLazy(String html, String url) {
+        Matcher m = Pattern.compile("<img src=\"(.*?)\" border=\"0\" oncontextmenu").matcher(html);
+        if(m.find()){
+            return "https://www.cartoonmad.com/comic/" + m.group(1);
+        }
+        return null;
     }
 
     @Override
@@ -148,28 +168,8 @@ public class Cartoonmad extends MangaParser {
     }
 
     @Override
-    public String parseCheck(String html) {
-        return new Node(html).text("div.book-detail > div.cont-list > dl:eq(2) > dd");
-    }
-
-    @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("li > a")) {
-            String cid = node.hrefWithSplit(1);
-            String title = node.text("h3");
-            String cover = node.attr("div > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
-            String author = node.text("dl:eq(2) > dd");
-            list.add(new Comic(TYPE, cid, title, cover, update, author));
-        }
-        return list;
-    }
-
-    @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.pufei.net");
+        return Headers.of("Referer", "http://www.cartoonmad.com");
     }
 
 }
