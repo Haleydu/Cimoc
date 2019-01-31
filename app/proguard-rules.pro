@@ -109,3 +109,15 @@ public static java.lang.String TABLENAME;
 -keep class org.slf4j.** { *; }
 -keep class org.xerial.snappy.** { *; }
 
+# guava
+-dontwarn com.google.common.base.**
+-keep class com.google.common.base.** {*;}
+-dontwarn com.google.errorprone.annotations.**
+-keep class com.google.errorprone.annotations.** {*;}
+-dontwarn com.google.j2objc.annotations.**
+-keep class com.google.j2objc.annotations.** { *; }
+-dontwarn java.lang.ClassValue
+-keep class java.lang.ClassValue { *; }
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+-keep class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement { *; }
+
