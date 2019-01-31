@@ -185,6 +185,18 @@
                 <data
                     android:host="99770.hhxxee.com"
                     android:scheme="https" />
+                <data
+                    android:host="www.cartoonmad.com"
+                    android:scheme="http" />
+                <data
+                    android:host="www.cartoonmad.com"
+                    android:scheme="https" />
+                <!--<data-->
+                    <!--android:host="www.2animx.com"-->
+                    <!--android:scheme="http" />-->
+                <!--<data-->
+                    <!--android:host="www.2animx.com"-->
+                    <!--android:scheme="https" />-->
                 <!--Generate By feilong end-->
 
             </intent-filter>
