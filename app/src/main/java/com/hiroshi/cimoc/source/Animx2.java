@@ -76,11 +76,10 @@ public class Animx2 extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        if (cid.indexOf("http://www.2animx.com") != -1) {
-            return new Request.Builder().url(cid).build();
-        } else {
-            return new Request.Builder().url("http://www.2animx.com/".concat(cid)).build();
+        if (cid.indexOf("http://www.2animx.com") == -1) {
+            cid = "http://www.2animx.com/".concat(cid);
         }
+        return new Request.Builder().url(cid).addHeader("Cookie","isAdult=1").build();
     }
 
     @Override
