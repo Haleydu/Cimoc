@@ -112,7 +112,7 @@ public class Animx2 extends MangaParser {
         String url = StringUtils.format(path);
         _cid = cid;
         _path = path;
-        return new Request.Builder().url(url).build();
+        return new Request.Builder().url(url).addHeader("Cookie","isAdult=1").build();
     }
 
     @Override
@@ -132,6 +132,7 @@ public class Animx2 extends MangaParser {
         return new Request.Builder()
 //                .addHeader("Referer", url)
                 .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .addHeader("Cookie","isAdult=1")
                 .url(url).build();
     }
 
