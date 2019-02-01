@@ -133,7 +133,11 @@ public class MH57 extends MangaParser {
                 JSONArray array = new JSONArray(jsonString);
                 int size = array.length();
                 for (int i = 0; i != size; ++i) {
-                    list.add(new ImageUrl(i + 1, array.getString(i), false));
+                    String url = array.getString(i);
+                    if(url.indexOf("http://") == -1){
+                        url = servers[0] + url;
+                    }
+                    list.add(new ImageUrl(i + 1, url, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
