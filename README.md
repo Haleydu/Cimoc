@@ -14,6 +14,8 @@ Online manga reader based on Android
 
 # 下载
 > 所有release由travis-ci编译发布，如果在release界面某个版本没有apk，那么要么是正在编译，要么就是编译失败了
+> 各位大佬们提交漫画源相关issue请按照[模板](https://github.com/feilongfl/Cimoc/issues/new?assignees=&labels=%E6%BC%AB%E7%94%BB%E6%BA%90%E9%97%AE%E9%A2%98&template=comic-source-issues.md&title=%5BCS%5D)填写，方便检查问题。
+
 
 # 功能简介
 - 翻页阅读（Page Reader）
