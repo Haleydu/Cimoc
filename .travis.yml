@@ -10,6 +10,7 @@ android:
 licenses:
 - android-sdk-license-.+
 before_install:
+- echo $TRAVIS_BUILD_NUMBER
 - yes | sdkmanager "platforms;android-28"
 jdk:
 - oraclejdk8

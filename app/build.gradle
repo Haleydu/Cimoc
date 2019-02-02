@@ -15,7 +15,7 @@ android {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode System.getenv("TRAVIS_BUILD_NUMBER")
+        versionCode System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
         versionName version + "(" + gitVersion + ")"
         resConfigs "en", "zh"
         manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
