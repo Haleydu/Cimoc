@@ -1,20 +1,15 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.RegexIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -74,7 +69,7 @@ public class Cartoonmad extends MangaParser {
                     return new Comic(TYPE, cid, title, cover, "", "");
                 }
             };
-        } catch (UnsupportedEncodingException ex){
+        } catch (Exception ex) {
             return null;
         }
     }
