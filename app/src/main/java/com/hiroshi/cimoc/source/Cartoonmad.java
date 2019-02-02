@@ -61,7 +61,6 @@ public class Cartoonmad extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         try {
-            html = new String(html.getBytes(), "BIG5");
             Pattern pattern = Pattern.compile("<a href=comic\\/(\\d+)\\.html title=\"(.*?)\"><span class=\"covers\"><\\/span><img src=\"(.*?)\"");
             Matcher matcher = pattern.matcher(html);
             return new RegexIterator(matcher) {

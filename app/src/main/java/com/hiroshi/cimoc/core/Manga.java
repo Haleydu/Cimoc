@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -288,10 +290,9 @@ public class Manga {
             if (response.isSuccessful()) {
                 byte[] bodybytes = response.body().bytes();
                 String body = new String(bodybytes);
-                if (body.indexOf("charset=gb2312") != -1) {
-                    body = new String(bodybytes, "GB2312");
-                } else if (body.indexOf("charset=big5") != -1) {
-                    body = new String(bodybytes, "BIG5");
+                Matcher m = Pattern.compile("charset=(\\w+)").matcher(body);
+                if(m.find()){
+                    body = new String(bodybytes, m.group(1));
                 }
                 return body;
             } else if (retry)
