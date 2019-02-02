@@ -73,7 +73,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     protected RecyclerView.LayoutManager initLayoutManager() {
-        return new GridLayoutManager(this, 2);
+        return new GridLayoutManager(this, 3);
     }
 
     @Override
