@@ -290,7 +290,7 @@ public class Manga {
             if (response.isSuccessful()) {
                 byte[] bodybytes = response.body().bytes();
                 String body = new String(bodybytes);
-                Matcher m = Pattern.compile("charset=(\\w+)").matcher(body);
+                Matcher m = Pattern.compile("charset=([\\w\\-]+)").matcher(body);
                 if(m.find()){
                     body = new String(bodybytes, m.group(1));
                 }

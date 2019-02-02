@@ -1,7 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-def buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
+def buildVersion = 01
+if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
+    buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
+}
 
 def cmd = 'git describe --tags'
 def version = cmd.execute().text.trim()
