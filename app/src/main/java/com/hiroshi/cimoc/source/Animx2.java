@@ -99,6 +99,8 @@ public class Animx2 extends MangaParser {
         List<Chapter> list = new LinkedList<>();
         for (Node node : new Node(html).list("div#oneCon2 > ul > li")) {
             String title = node.attr("a", "title");
+            Matcher mTitle = Pattern.compile("\\d+").matcher(title);
+            title = mTitle.find()? mTitle.group() : title;
             String path = node.href("a");
             list.add(new Chapter(title, path));
         }
