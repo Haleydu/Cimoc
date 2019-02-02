@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-def cmd = 'git rev-list HEAD --count'
+def cmd = 'git rev-list --all --count'
 def gitVersion = cmd.execute().text.trim().toInteger()
 
 cmd = 'git describe --tags'
