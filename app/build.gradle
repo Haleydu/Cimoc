@@ -1,10 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-def cmd = 'git rev-list --all --count'
-def gitVersion = cmd.execute().text.trim().toInteger()
+def buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
 
-cmd = 'git describe --tags'
+def cmd = 'git describe --tags'
 def version = cmd.execute().text.trim()
 
 android {
@@ -15,8 +14,8 @@ android {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
-        versionName version + "(" + gitVersion + ")"
+        versionCode buildVersion
+        versionName version + "(" + buildVersion + ")"
         resConfigs "en", "zh"
         manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
