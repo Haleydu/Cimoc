@@ -55,23 +55,19 @@ public class Cartoonmad extends MangaParser {
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        try {
-            Pattern pattern = Pattern.compile("<a href=comic\\/(\\d+)\\.html title=\"(.*?)\"><span class=\"covers\"><\\/span><img src=\"(.*?)\"");
-            Matcher matcher = pattern.matcher(html);
-            return new RegexIterator(matcher) {
-                @Override
-                protected Comic parse(Matcher match) {
-                    String cid = match.group(1);
-                    String title = match.group(2);
-                    String cover = "https://www.cartoonmad.com" + match.group(3);
+        Pattern pattern = Pattern.compile("<a href=comic\\/(\\d+)\\.html title=\"(.*?)\"><span class=\"covers\"><\\/span><img src=\"(.*?)\"");
+        Matcher matcher = pattern.matcher(html);
+        return new RegexIterator(matcher) {
+            @Override
+            protected Comic parse(Matcher match) {
+                String cid = match.group(1);
+                String title = match.group(2);
+                String cover = "https://www.cartoonmad.com" + match.group(3);
 //                String update = node.text("dl:eq(5) > dd");
 //                String author = node.text("dl:eq(2) > dd");
-                    return new Comic(TYPE, cid, title, cover, "", "");
-                }
-            };
-        } catch (Exception ex) {
-            return null;
-        }
+                return new Comic(TYPE, cid, title, cover, "", "");
+            }
+        };
     }
 
     @Override
@@ -94,13 +90,13 @@ public class Cartoonmad extends MangaParser {
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         Matcher mTitle = Pattern.compile("<meta name=\"Keywords\" content=\"(.*?),").matcher(html);
-        String title = mTitle.find()? mTitle.group(1) : "";
+        String title = mTitle.find() ? mTitle.group(1) : "";
         Matcher mCover = Pattern.compile("<div class=\"cover\"><\\/div><img src=\"(.*?)\"").matcher(html);
-        String cover = mCover.find()? "https://www.cartoonmad.com" + mCover.group(1) : "";
+        String cover = mCover.find() ? "https://www.cartoonmad.com" + mCover.group(1) : "";
         String update = "";
         String author = "";
         Matcher mInro = Pattern.compile("<META name=\"description\" content=\"(.*?)\">").matcher(html);
-        String intro = mInro.find()? mInro.group(1) : "";
+        String intro = mInro.find() ? mInro.group(1) : "";
         boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
     }
@@ -131,7 +127,7 @@ public class Cartoonmad extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
         Matcher pageMatcher = Pattern.compile("<a class=onpage>.*<a class=pages href=(.*)\\d{3}\\.html>(.*?)<\\/a>").matcher(html);
-        if(!pageMatcher.find()) return null;
+        if (!pageMatcher.find()) return null;
         int page = Integer.parseInt(pageMatcher.group(2));
         for (int i = 1; i <= page; ++i) {
             list.add(new ImageUrl(i, StringUtils.format("https://www.cartoonmad.com/comic/%s%03d.html", pageMatcher.group(1), i), true));
@@ -150,7 +146,7 @@ public class Cartoonmad extends MangaParser {
     @Override
     public String parseLazy(String html, String url) {
         Matcher m = Pattern.compile("<img src=\"(.*?)\" border=\"0\" oncontextmenu").matcher(html);
-        if(m.find()){
+        if (m.find()) {
             return "https://www.cartoonmad.com/comic/" + m.group(1);
         }
         return null;
