@@ -290,6 +290,8 @@ public class Manga {
                 String body = new String(bodybytes);
                 if (body.indexOf("charset=gb2312") != -1) {
                     body = new String(bodybytes, "GB2312");
+                } else if (body.indexOf("charset=big5") != -1) {
+                    body = new String(bodybytes, "BIG5");
                 }
                 return body;
             } else if (retry)
