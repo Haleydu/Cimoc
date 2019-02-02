@@ -29,6 +29,7 @@ before_deploy:
   - git rev-list --all --count
   - echo version
   - git describe --tags
+  - echo $TRAVIS_BUILD_NUMBER
 deploy:
   provider: releases
   api_key:
