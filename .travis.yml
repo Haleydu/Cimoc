@@ -24,23 +24,19 @@ cache:
   - "$HOME/.m2"
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
-#before_deploy:
-#  - echo $KEYSTORE_PASStest
-#  - mv app/build/outputs/apk/app-debug.apk app/build/outputs/apk/buff.apk
-#  - ls app/build/outputs/apk/debug
-#  - ls app/
-#  - ls app/build/outputs/apk/
-#  - ls app/release/
+before_deploy:
+  - echo gitVersion
+  - git rev-list --all --count
+  - echo version
+  - git describe --tags
 deploy:
   provider: releases
   api_key:
     secure: SVka7J99K5/DGL8LVEEnMqX5vIAVw6/bUDJbC41TdKASfWR3Huy97I8xkwiJ947b2eGIlmwVJLR9GD6akeVaUUvpTKr0PXAm7nMdFrkfAaN5ovruqrcnjIYQ/Y0u3yj2JESAuQIpR4ggJ9xWu1OwVfDpDfIFCsLlAKMyok+Bc5/J3SCnAfly0X61e+rs+223pc8GW3Dvaqp/cMo5OiCfhebvVMmXIAENjvKYdciTnxjz5DRzsBDwzSZW/mRn96wgdroGOuoBYUll8EOoHD/yPCbmrRZcvk/DCvRojvwMmOvP7g38DcIbmvYr04MKnHyfvkAWNZNR0k2k5IIe+b2j7HPHqv6g6LN2nysarjW0kA+EzMq9R8lyaLwY1umzs3iavc/BQBVYggP8ItN4cO1gAfefm2dB8Wt9cH7Sr3OJpvQPNDMS1RNhjl0Xo9fR5uLy0BN7n31f3OcChfyOpsM0zFUZGvL7WrxMtABH6lG9DuCzvXvLaThsZQAXNcZyzrwdQMK2YVd//WUuOSiLwq207fa2hadV6q+PpEsX4M1ugOB4Z7FyQ0Se9kzYPgXKrfdtOvbt2yeLYUpUBW6qh+rQ7JMhRG0xK9x9MYZdmf096+0HqC+CVM4/zE0+dpnc8fagL44Wfrs825kUI7sBpgKp6cJQNGSlrZCCda/sJbmddQo=
-#  file: "app/build/outputs/apk/debug/Cimoc.apk"
   file: "app/build/outputs/apk/release/Cimoc.apk"
   skip_cleanup: true
   on:
     repo: feilongfl/Cimoc
     branch:
       - release-tci
-      - test-sign
     tags: true
