@@ -42,3 +42,10 @@ deploy:
     branch:
       - release-tci
     tags: true
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/f2c42f2c1f06e4ac7bd0
+    on_success: always  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: always     # options: [always|never|change] default: always
