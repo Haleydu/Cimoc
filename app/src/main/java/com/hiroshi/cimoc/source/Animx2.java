@@ -96,7 +96,8 @@ public class Animx2 extends MangaParser {
             String title = node.attr("a", "title");
             Matcher mTitle = Pattern.compile("\\d+").matcher(title);
             title = mTitle.find()? mTitle.group() : title;
-            String path = node.href("a");
+            String path2 = node.href("a");
+            String path = node.hrefWithSplit("a", 0);
             list.add(new Chapter(title, path));
         }
         return list;
@@ -106,10 +107,12 @@ public class Animx2 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format(path);
+        if (path.indexOf("http://www.2animx.com") == -1) {
+            path = "http://www.2animx.com/".concat(path);
+        }
         _cid = cid;
         _path = path;
-        return new Request.Builder().url(url).addHeader("Cookie","isAdult=1").build();
+        return new Request.Builder().url(path).addHeader("Cookie", "isAdult=1").build();
     }
 
     @Override
