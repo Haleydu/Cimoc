@@ -197,7 +197,7 @@
     <string name="backup_cloud_sync_tag_summary">自动同步收藏到云</string>
 
     <string name="home_page">主页</string>
-    <string name="home_page_url">https://cimqus.now.sh/cimoc</string>
+    <string name="home_page_url">https://github.com/feilongfl/Cimoc</string>
     <string name="home_page_cimqus">Cimqus</string>
     <string name="home_page_cimqus_url">https://cimqus.now.sh</string>
     <string name="home_page_gitter">Gitter</string>
