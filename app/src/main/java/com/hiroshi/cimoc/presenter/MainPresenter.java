@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
+import com.hiroshi.cimoc.core.Update;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
@@ -58,19 +59,20 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void checkUpdate(final String version) {
-//        mCompositeSubscription.add(Update.check()
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<String>() {
-//                    @Override
-//                    public void call(String s) {
-//                        if (!version.equals(s)) {
-//                            mBaseView.onUpdateReady();
-//                        }
-//                    }
-//                }, new Action1<Throwable>() {
-//                    @Override
-//                    public void call(Throwable throwable) {}
-//                }));
+        mCompositeSubscription.add(Update.check()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        if (-1 == version.indexOf(s)) {
+                            mBaseView.onUpdateReady();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                    }
+                }));
     }
 
 }

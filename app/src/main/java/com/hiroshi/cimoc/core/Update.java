@@ -16,8 +16,8 @@ import rx.schedulers.Schedulers;
  */
 public class Update {
 
-    private static final String UPDATE_URL = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/update";
-    private static final String SERVER_FILENAME = "server_filename";
+    private static final String UPDATE_URL = "https://api.github.com/repos/feilongfl/cimoc/releases/latest";
+    private static final String SERVER_FILENAME = "name";
     private static final String LIST = "list";
 
     public static Observable<String> check() {
@@ -31,8 +31,8 @@ public class Update {
                     response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String json = response.body().string();
-                        JSONObject object = new JSONObject(json).getJSONArray(LIST).getJSONObject(0);
-                        String version = object.getString(SERVER_FILENAME);
+//                        JSONObject object = new JSONObject(json).getJSONArray(LIST).getJSONObject(0);
+                        String version = new JSONObject(json).getString(SERVER_FILENAME);
                         subscriber.onNext(version);
                         subscriber.onCompleted();
                     }
