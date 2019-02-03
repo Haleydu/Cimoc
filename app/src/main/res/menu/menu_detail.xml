@@ -23,6 +23,11 @@
         android:id="@+id/detail_search_author"
         android:title="@string/detail_search_author"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/detail_reverse_list"
+        android:icon="@drawable/ic_swap_vert_white_24dp"
+        android:title="@string/detail_reverse_list"
+        app:showAsAction="always" />
     <!--<item android:id="@+id/detail_disqus"-->
     <!--android:title="@string/detail_disqus"-->
     <!--android:icon="@drawable/ic_chat_bubble_white_24dp"-->

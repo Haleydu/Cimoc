@@ -160,6 +160,9 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(Intent.createChooser(intent, url));
                     break;
+                case R.id.detail_reverse_list:
+                    mDetailAdapter.reverse();
+                    break;
 //                case R.id.detail_disqus:
 //                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_cimqus_url) + "/cimoc/" + mPresenter.getComic().getTitle()));
 //                    try {
