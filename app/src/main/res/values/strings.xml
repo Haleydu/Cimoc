@@ -25,6 +25,7 @@
     <string name="search_menu_source">图源</string>
     <string name="search_keyword_empty">关键字为空</string>
     <string name="search_keyword_input">请输入关键字</string>
+    <string name="search_strict">严格搜索</string>
     <string name="search_source_select">图源选择</string>
     <string name="search_source_none">未选择图源</string>
     <string name="search_source_load_fail">读取图源失败</string>

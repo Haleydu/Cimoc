@@ -45,6 +45,16 @@
                     android:textSize="14sp"
                     tools:ignore="TextFields" />
             </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.AppCompatCheckBox
+                android:id="@+id/search_strict_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="100dp"
+                android:text="@string/search_strict"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
         </FrameLayout>
     </LinearLayout>
 

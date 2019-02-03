@@ -57,6 +57,16 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         intent.putExtra(Extra.EXTRA_MODE, type);
         intent.putExtra(Extra.EXTRA_SOURCE, array);
         intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
+//        intent.putExtra(Extra.EXTRA_STRICT, true);
+        return intent;
+    }
+
+    public static Intent createIntent(Context context, String keyword, boolean strictSearch, int[] array, int type) {
+        Intent intent = createIntent(context, keyword, array, type);
+//        intent.putExtra(Extra.EXTRA_MODE, type);
+//        intent.putExtra(Extra.EXTRA_SOURCE, array);
+//        intent.putExtra(Extra.EXTRA_KEYWORD, keyword);
+        intent.putExtra(Extra.EXTRA_STRICT, strictSearch);
         return intent;
     }
 
@@ -64,7 +74,8 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     protected BasePresenter initPresenter() {
         String keyword = getIntent().getStringExtra(Extra.EXTRA_KEYWORD);
         int[] source = getIntent().getIntArrayExtra(Extra.EXTRA_SOURCE);
-        mPresenter = new ResultPresenter(source, keyword);
+        boolean strictSearch = getIntent().getBooleanExtra(Extra.EXTRA_STRICT, true);
+        mPresenter = new ResultPresenter(source, keyword, strictSearch);
         mPresenter.attachView(this);
         return mPresenter;
     }

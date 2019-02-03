@@ -32,7 +32,7 @@ import rx.schedulers.Schedulers;
  */
 public class Manga {
 
-    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page) {
+    public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page, final boolean strictSearch) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
             @Override
             public void call(Subscriber<? super Comic> subscriber) {
@@ -46,7 +46,11 @@ public class Manga {
                     }
                     while (iterator.hasNext()) {
                         Comic comic = iterator.next();
-                        if (comic != null && (comic.getTitle().indexOf(keyword) != -1 || comic.getAuthor().indexOf(keyword) != -1)) {
+//                        if (comic != null && (comic.getTitle().indexOf(keyword) != -1 || comic.getAuthor().indexOf(keyword) != -1)) {
+                        if (comic != null
+                                && (comic.getTitle().indexOf(keyword) != -1
+                                || comic.getAuthor().indexOf(keyword) != -1
+                                || (!strictSearch))) {
                             subscriber.onNext(comic);
                             Thread.sleep(random.nextInt(200));
                         }

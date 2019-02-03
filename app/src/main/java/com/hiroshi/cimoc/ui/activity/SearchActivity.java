@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -47,6 +48,8 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     AppCompatAutoCompleteTextView mEditText;
     @BindView(R.id.search_action_button)
     FloatingActionButton mActionButton;
+    @BindView(R.id.search_strict_checkbox)
+    AppCompatCheckBox mCheckBox;
 
     private ArrayAdapter<String> mArrayAdapter;
 
@@ -159,6 +162,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     @OnClick(R.id.search_action_button)
     void onSearchButtonClick() {
         String keyword = mEditText.getText().toString();
+        Boolean strictSearch = mCheckBox.isChecked();
         if (StringUtils.isEmpty(keyword)) {
             mInputLayout.setError(getString(R.string.search_keyword_empty));
         } else {
@@ -171,7 +175,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
             if (list.isEmpty()) {
                 HintUtils.showToast(this, R.string.search_source_none);
             } else {
-                startActivity(ResultActivity.createIntent(this, keyword,
+                startActivity(ResultActivity.createIntent(this, keyword, strictSearch,
                         CollectionUtils.unbox(list), ResultActivity.LAUNCH_MODE_SEARCH));
             }
         }
