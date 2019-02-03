@@ -1,22 +1,17 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,7 +50,7 @@ public class Animx2 extends MangaParser {
         return new NodeIterator(body.list("ul.liemh > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.href("a");
+                String cid = node.hrefWithSplit("a", 0);
                 String title = node.text("a > div.tit");
                 String cover = "http://www.2animx.com" + node.attr("a > img", "src");
                 String update = node.text("a > font");
