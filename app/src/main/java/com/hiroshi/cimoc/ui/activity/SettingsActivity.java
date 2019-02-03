@@ -65,6 +65,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     CheckBoxPreference mReaderBanDoubleClick;
     @BindView(R.id.settings_reader_paging)
     CheckBoxPreference mReaderPaging;
+    @BindView(R.id.settings_reader_paging_reverse)
+    CheckBoxPreference mReaderPagingReverse;
     @BindView(R.id.settings_reader_white_edge)
     CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_search_auto_complete)
@@ -108,6 +110,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mReaderBanDoubleClick.bindPreference(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
+        mReaderPagingReverse.bindPreference(PreferenceManager.PREF_READER_PAGING_REVERSE, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
@@ -225,6 +228,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideNav.setColorStateList(stateList);
         mReaderBanDoubleClick.setColorStateList(stateList);
         mReaderPaging.setColorStateList(stateList);
+        mReaderPagingReverse.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
         mCheckUpdate.setColorStateList(stateList);

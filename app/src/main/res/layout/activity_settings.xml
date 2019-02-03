@@ -83,6 +83,13 @@
                     app:title="@string/settings_reader_paging" />
 
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_paging_reverse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:summary="@string/settings_reader_paging_reverse_summary"
+                    app:title="@string/settings_reader_paging_reverse" />
+
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_white_edge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

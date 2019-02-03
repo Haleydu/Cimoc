@@ -49,6 +49,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     int reader;
     private boolean isVertical; // 开页方向
     private boolean isPaging;
+    private boolean isPagingReverse;
     private boolean isWhiteEdge;
     private boolean isBanTurn;
     private boolean isDoubleTap;
@@ -130,7 +131,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                     .newBuilderWithSource(Uri.parse(url));
 
             // TODO 切图后可能需要修改图片高度和宽度
-            MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isWhiteEdge);
+            MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isPagingReverse, isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
 /*            if (isNeedResize(imageUrl)) {
                 ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
@@ -181,6 +182,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setPaging(boolean paging) {
         isPaging = paging;
+    }
+
+    public void setPagingReverse(boolean pagingReverse) {
+        isPagingReverse = pagingReverse;
     }
 
     public void setWhiteEdge(boolean whiteEdge) {

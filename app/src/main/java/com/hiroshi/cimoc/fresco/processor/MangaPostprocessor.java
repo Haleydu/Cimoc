@@ -20,15 +20,17 @@ public class MangaPostprocessor extends BasePostprocessor {
 
     private ImageUrl mImage;
     private boolean isPaging;
+    private boolean isPagingReverse;
     private boolean isWhiteEdge;
 
     private int mWidth, mHeight;
     private int mPosX, mPosY;
     private boolean isDone = false;
 
-    public MangaPostprocessor(ImageUrl image, boolean paging, boolean whiteEdge) {
+    public MangaPostprocessor(ImageUrl image, boolean paging, boolean pagingReverse, boolean whiteEdge) {
         mImage = image;
         isPaging = paging;
+        isPagingReverse = pagingReverse;
         isWhiteEdge = whiteEdge;
     }
 
@@ -38,7 +40,7 @@ public class MangaPostprocessor extends BasePostprocessor {
         mHeight = sourceBitmap.getHeight();
 
         if (isPaging) {
-            preparePaging();
+            preparePaging(isPagingReverse);
             isDone = true;
         }
         if (isWhiteEdge) {
@@ -58,7 +60,7 @@ public class MangaPostprocessor extends BasePostprocessor {
         return super.process(sourceBitmap, bitmapFactory);
     }
 
-    private void preparePaging() {
+    private void preparePaging(boolean reverse) {
         if (needHorizontalPaging()) {
             mWidth = mWidth / 2;
             if (mImage.getState() == ImageUrl.STATE_NULL) {
@@ -66,6 +68,8 @@ public class MangaPostprocessor extends BasePostprocessor {
                 RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage));
             }
             mPosX = mImage.getState() == ImageUrl.STATE_PAGE_1 ? mWidth : 0;
+            if (reverse)
+                mPosX = mImage.getState() == ImageUrl.STATE_PAGE_1 ? 0 : mWidth;
             mPosY = 0;
         } else if (needVerticalPaging()) {
             mHeight = mHeight / 2;
@@ -75,6 +79,8 @@ public class MangaPostprocessor extends BasePostprocessor {
             }
             mPosX = 0;
             mPosY = mImage.getState() == ImageUrl.STATE_PAGE_1 ? 0 : mHeight;
+            if (reverse)
+                mPosY = mImage.getState() == ImageUrl.STATE_PAGE_1 ? mHeight : 0;
         }
     }
 
