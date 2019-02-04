@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-def buildVersion = 01
+def buildVersion = 1
+def version = "v1.4.8.8074"
+
+def cmdGetTagname = 'git describe --tags'
+def cmdGetCommitNums = 'git describe --tags'
 if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
     buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
+} else {
+    buildVersion = cmdGetCommitNums.execute().text.trim().toInteger()
 }
-
-def cmd = 'git describe --tags'
-def version = cmd.execute().text.trim()
+version = cmdGetTagname.execute().text.trim()
 
 android {
     compileSdkVersion 28
@@ -18,7 +22,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode buildVersion
-        versionName version + "(" + buildVersion + ")"
+        versionName version
         resConfigs "en", "zh"
         manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
