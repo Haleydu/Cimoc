@@ -5,7 +5,7 @@ def buildVersion = 1
 def version = "v1.4.8.8074"
 
 def cmdGetTagname = 'git describe --tags'
-def cmdGetCommitNums = 'git describe --tags'
+def cmdGetCommitNums = 'git rev-list HEAD --count'
 if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
     buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
 } else {
