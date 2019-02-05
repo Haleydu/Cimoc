@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-def buildVersion = 1
-def version = "v1.4.8.8074"
-
-def cmdGetTagname = 'git describe --tags'
-def cmdGetCommitNums = 'git rev-list HEAD --count'
-if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
-    buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
-    version = cmdGetTagname.execute().text.trim()
-}
+//def buildVersion = 1
+//def version = "v1.4.8.8074"
+//
+//def cmdGetTagname = 'git describe --tags'
+//def cmdGetCommitNums = 'git rev-list HEAD --count'
+//if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
+//    buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
+//    version = cmdGetTagname.execute().text.trim()
+//}
 //else {
 //    buildVersion = cmdGetCommitNums.execute().text.trim().toInteger()
 //}
@@ -23,10 +23,10 @@ android {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode buildVersion
-        versionName version
+        versionCode 307
+        versionName "v1.4.9"
         resConfigs "en", "zh"
-        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
+//        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
     }
     signingConfigs {
         release {
