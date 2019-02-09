@@ -174,6 +174,18 @@
                     android:host="www.u17.com"
                     android:scheme="https" />
                 <data
+                    android:host="www.migudm.cn"
+                    android:scheme="http" />
+                <data
+                    android:host="www.migudm.cn"
+                    android:scheme="https" />
+                <data
+                    android:host="m.migudm.cn"
+                    android:scheme="http" />
+                <data
+                    android:host="m.migudm.cn"
+                    android:scheme="https" />
+                <data
                     android:host="h5.manhua.163.com"
                     android:scheme="http" />
                 <data

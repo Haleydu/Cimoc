@@ -87,6 +87,7 @@ public class MiGu extends MangaParser {
     @Override
     protected void initUrlFilterList() {
         filter.add(new UrlFilter("www.migudm.cn"));
+        filter.add(new UrlFilter("m.migudm.cn"));
     }
 
     @Override
