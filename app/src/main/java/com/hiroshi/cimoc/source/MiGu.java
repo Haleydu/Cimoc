@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Base64;
 
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -13,16 +14,23 @@ import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.Call;
 import okhttp3.Headers;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by FEILONG on 2017/12/21.
@@ -73,87 +81,105 @@ public class MiGu extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return cid;
+        return StringUtils.format("http://www.migudm.cn/comic/%s.html", cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("www.2animx.com", ".*", 0));
+        filter.add(new UrlFilter("www.migudm.cn"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        if (cid.indexOf("http://www.2animx.com") == -1) {
-            cid = "http://www.2animx.com/".concat(cid);
-        }
-        return new Request.Builder().url(cid).addHeader("Cookie", "isAdult=1").build();
+        return new Request.Builder().url(StringUtils.format("http://www.migudm.cn/comic/%s.html", cid)).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String title = body.text("div.position > strong");
-        String cover = "http://www.2animx.com/" + body.src("dl.mh-detail > dt > a > img");
-        String update = "";
-        String author = "";
-        String intro = body.text(".mh-introduce");
+        String title = body.text("div.inner > .ctdbRight > .ctdbRightInner > .title").trim();
+        String cover = body.attr("div.inner > .ctdbLeft > a > img", "src");
+//        String update = body.text("span.date").trim();
+//        String author = body.text("p.author").trim();
+        String intro = body.text("#worksDesc").trim();
         boolean status = false;
-        comic.setInfo(title, cover, update, intro, author, status);
+        comic.setInfo(title, cover, "", intro, "", status);
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("div#oneCon2 > ul > li")) {
-            String title = node.attr("a", "title");
-            Matcher mTitle = Pattern.compile("\\d+").matcher(title);
-            title = mTitle.find() ? mTitle.group() : title;
-            String path2 = node.href("a");
-            String path = node.hrefWithSplit("a", 0);
-            list.add(new Chapter(title, path));
+        Matcher m = Pattern.compile("<a stat='.*?' href=\"(?:.*?)(\\d+)\\.html\" class=\"item ellipsis\" title=\"(.*?)\" data-opusname=\"(?:.*?)\" data-index=\"(?:.*?)\" data-url=\"(?:.*?)\" target=\"_blank\">").matcher(html);
+        while (m.find()) {
+            list.add(new Chapter(m.group(2), m.group(1)));
         }
-        return list;
+        return Lists.reverse(list);
+    }
+
+    public String httpGet(String url) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder().readTimeout(10, TimeUnit.SECONDS).build();
+        final Request request = new Request.Builder()
+                .url(url)
+                .addHeader("user-agent", "Mozilla/5.0 (Linux; U; Android 4.0.4; en-gb; GT-I9300 Build/IMM76D) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30")
+                .get()//默认就是GET请求，可以不写
+                .build();
+        Call call = okHttpClient.newCall(request);
+        try {
+            Response response = call.execute();
+            return response.body().string();
+        } catch (Exception ex) {
+            return "";
+        }
     }
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        if (path.indexOf("http://www.2animx.com") == -1) {
-            path = "http://www.2animx.com/".concat(path);
-        }
         _cid = cid;
         _path = path;
-        return new Request.Builder().url(path).addHeader("Cookie", "isAdult=1").build();
+        String url = StringUtils.format("http://www.migudm.cn/%s/chapter/%s.html", cid, path);
+        String html = httpGet(url);
+        Matcher m = Pattern.compile("<input type=\"hidden\" id=\"playUrl\" value=\"(.*)\">").matcher(html);
+        if (m.find()) {
+            url = "http://www.migudm.cn/opus/webQueryWatchOpusInfo.html?".concat(m.group(1));
+            return new Request.Builder().url(url).build();
+        }
+        return null;
+//        String url = StringUtils.format("http://m.migudm.cn/comic/readImage.html?opusType=2&hwOpusId=090000000865&hwItemId=091000017043");
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
-        Matcher pageMatcher = Pattern.compile("id=\"total\" value=\"(.*?)\"").matcher(html);
-        if (!pageMatcher.find()) return null;
-        int page = Integer.parseInt(pageMatcher.group(1));
-        for (int i = 1; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("%s-p-%d", _path, i), true));
+        try {
+            JSONObject json = new JSONObject(html);
+            JSONArray jpgJsonArr = json.getJSONObject("data").getJSONArray("jpgList");
+            for (int i = 0; i < jpgJsonArr.length(); i++) {
+                JSONObject j = jpgJsonArr.getJSONObject(i);
+                list.add(new ImageUrl(i, j.getString("url"), false));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return list;
     }
 
-    @Override
-    public Request getLazyRequest(String url) {
-        return new Request.Builder()
-//                .addHeader("Referer", url)
-                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-                .addHeader("Cookie", "isAdult=1")
-                .url(url).build();
-    }
-
-    @Override
-    public String parseLazy(String html, String url) {
-        Matcher m = Pattern.compile("<\\/div><img src=\"(.*?)\" alt=").matcher(html);
-        if (m.find()) {
-            return m.group(1);
-        }
-        return null;
-    }
+//    @Override
+//    public Request getLazyRequest(String url) {
+//        return new Request.Builder()
+////                .addHeader("Referer", url)
+//                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+//                .addHeader("Cookie", "isAdult=1")
+//                .url(url).build();
+//    }
+//
+//    @Override
+//    public String parseLazy(String html, String url) {
+//        Matcher m = Pattern.compile("<\\/div><img src=\"(.*?)\" alt=").matcher(html);
+//        if (m.find()) {
+//            return m.group(1);
+//        }
+//        return null;
+//    }
 
     @Override
     public Request getCheckRequest(String cid) {
