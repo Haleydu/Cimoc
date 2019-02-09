@@ -1,17 +1,20 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Base64;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaParser;
-import com.hiroshi.cimoc.parser.NodeIterator;
+import com.hiroshi.cimoc.parser.RegexIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,23 +44,29 @@ public class MiGu extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
-        //TODO: 这编码牛逼,不认识...
+        //这编码牛逼,不认识...
         //天 => JUU1JUE0JUE5
-        String url = StringUtils.format("http://www.migudm.cn/search/result/list.html?hintKey=JUU1JUE0JUE5&hintType=2&pageSize=30&pageNo=%d", keyword, page);
+        //好吧,搞出来了
+        //天 ===utf-8===> \xE5\xA4\xA9 ===\x->%=====> %E5%A1%A9 ===base64=====> JUU1JUE0JUE5
+        byte[] keywordByte = keyword.getBytes(Charset.forName("UTF-8"));
+        String keyPre = "";
+        for (byte k : keywordByte) {
+            keyPre += "%" + String.format("%02x", k);
+        }
+        String keywordconv = Base64.encodeToString(keyPre.toUpperCase().getBytes(), keyPre.length()).trim();
+        String url = StringUtils.format("http://www.migudm.cn/search/result/list.html?hintKey=%s&hintType=2&pageSize=30&pageNo=%d",
+                keywordconv,
+                page);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        Node body = new Node(html);
-        return new NodeIterator(body.list("ul.liemh > li")) {
+        Matcher m = Pattern.compile("href=\"\\/comic\\/(.*?).html\"  title=\"(.*?)\">\\s+<img src=\"(.*?)\".*?>").matcher(html);
+        return new RegexIterator(m) {
             @Override
-            protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit("a", 0);
-                String title = node.text("a > div.tit");
-                String cover = "http://www.2animx.com" + node.attr("a > img", "src");
-                String update = node.text("a > font");
-                return new Comic(TYPE, cid, title, cover, update, "");
+            protected Comic parse(Matcher match) {
+                return new Comic(TYPE, match.group(1), match.group(2), match.group(3), "", "");
             }
         };
     }

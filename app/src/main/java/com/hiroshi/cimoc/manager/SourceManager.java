@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
+import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.PuFei;
@@ -161,6 +162,9 @@ public class SourceManager {
                     break;
                 case Animx2.TYPE:
                     parser = new Animx2(source);
+                    break;
+                case MiGu.TYPE:
+                    parser = new MiGu(source);
                     break;
 
                 default:

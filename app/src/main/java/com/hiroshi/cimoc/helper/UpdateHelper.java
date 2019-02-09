@@ -19,6 +19,7 @@ import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MangaNel;
+import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
@@ -109,6 +110,7 @@ public class UpdateHelper {
         list.add(PuFei.getDefaultSource());
         list.add(Cartoonmad.getDefaultSource());
         list.add(Animx2.getDefaultSource());
+        list.add(MiGu.getDefaultSource());
         list.add(Tencent.getDefaultSource());
         list.add(BuKa.getDefaultSource());
         list.add(EHentai.getDefaultSource());
