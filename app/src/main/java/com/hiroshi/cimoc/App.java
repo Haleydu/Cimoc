@@ -29,6 +29,9 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+
 import okhttp3.OkHttpClient;
 
 /**
@@ -208,7 +211,16 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         }
 
         if (mHttpClient == null) {
-            mHttpClient = new OkHttpClient();
+
+            // 修改为粗暴访问https
+            mHttpClient = new OkHttpClient().newBuilder().hostnameVerifier(new HostnameVerifier() {
+
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    //强行返回true 即验证成功
+                    return true;
+                }
+            }).build();
         }
 
         return mHttpClient;

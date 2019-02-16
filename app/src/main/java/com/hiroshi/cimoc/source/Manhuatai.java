@@ -42,7 +42,7 @@ public class Manhuatai extends MangaParser {
 
     public static final int TYPE = 49;
     public static final String DEFAULT_TITLE = "漫画台";
-    public static final String baseUrl = "http://m.manhuatai.com";
+    public static final String baseUrl = "https://m.manhuatai.com";
 
     public static String searchUrl = null;
 
@@ -126,7 +126,7 @@ public class Manhuatai extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://www.manhuatai.com/".concat(cid) + "/";
+        String url = "https://www.manhuatai.com/".concat(cid) + "/";
         return new Request.Builder().url(url).build();
     }
 
@@ -162,7 +162,7 @@ public class Manhuatai extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
 //        String url = StringUtils.format("http://m.manhuatai.com/%s/%s.html", cid, path);//于2018.3失效
-        String url = StringUtils.format("http://m.manhuatai.com%s", path);
+        String url = StringUtils.format("https://m.manhuatai.com%s", path);
         return new Request.Builder().url(url).build();
     }
 
@@ -185,7 +185,7 @@ public class Manhuatai extends MangaParser {
         String c = "mhpic." + mh_info.domain;
         for (int i = 0; i < mh_info.totalimg; i++) {
             String d = (mh_info.startimg + i) + ".jpg" + b;
-            String e = "http://" + c + "/comic/" + imgpath + d;
+            String e = "https://" + c + "/comic/" + imgpath + d;
             list.add(new ImageUrl(i + 1, e, false));
         }
         return list;
@@ -260,7 +260,7 @@ public class Manhuatai extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return StringUtils.format("http://www.manhuatai.com/%s_p%%d.html",
+            return StringUtils.format("https://www.manhuatai.com/%s_p%%d.html",
                     args[CATEGORY_SUBJECT]);
         }
 
@@ -316,7 +316,7 @@ public class Manhuatai extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.manhuatai.com");
+        return Headers.of("Referer", "https://m.manhuatai.com");
     }
 
 }

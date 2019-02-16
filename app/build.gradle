@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'org.greenrobot:greendao:3.2.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.facebook.fresco:fresco:1.8.0'
     implementation 'org.jsoup:jsoup:1.11.2'
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
