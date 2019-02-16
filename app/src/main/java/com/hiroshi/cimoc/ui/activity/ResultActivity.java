@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -182,4 +184,10 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         return intent;
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        System.out.println("其他Activity来了   onPause()");
+        SearchActivity.isBackToSearch = true;
+    }
 }

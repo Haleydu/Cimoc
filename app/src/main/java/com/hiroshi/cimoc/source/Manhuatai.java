@@ -18,6 +18,7 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.MDocument;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.ui.activity.SearchActivity;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
@@ -59,12 +60,13 @@ public class Manhuatai extends MangaParser {
         String url = StringUtils.format(baseUrl + "/getjson.shtml?d=1516243591359&q=%s",
                 URLEncoder.encode(keyword, "UTF-8"), page);
 
-        //解决重复加载列表问题
-        if (url.equals(searchUrl)) {
+        // 解决重复加载列表问题
+        if (url.equals(searchUrl) && !SearchActivity.isBackToSearch) {
             return null;
         } else {
             searchUrl = url;
         }
+        SearchActivity.isBackToSearch = false;
         return new Request.Builder().url(url).build();
     }
 

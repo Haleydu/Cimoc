@@ -53,6 +53,8 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     private List<Switcher<Source>> mSourceList;
     private boolean mAutoComplete;
 
+    public static boolean isBackToSearch = false;
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new SearchPresenter();
