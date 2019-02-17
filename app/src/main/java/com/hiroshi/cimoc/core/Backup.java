@@ -3,17 +3,9 @@ package com.hiroshi.cimoc.core;
 import android.content.ContentResolver;
 import android.util.Pair;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.internal.LinkedTreeMap;
-import com.google.gson.reflect.TypeToken;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Tag;
@@ -25,13 +17,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -285,14 +274,11 @@ public class Backup {
             public void call(Subscriber<? super Map<String, ?>> subscriber) {
 
                 String jsonString = readBackupFile(resolver, root, filename);
-//                Gson gson = new Gson();
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                gsonBuilder.registerTypeAdapter(new TypeToken<Map<String, ?>>() {
-                }.getType(), new MapDeserializerDoubleAsIntFix());
-                Gson gson = gsonBuilder.create();
+
                 //将jsonStr转为Map
-                Map<String, ?> entries = gson.fromJson(jsonString, new TypeToken<Map<String, ?>>() {
-                }.getType());
+                Map<String, ?> entries = JSON.parseObject(
+                        jsonString, new TypeReference<Map<String, ?>>() {
+                        });
                 if (filename.endsWith(SUFFIX_CSBF)) {
                     for (Map.Entry entry : entries.entrySet()) {
                         App.getPreferenceManager().putObject(entry.getKey().toString(), entry.getValue());
@@ -363,53 +349,5 @@ public class Backup {
                 break;
         }
         return list;
-    }
-
-    // 解决 Gson 转换错误导致 Int 变为 Double 类型
-    public static class MapDeserializerDoubleAsIntFix implements JsonDeserializer<Map<String, Object>> {
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public Map<String, Object> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return (Map<String, Object>) read(json);
-        }
-
-        public Object read(JsonElement in) {
-
-            if (in.isJsonArray()) {
-                List<Object> list = new ArrayList<Object>();
-                JsonArray arr = in.getAsJsonArray();
-                for (JsonElement anArr : arr) {
-                    list.add(read(anArr));
-                }
-                return list;
-            } else if (in.isJsonObject()) {
-                Map<String, Object> map = new LinkedTreeMap<String, Object>();
-                JsonObject obj = in.getAsJsonObject();
-                Set<Map.Entry<String, JsonElement>> entitySet = obj.entrySet();
-                for (Map.Entry<String, JsonElement> entry : entitySet) {
-                    map.put(entry.getKey(), read(entry.getValue()));
-                }
-                return map;
-            } else if (in.isJsonPrimitive()) {
-                JsonPrimitive prim = in.getAsJsonPrimitive();
-                if (prim.isBoolean()) {
-                    return prim.getAsBoolean();
-                } else if (prim.isString()) {
-                    return prim.getAsString();
-                } else if (prim.isNumber()) {
-                    Number num = prim.getAsNumber();
-                    // here you can handle double int/long values
-                    // and return any type you want
-                    // this solution will transform 3.0 float to long values
-                    if (Math.ceil(num.doubleValue()) == num.longValue())
-                        return num.longValue();
-                    else {
-                        return num.doubleValue();
-                    }
-                }
-            }
-            return null;
-        }
     }
 }
