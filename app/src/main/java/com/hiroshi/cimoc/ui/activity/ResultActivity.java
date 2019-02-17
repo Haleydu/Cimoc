@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
-import android.view.MenuItem;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -30,8 +29,10 @@ import butterknife.BindView;
  */
 public class ResultActivity extends BackActivity implements ResultView, BaseAdapter.OnItemClickListener {
 
-    @BindView(R.id.result_recycler_view) RecyclerView mRecyclerView;
-    @BindView(R.id.result_layout) FrameLayout mLayoutView;
+    @BindView(R.id.result_recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.result_layout)
+    FrameLayout mLayoutView;
 
     private ResultAdapter mResultAdapter;
     private LinearLayoutManager mLayoutManager;
@@ -39,6 +40,13 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     private ControllerBuilderProvider mProvider;
 
     private int type;
+
+    // 建个Map把漫源搜索的上一个请求的url存下来，最后利用Activity生命周期清掉
+    //
+    // 解决重复加载列表问题思路：
+    // 在新的一次请求（上拉加载）前检查新Url与上一次请求的是否一致。
+    // 一致则返回空请求，达到阻断请求的目的；不一致则更新Map中存的Url，Map中不存在则新建
+    public static SparseArray<String> searchUrls = new SparseArray<>();
 
     @Override
     protected BasePresenter initPresenter() {
@@ -71,7 +79,7 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                switch (newState){
+                switch (newState) {
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         mProvider.pause();
                         break;
@@ -188,6 +196,6 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     protected void onPause() {
         super.onPause();
 //        System.out.println("其他Activity来了   onPause()");
-        SearchActivity.isBackToSearch = true;
+        searchUrls.clear();
     }
 }

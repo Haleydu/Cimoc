@@ -18,7 +18,7 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.MDocument;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.ui.activity.SearchActivity;
+import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
@@ -45,8 +45,6 @@ public class Manhuatai extends MangaParser {
     public static final String DEFAULT_TITLE = "漫画台";
     public static final String baseUrl = "https://m.manhuatai.com";
 
-    public static String searchUrl = null;
-
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
@@ -61,12 +59,18 @@ public class Manhuatai extends MangaParser {
                 URLEncoder.encode(keyword, "UTF-8"), page);
 
         // 解决重复加载列表问题
-        if (url.equals(searchUrl) && !SearchActivity.isBackToSearch) {
+        //
+        // 思路：在新的一次请求（上拉加载）前检查新Url与上一次请求的是否一致。
+        // 一致则返回空请求，达到阻断请求的目的；不一致则更新Map中存的Url，Map中不存在则新建
+        if (url.equals(ResultActivity.searchUrls.get(TYPE))) {
             return null;
         } else {
-            searchUrl = url;
+            if (ResultActivity.searchUrls.get(TYPE) == null) {
+                ResultActivity.searchUrls.append(TYPE, url);
+            } else {
+                ResultActivity.searchUrls.setValueAt(TYPE, url);
+            }
         }
-        SearchActivity.isBackToSearch = false;
         return new Request.Builder().url(url).build();
     }
 

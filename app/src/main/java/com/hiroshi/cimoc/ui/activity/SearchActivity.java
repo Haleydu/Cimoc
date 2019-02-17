@@ -4,10 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
-import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,8 +50,6 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
     private SearchPresenter mPresenter;
     private List<Switcher<Source>> mSourceList;
     private boolean mAutoComplete;
-
-    public static boolean isBackToSearch = false;
 
     @Override
     protected BasePresenter initPresenter() {

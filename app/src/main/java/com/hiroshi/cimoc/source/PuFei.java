@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -32,8 +33,6 @@ public class PuFei extends MangaParser {
     public static final int TYPE = 50;
     public static final String DEFAULT_TITLE = "扑飞漫画";
 
-    public static String searchUrl = null;
-
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
@@ -49,10 +48,14 @@ public class PuFei extends MangaParser {
 //        return new Request.Builder().url(url).build();
 
         //解决重复加载列表问题
-        if (url.equals(searchUrl)) {
+        if (url.equals(ResultActivity.searchUrls.get(TYPE))) {
             return null;
         } else {
-            searchUrl = url;
+            if (ResultActivity.searchUrls.get(TYPE) == null) {
+                ResultActivity.searchUrls.append(TYPE, url);
+            } else {
+                ResultActivity.searchUrls.setValueAt(TYPE, url);
+            }
         }
         return new Request.Builder().url(url).build();
     }
