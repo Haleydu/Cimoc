@@ -1,6 +1,22 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
+def gitVersionTag() {
+    def cmd = 'git describe --tags'
+    def version = cmd.execute().text.trim()
+
+    def pattern = "-(\\d+)-g"
+    def matcher = version =~ pattern
+
+    if (matcher) {
+        version = version.substring(0, matcher.start()) + "." + matcher[0][1]
+    } else {
+        version = version + ".0"
+    }
+
+    return version
+}
+
 android {
     signingConfigs {
         releaseConfig {
@@ -18,7 +34,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.8.8"
+        versionName "1.4.12.0"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -30,8 +46,12 @@ android {
             signingConfig signingConfigs.releaseConfig
         }
         android.applicationVariants.all { variant ->
+            if (variant.buildType.name.equals('release')) {
+//                variant.mergedFlavor.versionCode = gitVersionCode()
+                variant.mergedFlavor.versionName = gitVersionTag()
+            }
             variant.outputs.all {
-                outputFileName = "Cimoc v${variant.versionName} ${buildType.getName()}.apk"
+                outputFileName = "Cimoc ${variant.versionName} ${buildType.getName()}.apk"
             }
         }
     }
