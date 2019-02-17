@@ -3,6 +3,8 @@ package com.hiroshi.cimoc.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Map;
+
 /**
  * Created by Hiroshi on 2016/8/4.
  */
@@ -143,4 +145,15 @@ public class PreferenceManager {
         mSharedPreferences.edit().putLong(key, value).apply();
     }
 
+    public Map<String, ?> getAll() {
+        return mSharedPreferences.getAll();
+    }
+
+    public void putObject(String key, Object value) {
+        if (value instanceof Boolean) mSharedPreferences.edit().putBoolean(key, (Boolean) value).apply();
+        else if (value instanceof Float)  mSharedPreferences.edit().putFloat(key, (Float) value).apply();
+        else if (value instanceof Integer) mSharedPreferences.edit().putInt(key, (Integer) value).apply();
+        else if (value instanceof Long)  mSharedPreferences.edit().putLong(key, (Long) value).apply();
+        else if (value instanceof String)  mSharedPreferences.edit().putString(key, ((String) value)).apply();
+    }
 }

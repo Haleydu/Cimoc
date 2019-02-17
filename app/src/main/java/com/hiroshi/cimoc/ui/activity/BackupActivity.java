@@ -24,6 +24,7 @@ public class BackupActivity extends BackActivity implements BackupView {
 
     private static final int DIALOG_REQUEST_RESTORE_COMIC = 0;
     private static final int DIALOG_REQUEST_RESTORE_TAG = 1;
+    private static final int DIALOG_REQUEST_RESTORE_SETTINGS = 2;
 
     @BindView(R.id.backup_layout) View mLayoutView;
     @BindView(R.id.backup_save_comic_auto) CheckBoxPreference mSaveComicAuto;
@@ -61,6 +62,15 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
+    @OnClick(R.id.backup_save_settings) void onSaveSettingsClick() {
+        showProgressDialog();
+        if (PermissionUtils.hasStoragePermission(this)) {
+            mPresenter.saveSettings();
+        } else {
+            onFileLoadFail();
+        }
+    }
+
     @OnClick(R.id.backup_restore_comic) void onRestoreFavoriteClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
@@ -79,6 +89,15 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
+    @OnClick(R.id.backup_restore_settings) void onRestoreSettingsClick() {
+        showProgressDialog();
+        if (PermissionUtils.hasStoragePermission(this)) {
+            mPresenter.loadSettingsFile();
+        } else {
+            onFileLoadFail();
+        }
+    }
+
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
@@ -89,6 +108,10 @@ public class BackupActivity extends BackActivity implements BackupView {
             case DIALOG_REQUEST_RESTORE_TAG:
                 showProgressDialog();
                 mPresenter.restoreTag(bundle.getString(EXTRA_DIALOG_RESULT_VALUE));
+                break;
+            case DIALOG_REQUEST_RESTORE_SETTINGS:
+                showProgressDialog();
+                mPresenter.restoreSetting(bundle.getString(EXTRA_DIALOG_RESULT_VALUE));
                 break;
         }
     }
@@ -101,6 +124,11 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     public void onTagFileLoadSuccess(String[] file) {
         showChoiceDialog(R.string.backup_restore_tag, file, DIALOG_REQUEST_RESTORE_TAG);
+    }
+
+    @Override
+    public void onSettingsFileLoadSuccess(String[] file) {
+        showChoiceDialog(R.string.backup_restore_settings, file, DIALOG_REQUEST_RESTORE_SETTINGS);
     }
 
     private void showChoiceDialog(int title, String[] item, int request) {

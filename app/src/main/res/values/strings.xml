@@ -176,6 +176,8 @@
     <string name="backup_save_comic_summary">备份收藏和历史漫画</string>
     <string name="backup_save_tag">备份标签</string>
     <string name="backup_save_tag_summary">备份标签及相应漫画</string>
+    <string name="backup_save_settings">备份设置</string>
+    <string name="backup_save_settings_summary">备份所有个人配置</string>
     <string name="backup_save_success">备份成功 共 %d 条记录</string>
     <string name="backup_restore">恢复</string>
     <string name="backup_restore_not_found">没有找到备份文件</string>
@@ -183,6 +185,8 @@
     <string name="backup_restore_comic_summary">恢复收藏和历史漫画</string>
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
+    <string name="backup_restore_settings">恢复设置</string>
+    <string name="backup_restore_settings_summary">恢复所有个人配置</string>
 
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>

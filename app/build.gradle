@@ -56,6 +56,6 @@ dependencies {
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'io.reactivex:rxjava:1.2.4'
     implementation 'io.reactivex:rxandroid:1.2.1'
-    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.google.code.gson:gson:2.8.2'
     implementation files('libs/commons-lang3-3.7.jar')
 }

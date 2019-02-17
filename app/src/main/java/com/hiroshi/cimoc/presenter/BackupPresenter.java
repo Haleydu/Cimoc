@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.presenter;
 import android.content.ContentResolver;
 import android.util.Pair;
 
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.TagManager;
@@ -18,6 +19,7 @@ import com.hiroshi.cimoc.ui.view.BackupView;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -77,6 +79,22 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 }));
     }
 
+    public void loadSettingsFile() {
+        mCompositeSubscription.add(Backup.loadSettings(mBaseView.getAppInstance().getDocumentFile())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<String[]>() {
+                    @Override
+                    public void call(String[] file) {
+                        mBaseView.onSettingsFileLoadSuccess(file);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onFileLoadFail();
+                    }
+                }));
+    }
+
     public void saveComic() {
         mCompositeSubscription.add(mComicManager.listFavoriteOrHistoryInRx()
                 .map(new Func1<List<Comic>, Integer>() {
@@ -105,13 +123,41 @@ public class BackupPresenter extends BasePresenter<BackupView> {
 
     public void saveTag() {
         mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                int size = groupAndSaveComicByTag();
+                subscriber.onNext(size);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Integer>() {
                     @Override
-                    public void call(Subscriber<? super Integer> subscriber) {
-                        int size = groupAndSaveComicByTag();
-                        subscriber.onNext(size);
-                        subscriber.onCompleted();
+                    public void call(Integer size) {
+                        if (size == -1) {
+                            mBaseView.onBackupSaveFail();
+                        } else {
+                            mBaseView.onBackupSaveSuccess(size);
+                        }
                     }
-                }).subscribeOn(Schedulers.io())
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onBackupSaveFail();
+                    }
+                }));
+    }
+
+    public void saveSettings() {
+        mCompositeSubscription.add(Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+//                boolean isBackuped = SharePrefUtils.copyFiles(context.getFilesDir().getPath() + context.getPackageName() + "/shared_prefs", );
+                int size = Backup.saveSetting(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), App.getPreferenceManager().getAll());
+                subscriber.onNext(size);
+                subscriber.onCompleted();
+            }
+        }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Integer>() {
                     @Override
@@ -165,6 +211,22 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 .subscribe(new Action1<List<Pair<Tag, List<Comic>>>>() {
                     @Override
                     public void call(List<Pair<Tag, List<Comic>>> pair) {
+                        mBaseView.onBackupRestoreSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onBackupRestoreFail();
+                    }
+                }));
+    }
+
+    public void restoreSetting(String filename) {
+        mCompositeSubscription.add(Backup.restoreSetting(mContentResolver, mBaseView.getAppInstance().getDocumentFile(), filename)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Map<String, ?>>() {
+                    @Override
+                    public void call(Map<String, ?> pair) {
                         mBaseView.onBackupRestoreSuccess();
                     }
                 }, new Action1<Throwable>() {

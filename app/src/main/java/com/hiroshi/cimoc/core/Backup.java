@@ -3,6 +3,9 @@ package com.hiroshi.cimoc.core;
 import android.content.ContentResolver;
 import android.util.Pair;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.saf.DocumentFile;
@@ -14,8 +17,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -36,6 +41,9 @@ public class Backup {
 
     // ctbf = Cimoc Tag Backup File
     private static final String SUFFIX_CTBF = "ctbf";
+
+    // csbf = Cimoc Settings Backup File
+    private static final String SUFFIX_CSBF = "csbf";
 
     private static final String JSON_CIMOC_KEY_COMIC_SOURCE = "s";
     private static final String JSON_CIMOC_KEY_COMIC_CID = "i";
@@ -68,6 +76,10 @@ public class Backup {
 
     public static Observable<String[]> loadTag(DocumentFile root) {
         return load(root, SUFFIX_CTBF);
+    }
+
+    public static Observable<String[]> loadSettings(DocumentFile root) {
+        return load(root, SUFFIX_CSBF);
     }
 
     private static Observable<String[]> load(final DocumentFile root, final String... suffix) {
@@ -132,6 +144,25 @@ public class Backup {
                 DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
                 DocumentUtils.writeStringToFile(resolver, file, result.toString());
                 return list.size();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return -1;
+    }
+
+    public static int saveSetting(ContentResolver resolver, DocumentFile root, Map<?, ?> settingMap) {
+        DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+        if (dir != null) {
+            try {
+//                String result = XMLUtils.converter(settingMap);
+//                JSONObject result = new JSONObject(settingMap);
+                Gson gson = new Gson();
+                String result = gson.toJson(settingMap);
+                String filename = StringUtils.getDateStringWithSuffix(SUFFIX_CSBF);
+                DocumentFile file = DocumentUtils.getOrCreateFile(dir, filename);
+                DocumentUtils.writeStringToFile(resolver, file, result.toString());
+                return settingMap.size();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -232,6 +263,27 @@ public class Backup {
                 } catch (JSONException e) {
                     subscriber.onError(e);
                 }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<Map<String, ?>> restoreSetting(final ContentResolver resolver, final DocumentFile root, final String filename) {
+        return Observable.create(new Observable.OnSubscribe<Map<String, ?>>() {
+            @Override
+            public void call(Subscriber<? super Map<String, ?>> subscriber) {
+
+                String jsonString = readBackupFile(resolver, root, filename);
+                Gson gson = new Gson();
+                //将jsonStr转为Map
+                Map<String, ?> entries = gson.fromJson(jsonString, new TypeToken<Map<String, ?>>() {
+                }.getType());
+                if (filename.endsWith(SUFFIX_CSBF)) {
+                    for (Map.Entry entry : entries.entrySet()) {
+                        App.getPreferenceManager().putObject(entry.getKey().toString(), entry.getValue());
+                    }
+                }
+                subscriber.onNext(entries);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }
