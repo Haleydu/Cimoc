@@ -265,7 +265,7 @@ public class FrescoUtils {
      *
      * @param url
      */
-    public static File getFileFromDiskCache(String url){
+    public static File getFileFromDiskCache(String url) throws NullPointerException{
         File localFile = null;
         if (!TextUtils.isEmpty(url)) {
             CacheKey cacheKey = DefaultCacheKeyFactory.getInstance().getEncodedCacheKey(ImageRequest.fromUri(url), null);
