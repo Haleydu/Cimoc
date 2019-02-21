@@ -13,7 +13,7 @@ Online manga reader based on Android
 - 本地备份恢复（Local Backup）
 
 # 支持网站
-- [看漫画](http://m.ikanman.com)
+- [看漫画](https://m.manhuagui.com)
 - [动漫之家](http://m.dmzj.com)
 - [手机汗汗](http://hhaazz.com)
 - [CC图库](http://m.tuku.cc)
@@ -23,6 +23,7 @@ Online manga reader based on Android
 - [汗汗漫画](http://hhssee.com)
 - [57漫画](http://m.57mh.com)
 - [吹妖漫画](http://m.chuiyao.com/)
+- [漫画台](https://m.manhuatai.com/) (感谢[@AoEiuV020](https://github.com/AoEiuV020)的项目[PaComic](https://github.com/AoEiuV020/PaComic)提供的漫源)
 
 # 感谢以下的开源项目及作者
 - [Android Open Source Project](http://source.android.com/)
