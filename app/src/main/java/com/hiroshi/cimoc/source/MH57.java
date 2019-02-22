@@ -47,7 +47,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("http://m.5qmh.com/search/q_%s-p-%d", keyword, page);
+        String url = StringUtils.format("http://m.wuqimh.com/search/q_%s-p-%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
 
@@ -78,17 +78,17 @@ public class MH57 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "http://m.5qmh.com/".concat(cid);
+        return "http://m.wuqimh.com/".concat(cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.5qmh.com"));
+        filter.add(new UrlFilter("m.wuqimh.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.5qmh.com/".concat(cid);
+        String url = "http://m.wuqimh.com/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -118,7 +118,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.5qmh.com/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.wuqimh.com/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -181,7 +181,7 @@ public class MH57 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.5qmh.com/");
+        return Headers.of("Referer", "http://m.wuqimh.com/");
     }
 
     private static class Category extends MangaCategory {
