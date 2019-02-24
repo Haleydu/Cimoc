@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
+//static def gitVersionCode() {
+//    def cmd = 'git rev-list HEAD --first-parent --count'
+//    cmd.execute().text.trim().toInteger()
+//}
+
 static def gitVersionTag() {
     def cmd = 'git describe --tags'
     def version = cmd.execute().text.trim()
@@ -32,7 +37,6 @@ android {
         }
     }
     compileSdkVersion 27
-    buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.hiroshi.cimoc"
@@ -51,12 +55,15 @@ android {
             signingConfig signingConfigs.release
         }
         android.applicationVariants.all { variant ->
-            if (variant.buildType.name.equals('release')) {
+            def versionName = gitVersionTag()
+//            def versionCode = gitVersionCode()
 //                variant.mergedFlavor.versionCode = gitVersionCode()
-                variant.mergedFlavor.versionName = gitVersionTag()
-            }
-            variant.outputs.all {
-                outputFileName = "Cimoc ${variant.versionName} ${buildType.getName()}.apk"
+//                variant.mergedFlavor.versionName = gitVersionTag()
+            // 修复升级gradle后 ERROR: versionName cannot be set on a mergedFlavor directly.
+            variant.outputs.all { output ->
+//                output.setVersionCodeOverride(versionCode)
+                output.setVersionNameOverride(versionName)
+                outputFileName = "Cimoc ${versionName} ${buildType.getName()}.apk"
             }
         }
     }
