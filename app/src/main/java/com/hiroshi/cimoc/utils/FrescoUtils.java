@@ -465,7 +465,7 @@ public class FrescoUtils {
         }
 
         @Override
-        public void onDiskCacheHit() {
+        public void onDiskCacheHit(CacheKey cacheKey) {
             //Logger.e("ImageCacheStatsTracker---onDiskCacheHit");
         }
 
