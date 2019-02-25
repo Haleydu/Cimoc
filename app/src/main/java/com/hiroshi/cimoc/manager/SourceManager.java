@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.source.Animx2;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
+import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -27,8 +28,10 @@ import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
+import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
+import com.hiroshi.cimoc.source.WuLing;
 
 import java.util.List;
 
@@ -165,6 +168,15 @@ public class SourceManager {
                     break;
                 case MiGu.TYPE:
                     parser = new MiGu(source);
+                    break;
+                case ChuiXue.TYPE:
+                    parser = new ChuiXue(source);
+                    break;
+                case WuLing.TYPE:
+                    parser = new WuLing(source);
+                    break;
+                case TuHao.TYPE:
+                    parser = new TuHao(source);
                     break;
 
                 default:
