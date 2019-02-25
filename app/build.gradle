@@ -86,7 +86,7 @@ dependencies {
     implementation 'com.facebook.fresco:fresco:1.12.1'
     implementation 'org.jsoup:jsoup:1.11.2'
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
-    implementation 'io.reactivex:rxjava:1.2.4'
+    implementation 'io.reactivex:rxjava:1.2.9'
     implementation 'io.reactivex:rxandroid:1.2.1'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.alibaba:fastjson:1.1.70.android'

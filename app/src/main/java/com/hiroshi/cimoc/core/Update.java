@@ -1,8 +1,9 @@
 package com.hiroshi.cimoc.core;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.hiroshi.cimoc.App;
 
-import org.json.JSONObject;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -16,9 +17,9 @@ import rx.schedulers.Schedulers;
  */
 public class Update {
 
-    private static final String UPDATE_URL = "http://pan.baidu.com/share/list?uk=223062232&shareid=2388458898&dir=/update";
-    private static final String SERVER_FILENAME = "server_filename";
-    private static final String LIST = "list";
+    private static final String UPDATE_URL = "https://api.github.com/repos/RebornQ/Cimoc/releases/latest";
+    private static final String NAME = "name";
+    private static final String ASSETS = "assets";
 
     public static Observable<String> check() {
         return Observable.create(new Observable.OnSubscribe<String>() {
@@ -31,8 +32,8 @@ public class Update {
                     response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String json = response.body().string();
-                        JSONObject object = new JSONObject(json).getJSONArray(LIST).getJSONObject(0);
-                        String version = object.getString(SERVER_FILENAME);
+                        JSONObject object = JSON.parseObject(json);
+                        String version = object.getString(NAME).toLowerCase();
                         subscriber.onNext(version);
                         subscriber.onCompleted();
                     }

@@ -189,7 +189,7 @@
     <string name="backup_restore_settings_summary">恢复所有个人配置</string>
 
     <string name="about_resource">源代码</string>
-    <string name="about_resource_url">https://github.com/Arachnid-27/Cimoc</string>
+    <string name="about_resource_url">https://github.com/RebornQ/Cimoc</string>
     <string name="about_support">支持作者</string>
     <string name="about_support_summary">如果喜欢本应用，不妨支持一下作者哟</string>
     <string name="about_support_account">支付宝账号：cimoc_app@163.com</string>
@@ -198,7 +198,7 @@
     <string name="about_already_clip">邮箱已复制到剪切板</string>
     <string name="about_update">检查更新</string>
     <string name="about_update_app_auto">自动检查更新APP</string>
-    <string name="about_update_url">http://pan.baidu.com/s/1boLdjhP</string>
+    <string name="about_update_url">https://github.com/RebornQ/Cimoc/releases</string>
     <string name="about_update_summary">点击检查更新</string>
     <string name="about_update_latest">当前已经是最新版本</string>
     <string name="about_update_download">点击下载最新版本</string>
