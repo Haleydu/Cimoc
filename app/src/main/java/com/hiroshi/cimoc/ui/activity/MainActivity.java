@@ -33,6 +33,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
+import com.hiroshi.cimoc.core.Update;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
@@ -311,7 +312,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     public void onUpdateReady() {
-        HintUtils.showToast(this, R.string.main_ready_update);
+//        HintUtils.showToast(this, R.string.main_ready_update);
+        Update.update(this);
     }
 
     @Override

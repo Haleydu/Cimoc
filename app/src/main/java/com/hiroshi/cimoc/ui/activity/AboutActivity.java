@@ -6,12 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.azhon.appupdate.manager.DownloadManager;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.Update;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -92,12 +97,7 @@ public class AboutActivity extends BackActivity implements AboutView {
 
     @OnClick(R.id.about_update_btn) void onUpdateClick() {
         if (update) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
-            try {
-                startActivity(intent);
-            } catch (Exception e) {
-                showSnackbar(R.string.about_resource_fail);
-            }
+            update();
         } else if (!checking) {
             try {
                 PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -119,7 +119,8 @@ public class AboutActivity extends BackActivity implements AboutView {
 
     @Override
     public void onUpdateReady() {
-        mUpdateText.setText(R.string.about_update_download);
+//        mUpdateText.setText(R.string.about_update_download);
+        update();
         checking = false;
         update = true;
     }
@@ -143,6 +144,14 @@ public class AboutActivity extends BackActivity implements AboutView {
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_about;
+    }
+
+    private void update() {
+        if (Update.update(this)) {
+            mUpdateText.setText(R.string.about_update_summary);
+        } else {
+            showSnackbar(R.string.about_resource_fail);
+        }
     }
 
 }
