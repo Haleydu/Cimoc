@@ -14,6 +14,7 @@ import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
@@ -61,6 +62,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(Tencent.TYPE);
         list.add(U17.TYPE);
         list.add(MH57.TYPE);
+        list.add(MH50.TYPE);
         list.add(DM5.TYPE);
         list.add(IKanman.TYPE);
         list.add(NetEase.TYPE);
