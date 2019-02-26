@@ -18,6 +18,7 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
@@ -105,6 +106,7 @@ public class UpdateHelper {
         list.add(Webtoon.getDefaultSource());
         list.add(HHSSEE.getDefaultSource());
         list.add(MH57.getDefaultSource());
+        list.add(MH50.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
         list.add(PuFei.getDefaultSource());

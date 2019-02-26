@@ -21,6 +21,7 @@ import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
@@ -127,6 +128,9 @@ public class SourceManager {
                     break;
                 case MH57.TYPE:
                     parser = new MH57(source);
+                    break;
+                case MH50.TYPE:
+                    parser = new MH50(source);
                     break;
                 case Dmzjv2.TYPE:
                     parser = new Dmzjv2(source);
