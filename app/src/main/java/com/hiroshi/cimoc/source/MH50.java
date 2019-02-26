@@ -25,7 +25,7 @@ import okhttp3.Request;
  */
 public class MH50 extends MangaParser {
 
-    public static final int TYPE = 60;
+    public static final int TYPE = 80;
     public static final String DEFAULT_TITLE = "50漫画";
 
     public static Source getDefaultSource() {
@@ -175,12 +175,13 @@ public class MH50 extends MangaParser {
             String path = args[CATEGORY_SUBJECT].concat(" ").concat(args[CATEGORY_AREA]).concat(" ")
                     .concat(args[CATEGORY_READER]).concat(" ").concat(args[CATEGORY_YEAR]).concat(" ")
                     .concat(args[CATEGORY_PROGRESS]).trim();
+            String finalPath;
             if (path.isEmpty()) {
-                path = String.valueOf(0);
+                finalPath = StringUtils.format("https://m.50mh.com/list/");
             } else {
-                path = path.replaceAll("\\s+", "-");
+                finalPath = StringUtils.format("https://m.50mh.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
             }
-            return StringUtils.format("https://m.50mh.com/list/%s/?page=%%d", path);
+            return finalPath;
         }
 
         @Override
