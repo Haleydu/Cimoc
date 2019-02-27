@@ -63,7 +63,7 @@ android {
             variant.outputs.all { output ->
 //                output.setVersionCodeOverride(versionCode)
                 output.setVersionNameOverride(versionName)
-                outputFileName = "Cimoc ${versionName} ${buildType.getName()}.apk"
+                outputFileName = "Cimoc.${versionName}.${buildType.getName()}.apk"
             }
         }
     }

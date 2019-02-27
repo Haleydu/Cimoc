@@ -66,8 +66,8 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     private static App mApp;
     private static Activity sActivity;
 
-    // 默认Gitee源
-    private static String UPDATE_CURRENT_URL = "https://gitee.com/api/v5/repos/Reborn_0/Cimoc_Mirror/releases/latest";
+    // 默认Github源
+    private static String UPDATE_CURRENT_URL = "https://api.github.com/repos/RebornQ/Cimoc/releases/latest";
 
     @Override
     public void onCreate() {

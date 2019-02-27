@@ -71,8 +71,8 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
             autoUpdateSwitch();
 
             listSources.add("请选择更新源");
-            listSources.add("Gitee源");
             listSources.add("Github源");
+//            listSources.add("Gitee源");
             ArrayAdapter arrayAdapter = new ArrayAdapter(this, R.layout.item_spinner, listSources);
             spinner_download_source.setAdapter(arrayAdapter);
             spinner_download_source.setOnItemSelectedListener(this);
@@ -188,12 +188,12 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
                 checkSpinnerSelected(spinner_download_source);
                 break;
             case 1:
-                App.setUpdateCurrentUrl(Constants.UPDATE_GITEE_URL);
+                App.setUpdateCurrentUrl(Constants.UPDATE_GITHUB_URL);
                 update = false;
                 App.getPreferenceManager().putString(PreferenceManager.PREF_UPDATE_CURRENT_URL, App.getUpdateCurrentUrl());
                 break;
             case 2:
-                App.setUpdateCurrentUrl(Constants.UPDATE_GITHUB_URL);
+                App.setUpdateCurrentUrl(Constants.UPDATE_GITEE_URL);
                 update = false;
                 App.getPreferenceManager().putString(PreferenceManager.PREF_UPDATE_CURRENT_URL, App.getUpdateCurrentUrl());
                 break;
@@ -207,9 +207,9 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
 
     private void checkSpinnerSelected(AppCompatSpinner spinner) {
         try {
-            if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITEE_URL)) {
+            if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITHUB_URL)) {
                 spinner.setSelection(1);
-            } else if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITHUB_URL)) {
+            } else if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITEE_URL)) {
                 spinner.setSelection(2);
             }
         } catch (NullPointerException e) {
