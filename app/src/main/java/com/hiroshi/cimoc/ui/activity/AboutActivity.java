@@ -206,10 +206,14 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
     }
 
     private void checkSpinnerSelected(AppCompatSpinner spinner) {
-        if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITEE_URL)) {
-            spinner.setSelection(1);
-        } else if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITHUB_URL)) {
-            spinner.setSelection(2);
+        try {
+            if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITEE_URL)) {
+                spinner.setSelection(1);
+            } else if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITHUB_URL)) {
+                spinner.setSelection(2);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 }
