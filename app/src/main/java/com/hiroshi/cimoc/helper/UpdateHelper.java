@@ -6,6 +6,7 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.source.Animx2;
+import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
@@ -19,6 +20,7 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
@@ -98,7 +100,7 @@ public class UpdateHelper {
      * 初始化图源
      */
     private static void initSource(DaoSession session) {
-        List<Source> list = new ArrayList<>(11);
+        List<Source> list = new ArrayList<>(15);
         list.add(IKanman.getDefaultSource());
         list.add(Dmzj.getDefaultSource());
         list.add(HHAAZZ.getDefaultSource());
@@ -120,9 +122,10 @@ public class UpdateHelper {
         list.add(NetEase.getDefaultSource());
         list.add(Hhxxee.getDefaultSource());
         list.add(ChuiXue.getDefaultSource());
+        list.add(BaiNian.getDefaultSource());
         list.add(WuLing.getDefaultSource());
         list.add(TuHao.getDefaultSource());
+        list.add(ManHuaDB.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
-
 }

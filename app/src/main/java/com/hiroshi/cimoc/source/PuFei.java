@@ -145,13 +145,12 @@ public class PuFei extends MangaParser {
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("#detail > li")) {
-            Node node_a = node.list("a").get(0);
-            String cid = node_a.hrefWithSplit(1);
-            String title = node_a.text("h3");
-            String cover = node_a.attr("div > img", "data-src");
-            String author = node_a.text("dl > dd");
-            String update = node.text("dl:eq(4) > dd");
+        for (Node node : body.list("li > a")) {
+            String cid = node.hrefWithSplit(1);
+            String title = node.text("h3");
+            String cover = node.attr("div > img", "data-src");
+            String update = node.text("dl:eq(5) > dd");
+            String author = node.text("dl:eq(2) > dd");
             list.add(new Comic(TYPE, cid, title, cover, update, author));
         }
         return list;

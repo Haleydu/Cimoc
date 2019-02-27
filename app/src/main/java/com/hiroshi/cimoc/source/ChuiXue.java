@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -15,7 +12,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +19,7 @@ import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
- * Created by PingZi on 2019/2/25.
+ * Created by ZhiWen on 2019/02/25.
  */
 
 public class ChuiXue extends MangaParser {
@@ -36,7 +32,7 @@ public class ChuiXue extends MangaParser {
     }
 
     public ChuiXue(Source source) {
-        init(source, new ChuiXue.Category());
+        init(source, null);
     }
 
     @Override
@@ -76,7 +72,7 @@ public class ChuiXue extends MangaParser {
         Node body = new Node(html);
         String title = body.text("div.intro_l > div.title > h1");
         String cover = body.src("div.intro_l > div.info_cover > p.cover > img");
-        String update = body.text("div.intro_l > div.info > p:eq(0) > span");
+        String update = body.text("div.intro_l > div.info > p:eq(0) > span").substring(0, 10);
         String author = body.text("div.intro_l > div.info > p:eq(1)").substring(5).trim();
         String intro = body.text("#intro");
         boolean status = isFinish(body.text("div.intro_l > div.info > p:eq(2)"));
@@ -128,68 +124,7 @@ public class ChuiXue extends MangaParser {
     @Override
     public String parseCheck(String html) {
         // 这里表示的是更新时间
-        return new Node(html).text("div.intro_l > div.info > p:eq(0) > span");
-    }
-
-    @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#dmList> ul > li")) {
-            Node node_cover = node.list("p > a").get(0);
-            String cid = node_cover.hrefWithSplit(1);
-            String title = node_cover.attr("img", "alt");
-            String cover = node_cover.attr("img", "_src");
-            String update = node.text("dl > dd > p:eq(0) > span");
-            list.add(new Comic(TYPE, cid, title, cover, update, null));
-        }
-        return list;
-    }
-
-    private static class Category extends MangaCategory {
-
-        @Override
-        public boolean isComposite() {
-            return true;
-        }
-
-        @Override
-        public String getFormat(String... args) {
-            return StringUtils.format("http://www.chuixue.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
-        }
-
-        @Override
-        protected List<Pair<String, String>> getSubject() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("最近更新", "0"));
-            list.add(Pair.create("少年热血", "1"));
-            list.add(Pair.create("武侠格斗", "2"));
-            list.add(Pair.create("科幻魔幻", "3"));
-            list.add(Pair.create("竞技体育", "4"));
-            list.add(Pair.create("爆笑喜剧", "5"));
-            list.add(Pair.create("侦探推理", "6"));
-            list.add(Pair.create("恐怖灵异", "7"));
-            list.add(Pair.create("少女爱情", "8"));
-            list.add(Pair.create("恋爱生活", "9"));
-            return list;
-        }
-
-        @Override
-        protected boolean hasOrder() {
-            return true;
-        }
-
-        @Override
-        protected List<Pair<String, String>> getOrder() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "3"));
-            list.add(Pair.create("发布", "1"));
-            list.add(Pair.create("人气", "2"));
-            return list;
-        }
-
+        return new Node(html).text("div.intro_l > div.info > p:eq(0) > span").substring(0, 10);
     }
 
     @Override

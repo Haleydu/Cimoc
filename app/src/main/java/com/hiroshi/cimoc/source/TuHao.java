@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -14,7 +11,6 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +18,7 @@ import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
- * Created by PingZi on 2019/2/25.
+ * Created by ZhiWen on 2019/02/25.
  */
 
 public class TuHao extends MangaParser {
@@ -35,7 +31,7 @@ public class TuHao extends MangaParser {
     }
 
     public TuHao(Source source) {
-        init(source, new TuHao.Category());
+        init(source, null);
     }
 
     @Override
@@ -115,20 +111,23 @@ public class TuHao extends MangaParser {
         List<ImageUrl> list = new LinkedList<>();
 
         String str = StringUtils.match("var pl = \'(.*?)\'", html, 1);
+        // 得到 https://mh2.wan1979.com/upload/jiemoren/1989998/
+        String prevStr = str.substring(0, str.length() - 8);
+
+        // 得到 0000
+        int lastStr = Integer.parseInt(str.substring(str.length() - 8, str.length() - 4));
         int pagNum = Integer.parseInt(StringUtils.match("var pcount=(.*?);", html, 1));
 
         if (str != null) {
             try {
-                for (int i = 0; i < pagNum; ++i) {
-                    String lastNum = i + "";
-                    if (lastNum.length() != 4) {
-                        //需要补0的个数
-                        int num = 4 - lastNum.length();
-                        for (int j = 0; j < num; j++) {
-                            lastNum = "0" + lastNum;
-                        }
+                for (int i = lastStr; i < pagNum + lastStr; i++) {
+                    String lastNum = "";
+                    if (i < 10) {
+                        lastNum = "000" + i;
+                    } else {
+                        lastNum = "00" + i;
                     }
-                    String url = str.substring(0, str.length() - 8) + lastNum + ".jpg";
+                    String url = prevStr + lastNum + ".jpg";
 //                  https://mh2.wan1979.com/upload/jiemoren/1989998/0000.jpg
                     list.add(new ImageUrl(i + 1, url, false));
                 }
@@ -161,68 +160,8 @@ public class TuHao extends MangaParser {
     }
 
     @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#classList_1 > ul > li")) {
-            String title = node.attr("a", "title");
-            String urls = node.attr("a", "href");
-            String cid = urls.substring(1, urls.length() - 1);
-            String cover = node.attr("a > div > img", "src");
-            list.add(new Comic(TYPE, cid, title, cover, null, null));
-        }
-        return list;
-    }
-
-    private static class Category extends MangaCategory {
-
-        @Override
-        public boolean isComposite() {
-            return true;
-        }
-
-        @Override
-        public String getFormat(String... args) {
-            return StringUtils.format("https://m.tohomh123.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
-        }
-
-        @Override
-        protected List<Pair<String, String>> getSubject() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("最近更新", "0"));
-            list.add(Pair.create("少年热血", "1"));
-            list.add(Pair.create("武侠格斗", "2"));
-            list.add(Pair.create("科幻魔幻", "3"));
-            list.add(Pair.create("竞技体育", "4"));
-            list.add(Pair.create("爆笑喜剧", "5"));
-            list.add(Pair.create("侦探推理", "6"));
-            list.add(Pair.create("恐怖灵异", "7"));
-            list.add(Pair.create("少女爱情", "8"));
-            list.add(Pair.create("恋爱生活", "9"));
-            return list;
-        }
-
-        @Override
-        protected boolean hasOrder() {
-            return true;
-        }
-
-        @Override
-        protected List<Pair<String, String>> getOrder() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "3"));
-            list.add(Pair.create("发布", "1"));
-            list.add(Pair.create("人气", "2"));
-            return list;
-        }
-
-    }
-
-    @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://www.tohomh123.com");
+        return Headers.of("Referer", "https://m.tohomh123.com");
     }
 
 }

@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.Animx2;
+import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
@@ -22,6 +23,7 @@ import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
@@ -172,11 +174,17 @@ public class SourceManager {
                 case ChuiXue.TYPE:
                     parser = new ChuiXue(source);
                     break;
+                case BaiNian.TYPE:
+                    parser = new BaiNian(source);
+                    break;
                 case WuLing.TYPE:
                     parser = new WuLing(source);
                     break;
                 case TuHao.TYPE:
                     parser = new TuHao(source);
+                    break;
+                case ManHuaDB.TYPE:
+                    parser = new ManHuaDB(source);
                     break;
 
                 default:
@@ -203,5 +211,4 @@ public class SourceManager {
         }
 
     }
-
 }

@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -15,7 +12,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,7 +19,7 @@ import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
- * Created by PingZi on 2019/2/25.
+ * Created by ZhiWen on 2019/02/25.
  */
 
 public class WuLing extends MangaParser {
@@ -36,7 +32,7 @@ public class WuLing extends MangaParser {
     }
 
     public WuLing(Source source) {
-        init(source, new WuLing.Category());
+        init(source, null);
     }
 
     @Override
@@ -78,7 +74,7 @@ public class WuLing extends MangaParser {
         String cover = body.src("div.comic_i_img > img");
         String title = body.attr("div.comic_i_img > img", "alt");
         String updateTime = body.text("span.zj_list_head_dat");
-        String update = updateTime.substring(7, updateTime.length() - 2).trim();
+        String update = updateTime.substring(7, updateTime.length() - 2).trim().substring(0, 10);
         String author = body.text("ul.comic_deCon_liO > li:eq(0) > a");
         String intro = body.text("p.comic_deCon_d");
         boolean status = isFinish(body.text("ul.comic_deCon_liO > li:eq(2) > a"));
@@ -91,7 +87,7 @@ public class WuLing extends MangaParser {
         for (Node node : new Node(html).list("#chapter-list-1 > li > a")) {
             String title = node.text("span.list_con_zj");
             String path = node.hrefWithSplit(2);
-            list.add(new Chapter(title, path));
+            list.add(0, new Chapter(title, path));
         }
         return list;
     }
@@ -149,69 +145,7 @@ public class WuLing extends MangaParser {
         // 这里表示的是更新时间
         Node body = new Node(html);
         String updateTime = body.text("span.zj_list_head_dat");
-        return updateTime.substring(7, updateTime.length() - 2).trim();
-    }
-
-    @Override
-    public List<Comic> parseCategory(String html, int page) {
-        List<Comic> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("#w0 > ul > li")) {
-            Node node_a = node.list("a").get(0);
-            String[] urls = node_a.attr("href").split("/");
-            String cid = urls[urls.length - 1] + "/";
-            String title = node_a.attr("title");
-            String cover = node_a.attr("img", "src");
-            String author = node.text("p.auth");
-            list.add(new Comic(TYPE, cid, title, cover, null, author));
-        }
-        return list;
-    }
-
-    private static class Category extends MangaCategory {
-
-        @Override
-        public boolean isComposite() {
-            return true;
-        }
-
-        @Override
-        public String getFormat(String... args) {
-            return StringUtils.format("https://www.50mh.com/act/?act=list&page=%%d&catid=%s&ajax=1&order=%s",
-                    args[CATEGORY_SUBJECT], args[CATEGORY_ORDER]);
-        }
-
-        @Override
-        protected List<Pair<String, String>> getSubject() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("最近更新", "0"));
-            list.add(Pair.create("少年热血", "1"));
-            list.add(Pair.create("武侠格斗", "2"));
-            list.add(Pair.create("科幻魔幻", "3"));
-            list.add(Pair.create("竞技体育", "4"));
-            list.add(Pair.create("爆笑喜剧", "5"));
-            list.add(Pair.create("侦探推理", "6"));
-            list.add(Pair.create("恐怖灵异", "7"));
-            list.add(Pair.create("少女爱情", "8"));
-            list.add(Pair.create("恋爱生活", "9"));
-            return list;
-        }
-
-        @Override
-        protected boolean hasOrder() {
-            return true;
-        }
-
-        @Override
-        protected List<Pair<String, String>> getOrder() {
-            List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "3"));
-            list.add(Pair.create("发布", "1"));
-            list.add(Pair.create("人气", "2"));
-            return list;
-        }
-
+        return updateTime.substring(7, updateTime.length() - 2).trim().substring(0, 10);
     }
 
     @Override
