@@ -102,7 +102,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mPresenter.loadLast();
 
         //检查App更新
+        String updateUrl = null;
         if (mPreference.getBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, true)) {
+            if ((updateUrl = App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL)) != null) {
+                App.setUpdateCurrentUrl(updateUrl);
+            }
             checkUpdate();
         }
 

@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.manager.DownloadManager;
 import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.Constants;
 import com.hiroshi.cimoc.R;
 
 
@@ -25,8 +26,8 @@ import rx.schedulers.Schedulers;
  */
 public class Update {
 
-    private static final String UPDATE_URL = "https://api.github.com/repos/RebornQ/Cimoc/releases/latest";
     private static final String NAME = "name";
+    private static final String TAG_NAME = "tag_name";
     private static final String ASSETS = "assets";
     private static String updateJson = "";
 
@@ -35,7 +36,7 @@ public class Update {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 OkHttpClient client = App.getHttpClient();
-                Request request = new Request.Builder().url(UPDATE_URL).build();
+                Request request = new Request.Builder().url(App.getUpdateCurrentUrl()).build();
                 Response response = null;
                 try {
                     response = client.newCall(request).execute();
@@ -43,7 +44,7 @@ public class Update {
                         String json = response.body().string();
                         updateJson = json;
                         JSONObject object = JSON.parseObject(json);
-                        String version = object.getString(NAME).toLowerCase();
+                        String version = object.getString(TAG_NAME).toLowerCase();
                         subscriber.onNext(version);
                         subscriber.onCompleted();
                     }
@@ -64,7 +65,7 @@ public class Update {
         try {
 //                DownloadManager.getInstance().release();
             JSONObject updateObject = JSON.parseObject(Update.getUpdateJson());
-            JSONObject updateAssetsObject = updateObject.getJSONArray("assets").getJSONObject(0);
+            JSONObject updateAssetsObject = updateObject.getJSONArray(ASSETS).getJSONObject(0);
 
             UpdateConfiguration configuration = new UpdateConfiguration()
                     //输出错误日志
@@ -87,7 +88,7 @@ public class Update {
                     .setForcedUpgrade(false);
 
             DownloadManager manager = DownloadManager.getInstance(context);
-            manager.setApkName(updateAssetsObject.getString("name"))
+            manager.setApkName("Comic." + updateObject.getString(NAME) + ".release.apk")
                     .setApkUrl(updateAssetsObject.getString("browser_download_url"))
                     .setDownloadPath(Environment.getExternalStorageDirectory() + "/Download")
                     .setApkDescription(updateObject.getString("body"))
@@ -95,9 +96,15 @@ public class Update {
                     .setShowNewerToast(true)
                     .setConfiguration(configuration)
                     .setApkVersionCode(2)
-                    .setApkVersionName(updateObject.getString("name").substring(1))
-                    .setApkSize(String.format("%.2f", updateAssetsObject.getDouble("size") / (1024 * 1024)))
-                    .download();
+                    .setApkVersionName(updateObject.getString(TAG_NAME).substring(1));
+
+            if (App.getUpdateCurrentUrl().equals(Constants.UPDATE_GITEE_URL)) {
+                manager.download();
+            } else {
+                manager.setApkSize(String.format("%.2f", updateAssetsObject.getDouble("size") / (1024 * 1024)))
+                        .download();
+            }
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();

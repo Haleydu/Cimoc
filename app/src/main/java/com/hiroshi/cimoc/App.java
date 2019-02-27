@@ -66,6 +66,9 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     private static App mApp;
     private static Activity sActivity;
 
+    // 默认Gitee源
+    private static String UPDATE_CURRENT_URL = "https://gitee.com/api/v5/repos/Reborn_0/Cimoc_Mirror/releases/latest";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -209,6 +212,14 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
                     SourceManager.getInstance(this).new HeaderGetter(), true);
         }
         return mBuilderProvider;
+    }
+
+    public static void setUpdateCurrentUrl(String updateCurrentUrl) {
+        UPDATE_CURRENT_URL = updateCurrentUrl;
+    }
+
+    public static String getUpdateCurrentUrl() {
+        return UPDATE_CURRENT_URL;
     }
 
     public static OkHttpClient getHttpClient() {
