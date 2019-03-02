@@ -66,7 +66,7 @@ public class Animx2 extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("www.2animx.com", ".*", 0));
+        filter.add(new UrlFilter("m.bnmanhua.com", ".*", 0));
     }
 
     @Override
@@ -74,7 +74,7 @@ public class Animx2 extends MangaParser {
         if (cid.indexOf("http://www.2animx.com") == -1) {
             cid = "http://www.2animx.com/".concat(cid);
         }
-        return new Request.Builder().url(cid).addHeader("Cookie","isAdult=1").build();
+        return new Request.Builder().url(cid).addHeader("Cookie", "isAdult=1").build();
     }
 
     @Override
@@ -95,7 +95,7 @@ public class Animx2 extends MangaParser {
         for (Node node : new Node(html).list("div#oneCon2 > ul > li")) {
             String title = node.attr("a", "title");
             Matcher mTitle = Pattern.compile("\\d+").matcher(title);
-            title = mTitle.find()? mTitle.group() : title;
+            title = mTitle.find() ? mTitle.group() : title;
             String path2 = node.href("a");
             String path = node.hrefWithSplit("a", 0);
             list.add(new Chapter(title, path));
@@ -132,7 +132,7 @@ public class Animx2 extends MangaParser {
         return new Request.Builder()
 //                .addHeader("Referer", url)
                 .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
-                .addHeader("Cookie","isAdult=1")
+                .addHeader("Cookie", "isAdult=1")
                 .url(url).build();
     }
 
