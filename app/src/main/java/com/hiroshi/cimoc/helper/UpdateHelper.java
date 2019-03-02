@@ -6,6 +6,7 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.source.Animx2;
+import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
@@ -110,6 +111,7 @@ public class UpdateHelper {
         list.add(PuFei.getDefaultSource());
         list.add(Cartoonmad.getDefaultSource());
         list.add(Animx2.getDefaultSource());
+        list.add(BaiNian.getDefaultSource());
         list.add(MiGu.getDefaultSource());
         list.add(Tencent.getDefaultSource());
         list.add(BuKa.getDefaultSource());
