@@ -1,7 +1,9 @@
 package com.hiroshi.cimoc;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.Build;
+import android.support.multidex.MultiDex;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -154,6 +156,12 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
                     SourceManager.getInstance(this).new HeaderGetter(), true);
         }
         return mBuilderProvider;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
 }
