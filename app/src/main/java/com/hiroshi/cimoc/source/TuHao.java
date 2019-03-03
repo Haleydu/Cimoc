@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -44,6 +45,16 @@ public class TuHao extends MangaParser {
     }
 
     @Override
+    public String getUrl(String cid) {
+        return "https://m.tohomh123.com/".concat(cid).concat("/");
+    }
+
+    @Override
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("m.tohomh123.com", "\\w+", 0));
+    }
+
+    @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
         return new NodeIterator(body.list("#classList_1 > ul > li")) {
@@ -61,7 +72,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://m.tohomh123.com/".concat(cid) + "/";
+        String url = "https://m.tohomh123.com/".concat(cid).concat("/");
         return new Request.Builder().url(url).build();
     }
 
