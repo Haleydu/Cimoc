@@ -216,11 +216,35 @@
                   android:host="www.50mh.com"
                   android:scheme="https" />
                 <data
-                  android:host="m.50mh.com"
+                    android:host="m.50mh.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.50mh.com"
+                    android:scheme="https" />
+                <data
+                    android:host="www.manhuadb.com"
                   android:scheme="http" />
                 <data
-                  android:host="m.50mh.com"
+                    android:host="www.manhuadb.com"
                   android:scheme="https" />
+                <data
+                    android:host="m.bnmanhua.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.bnmanhua.com"
+                    android:scheme="https" />
+                <data
+                    android:host="m.tohomh123.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.tohomh123.com"
+                    android:scheme="https" />
+                <data
+                    android:host="www.chuixue.net"
+                    android:scheme="http" />
+                <data
+                    android:host="www.chuixue.net"
+                    android:scheme="https" />
                 <!--Generate By feilong end-->
 
             </intent-filter>
