@@ -1,19 +1,19 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
-//def buildVersion = 1
-//def version = "v1.4.8.8074"
-//
-//def cmdGetTagname = 'git describe --tags'
-//def cmdGetCommitNums = 'git rev-list HEAD --count'
-//if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
-//    buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
-//    version = cmdGetTagname.execute().text.trim()
-//}
-//else {
-//    buildVersion = cmdGetCommitNums.execute().text.trim().toInteger()
-//}
-//version = cmdGetTagname.execute().text.trim()
+def buildVersion = 329
+def version = "v1.4.14"
+
+def cmdGetTagname = 'git describe --tags'
+def cmdGetCommitNums = 'git rev-list HEAD --count'
+if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
+    buildVersion = System.getenv("TRAVIS_BUILD_NUMBER").trim().toInteger()
+    version = cmdGetTagname.execute().text.trim()
+}
+else {
+    buildVersion = cmdGetCommitNums.execute().text.trim().toInteger()
+}
+version = cmdGetTagname.execute().text.trim()
 
 android {
     compileSdkVersion 28
@@ -23,8 +23,8 @@ android {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 328
-        versionName "v1.4.13"
+        versionCode buildVersion
+        versionName version
         resConfigs "en", "zh"
 //        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
         multiDexEnabled true
