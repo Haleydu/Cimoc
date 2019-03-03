@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Pair;
 
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -97,7 +98,8 @@ public class MH50 extends MangaParser {
             String path = StringUtils.split(node.href(), "/", 3);
             list.add(new Chapter(title, path));
         }
-        return list;
+
+        return Lists.reverse(list);
     }
 
     @Override
