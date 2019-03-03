@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -42,6 +43,16 @@ public class ManHuaDB extends MangaParser {
             url = StringUtils.format("https://www.manhuadb.com/search?q=%s", keyword);
         }
         return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public String getUrl(String cid) {
+        return "https://www.manhuadb.com/manhua/".concat(cid);
+    }
+
+    @Override
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("www.manhuadb.com"));
     }
 
     @Override

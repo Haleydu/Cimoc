@@ -84,7 +84,8 @@ public class BaiNian extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.bnmanhua.com/comic/".concat(cid);
+        String url = cid.indexOf(".html") > 0 ? "http://m.bnmanhua.com/comic/".concat(cid)
+                : "http://m.bnmanhua.com/comic/".concat(cid).concat(".html");
         return new Request.Builder().url(url).build();
     }
 
