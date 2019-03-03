@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.helper;
 
+import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
@@ -10,6 +11,7 @@ import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
+import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -19,12 +21,14 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
+import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -38,37 +42,12 @@ import java.util.List;
 public class UpdateHelper {
 
     // 1.04.08.008
-    private static final int VERSION = 10408008;
+    private static final int VERSION = BuildConfig.VERSION_CODE;
 
     public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
         if (version != VERSION) {
-            switch (version) {
-                case 0:
-                    initSource(session);
-                    break;
-                case 10404000:
-                case 10404001:
-                case 10404002:
-                case 10404003:
-                case 10405000:
-                    session.getSourceDao().insert(Dmzjv2.getDefaultSource());
-                case 10406000:
-                case 10407000:
-                case 10408000:
-                    deleteDownloadFromLocal(session);
-                case 10408001:
-                case 10408002:
-                case 10408003:
-                    session.getSourceDao().insert(MangaNel.getDefaultSource());
-                case 10408004:
-                case 10408005:
-                case 10408006:
-                case 10408007:
-                    // 删除 Chuiyao
-                    session.getDatabase().execSQL("DELETE FROM SOURCE WHERE \"TYPE\" = 9");
-                    // session.getSourceDao().insert(PuFei.getDefaultSource());
-            }
+            initSource(session);
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
     }
@@ -97,7 +76,7 @@ public class UpdateHelper {
      * 初始化图源
      */
     private static void initSource(DaoSession session) {
-        List<Source> list = new ArrayList<>(11);
+        List<Source> list = new ArrayList<>();
         list.add(IKanman.getDefaultSource());
         list.add(Dmzj.getDefaultSource());
         list.add(HHAAZZ.getDefaultSource());
@@ -120,7 +99,10 @@ public class UpdateHelper {
         list.add(EHentai.getDefaultSource());
         list.add(NetEase.getDefaultSource());
         list.add(Hhxxee.getDefaultSource());
+        list.add(ChuiXue.getDefaultSource());
+        list.add(BaiNian.getDefaultSource());
+        list.add(TuHao.getDefaultSource());
+        list.add(ManHuaDB.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
-
 }

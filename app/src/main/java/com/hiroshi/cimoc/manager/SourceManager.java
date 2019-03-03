@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
+import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -22,6 +23,7 @@ import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
@@ -29,6 +31,7 @@ import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.Null;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
+import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
 
@@ -174,6 +177,18 @@ public class SourceManager {
                 case BaiNian.TYPE:
                     parser = new BaiNian(source);
                     break;
+                case ChuiXue.TYPE:
+                    parser = new ChuiXue(source);
+                    break;
+                case BaiNian.TYPE:
+                    parser = new BaiNian(source);
+                    break;
+                case TuHao.TYPE:
+                    parser = new TuHao(source);
+                    break;
+                case ManHuaDB.TYPE:
+                    parser = new ManHuaDB(source);
+                    break;
 
                 default:
                     parser = new Null();
@@ -199,5 +214,4 @@ public class SourceManager {
         }
 
     }
-
 }

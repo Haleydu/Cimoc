@@ -44,23 +44,25 @@ public class PuFei extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "";
-        if (page == 1)
+        if (page == 1) {
             url = StringUtils.format("http://m.pufei.net/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
                     URLEncoder.encode(keyword, "GB2312"));
+        }
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("#detail > li > a")) {
+        return new NodeIterator(body.list("#detail > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit(1);
-                String title = node.text("h3");
-                String cover = node.attr("div > img", "data-src");
-                String update = node.text("dl:eq(5) > dd");
-                String author = node.text("dl:eq(2) > dd");
+                Node node_a = node.list("a").get(0);
+                String cid = node_a.hrefWithSplit(1);
+                String title = node_a.text("h3");
+                String cover = node_a.attr("div > img", "data-src");
+                String author = node_a.text("dl > dd");
+                String update = node.text("dl:eq(4) > dd");
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
@@ -120,7 +122,7 @@ public class PuFei extends MangaParser {
                 str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://f.pufei.net/" + array[i], false));
+                    list.add(new ImageUrl(i + 1, "http://res.img.pufei.net/" + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
