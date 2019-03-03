@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.Animx2;
 import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
+import com.hiroshi.cimoc.source.CCMH;
 import com.hiroshi.cimoc.source.CCTuku;
 import com.hiroshi.cimoc.source.Cartoonmad;
 import com.hiroshi.cimoc.source.ChuiXue;
@@ -197,6 +198,9 @@ public class SourceManager {
                     break;
                 case GuFeng.TYPE:
                     parser = new GuFeng(source);
+                    break;
+                case CCMH.TYPE:
+                    parser = new CCMH(source);
                     break;
 
                 default:
