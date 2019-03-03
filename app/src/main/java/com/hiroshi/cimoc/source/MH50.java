@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -66,6 +67,17 @@ public class MH50 extends MangaParser {
             }
         };
     }
+
+    @Override
+    public String getUrl(String cid) {
+        return StringUtils.format("https://m.50mh.com/manhua/%s/", cid);
+    }
+
+    @Override
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("m.50mh.com", "manhua\\/(\\w+)", 1));
+    }
+
 
     @Override
     public Request getInfoRequest(String cid) {
