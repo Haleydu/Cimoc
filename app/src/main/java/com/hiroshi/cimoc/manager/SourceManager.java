@@ -33,7 +33,6 @@ import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
-import com.hiroshi.cimoc.source.WuLing;
 
 import java.util.List;
 
@@ -176,9 +175,6 @@ public class SourceManager {
                     break;
                 case BaiNian.TYPE:
                     parser = new BaiNian(source);
-                    break;
-                case WuLing.TYPE:
-                    parser = new WuLing(source);
                     break;
                 case TuHao.TYPE:
                     parser = new TuHao(source);

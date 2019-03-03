@@ -8,17 +8,21 @@ import android.widget.Toast;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.source.Animx2;
+import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.Cartoonmad;
+import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
 import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
+import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 
 import java.util.ArrayList;
@@ -65,6 +69,10 @@ public class BrowserFilter extends BaseActivity {
         list.add(IKanman.TYPE);
         list.add(NetEase.TYPE);
         list.add(Hhxxee.TYPE);
+        list.add(BaiNian.TYPE);
+        list.add(ChuiXue.TYPE);
+        list.add(ManHuaDB.TYPE);
+        list.add(TuHao.TYPE);
 
         return list;
     }

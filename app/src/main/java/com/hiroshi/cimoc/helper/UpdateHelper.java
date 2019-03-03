@@ -30,7 +30,6 @@ import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Webtoon;
-import com.hiroshi.cimoc.source.WuLing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,6 @@ public class UpdateHelper {
         list.add(Hhxxee.getDefaultSource());
         list.add(ChuiXue.getDefaultSource());
         list.add(BaiNian.getDefaultSource());
-        list.add(WuLing.getDefaultSource());
         list.add(TuHao.getDefaultSource());
         list.add(ManHuaDB.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
