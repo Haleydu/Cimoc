@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.helper;
 
+import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
@@ -41,37 +42,12 @@ import java.util.List;
 public class UpdateHelper {
 
     // 1.04.08.008
-    private static final int VERSION = 10408008;
+    private static final int VERSION = BuildConfig.VERSION_CODE;
 
     public static void update(PreferenceManager manager, final DaoSession session) {
         int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
         if (version != VERSION) {
-            switch (version) {
-                case 0:
-                    initSource(session);
-                    break;
-                case 10404000:
-                case 10404001:
-                case 10404002:
-                case 10404003:
-                case 10405000:
-                    session.getSourceDao().insert(Dmzjv2.getDefaultSource());
-                case 10406000:
-                case 10407000:
-                case 10408000:
-                    deleteDownloadFromLocal(session);
-                case 10408001:
-                case 10408002:
-                case 10408003:
-                    session.getSourceDao().insert(MangaNel.getDefaultSource());
-                case 10408004:
-                case 10408005:
-                case 10408006:
-                case 10408007:
-                    // 删除 Chuiyao
-                    session.getDatabase().execSQL("DELETE FROM SOURCE WHERE \"TYPE\" = 9");
-                    // session.getSourceDao().insert(PuFei.getDefaultSource());
-            }
+            initSource(session);
             manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
         }
     }
