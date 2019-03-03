@@ -17,6 +17,7 @@ public class PreferenceManager {
 
     public static final int READER_ORIENTATION_PORTRAIT = 0;
     public static final int READER_ORIENTATION_LANDSCAPE = 1;
+    public static final int READER_ORIENTATION_AUTO = 2;
 
     public static final int HOME_FAVORITE = 0;
     public static final int HOME_SOURCE = 1;

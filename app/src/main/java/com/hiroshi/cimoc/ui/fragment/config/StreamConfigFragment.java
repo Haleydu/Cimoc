@@ -41,7 +41,7 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
         mReaderLoadPrev.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
         mReaderLoadNext.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
         mReaderOrientation.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_ORIENTATION,
-                PreferenceManager.READER_ORIENTATION_PORTRAIT, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
+                PreferenceManager.READER_ORIENTATION_AUTO, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
         mReaderTurn.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_TURN,
                 PreferenceManager.READER_TURN_LTR, R.array.reader_turn_items, DIALOG_REQUEST_TURN);
     }
@@ -50,7 +50,7 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
     void onReaderEventClick(View view) {
         boolean isLong = view.getId() == R.id.settings_reader_long_click_event;
         Intent intent = EventSettingsActivity.createIntent(getActivity(), isLong,
-                mReaderOrientation.getValue() == PreferenceManager.READER_ORIENTATION_PORTRAIT, true);
+                mReaderOrientation.getValue(), true);
         startActivity(intent);
     }
 

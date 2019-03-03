@@ -21,6 +21,8 @@ import java.util.List;
 
 import butterknife.BindViews;
 
+import static com.hiroshi.cimoc.manager.PreferenceManager.READER_ORIENTATION_AUTO;
+
 /**
  * Created by Hiroshi on 2016/10/9.
  */
@@ -34,10 +36,10 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
     private String[] mKeyArray;
     private boolean isLong;
 
-    public static Intent createIntent(Context context, boolean isLong, boolean isPortrait, boolean isStream) {
+    public static Intent createIntent(Context context, boolean isLong, int orientation, boolean isStream) {
         Intent intent = new Intent(context, EventSettingsActivity.class);
         intent.putExtra(Extra.EXTRA_IS_LONG, isLong);
-        intent.putExtra(Extra.EXTRA_IS_PORTRAIT, isPortrait);
+        intent.putExtra(Extra.EXTRA_IS_PORTRAIT, orientation);
         intent.putExtra(Extra.EXTRA_IS_STREAM, isStream);
         return intent;
     }
@@ -49,8 +51,8 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
-        int value = getIntent().getBooleanExtra(Extra.EXTRA_IS_PORTRAIT, true) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT :
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
+        int value = oArray[getIntent().getIntExtra(Extra.EXTRA_IS_PORTRAIT, READER_ORIENTATION_AUTO)];
         setRequestedOrientation(value);
     }
 

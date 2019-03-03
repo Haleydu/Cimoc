@@ -143,8 +143,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_ORIENTATION : PreferenceManager.PREF_READER_STREAM_ORIENTATION;
         orientation = mPreference.getInt(key, PreferenceManager.READER_ORIENTATION_PORTRAIT);
-        setRequestedOrientation(orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT ?
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
+        setRequestedOrientation(oArray[orientation]);
     }
 
     @Override
@@ -618,13 +618,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     protected void switchScreen() {
-        if (orientation == PreferenceManager.READER_ORIENTATION_PORTRAIT) {
-            orientation = PreferenceManager.READER_ORIENTATION_LANDSCAPE;
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            orientation = PreferenceManager.READER_ORIENTATION_PORTRAIT;
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
+        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
+        orientation = PreferenceManager.READER_ORIENTATION_PORTRAIT;
+        setRequestedOrientation(oArray[orientation]);
     }
 
     protected void switchMode() {
