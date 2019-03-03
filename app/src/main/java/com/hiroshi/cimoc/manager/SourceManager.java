@@ -22,9 +22,9 @@ import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.Locality;
+import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.ManHuaDB;
-import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.NetEase;
@@ -179,9 +179,6 @@ public class SourceManager {
                     break;
                 case ChuiXue.TYPE:
                     parser = new ChuiXue(source);
-                    break;
-                case BaiNian.TYPE:
-                    parser = new BaiNian(source);
                     break;
                 case TuHao.TYPE:
                     parser = new TuHao(source);
