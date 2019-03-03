@@ -23,8 +23,8 @@ android {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 313
-        versionName "v1.4.11"
+        versionCode 325
+        versionName "v1.4.12"
         resConfigs "en", "zh"
 //        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
         multiDexEnabled true
