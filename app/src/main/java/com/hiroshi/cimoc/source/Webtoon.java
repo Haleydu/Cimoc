@@ -46,9 +46,9 @@ public class Webtoon extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://m.webtoons.com/zh-hans/search";
+            String url = "https://m.webtoons.com/zh-hant/search";
             RequestBody body = new FormBody.Builder().add("keyword", keyword).add("searchType", "ALL").build();
-            return new Request.Builder().url(url).post(body).addHeader("Referer", "http://m.webtoons.com").build();
+            return new Request.Builder().url(url).post(body).addHeader("Referer", "https://m.webtoons.com").build();
         }
         return null;
     }
@@ -56,7 +56,7 @@ public class Webtoon extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("#ct > div._searchResultArea > ul._searchResultList > li > a")) {
+        return new NodeIterator(body.list("ul._searchResultList > li > a")) {
             @Override
             protected Comic parse(Node node) {
                 String cid = node.hrefWithSplit(-1);
@@ -70,12 +70,12 @@ public class Webtoon extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "http://m.webtoons.com/episodeList?titleNo=".concat(cid);
+        return "https://m.webtoons.com/episodeList?titleNo=".concat(cid);
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.webtoons.com/episodeList?titleNo=".concat(cid);
+        String url = "https://m.webtoons.com/episodeList?titleNo=".concat(cid);
         return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
     }
 
@@ -109,8 +109,8 @@ public class Webtoon extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "http://m.webtoons.com/zh-hans/".concat(path);
-        return new Request.Builder().url(url).addHeader("Referer", "http://m.webtoons.com").build();
+        String url = "https://m.webtoons.com/zh-hant/".concat(path);
+        return new Request.Builder().url(url).addHeader("Referer", "https://m.webtoons.com").build();
     }
 
     @Override
@@ -150,7 +150,7 @@ public class Webtoon extends MangaParser {
     @Override
     public Request getCategoryRequest(String format, int page) {
         if (page == 1) {
-            return new Request.Builder().url(format).addHeader("Referer", "http://m.webtoons.com").build();
+            return new Request.Builder().url(format).addHeader("Referer", "https://m.webtoons.com").build();
         }
         return null;
     }
@@ -170,14 +170,14 @@ public class Webtoon extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.webtoons.com");
+        return Headers.of("Referer", "https://m.webtoons.com");
     }
 
     private static class Category extends MangaCategory {
 
         @Override
         public String getFormat(String... args) {
-            return "http://m.webtoons.com/zh-hans/new";
+            return "https://m.webtoons.com/zh-hant/new";
         }
 
         @Override
