@@ -132,13 +132,7 @@ public class TuHao extends MangaParser {
         if (str != null) {
             try {
                 for (int i = lastStr; i < pagNum + lastStr; i++) {
-                    String lastNum = "";
-                    if (i < 10) {
-                        lastNum = "000" + i;
-                    } else {
-                        lastNum = "00" + i;
-                    }
-                    String url = prevStr + lastNum + ".jpg";
+                    String url = StringUtils.format("%s%04d.jpg", prevStr, i);
 //                  https://mh2.wan1979.com/upload/jiemoren/1989998/0000.jpg
                     list.add(new ImageUrl(i + 1, url, false));
                 }
