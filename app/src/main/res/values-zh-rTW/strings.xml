@@ -1,0 +1,280 @@
+<resources>
+    <string name="drawer_comic">漫畫</string>
+    <string name="drawer_source">圖源</string>
+    <string name="drawer_list">列表</string>
+    <string name="drawer_tag">標籤</string>
+    <string name="drawer_picture">截圖</string>
+    <string name="drawer_settings">設定</string>
+    <string name="drawer_about">關於</string>
+    <string name="drawer_light">日間模式</string>
+    <string name="drawer_night">夜間模式</string>
+    <string name="drawer_backup">備份</string>
+
+    <string name="main_double_click">再按一次退出</string>
+    <string name="main_last_read_fail">讀取最後閱讀失敗</string>
+    <string name="main_notice">歡迎使用</string>
+    <string name="main_notice_content">以下說明抄自酷安@人生亦夢:\n\n 1，這只是整合了各種源，請不要指望能免費看付費漫畫，除非有盜版網站提供免費源\n 2，關於部分網站(看漫畫等)，由於網站本身為了規避國內限制，所以國內ip無法看一些敏感漫畫，但使用國外ip可以觀看\n 3，你可以在cimoc支持的原網站上搜尋漫畫，然後分享到cimoc打開。可以解決部分漫畫在cimoc中搜尋不到，但原網站能搜尋看到的問題\n\n下邊我加的:\n\n1.個人比較慫,所以不支持任何收費漫畫,本著不收律師函的小目標隨緣更新\n2.酷安偶爾看看,有問題盡量發issue</string>
+    <string name="main_permission">權限請求</string>
+    <string name="main_permission_content">下載、備份還原與儲存圖片功能需要存取 SD 卡的權限！ \n如果沒有儲存權限，將會出現設定功能將閃退，備份功能無法使用等問題。請在之後的彈出框中確定授予權限！</string>
+    <string name="main_permission_success">取得權限成功</string>
+    <string name="main_permission_fail">取得權限失敗</string>
+    <string name="main_ready_update">檢測到新版本</string>
+
+    <string name="search_menu_source">圖源</string>
+    <string name="search_keyword_empty">關鍵字為空</string>
+    <string name="search_keyword_input">請輸入關鍵字</string>
+    <string name="search_strict">嚴格搜尋</string>
+    <string name="search_source_select">圖源選擇</string>
+    <string name="search_source_none">未選擇圖源</string>
+    <string name="search_source_load_fail">讀取圖源失敗</string>
+
+    <string name="result">搜尋結果</string>
+    <string name="result_empty">搜尋結果為空</string>
+
+    <string name="detail"></string>
+    <string name="detail_favorite">收藏成功</string>
+    <string name="detail_unfavorite">取消收藏成功</string>
+    <string name="detail_tag_favorite">請先收藏漫畫</string>
+    <string name="detail_history">繼續閱讀</string>
+    <string name="detail_download">下載</string>
+    <string name="detail_download_queue_success">已加入下載佇列</string>
+    <string name="detail_download_queue_fail">加入下載佇列失敗</string>
+    <string name="detail_tag">編輯標籤</string>
+    <string name="detail_search_title">搜尋標題</string>
+    <string name="detail_search_author">搜尋作者</string>
+    <string name="detail_share_url">分享漫畫</string>
+    <string name="detail_reverse_list">反轉列表</string>
+
+    <string name="tag_editor">標籤編輯</string>
+
+    <string name="chapter">章節列表</string>
+    <string name="chapter_all">全選</string>
+    <string name="chapter_sort">排序</string>
+    <string name="chapter_switch_view">切換視圖</string>
+    <string name="chapter_download_perm_fail">取得權限失敗</string>
+    <string name="chapter_download_empty">未選擇章節</string>
+
+    <string name="category">分類</string>
+
+    <string name="comic_tab_favorite">收藏</string>
+    <string name="comic_tab_history">歷史</string>
+    <string name="comic_tab_download">下載</string>
+    <string name="comic_tab_local">本地</string>
+    <string name="comic_filter">過濾</string>
+    <string name="comic_bbs">討論圈</string>
+    <string name="comic_search">搜尋</string>
+    <string name="comic_cancel_highlight">全部標記已讀</string>
+    <string name="comic_load_tag_fail">讀取標籤失敗</string>
+    <string name="comic_status_continue">連載</string>
+    <string name="comic_status_finish">完結</string>
+    <string name="comic_tag_select">標籤選擇</string>
+    <string name="comic_info">漫畫資訊</string>
+    <string name="comic_info_not_found">找不到漫畫資訊</string>
+    <string name="comic_info_title">漫畫名稱</string>
+    <string name="comic_info_source">圖源名稱</string>
+    <string name="comic_info_status">漫畫狀態</string>
+    <string name="comic_info_chapter">最後閱讀</string>
+    <string name="comic_info_time">閱讀時間</string>
+
+    <string name="favorite_check_update_fail">檢查更新失敗</string>
+    <string name="favorite_check_update_confirm">是否檢查更新</string>
+    <string name="favorite_check_update_doing">正在檢查更新</string>
+    <string name="favorite_check_update_done">檢查更新完成</string>
+    <string name="favorite_delete">取消收藏</string>
+    <string name="favorite_delete_confirm">是否取消收藏</string>
+
+    <string name="history_delete">刪除歷史紀錄</string>
+    <string name="history_delete_confirm">是否刪除歷史紀錄</string>
+    <string name="history_clear_confirm">是否清除所有歷史紀錄</string>
+
+    <string name="reader_prev_none">已到首頁</string>
+    <string name="reader_next_none">已到尾頁</string>
+    <string name="reader_load_prev">正在載入上一話</string>
+    <string name="reader_load_next">正在載入下一話</string>
+    <string name="reader_load_error">載入錯誤</string>
+    <string name="reader_load_success">載入成功</string>
+    <string name="reader_picture_loading">正在載入中..</string>
+    <string name="reader_picture_save_success">儲存成功</string>
+    <string name="reader_picture_save_fail">儲存失敗</string>
+
+    <string name="reader_config_title">閱讀配置</string>
+    <string name="reader_config_page">翻頁模式</string>
+    <string name="reader_config_stream">捲紙模式</string>
+
+    <string name="source_detail">圖源詳情</string>
+    <string name="source_detail_type">圖源 ID</string>
+    <string name="source_detail_title">圖源名稱</string>
+    <string name="source_detail_favorite">收藏統計</string>
+
+    <string name="category_subject">主題</string>
+    <string name="category_area">地區</string>
+    <string name="category_reader">讀者</string>
+    <string name="category_year">年份</string>
+    <string name="category_progress">進度</string>
+    <string name="category_order">排序</string>
+
+    <string name="settings_reader">閱讀設定</string>
+    <string name="settings_reader_mode">預設閱讀模式</string>
+    <string name="settings_reader_config">閱讀配置</string>
+    <string name="settings_reader_config_summary">自訂閱讀模式下各項功能</string>
+    <string name="settings_reader_turn">閱讀方向</string>
+    <string name="settings_reader_orientation">螢幕方向</string>
+    <string name="settings_reader_click_event">自訂點擊事件</string>
+    <string name="settings_reader_click_event_summary">閱讀狀態螢幕及音量鍵點擊事件</string>
+    <string name="settings_reader_long_click_event">自訂長按事件</string>
+    <string name="settings_reader_long_click_event_summary">閱讀狀態螢幕長按事件</string>
+    <string name="settings_reader_load_prev">自動載入上一章</string>
+    <string name="settings_reader_load_prev_summary">位於第一頁自動載入上一章</string>
+    <string name="settings_reader_load_next">自動載入下一章</string>
+    <string name="settings_reader_load_next_summary">位於最後一頁自動載入下一章</string>
+    <string name="settings_reader_white_edge">自動裁剪白邊</string>
+    <string name="settings_reader_white_edge_summary">閱讀狀態自動裁剪白邊</string>
+    <string name="settings_reader_ban_double_click">禁止雙擊放大</string>
+    <string name="settings_reader_ban_double_click_summary">閱讀狀態禁止雙擊放大</string>
+    <string name="settings_reader_keep_bright">保持螢幕常亮</string>
+    <string name="settings_reader_keep_bright_summary">閱讀狀態保持螢幕常亮</string>
+    <string name="settings_reader_hide_info">隱藏閱讀資訊</string>
+    <string name="settings_reader_hide_info_summary">閱讀狀態隱藏右上角的資訊</string>
+    <string name="settings_reader_trigger">翻頁觸發位移</string>
+    <string name="settings_reader_quick_turn">快速翻頁</string>
+    <string name="settings_reader_quick_turn_summary">不顯示翻頁平移效果</string>
+    <string name="settings_reader_ban_turn">放大禁止翻頁</string>
+    <string name="settings_reader_ban_turn_summary">放大狀態禁止翻頁</string>
+    <string name="settings_reader_interval">顯示圖片間隔</string>
+    <string name="settings_reader_interval_summary">閱讀狀態顯示圖片間隔</string>
+    <string name="settings_reader_hide_nav">隱藏導航欄</string>
+    <string name="settings_reader_hide_nav_summary">閱讀狀態底部隱藏導航欄</string>
+    <string name="settings_reader_paging">自動切割大圖</string>
+    <string name="settings_reader_paging_reverse">反向切割大圖</string>
+    <string name="settings_reader_paging_summary">閱讀狀態自動切割大圖</string>
+    <string name="settings_reader_paging_reverse_summary">交換大圖切割後位置</string>
+    <string name="settings_reader_scale_factor">雙擊放大百分比</string>
+    <string name="settings_download">下載設定</string>
+    <string name="settings_download_thread">多任務下載數量</string>
+    <string name="settings_download_scan">掃描已下載漫畫</string>
+    <string name="settings_download_scan_summary">掃描並恢復已下載漫畫</string>
+    <string name="settings_download_scan_confirm">需要將從本軟件下載的漫畫放在軟件儲存目錄的 download 目錄下！重點是，不一定可以成功！</string>
+    <string name="settings_search">搜尋設定</string>
+    <string name="settings_search_auto_complete">開啟搜尋提示</string>
+    <string name="settings_search_auto_complete_summary">根據輸入的關鍵字彈出提示</string>
+    <string name="settings_other">App 設定</string>
+    <string name="settings_other_check_update">自動檢查漫畫更新</string>
+    <string name="settings_other_check_update_summary">WIFI 下自動檢查漫畫更新</string>
+    <string name="settings_other_launch">預設啟動頁</string>
+    <string name="settings_other_theme">主題顏色</string>
+    <string name="settings_other_night_alpha">夜間模式亮度</string>
+    <string name="settings_other_storage">儲存路徑</string>
+    <string name="settings_other_storage_summary">自訂儲存路徑</string>
+    <string name="settings_other_storage_not_found">打開 DocumentUI 失敗</string>
+    <string name="settings_other_storage_edit_neutral">選擇路徑</string>
+    <string name="settings_other_clear_cache">清理緩存</string>
+    <string name="settings_other_clear_cache_summary">清理線上漫畫的緩存資料</string>
+
+    <string name="backup_save">備份</string>
+    <string name="backup_save_comic_auto">自動備份</string>
+    <string name="backup_save_comic_auto_summary">自動備份收藏和歷史漫畫</string>
+    <string name="backup_save_comic">備份漫畫</string>
+    <string name="backup_save_comic_summary">備份收藏和歷史漫畫</string>
+    <string name="backup_save_tag">備份標籤</string>
+    <string name="backup_save_tag_summary">備份標籤及相應漫畫</string>
+    <string name="backup_save_success">備份成功 共 %d 條記錄</string>
+    <string name="backup_restore">恢復</string>
+    <string name="backup_restore_not_found">沒有找到備份檔案</string>
+    <string name="backup_restore_comic">恢復漫畫</string>
+    <string name="backup_restore_comic_summary">恢復收藏和歷史漫畫</string>
+    <string name="backup_restore_tag">恢復標籤</string>
+    <string name="backup_restore_tag_summary">恢復標籤及相應漫畫</string>
+    <string name="backup_cloud">雲端</string>
+    <string name="backup_cloud_restore_tag">從雲端恢復</string>
+    <string name="backup_cloud_restore_tag_summary">從雲端恢復收藏的漫畫</string>
+    <string name="backup_cloud_clear_tag">清除雲端資料</string>
+    <string name="backup_cloud_clear_tag_summary">清除雲端同步的漫畫資料</string>
+    <string name="backup_cloud_backup_tag">備份到雲端</string>
+    <string name="backup_cloud_backup_tag_summary">備份收藏漫畫到雲端</string>
+    <string name="backup_cloud_sync_tag">自動同步</string>
+    <string name="backup_cloud_sync_tag_summary">自動同步收藏到雲端</string>
+
+    <string name="home_page">首頁</string>
+    <string name="home_page_cimqus">Cimqus</string>
+    <string name="home_page_gitter">Gitter</string>
+    <string name="home_page_comiclist">Comiclist</string>
+    <string name="about_resource">原始碼</string>
+    <string name="about_resource_ori">原作倉庫</string>
+    <string name="about_support">意見回饋</string>
+    <string name="about_update">檢查更新</string>
+    <string name="about_update_summary">點擊前往 Github Releases 頁面</string>
+    <string name="about_update_latest">當前已經是最新版本</string>
+    <string name="about_update_download">點擊下載最新版本</string>
+    <string name="about_update_doing">正在檢查更新</string>
+    <string name="about_update_fail">檢查更新失敗</string>
+    <string name="about_resource_fail">打開網頁失敗</string>
+
+    <string name="dialog_choice">單項選擇</string>
+    <string name="dialog_confirm">操作確認</string>
+    <string name="dialog_positive">確定</string>
+    <string name="dialog_negative">取消</string>
+    <string name="dialog_doing">正在執行中</string>
+
+    <string name="local_delete">刪除漫畫</string>
+    <string name="local_delete_confirm">是否刪除漫畫(不會刪除檔案)</string>
+
+    <string name="tag_add">新增標籤</string>
+    <string name="tag_delete_confirm">是否刪除標籤</string>
+
+    <string name="part_favorite_select">選擇漫畫</string>
+    <string name="part_favorite_delete_confirm">是否刪除漫畫</string>
+
+    <string name="part_favorite_add">新增漫畫</string>
+
+    <string name="download_service_doing">正在下載漫畫</string>
+    <string name="download_service_done">所有任務已完成</string>
+    <string name="download_start_success">已開始全部下載任務</string>
+    <string name="download_stop_success">已暫停全部下載任務</string>
+    <string name="download_task_empty">下載任務為空</string>
+    <string name="download_ask_stop">請先暫停下載任務</string>
+    <string name="download_action_confirm">是否開始或暫停下載</string>
+    <string name="download_delete">刪除漫畫</string>
+    <string name="download_delete_confirm">是否刪除下載</string>
+
+    <string name="task_parse">正在解析</string>
+    <string name="task_pause">暫停下載</string>
+    <string name="task_wait">等待下載</string>
+    <string name="task_doing">正在下載</string>
+    <string name="task_finish">下載完成</string>
+    <string name="task_error">下載錯誤</string>
+    <string name="task_list">任務列表</string>
+    <string name="task_history">繼續閱讀</string>
+    <string name="task_load_task_fail">讀取任務失敗</string>
+    <string name="task_delete">刪除任務</string>
+    <string name="task_read">閱讀漫畫</string>
+    <string name="task_sort">排序</string>
+    <string name="task_empty">未選擇任務</string>
+
+    <string name="dir_picker">目錄選擇</string>
+    <string name="dir_picker_parent">&lt; 返回上層目錄 &gt;</string>
+
+    <string name="event_select">事件選擇</string>
+
+    <string name="common_data_load_fail">讀取資料失敗</string>
+    <string name="common_keyword_empty">關鍵字為空</string>
+    <string name="common_parse_error">解析錯誤</string>
+    <string name="common_execute_success">操作成功</string>
+    <string name="common_execute_fail">操作失敗</string>
+    <string name="common_operation_select">操作選擇</string>
+    <string name="common_null">null</string>
+    <string name="about_version">飛龍</string>
+    <string name="detail_disqus">評論</string>
+
+    <!--登入相關-->
+    <string name="title_activity_login">Users</string>
+    <string name="user_login_tips">請登入</string>
+    <string name="user_login_item">登入</string>
+    <string name="user_login_failed">登入失敗</string>
+    <string name="user_login_sucess">登入成功</string>
+    <string name="user_login_logout_sucess">登出成功</string>
+    <string name="user_login_logout_tips">您確定要登出嗎?</string>
+    <string name="user_login_logout">登出</string>
+
+    <string name="developing">此功能正在開發中</string>
+
+</resources>
