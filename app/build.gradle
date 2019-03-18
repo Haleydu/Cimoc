@@ -22,6 +22,8 @@ static def gitVersionTag() {
     return version
 }
 
+static def releaseTime() { return new Date().format("yyMMdd", TimeZone.getTimeZone("UTC")) }
+
 // 加载 keystore.properties 文件
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -43,7 +45,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
-        versionName "1.4.12.0"
+        versionName "1.5.0"
         resConfigs "en", "zh"
     }
     buildTypes {
@@ -63,7 +65,7 @@ android {
             variant.outputs.all { output ->
 //                output.setVersionCodeOverride(versionCode)
                 output.setVersionNameOverride(versionName)
-                outputFileName = "Cimoc.${versionName}.${buildType.getName()}.apk"
+                outputFileName = "Cimoc.${versionName}.build${releaseTime()}.${buildType.getName()}.apk"
             }
         }
     }
