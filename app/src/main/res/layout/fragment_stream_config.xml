@@ -31,6 +31,12 @@
             android:layout_height="wrap_content"
             app:title="@string/settings_reader_long_click_event"
             app:summary="@string/settings_reader_long_click_event_summary"/>
+        <com.hiroshi.cimoc.ui.widget.Option
+            android:id="@+id/settings_reader_volume_click_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/settings_reader_volume_click_event"
+            app:summary="@string/settings_reader_volume_click_event_summary"/>
         <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
             android:id="@+id/settings_reader_load_prev"
             android:layout_width="match_parent"

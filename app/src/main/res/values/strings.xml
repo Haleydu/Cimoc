@@ -120,6 +120,8 @@
     <string name="settings_reader_click_event_summary">阅读状态屏幕及音量键点击事件</string>
     <string name="settings_reader_long_click_event">自定义长按事件</string>
     <string name="settings_reader_long_click_event_summary">阅读状态屏幕长按事件</string>
+    <string name="settings_reader_volume_click_event">自定义音量键点击事件</string>
+    <string name="settings_reader_volume_click_event_summary">音量键点击事件</string>
     <string name="settings_reader_load_prev">自动加载上一章</string>
     <string name="settings_reader_load_prev_summary">位于第一页自动加载上一章</string>
     <string name="settings_reader_load_next">自动加载下一章</string>
