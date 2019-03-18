@@ -1,9 +1,12 @@
 package com.hiroshi.cimoc.ui.activity.settings;
 
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.component.DialogCaller;
+import com.hiroshi.cimoc.global.ClickEvents;
 import com.hiroshi.cimoc.ui.activity.BackActivity;
 import com.hiroshi.cimoc.ui.adapter.TabPagerAdapter;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
@@ -16,10 +19,13 @@ import butterknife.BindView;
  * Created by Hiroshi on 2016/10/14.
  */
 
-public class ReaderConfigActivity extends BackActivity {
+public class ReaderConfigActivity extends BackActivity implements DialogCaller {
 
     @BindView(R.id.reader_config_tab_layout) TabLayout mTabLayout;
     @BindView(R.id.reader_config_view_pager) ViewPager mViewPager;
+
+    private String[] mKeyArray;
+    private int[] mChoiceArray;
 
     @Override
     protected void initView() {
@@ -31,6 +37,14 @@ public class ReaderConfigActivity extends BackActivity {
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setAdapter(tabAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+        boolean isStream = mViewPager.getCurrentItem() == 1;
+        if (isStream) {
+            mKeyArray =  ClickEvents.getStreamClickEvents();
+            mChoiceArray = ClickEvents.getStreamClickEventChoice(mPreference);
+        } else {
+            mKeyArray = ClickEvents.getPageClickEvents();
+            mChoiceArray = ClickEvents.getPageClickEventChoice(mPreference);
+        }
     }
 
     @Override
@@ -43,4 +57,10 @@ public class ReaderConfigActivity extends BackActivity {
         return R.layout.activity_reader_config;
     }
 
+    @Override
+    public void onDialogResult(int requestCode, Bundle bundle) {
+        int index = bundle.getInt(EXTRA_DIALOG_RESULT_INDEX);
+        mChoiceArray[requestCode] = index;
+        mPreference.putInt(mKeyArray[requestCode], index);
+    }
 }
