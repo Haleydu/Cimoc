@@ -6,6 +6,7 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
 import com.hiroshi.cimoc.source.Dmzjv2;
@@ -102,6 +103,7 @@ public class UpdateHelper {
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
         list.add(PuFei.getDefaultSource());
+        list.add(ChuiXue.getDefaultSource());
         list.add(Manhuatai.getDefaultSource());
 //        list.add(Tencent.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
