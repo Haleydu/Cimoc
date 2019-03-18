@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.Chuiyao;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzj;
@@ -123,6 +124,9 @@ public class SourceManager {
                     break;
                 case PuFei.TYPE:
                     parser = new PuFei(source);
+                    break;
+                case ChuiXue.TYPE:
+                    parser = new ChuiXue(source);
                     break;
                 case Manhuatai.TYPE:
                     parser = new Manhuatai(source);
