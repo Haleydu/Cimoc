@@ -71,7 +71,7 @@ public class ChuiXue extends MangaParser {
                 String cid = node.getChild("a").hrefWithSplit(1);//node.hrefWithSplit(1);
                 String title = node.text("a > h3");
                 String cover = node.attr("a > div > img", "data-src");
-                String update = node.text("a > dl:eq(4) > dd");
+                String update = node.text("a > dl:eq(5) > dd");
                 String author = node.text("a > dl:eq(2) > dd");
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
