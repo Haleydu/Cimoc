@@ -92,7 +92,7 @@ public class Update {
                     .setApkUrl(updateAssetsObject.getString("browser_download_url"))
                     .setDownloadPath(Environment.getExternalStorageDirectory() + "/Download")
                     .setApkDescription(updateObject.getString("body"))
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_launcher_blue_foreground)
                     .setShowNewerToast(true)
                     .setConfiguration(configuration)
                     .setApkVersionCode(2)
