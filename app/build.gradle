@@ -24,6 +24,44 @@ static def gitVersionTag() {
 
 static def releaseTime() { return new Date().format("yyMMdd", TimeZone.getTimeZone("UTC")) }
 
+//替换版本号
+task updateVersion << {
+    //Version文件的目录。这里应该改为你的实际目录
+//    def versionFileDir = projectDir.getAbsolutePath() + File.separatorChar + 'Constants.java'
+    def versionFileDir = file('src/main/java/com/hiroshi/cimoc').absolutePath + File.separatorChar + 'Constants.java'
+    println versionFileDir
+    //读取旧的version字符串
+    def oldVersionStr = findOldVersionStr(versionFileDir)
+    println oldVersionStr
+    //获取新的version字符串
+    def newVersionValue = gitVersionTag()
+    def newVersionList = newVersionValue.split('\\.')
+    def newVersionInt = (newVersionList[0].plus(newVersionList[1].padLeft(2,"0")).plus(newVersionList[2].padLeft(3,"0"))).substring(1).toInteger()
+    println newVersionInt
+    //拼接为java的语句
+    def newVersionStr = "    public static final int VERSION = " + newVersionInt + ";"
+    println newVersionStr
+    //重新写入到文件中
+    def updatedContent = new File(versionFileDir).getText('UTF-8').replaceAll(oldVersionStr, newVersionStr)
+    new File(versionFileDir).write(updatedContent, 'UTF-8')
+}
+
+//读取旧的version字符串
+static def findOldVersionStr(path) {
+    def readerString = ""
+    new File(path).withReader('UTF-8') { reader ->
+        reader.eachLine {
+            //读取一行，如果发现有"VERSION"字符，说明是我们要修改的那一行。
+            if (it.contains("VERSION")) {
+                //保存it到string，然后返回
+                readerString <<= it
+                return readerString
+            }
+        }
+        return readerString
+    }
+}
+
 // 加载 keystore.properties 文件
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
@@ -95,3 +133,6 @@ dependencies {
     implementation 'com.azhon:appupdate:2.0.0'
     implementation files('libs/commons-lang3-3.7.jar')
 }
+
+//编译之前，执行updateVerion
+preBuild.dependsOn updateVersion
