@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.helper;
 
+import com.hiroshi.cimoc.Constants;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
@@ -31,15 +32,15 @@ import java.util.List;
 public class UpdateHelper {
 
     // 1.04.08.008
-    private static final int VERSION = 10408008;
+//    private static final int VERSION = 10408008;
 
     public static void update(PreferenceManager manager, final DaoSession session) {
-        int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
-        if (version != VERSION) {
+        try {
+            int version = manager.getInt(PreferenceManager.PREF_APP_VERSION, 0);
+            if (version != Constants.VERSION) {
+                initSource(session);
+            }
             switch (version) {
-                case 0:
-                    initSource(session);
-                    break;
                 case 10404000:
                 case 10404001:
                 case 10404002:
@@ -61,8 +62,17 @@ public class UpdateHelper {
                     // 删除 Chuiyao
                     session.getDatabase().execSQL("DELETE FROM SOURCE WHERE \"TYPE\" = 9");
                     // session.getSourceDao().insert(PuFei.getDefaultSource());
+                case 105001:
+                    // 删除腾讯漫画
+                    session.getDatabase().execSQL("DELETE FROM SOURCE WHERE \"TYPE\" = "+Tencent.TYPE);
+                    break;
             }
-            manager.putInt(PreferenceManager.PREF_APP_VERSION, VERSION);
+            manager.putInt(PreferenceManager.PREF_APP_VERSION, Constants.VERSION);
+        } catch (ClassCastException e) {
+            initSource(session);
+            manager.putInt(PreferenceManager.PREF_APP_VERSION, Constants.VERSION);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -90,7 +100,7 @@ public class UpdateHelper {
      * 初始化图源
      */
     private static void initSource(DaoSession session) {
-        List<Source> list = new ArrayList<>(11);
+        List<Source> list = new ArrayList<>();
         list.add(IKanman.getDefaultSource());
         list.add(Dmzj.getDefaultSource());
         list.add(HHAAZZ.getDefaultSource());
