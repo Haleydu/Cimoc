@@ -234,6 +234,7 @@
     <string name="dialog_confirm">操作确认</string>
     <string name="dialog_positive">确定</string>
     <string name="dialog_negative">取消</string>
+    <string name="dialog_close">关闭</string>
     <string name="dialog_doing">正在执行中</string>
 
     <string name="local_delete">删除漫画</string>

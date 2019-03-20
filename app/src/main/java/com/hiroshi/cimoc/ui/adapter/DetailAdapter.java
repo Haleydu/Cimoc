@@ -25,11 +25,11 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
 
     private PipelineDraweeControllerBuilderSupplier mControllerSupplier;
 
-    private String title;
+    public String title;
     private String cover;
     private String update;
     private String author;
-    private String intro;
+    public String intro;
     private Boolean finish;
 
     private String last;
