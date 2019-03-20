@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
@@ -618,9 +619,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     protected void switchScreen() {
-        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
-        orientation = PreferenceManager.READER_ORIENTATION_PORTRAIT;
-        setRequestedOrientation(oArray[orientation]);
+        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
+        setRequestedOrientation(oArray[this.getResources().getConfiguration().orientation]);
     }
 
     protected void switchMode() {
