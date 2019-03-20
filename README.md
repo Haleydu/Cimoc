@@ -41,23 +41,13 @@ Online manga reader based on Android
 - [BlazingChain](https://github.com/tommyettinger/BlazingChain)
 
 # ToDo
-- ~~综合搜索~~
-- ~~漫画标签分类~~
-- ~~多任务下载~~
-- ~~更改下载路径~~
-- ~~扫描已下载漫画~~
-- ~~阅读状态自定义点击事件~~
-- 建立漫画数据库，加速部分漫画加载速度
-- 基于数据库的快速漫画更新检查
 - 云备份（google driver）
-- ~~评论系统~~[cimqus]（cimqus.now.sh)
 - 要是能多线程检查更新就好了，我本地收藏两百多，每次检查更新要好久
-
 
 # 应用截图
 <img src="./screenshot/01.png" width="250">
 
-# 增加图源（最好能自己写好代码pr过来）
+# 增加图源（欢迎pr）
 - 继承 MangaParser 类，参照 Parser 接口的注释
 > 在app\src\main\java\com\hiroshi\cimoc\source目录里面随便找一个复制一下
 > 注释是这个：app\src\main\java\com\hiroshi\cimoc\parser\MangaParser.java
