@@ -58,7 +58,8 @@ public abstract class CoordinatorActivity extends BackActivity implements
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
+    public boolean onItemLongClick(View view, int position) {
+        return false;
     }
 
     @Override

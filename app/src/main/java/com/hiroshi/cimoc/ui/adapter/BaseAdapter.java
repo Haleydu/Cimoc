@@ -134,8 +134,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
                 if (mLongClickListener == null) {
                     return false;
                 }
-                mLongClickListener.onItemLongClick(v, holder.getAdapterPosition());
-                return true;
+                return mLongClickListener.onItemLongClick(v, holder.getAdapterPosition());
             }
         });
     }
@@ -149,7 +148,7 @@ public abstract class BaseAdapter<T> extends RecyclerView.Adapter<RecyclerView.V
     }
 
     public interface OnItemLongClickListener {
-        void onItemLongClick(View view, int position);
+        boolean onItemLongClick(View view, int position);
     }
 
     static class BaseViewHolder extends RecyclerView.ViewHolder {

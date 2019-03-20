@@ -85,12 +85,13 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
+    public boolean onItemLongClick(View view, int position) {
         mSavedId = mGridAdapter.getItem(position).getId();
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
                 getOperationItems(), DIALOG_REQUEST_OPERATION);
         fragment.setTargetFragment(this, 0);
         fragment.show(getFragmentManager(), null);
+        return true;
     }
 
     @Override

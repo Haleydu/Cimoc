@@ -93,9 +93,10 @@ public class SourceFragment extends RecyclerViewFragment implements SourceView, 
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
+    public boolean onItemLongClick(View view, int position) {
         Intent intent = SourceDetailActivity.createIntent(getActivity(), mSourceAdapter.getItem(position).getType());
         startActivity(intent);
+        return true;
     }
 
     @Override

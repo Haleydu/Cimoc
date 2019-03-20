@@ -225,6 +225,12 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         }
     }
 
+    @Override
+    public boolean onItemLongClick(View view, int position) {
+        return false;
+    }
+
+
     private void startReader(String path) {
         long id = mPresenter.updateLast(path);
         mDetailAdapter.setLast(path);
@@ -237,6 +243,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     public void onLastChange(String last) {
         mDetailAdapter.setLast(last);
     }
+
 
     @Override
     public void onTaskAddSuccess(ArrayList<Task> list) {

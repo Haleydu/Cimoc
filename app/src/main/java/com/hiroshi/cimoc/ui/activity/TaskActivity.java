@@ -153,12 +153,13 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
+    public boolean onItemLongClick(View view, int position) {
         mSavedTask = mTaskAdapter.getItem(position);
         String[] item = {getString(R.string.task_read), getString(R.string.task_delete)};
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
                 item, DIALOG_REQUEST_OPERATION);
         fragment.show(getFragmentManager(), null);
+        return true;
     }
 
     @Override

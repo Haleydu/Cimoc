@@ -19,10 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
@@ -32,6 +30,10 @@ import rx.schedulers.Schedulers;
  * Created by Hiroshi on 2016/8/20.
  */
 public class Manga {
+
+    private static boolean indexOfIgnoreCase(String str, String search) {
+        return str.toLowerCase().indexOf(search.toLowerCase()) != -1;
+    }
 
     public static Observable<Comic> getSearchResult(final Parser parser, final String keyword, final int page, final boolean strictSearch) {
         return Observable.create(new Observable.OnSubscribe<Comic>() {
@@ -49,8 +51,8 @@ public class Manga {
                         Comic comic = iterator.next();
 //                        if (comic != null && (comic.getTitle().indexOf(keyword) != -1 || comic.getAuthor().indexOf(keyword) != -1)) {
                         if (comic != null
-                                && (comic.getTitle().indexOf(keyword) != -1
-                                || comic.getAuthor().indexOf(keyword) != -1
+                                && (indexOfIgnoreCase(comic.getTitle(), keyword)
+                                || indexOfIgnoreCase(comic.getAuthor(), keyword)
                                 || (!strictSearch))) {
                             subscriber.onNext(comic);
                             Thread.sleep(random.nextInt(200));
@@ -302,7 +304,7 @@ public class Manga {
                 byte[] bodybytes = response.body().bytes();
                 String body = new String(bodybytes);
                 Matcher m = Pattern.compile("charset=([\\w\\-]+)").matcher(body);
-                if(m.find()){
+                if (m.find()) {
                     body = new String(bodybytes, m.group(1));
                 }
                 return body;

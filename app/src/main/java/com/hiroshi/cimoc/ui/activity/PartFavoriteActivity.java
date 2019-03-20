@@ -112,13 +112,15 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
+    public boolean onItemLongClick(View view, int position) {
         if (isDeletable) {
             mSavedComic = mGridAdapter.getItem(position);
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                     R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
             fragment.show(getFragmentManager(), null);
+            return true;
         }
+        return false;
     }
 
     @Override
