@@ -40,6 +40,7 @@ public class Animx2 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
+        if (page != 1) return null;
         String url = StringUtils.format("http://www.2animx.com/search-index?searchType=1&q=%s&page=%d", keyword, page);
         return new Request.Builder().url(url).build();
     }
