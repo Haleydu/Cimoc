@@ -619,14 +619,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     protected void switchScreen() {
-        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            orientation = PreferenceManager.READER_ORIENTATION_LANDSCAPE;
-        }
-        else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-            orientation = PreferenceManager.READER_ORIENTATION_PORTRAIT;
-        }
-        setRequestedOrientation(oArray[orientation]);
+        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
+        setRequestedOrientation(oArray[this.getResources().getConfiguration().orientation]);
     }
 
     protected void switchMode() {
