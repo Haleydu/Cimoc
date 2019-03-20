@@ -16,8 +16,10 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.utils.FrescoUtils;
 
 import java.util.List;
 
@@ -57,10 +59,44 @@ public class GridAdapter extends BaseAdapter<MiniComic> {
         gridHolder.comicTitle.setText(comic.getTitle());
         gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
         if (mProvider != null) {
-            ImageRequest request = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(comic.getCover()))
-                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
-                    .build();
+//            ImageRequest request = ImageRequestBuilder
+//                    .newBuilderWithSource(Uri.parse(comic.getCover()))
+//                    .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+//                    .build();
+            ImageRequest request = null;
+            try {
+                if (!App.getManager_wifi().isWifiEnabled() && App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false)) {
+//                    request = null;
+                    if (FrescoUtils.isCached(comic.getCover())) {
+                        request = ImageRequestBuilder
+                                .newBuilderWithSource(Uri.fromFile(FrescoUtils.getFileFromDiskCache(comic.getCover())))
+                                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+                                .build();
+                    }
+                } else if (!App.getManager_wifi().isWifiEnabled() && App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_LOADCOVER_ONLY_WIFI, false)) {
+//                    request = null;
+                    if (FrescoUtils.isCached(comic.getCover())) {
+                        request = ImageRequestBuilder
+                                .newBuilderWithSource(Uri.fromFile(FrescoUtils.getFileFromDiskCache(comic.getCover())))
+                                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+                                .build();
+                    }
+                } else {
+                    if (FrescoUtils.isCached(comic.getCover())) {
+                        request = ImageRequestBuilder
+                                .newBuilderWithSource(Uri.fromFile(FrescoUtils.getFileFromDiskCache(comic.getCover())))
+                                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+                                .build();
+                    } else {
+                        request = ImageRequestBuilder
+                                .newBuilderWithSource(Uri.parse(comic.getCover()))
+                                .setResizeOptions(new ResizeOptions(App.mCoverWidthPixels / 3, App.mCoverHeightPixels / 3))
+                                .build();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             DraweeController controller = mProvider.get(comic.getSource())
                     .setOldController(gridHolder.comicImage.getController())
                     .setImageRequest(request)

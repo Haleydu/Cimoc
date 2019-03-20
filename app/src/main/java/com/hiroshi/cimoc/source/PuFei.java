@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.ui.activity.ResultActivity;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -145,12 +146,12 @@ public class PuFei extends MangaParser {
     public List<Comic> parseCategory(String html, int page) {
         List<Comic> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("li > a")) {
-            String cid = node.hrefWithSplit(1);
-            String title = node.text("h3");
-            String cover = node.attr("div > img", "data-src");
-            String update = node.text("dl:eq(5) > dd");
-            String author = node.text("dl:eq(2) > dd");
+        for (Node node : body.list("div.cont-list > ul > li")) {//li > a
+            String cid = node.getChild("a").hrefWithSplit(1);//node.hrefWithSplit(1);
+            String title = node.text("a > h3");
+            String cover = node.attr("a > div > img", "data-src");
+            String update = node.text("dl:eq(4) > dd");
+            String author = node.text("a > dl:eq(2) > dd");
             list.add(new Comic(TYPE, cid, title, cover, update, author));
         }
         return list;
@@ -177,17 +178,19 @@ public class PuFei extends MangaParser {
         @Override
         protected List<Pair<String, String>> getSubject() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("全部", ""));
-            list.add(Pair.create("最近更新", "0"));
-            list.add(Pair.create("少年热血", "1"));
-            list.add(Pair.create("武侠格斗", "2"));
-            list.add(Pair.create("科幻魔幻", "3"));
-            list.add(Pair.create("竞技体育", "4"));
-            list.add(Pair.create("爆笑喜剧", "5"));
-            list.add(Pair.create("侦探推理", "6"));
-            list.add(Pair.create("恐怖灵异", "7"));
-            list.add(Pair.create("少女爱情", "8"));
-            list.add(Pair.create("恋爱生活", "9"));
+//            list.add(Pair.create("全部", ""));
+            list.add(Pair.create("最近更新", "manhua/update"));
+            list.add(Pair.create("漫画排行", "manhua/paihang"));
+            list.add(Pair.create("少年热血", "shaonianrexue"));
+            list.add(Pair.create("武侠格斗", "wuxiagedou"));
+            list.add(Pair.create("科幻魔幻", "kehuan"));
+            list.add(Pair.create("竞技体育", "jingjitiyu"));
+            list.add(Pair.create("搞笑喜剧", "gaoxiaoxiju"));
+            list.add(Pair.create("侦探推理", "zhentantuili"));
+            list.add(Pair.create("恐怖灵异", "kongbulingyi"));
+            list.add(Pair.create("少女爱情", "shaonvaiqing"));
+            list.add(Pair.create("耽美BL", "danmeirensheng"));
+//            list.add(Pair.create("恋爱生活", "9"));
             return list;
         }
 
@@ -199,9 +202,9 @@ public class PuFei extends MangaParser {
         @Override
         protected List<Pair<String, String>> getOrder() {
             List<Pair<String, String>> list = new ArrayList<>();
-            list.add(Pair.create("更新", "3"));
-            list.add(Pair.create("发布", "1"));
-            list.add(Pair.create("人气", "2"));
+            list.add(Pair.create("发布", "index"));
+            list.add(Pair.create("更新", "update"));
+            list.add(Pair.create("人气", "view"));
             return list;
         }
 

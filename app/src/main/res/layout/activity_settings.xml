@@ -163,6 +163,18 @@
                     android:textSize="14sp" />
 
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_other_connect_only_wifi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_other_connect_only_wifi"
+                    app:summary="@string/settings_other_connect_only_wifi_summary"/>
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_other_loadcover_only_wifi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_other_loadcover_only_wifi"
+                    app:summary="@string/settings_other_loadcover_only_wifi_summary"/>
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_check_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -69,6 +70,13 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
         intent.putExtra(Extra.EXTRA_STRICT, strictSearch);
         return intent;
     }
+
+    // 建个Map把漫源搜索的上一个请求的url存下来，最后利用Activity生命周期清掉
+    //
+    // 解决重复加载列表问题思路：
+    // 在新的一次请求（上拉加载）前检查新Url与上一次请求的是否一致。
+    // 一致则返回空请求，达到阻断请求的目的；不一致则更新Map中存的Url，Map中不存在则新建
+    public static SparseArray<String> searchUrls = new SparseArray<>();
 
     @Override
     protected BasePresenter initPresenter() {

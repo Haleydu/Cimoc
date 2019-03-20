@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
@@ -32,6 +33,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
+import com.hiroshi.cimoc.core.Update;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
@@ -172,7 +174,16 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected void initData() {
         mPresenter.loadLast();
-        checkUpdate();
+
+        //检查App更新
+        String updateUrl = null;
+        if (mPreference.getBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, true)) {
+            if ((updateUrl = App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL)) != null) {
+                App.setUpdateCurrentUrl(updateUrl);
+            }
+            checkUpdate();
+        }
+
         if (!showAuthorNotice()) {
             showPermission();
         }
@@ -434,6 +445,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     public void onUpdateReady() {
         HintUtils.showToast(this, R.string.main_ready_update);
+//        Update.update(this);
     }
 
     @Override

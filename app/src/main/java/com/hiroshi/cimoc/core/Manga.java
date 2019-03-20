@@ -9,6 +9,7 @@ import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.parser.SearchIterator;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.InterruptedIOException;
 import java.util.ArrayList;
@@ -229,20 +230,26 @@ public class Manga {
         return Observable.create(new Observable.OnSubscribe<List<String>>() {
             @Override
             public void call(Subscriber<? super List<String>> subscriber) {
-                RequestBody body = new FormBody.Builder()
-                        .add("key", keyword)
-                        .add("s", "1")
-                        .build();
+//                RequestBody body = new FormBody.Builder()
+//                        .add("key", keyword)
+//                        .add("s", "1")
+//                        .build();
+//                Request request = new Request.Builder()
+//                        .url("http://m.ikanman.com/support/word.ashx")
+//                        .post(body)
+//                        .build();
                 Request request = new Request.Builder()
-                        .url("http://m.ikanman.com/support/word.ashx")
-                        .post(body)
+                        .url("http://m.ac.qq.com/search/smart?word=" + keyword)
                         .build();
                 try {
                     String jsonString = getResponseBody(App.getHttpClient(), request);
-                    JSONArray array = new JSONArray(jsonString);
+//                    JSONArray array = new JSONArray(jsonString);
+                    JSONObject jsonObject = new JSONObject(jsonString);
+                    JSONArray array = jsonObject.getJSONArray("data");
                     List<String> list = new ArrayList<>();
                     for (int i = 0; i != array.length(); ++i) {
-                        list.add(array.getJSONObject(i).getString("t"));
+//                        list.add(array.getJSONObject(i).getString("t"));
+                        list.add(array.getJSONObject(i).getString("title"));
                     }
                     subscriber.onNext(list);
                     subscriber.onCompleted();
@@ -283,7 +290,7 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    private static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
+    public static String getResponseBody(OkHttpClient client, Request request) throws NetworkErrorException {
         return getResponseBody(client, request, true);
     }
 

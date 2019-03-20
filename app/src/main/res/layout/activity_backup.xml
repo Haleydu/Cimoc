@@ -56,8 +56,14 @@
                         android:id="@+id/backup_save_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:summary="@string/backup_save_tag_summary"
-                        app:title="@string/backup_save_tag" />
+                        app:title="@string/backup_save_tag"
+                        app:summary="@string/backup_save_tag_summary"/>
+                    <com.hiroshi.cimoc.ui.widget.Option
+                        android:id="@+id/backup_save_settings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/backup_save_settings"
+                        app:summary="@string/backup_save_settings_summary"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -87,8 +93,14 @@
                         android:id="@+id/backup_restore_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:summary="@string/backup_restore_tag_summary"
-                        app:title="@string/backup_restore_tag" />
+                        app:title="@string/backup_restore_tag"
+                        app:summary="@string/backup_restore_tag_summary"/>
+                    <com.hiroshi.cimoc.ui.widget.Option
+                        android:id="@+id/backup_restore_settings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:title="@string/backup_restore_settings"
+                        app:summary="@string/backup_restore_settings_summary"/>
                 </LinearLayout>
 
                 <LinearLayout

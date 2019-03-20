@@ -20,6 +20,8 @@ import com.facebook.imagepipeline.producers.BaseProducerContextCallbacks;
 import com.facebook.imagepipeline.producers.Consumer;
 import com.facebook.imagepipeline.producers.FetchState;
 import com.facebook.imagepipeline.producers.ProducerContext;
+import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.ui.widget.CustomToast;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -54,7 +56,14 @@ public class OkHttpNetworkFetcher extends
      */
     public OkHttpNetworkFetcher(OkHttpClient okHttpClient, Headers headers) {
         mOkHttpClient = okHttpClient;
-        mCancellationExecutor = okHttpClient.dispatcher().executorService();
+
+        //修复打开仅WiFi联网功能后运行闪退的问题
+        try {
+            mCancellationExecutor = okHttpClient.dispatcher().executorService();
+        } catch (NullPointerException e) {
+            CustomToast.showToast(App.getActivity(), "网络连接失败，请检查网络！！", 2000);
+        }
+
         mHeaders = headers;
     }
 

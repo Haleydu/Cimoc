@@ -85,4 +85,7 @@ dependencies {
     implementation 'io.reactivex:rxandroid:1.2.1'
     api 'com.google.guava:guava:27.0.1-android'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.alibaba:fastjson:1.1.70.android'
+//    implementation 'com.azhon:appupdate:2.0.0'
 }

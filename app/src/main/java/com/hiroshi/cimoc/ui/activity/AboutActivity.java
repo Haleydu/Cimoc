@@ -3,14 +3,28 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
+import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.SwitchCompat;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.Constants;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.core.Update;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.view.AboutView;
+import com.hiroshi.cimoc.ui.widget.CustomToast;
+import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -19,7 +33,7 @@ import butterknife.OnClick;
  * Created by Hiroshi on 2016/9/21.
  */
 
-public class AboutActivity extends BackActivity implements AboutView {
+public class AboutActivity extends BackActivity implements AboutView, AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.about_update_summary)
     TextView mUpdateText;
@@ -32,6 +46,8 @@ public class AboutActivity extends BackActivity implements AboutView {
     private boolean update = false;
     private boolean checking = false;
 
+    private List<String> listSources = new ArrayList<>();
+
     @Override
     protected BasePresenter initPresenter() {
         mPresenter = new AboutPresenter();
@@ -39,6 +55,7 @@ public class AboutActivity extends BackActivity implements AboutView {
         return mPresenter;
     }
 
+    // TODO 更新源独立出一个模块？
     @Override
     protected void initView() {
         try {
@@ -124,12 +141,14 @@ public class AboutActivity extends BackActivity implements AboutView {
     @Override
     public void onUpdateNone() {
         mUpdateText.setText(R.string.about_update_latest);
+        HintUtils.showToast(this, R.string.about_update_latest);
         checking = false;
     }
 
     @Override
     public void onUpdateReady() {
-        mUpdateText.setText(R.string.about_update_download);
+//        mUpdateText.setText(R.string.about_update_download);
+        update();
         checking = false;
         update = true;
     }
@@ -155,4 +174,48 @@ public class AboutActivity extends BackActivity implements AboutView {
         return R.layout.activity_about;
     }
 
+    private void update() {
+//        if (Update.update(this)) {
+            mUpdateText.setText(R.string.about_update_summary);
+//        } else {
+//            showSnackbar(R.string.about_resource_fail);
+//        }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case 0:
+                showSnackbar("请选择一个下载源");
+//                checkSpinnerSelected(spinner_download_source);
+                break;
+            case 1:
+                App.setUpdateCurrentUrl(Constants.UPDATE_GITHUB_URL);
+                update = false;
+                App.getPreferenceManager().putString(PreferenceManager.PREF_UPDATE_CURRENT_URL, App.getUpdateCurrentUrl());
+                break;
+            case 2:
+                App.setUpdateCurrentUrl(Constants.UPDATE_GITEE_URL);
+                update = false;
+                App.getPreferenceManager().putString(PreferenceManager.PREF_UPDATE_CURRENT_URL, App.getUpdateCurrentUrl());
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    private void checkSpinnerSelected(AppCompatSpinner spinner) {
+        try {
+            if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITHUB_URL)) {
+                spinner.setSelection(1);
+            } else if (App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL).equals(Constants.UPDATE_GITEE_URL)) {
+                spinner.setSelection(2);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
 }
