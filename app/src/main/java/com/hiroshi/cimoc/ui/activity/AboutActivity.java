@@ -175,11 +175,11 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
     }
 
     private void update() {
-        if (Update.update(this)) {
+//        if (Update.update(this)) {
             mUpdateText.setText(R.string.about_update_summary);
-        } else {
-            showSnackbar(R.string.about_resource_fail);
-        }
+//        } else {
+//            showSnackbar(R.string.about_resource_fail);
+//        }
     }
 
     @Override
@@ -187,7 +187,7 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
         switch (position) {
             case 0:
                 showSnackbar("请选择一个下载源");
-                checkSpinnerSelected(spinner_download_source);
+//                checkSpinnerSelected(spinner_download_source);
                 break;
             case 1:
                 App.setUpdateCurrentUrl(Constants.UPDATE_GITHUB_URL);

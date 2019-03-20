@@ -85,6 +85,10 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     SliderPreference mOtherNightAlpha;
     @BindView(R.id.settings_download_thread)
     SliderPreference mDownloadThread;
+    @BindView(R.id.settings_other_connect_only_wifi)
+    CheckBoxPreference mConnectOnlyWifi;
+    @BindView(R.id.settings_other_loadcover_only_wifi)
+    CheckBoxPreference mLoadCoverOnlyWifi;
 
     private SettingsPresenter mPresenter;
 

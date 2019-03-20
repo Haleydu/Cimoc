@@ -43,15 +43,15 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
     @BindView(R.id.settings_reader_turn)
     ChoicePreference mReaderTurn;
 
-    @BindView(R.id.settings_reader_volume_click_event) View mReaderVolumeEvent;
+//    @BindView(R.id.settings_reader_volume_click_event) View mReaderVolumeEvent;
 
     @Override
     protected void initView() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            mReaderVolumeEvent.setVisibility(View.VISIBLE);
-        } else {
-            mReaderVolumeEvent.setVisibility(View.GONE);
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//            mReaderVolumeEvent.setVisibility(View.VISIBLE);
+//        } else {
+//            mReaderVolumeEvent.setVisibility(View.GONE);
+//        }
         mReaderInterval.bindPreference(PreferenceManager.PREF_READER_STREAM_INTERVAL, false);
         mReaderLoadPrev.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
         mReaderLoadNext.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
@@ -69,14 +69,14 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
         startActivity(intent);
     }
 
-    @OnClick(R.id.settings_reader_volume_click_event)
-    void onReaderVolumeEventClick() {
-        String[] items = {"音量上键", "音量下键"};
-        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
-                items, DIALOG_REQUEST_OPERATION);
-        fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
-    }
+//    @OnClick(R.id.settings_reader_volume_click_event)
+//    void onReaderVolumeEventClick() {
+//        String[] items = {"音量上键", "音量下键"};
+//        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
+//                items, DIALOG_REQUEST_OPERATION);
+//        fragment.setTargetFragment(this, 0);
+//        fragment.show(getFragmentManager(), null);
+//    }
 
     private void showEventList(int index) {
         int[] mChoiceArray = ClickEvents.getStreamClickEventChoice(mPreference);

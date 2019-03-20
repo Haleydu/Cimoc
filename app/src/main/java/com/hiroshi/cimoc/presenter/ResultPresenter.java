@@ -26,6 +26,8 @@ public class ResultPresenter extends BasePresenter<ResultView> {
     private String keyword;
     private boolean strictSearch;
     private int error = 0;
+    private String keywordTemp;
+    private String comicTitleTemp = "";
 
     public ResultPresenter(int[] source, String keyword, boolean strictSearch) {
         this.keyword = keyword;
