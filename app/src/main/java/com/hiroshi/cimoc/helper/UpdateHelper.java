@@ -20,6 +20,7 @@ import com.hiroshi.cimoc.source.HHAAZZ;
 import com.hiroshi.cimoc.source.HHSSEE;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.MH517;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MH50;
@@ -92,6 +93,7 @@ public class UpdateHelper {
         list.add(PuFei.getDefaultSource());
         list.add(Cartoonmad.getDefaultSource());
         list.add(Animx2.getDefaultSource());
+        list.add(MH517.getDefaultSource());
         list.add(BaiNian.getDefaultSource());
         list.add(MiGu.getDefaultSource());
         list.add(Tencent.getDefaultSource());

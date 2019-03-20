@@ -246,6 +246,12 @@
                 <data
                     android:host="www.chuixue.net"
                     android:scheme="https" />
+                <data
+                    android:host="m.517manhua.com"
+                    android:scheme="http" />
+                <data
+                    android:host="m.517manhua.com"
+                    android:scheme="https" />
                 <!--Generate By feilong end-->
 
             </intent-filter>

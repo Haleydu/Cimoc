@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH50;
+import com.hiroshi.cimoc.source.MH517;
 import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MiGu;
@@ -62,6 +63,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(PuFei.TYPE);
         list.add(Cartoonmad.TYPE);
         list.add(Animx2.TYPE);
+        list.add(MH517.TYPE);
         list.add(BaiNian.TYPE);
         list.add(MiGu.TYPE);
         list.add(Tencent.TYPE);
