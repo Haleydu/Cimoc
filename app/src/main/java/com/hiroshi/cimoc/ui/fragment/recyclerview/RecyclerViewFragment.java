@@ -42,7 +42,8 @@ public abstract class RecyclerViewFragment extends BaseFragment implements BaseA
     }
 
     @Override
-    public void onItemLongClick(View view, int position) {
+    public boolean onItemLongClick(View view, int position) {
+        return false;
     }
 
     @Override
