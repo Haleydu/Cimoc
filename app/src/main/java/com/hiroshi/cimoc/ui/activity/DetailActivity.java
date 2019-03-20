@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.ui.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -227,6 +228,13 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
 
     @Override
     public boolean onItemLongClick(View view, int position) {
+        if (position == 0) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(mDetailAdapter.title)
+                    .setMessage(mDetailAdapter.intro)
+                    .setPositiveButton(R.string.dialog_close, null)
+                    .show();
+        }
         return false;
     }
 
