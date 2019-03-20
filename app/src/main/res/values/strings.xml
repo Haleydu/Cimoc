@@ -125,6 +125,8 @@
     <string name="settings_reader_click_event_summary">阅读状态屏幕及音量键点击事件</string>
     <string name="settings_reader_long_click_event">自定义长按事件</string>
     <string name="settings_reader_long_click_event_summary">阅读状态屏幕长按事件</string>
+    <string name="settings_reader_volume_click_event">自定义音量键点击事件</string>
+    <string name="settings_reader_volume_click_event_summary">音量键点击事件</string>
     <string name="settings_reader_load_prev">自动加载上一章</string>
     <string name="settings_reader_load_prev_summary">位于第一页自动加载上一章</string>
     <string name="settings_reader_load_next">自动加载下一章</string>
@@ -160,6 +162,10 @@
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
+    <string name="settings_other_connect_only_wifi">仅WiFi联网</string>
+    <string name="settings_other_connect_only_wifi_summary">非 WIFI 环境下禁止联网</string>
+    <string name="settings_other_loadcover_only_wifi">禁止流量加载封面</string>
+    <string name="settings_other_loadcover_only_wifi_summary">非 WIFI 环境下使用缓存加载封面</string>
     <string name="settings_other_check_update">自动检查漫画更新</string>
     <string name="settings_other_check_update_summary">WIFI 环境下自动检查漫画更新</string>
     <string name="settings_other_launch">默认启动页</string>
@@ -179,6 +185,8 @@
     <string name="backup_save_comic_summary">备份收藏和历史漫画</string>
     <string name="backup_save_tag">备份标签</string>
     <string name="backup_save_tag_summary">备份标签及相应漫画</string>
+    <string name="backup_save_settings">备份设置</string>
+    <string name="backup_save_settings_summary">备份所有个人配置</string>
     <string name="backup_save_success">备份成功 共 %d 条记录</string>
     <string name="backup_restore">恢复</string>
     <string name="backup_restore_not_found">没有找到备份文件</string>
@@ -195,6 +203,8 @@
     <string name="backup_cloud_backup_tag_summary">备份收藏漫画到云端</string>
     <string name="backup_cloud_sync_tag">自动同步</string>
     <string name="backup_cloud_sync_tag_summary">自动同步收藏到云</string>
+    <string name="backup_restore_settings">恢复设置</string>
+    <string name="backup_restore_settings_summary">恢复所有个人配置</string>
 
     <string name="home_page">主页</string>
     <string name="home_page_url">https://github.com/feilongfl/Cimoc</string>
@@ -213,6 +223,7 @@
     <string name="about_update">检查更新</string>
     <string name="about_update_url">https://github.com/feilongfl/Cimoc/releases</string>
     <string name="about_update_summary">点击访问Github Releases页面</string>
+    <string name="about_update_app_auto">自动检查更新APP</string>
     <string name="about_update_latest">当前已经是最新版本</string>
     <string name="about_update_download">点击下载最新版本</string>
     <string name="about_update_doing">正在检查更新</string>

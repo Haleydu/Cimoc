@@ -66,11 +66,30 @@ public class ResultPresenter extends BasePresenter<ResultView> {
         if (mStateArray[0].state == STATE_NULL) {
             Parser parser = mSourceManager.getParser(mStateArray[0].source);
             mStateArray[0].state = STATE_DOING;
+
+            //修复扑飞漫画分类查看
+            if (mStateArray[0].page == 0) {
+                if (parser.getTitle().equals("扑飞漫画")) {
+                    keywordTemp = keyword;
+                    keyword = keyword.replace("_%d", "");
+                }
+            } else {
+                if (parser.getTitle().equals("扑飞漫画")) {
+                    keyword = keywordTemp;
+                }
+            }
             mCompositeSubscription.add(Manga.getCategoryComic(parser, keyword, ++mStateArray[0].page)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Action1<List<Comic>>() {
                         @Override
                         public void call(List<Comic> list) {
+
+                            //修复扑飞漫画分类查看时的重复加载列表问题
+                            if (!comicTitleTemp.equals("") && comicTitleTemp.equals(list.get(0).getTitle())) {
+                                list.clear();
+                            }
+                            comicTitleTemp = list.get(0).getTitle();
+
                             mBaseView.onLoadSuccess(list);
                             mStateArray[0].state = STATE_NULL;
                         }

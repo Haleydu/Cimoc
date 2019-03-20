@@ -24,6 +24,7 @@ public class BackupActivity extends BackActivity implements BackupView {
 
     private static final int DIALOG_REQUEST_RESTORE_COMIC = 0;
     private static final int DIALOG_REQUEST_RESTORE_TAG = 1;
+    private static final int DIALOG_REQUEST_RESTORE_SETTINGS = 2;
 
     @BindView(R.id.backup_layout)
     View mLayoutView;
@@ -65,8 +66,16 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_restore_comic)
-    void onRestoreFavoriteClick() {
+    @OnClick(R.id.backup_save_settings) void onSaveSettingsClick() {
+        showProgressDialog();
+        if (PermissionUtils.hasStoragePermission(this)) {
+            mPresenter.saveSettings();
+        } else {
+            onFileLoadFail();
+        }
+    }
+
+    @OnClick(R.id.backup_restore_comic) void onRestoreFavoriteClick() {
         showProgressDialog();
         if (PermissionUtils.hasStoragePermission(this)) {
             mPresenter.loadComicFile();
@@ -85,15 +94,13 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
-    @OnClick(R.id.backup_cloud_restore)
-    void onCloudRestoreClick() {
-//        showProgressDialog();
-//        if (PermissionUtils.hasStoragePermission(this)) {
-//            mPresenter.loadComicFile();
-//        } else {
-//            onFileLoadFail();
-//        }
-        showSnackbar(R.string.developing);
+    @OnClick(R.id.backup_restore_settings) void onRestoreSettingsClick() {
+        showProgressDialog();
+        if (PermissionUtils.hasStoragePermission(this)) {
+            mPresenter.loadSettingsFile();
+        } else {
+            onFileLoadFail();
+        }
     }
 
     @Override
@@ -107,6 +114,10 @@ public class BackupActivity extends BackActivity implements BackupView {
                 showProgressDialog();
                 mPresenter.restoreTag(bundle.getString(EXTRA_DIALOG_RESULT_VALUE));
                 break;
+            case DIALOG_REQUEST_RESTORE_SETTINGS:
+                showProgressDialog();
+                mPresenter.restoreSetting(bundle.getString(EXTRA_DIALOG_RESULT_VALUE));
+                break;
         }
     }
 
@@ -118,6 +129,11 @@ public class BackupActivity extends BackActivity implements BackupView {
     @Override
     public void onTagFileLoadSuccess(String[] file) {
         showChoiceDialog(R.string.backup_restore_tag, file, DIALOG_REQUEST_RESTORE_TAG);
+    }
+
+    @Override
+    public void onSettingsFileLoadSuccess(String[] file) {
+        showChoiceDialog(R.string.backup_restore_settings, file, DIALOG_REQUEST_RESTORE_SETTINGS);
     }
 
     private void showChoiceDialog(int title, String[] item, int request) {

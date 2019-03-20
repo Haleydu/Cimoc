@@ -3,6 +3,8 @@ package com.hiroshi.cimoc.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Map;
+
 /**
  * Created by Hiroshi on 2016/8/4.
  */
@@ -80,7 +82,13 @@ public class PreferenceManager {
 
     public static final String PREF_NIGHT = "pref_night";
 
+    public static final String PREF_UPDATE_APP_AUTO = "pref_update_app_auto";
+
+    public static final String PREF_UPDATE_CURRENT_URL = "pref_update_current_url";
+
     public static final String PREF_OTHER_CHECK_UPDATE = "pref_other_check_update";
+    public static final String PREF_OTHER_CONNECT_ONLY_WIFI = "pref_other_connect_only_wifi";
+    public static final String PREF_OTHER_LOADCOVER_ONLY_WIFI = "pref_other_loadcover_only_wifi";
     public static final String PREF_OTHER_CHECK_UPDATE_LAST = "pref_other_check_update_last";
     public static final String PREF_OTHER_STORAGE = "pref_other_storage";
     public static final String PREF_OTHER_THEME = "pref_other_theme";
@@ -143,4 +151,15 @@ public class PreferenceManager {
         mSharedPreferences.edit().putLong(key, value).apply();
     }
 
+    public Map<String, ?> getAll() {
+        return mSharedPreferences.getAll();
+    }
+
+    public void putObject(String key, Object value) {
+        if (value instanceof Boolean) mSharedPreferences.edit().putBoolean(key, (Boolean) value).apply();
+        else if (value instanceof Float)  mSharedPreferences.edit().putFloat(key, (Float) value).apply();
+        else if (value instanceof Integer) mSharedPreferences.edit().putInt(key, (Integer) value).apply();
+        else if (value instanceof Long)  mSharedPreferences.edit().putLong(key, (Long) value).apply();
+        else if (value instanceof String)  mSharedPreferences.edit().putString(key, ((String) value)).apply();
+    }
 }

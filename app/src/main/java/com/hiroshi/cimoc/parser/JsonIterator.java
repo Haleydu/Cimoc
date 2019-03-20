@@ -39,6 +39,6 @@ public abstract class JsonIterator implements SearchIterator {
         return array == null || array.length() == 0;
     }
 
-    protected abstract Comic parse(JSONObject object);
+    protected abstract Comic parse(JSONObject object) throws JSONException;
 
 }

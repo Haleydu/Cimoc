@@ -105,6 +105,7 @@ public class UpdateHelper {
         list.add(BaiNian.getDefaultSource());
         list.add(TuHao.getDefaultSource());
         list.add(ManHuaDB.getDefaultSource());
+        list.add(Manhuatai.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }

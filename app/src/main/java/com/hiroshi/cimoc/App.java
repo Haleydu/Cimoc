@@ -1,8 +1,12 @@
 package com.hiroshi.cimoc;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Resources;
+import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.multidex.MultiDex;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -29,6 +33,16 @@ import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 
@@ -46,30 +60,19 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
     private static OkHttpClient mHttpClient;
 
     private DocumentFile mDocumentFile;
-    private PreferenceManager mPreferenceManager;
+    private static PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
     private RecyclerView.RecycledViewPool mRecycledPool;
     private DaoSession mDaoSession;
     private ActivityLifecycle mActivityLifecycle;
 
-    public static OkHttpClient getHttpClient() {
-        if (mHttpClient == null) {
-            if (false) {
-                mHttpClient = new OkHttpClient.Builder()
-                        .dns(new HttpDns())
-//                https://t.me/proxy?server=sean.taipei&port=9487&secret=7c8b14f05c262263d245109fac1e38c8
-                        .proxy(new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("sean.taipei", 9487)))
-                        .build();
-            } else {
-                mHttpClient = new OkHttpClient.Builder()
-//                        .dns(new HttpDns())
-//                        .proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("proxy", proxyPort)))
-//                        .protocols(Collections.unmodifiableList(Arrays.asList(Protocol.HTTP_1_1)))//disable http2
-                        .build();
-            }
-        }
-        return mHttpClient;
-    }
+
+    private static WifiManager manager_wifi;
+    private static App mApp;
+    private static Activity sActivity;
+
+    // 默认Github源
+    private static String UPDATE_CURRENT_URL = "https://api.github.com/repos/RebornQ/Cimoc/releases/latest";
 
     @Override
     public void onCreate() {
@@ -83,6 +86,48 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         UpdateHelper.update(mPreferenceManager, getDaoSession());
         Fresco.initialize(this);
         initPixels();
+
+        manager_wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        //获取栈顶Activity以及当前App上下文
+        mApp = this;
+        this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+//                Log.d("ActivityLifecycle:",activity+"onActivityCreated");
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+//                Log.d("ActivityLifecycle:",activity+"onActivityStarted");
+                sActivity = activity;
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
     }
 
     @Override
@@ -112,6 +157,22 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         return this;
     }
 
+    public static Context getAppContext() {
+        return mApp;
+    }
+
+    public static Resources getAppResources() {
+        return mApp.getResources();
+    }
+
+    public static Activity getActivity() {
+        return sActivity;
+    }
+
+    public static WifiManager getManager_wifi() {
+        return manager_wifi;
+    }
+
     private void initPixels() {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
@@ -138,7 +199,7 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         return mDaoSession;
     }
 
-    public PreferenceManager getPreferenceManager() {
+    public static PreferenceManager getPreferenceManager() {
         return mPreferenceManager;
     }
 
@@ -163,5 +224,71 @@ public class App extends Application implements AppGetter, Thread.UncaughtExcept
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
+
+    public static void setUpdateCurrentUrl(String updateCurrentUrl) {
+        UPDATE_CURRENT_URL = updateCurrentUrl;
+    }
+
+    public static String getUpdateCurrentUrl() {
+        return UPDATE_CURRENT_URL;
+    }
+
+    public static OkHttpClient getHttpClient() {
+
+        //OkHttpClient返回null实现"仅WiFi联网"，后面要注意空指针处理
+        if (!manager_wifi.isWifiEnabled() && mPreferenceManager.getBoolean(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false)) {
+            return null;
+        }
+
+        if (mHttpClient == null) {
+
+            // 3.OkHttp访问https的Client实例
+            mHttpClient = new OkHttpClient().newBuilder()
+                    .sslSocketFactory(createSSLSocketFactory())
+                    .hostnameVerifier(new TrustAllHostnameVerifier())
+                    .build();
+        }
+
+        return mHttpClient;
+    }
+
+    // 1.实现X509TrustManager接口
+    private static class TrustAllCerts implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    }
+
+    // 2.实现HostnameVerifier接口
+    private static class TrustAllHostnameVerifier implements HostnameVerifier {
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+            return true;
+        }
+    }
+
+    private static SSLSocketFactory createSSLSocketFactory() {
+        SSLSocketFactory ssfFactory = null;
+
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, new TrustManager[]{new TrustAllCerts()}, new SecureRandom());
+
+            ssfFactory = sc.getSocketFactory();
+        } catch (Exception e) {
+        }
+
+        return ssfFactory;
+    }
+
 
 }

@@ -20,6 +20,8 @@ public interface BackupView extends BaseView, DialogCaller {
 
     void onTagFileLoadSuccess(String[] file);
 
+    void onSettingsFileLoadSuccess(String[] file);
+
     void onFileLoadFail();
 
 }

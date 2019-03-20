@@ -28,6 +28,8 @@ import okhttp3.Request;
  */
 public class IKanman extends MangaParser {
 
+    // TODO 实测联通4G网络无法使用看漫画
+
     public static final int TYPE = 0;
     public static final String DEFAULT_TITLE = "看漫画";
 
