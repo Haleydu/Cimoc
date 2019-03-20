@@ -65,7 +65,7 @@ public class BaiNian extends MangaParser {
             protected Comic parse(Node node) {
                 String title = node.attr("a.vbox_t", "title");
                 String cid = node.attr("a.vbox_t", "href").substring(7);
-                String cover = "https://m.bnmanhua.com" + node.attr("a.vbox_t > mip-img", "src");
+                String cover = node.attr("a.vbox_t > mip-img", "src");
                 String update = node.text("h4:eq(2)"); // 从1开始
                 return new Comic(TYPE, cid, title, cover, update, null);
             }
@@ -92,7 +92,7 @@ public class BaiNian extends MangaParser {
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String cover = "https://m.bnmanhua.com" + body.attr("div.dbox > div.img > mip-img", "src");
+        String cover = body.attr("div.dbox > div.img > mip-img", "src");
         String title = body.text("div.dbox > div.data > h4");
         String intro = body.text("div.tbox_js");
         String author = body.text("div.dbox > div.data > p.dir").substring(3).trim();
