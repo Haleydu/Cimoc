@@ -114,9 +114,15 @@ public class MHLove extends MangaParser {
             try {
                 str = DecryptionUtils.base64Decrypt(str);
                 String[] array = str.split("\\$qingtiandy\\$");
+                String preUrl = "";
+                // 当解密出来的URL地址不包含 "https://res.mhkan.com/images/comic" 时，需要加上下面的前缀，否则不需要
+                if(!array[0].contains("mhkan")){
+                    preUrl = "http://www.dc619.com";
+                }
                 for (int i = 0; i != array.length; ++i) {
 //                    http://www.dc619.com/upload2/20067/2019/03-20/20190320133920_3803el39A.D.cjou_small.jpg
-                    list.add(new ImageUrl(i + 1, "http://www.dc619.com" + array[i], false));
+//                    https://res.mhkan.com/images/comic/449/897246/1551916012_ETEbxAU1-ov3pF4.jpg
+                    list.add(new ImageUrl(i + 1, preUrl + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
