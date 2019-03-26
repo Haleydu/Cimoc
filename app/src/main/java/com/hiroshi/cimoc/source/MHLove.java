@@ -25,7 +25,7 @@ import okhttp3.Request;
 
 public class MHLove extends MangaParser {
 
-    public static final int TYPE = 23;
+    public static final int TYPE = 27;
     public static final String DEFAULT_TITLE = "漫画Love";
 
     public static Source getDefaultSource() {
