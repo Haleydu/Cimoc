@@ -6,33 +6,7 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.source.Animx2;
-import com.hiroshi.cimoc.source.BaiNian;
-import com.hiroshi.cimoc.source.BuKa;
-import com.hiroshi.cimoc.source.CCTuku;
-import com.hiroshi.cimoc.source.Cartoonmad;
-import com.hiroshi.cimoc.source.ChuiXue;
-import com.hiroshi.cimoc.source.DM5;
-import com.hiroshi.cimoc.source.Dmzj;
-import com.hiroshi.cimoc.source.Dmzjv2;
-import com.hiroshi.cimoc.source.EHentai;
-import com.hiroshi.cimoc.source.HHAAZZ;
-import com.hiroshi.cimoc.source.HHSSEE;
-import com.hiroshi.cimoc.source.Hhxxee;
-import com.hiroshi.cimoc.source.IKanman;
-import com.hiroshi.cimoc.source.MH517;
-import com.hiroshi.cimoc.source.MH57;
-import com.hiroshi.cimoc.source.ManHuaDB;
-import com.hiroshi.cimoc.source.MH50;
-import com.hiroshi.cimoc.source.MangaNel;
-import com.hiroshi.cimoc.source.Manhuatai;
-import com.hiroshi.cimoc.source.MiGu;
-import com.hiroshi.cimoc.source.NetEase;
-import com.hiroshi.cimoc.source.PuFei;
-import com.hiroshi.cimoc.source.Tencent;
-import com.hiroshi.cimoc.source.TuHao;
-import com.hiroshi.cimoc.source.U17;
-import com.hiroshi.cimoc.source.Webtoon;
+import com.hiroshi.cimoc.source.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +81,11 @@ public class UpdateHelper {
         list.add(TuHao.getDefaultSource());
         list.add(ManHuaDB.getDefaultSource());
         list.add(Manhuatai.getDefaultSource());
+        list.add(GuFeng.getDefaultSource());
+        list.add(CCMH.getDefaultSource());
+        list.add(Manhuatai.getDefaultSource());
+        list.add(MHLove.getDefaultSource());
+        list.add(GuFeng.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }
