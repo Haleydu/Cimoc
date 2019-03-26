@@ -114,6 +114,7 @@ public class UpdateHelper {
         list.add(CCMH.getDefaultSource());
         list.add(Manhuatai.getDefaultSource());
         list.add(MHLove.getDefaultSource());
+        list.add(GuFeng.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }

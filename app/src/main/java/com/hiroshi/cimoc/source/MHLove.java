@@ -46,6 +46,7 @@ public class MHLove extends MangaParser {
         return new Request.Builder()
                 .addHeader("Referer", "http://m.manhualove.com/")
                 .addHeader("Host", "m.manhualove.com")
+//                .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url).build();
     }
 
@@ -56,10 +57,10 @@ public class MHLove extends MangaParser {
             @Override
             protected Comic parse(Node node) {
 
-                String cover = node.attr("a:eq(1) > img", "src");
+                String cover = node.attr("a:eq(0) > img", "src");
 
-                String title = node.text("a:eq(2)");
-                String cid = node.attr("a:eq(1)", "href");
+                String title = node.text("a:eq(1)");
+                String cid = node.attr("a:eq(0)", "href");
                 cid = cid.substring(1, cid.length() - 1);
 
                 return new Comic(TYPE, cid, title, cover, null, null);
@@ -80,11 +81,12 @@ public class MHLove extends MangaParser {
         String intro = body.text("div.Introduct > p:eq(1)");
         String title = body.attr("#Cover > img", "title");
 
-        String update = body.text("div.sub_r > p:eq(4) > span.date");
+        String update = body.text("div.sub_r > p:eq(3) > span.date");
+        String author = body.text("div.sub_r > p:eq(1)");
 
         // 连载状态
-        boolean status = isFinish(body.text("div.sub_r > p:eq(1)"));
-        comic.setInfo(title, cover, update, intro, null, status);
+        boolean status = isFinish(body.text("div.sub_r > p:eq(0)"));
+        comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
@@ -131,7 +133,7 @@ public class MHLove extends MangaParser {
     @Override
     public String parseCheck(String html) {
         // 这里表示的是更新时间
-        return new Node(html).text("div.sub_r > p:eq(4) > span.date");
+        return new Node(html).text("div.sub_r > p:eq(3) > span.date");
     }
 
     @Override

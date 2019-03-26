@@ -39,29 +39,30 @@ public class GuFeng extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "";
         if (page == 1) {
-            url = StringUtils.format("http://m.gufengmh.com/search/?keywords=%s",
+            url = StringUtils.format("https://m.gufengmh8.com/search/?keywords=%s",
                     URLEncoder.encode(keyword, "UTF-8"));
         }
         return new Request.Builder()
-                .addHeader("Referer", url)
-                .addHeader("Host", "m.gufengmh.com")
+//                .addHeader("Referer", "https://www.gufengmh8.com/")
+//                .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
+//                .addHeader("Host", "m.gufengmh8.com")
                 .url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("div.itemBox")) {
+        return new NodeIterator(body.list("div.UpdateList > div.itemBox")) {
             @Override
             protected Comic parse(Node node) {
 
                 String cover = node.attr("div.itemImg > a > mip-img", "src");
 
                 String title = node.text("div.itemTxt > a");
-                String cid = node.attr("div.itemTxt > a", "href").replace("http://m.gufengmh.com/manhua/", "");
+                String cid = node.attr("div.itemTxt > a", "href").replace("https://m.gufengmh8.com/manhua/", "");
                 cid = cid.substring(0, cid.length() - 1);
 
-                String update = node.text("div.itemTxt > p:eq(3)");
+                String update = node.text("div.itemTxt > p:eq(3) > span.date");
                 String author = node.text("div.itemTxt > p:eq(1)");
 
                 return new Comic(TYPE, cid, title, cover, update, author);
@@ -71,7 +72,7 @@ public class GuFeng extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.gufengmh.com/manhua/".concat(cid) + "/";
+        String url = "https://m.gufengmh8.com/manhua/".concat(cid) + "/";
         return new Request.Builder().url(url).build();
     }
 
@@ -103,7 +104,7 @@ public class GuFeng extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.gufengmh.com/manhua/%s/%s.html", cid, path);
+        String url = StringUtils.format("https://m.gufengmh8.com/manhua/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -118,8 +119,8 @@ public class GuFeng extends MangaParser {
                 for (int i = 0; i != array.length; ++i) {
                     // 去掉首末两端的双引号
                     String s = array[i].substring(1, array[i].length() - 1);
-                    // http://res.gufengmh.com/images/comic/159/316518/1519527843Efo9qfJOY9Jb_VP4.jpg
-                    list.add(new ImageUrl(i + 1, "http://res.gufengmh.com/" + urlPrev + s, false));
+                    // http://res.gufengmh8.com/images/comic/159/316518/1519527843Efo9qfJOY9Jb_VP4.jpg
+                    list.add(new ImageUrl(i + 1, "https://res.gufengmh8.com/" + urlPrev + s, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -141,7 +142,7 @@ public class GuFeng extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.gufengmh.com/");
+        return Headers.of("Referer", "https://m.gufengmh8.com/");
     }
 
 }
