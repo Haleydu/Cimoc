@@ -38,15 +38,12 @@ public class MHLove extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
-        String url = "";
-        if (page == 1) {
-            url = StringUtils.format("http://m.manhualove.com/statics/search.aspx?key=%s",
-                    URLEncoder.encode(keyword, "UTF-8"));
+        if (page != 1) {
+            return null;
         }
+        String url = StringUtils.format("http://m.manhualove.com/statics/search.aspx?key=%s", keyword);
         return new Request.Builder()
                 .addHeader("Referer", "http://m.manhualove.com/")
-                .addHeader("Host", "m.manhualove.com")
-//                .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url).build();
     }
 
@@ -116,7 +113,7 @@ public class MHLove extends MangaParser {
                 String[] array = str.split("\\$qingtiandy\\$");
                 String preUrl = "";
                 // 当解密出来的URL地址不包含 "https://res.mhkan.com/images/comic" 时，需要加上下面的前缀，否则不需要
-                if(!array[0].contains("mhkan")){
+                if(!array[0].contains("http")){
                     preUrl = "http://www.dc619.com";
                 }
                 for (int i = 0; i != array.length; ++i) {
