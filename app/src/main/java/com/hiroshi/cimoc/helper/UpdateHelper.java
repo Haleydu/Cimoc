@@ -24,6 +24,7 @@ import com.hiroshi.cimoc.source.Hhxxee;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH517;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MHLove;
 import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MangaNel;
@@ -111,6 +112,8 @@ public class UpdateHelper {
         list.add(Manhuatai.getDefaultSource());
         list.add(GuFeng.getDefaultSource());
         list.add(CCMH.getDefaultSource());
+        list.add(Manhuatai.getDefaultSource());
+        list.add(MHLove.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }

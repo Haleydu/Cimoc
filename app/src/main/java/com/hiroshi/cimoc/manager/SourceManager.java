@@ -27,6 +27,7 @@ import com.hiroshi.cimoc.source.Locality;
 import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MH517;
 import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MHLove;
 import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MangaNel;
 import com.hiroshi.cimoc.source.Manhuatai;
@@ -201,6 +202,9 @@ public class SourceManager {
                     break;
                 case CCMH.TYPE:
                     parser = new CCMH(source);
+                    break;
+                case MHLove.TYPE:
+                    parser = new MHLove(source);
                     break;
 
                 default:
