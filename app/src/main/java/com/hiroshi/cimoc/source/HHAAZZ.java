@@ -26,7 +26,7 @@ import okhttp3.Request;
 public class HHAAZZ extends MangaParser {
 
     public static final int TYPE = 2;
-    public static final String DEFAULT_TITLE = "手机汗汗";
+    public static final String DEFAULT_TITLE = "汗汗酷漫";
 
     private static final String[] servers = {
             "http://20.94201314.net/dm08/",
