@@ -163,6 +163,13 @@
                     android:textSize="14sp" />
 
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_other_show_topbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:title="@string/settings_other_show_topbar"
+                    app:summary="@string/settings_other_show_topbar_summary"/>
+
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_connect_only_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

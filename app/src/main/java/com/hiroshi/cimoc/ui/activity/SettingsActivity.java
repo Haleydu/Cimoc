@@ -81,6 +81,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     ChoicePreference mOtherTheme;
     @BindView(R.id.settings_reader_scale_factor)
     SliderPreference mReaderScaleFactor;
+    @BindView(R.id.settings_other_show_topbar)
+    CheckBoxPreference mOtherShowTopbar;
     @BindView(R.id.settings_other_night_alpha)
     SliderPreference mOtherNightAlpha;
     @BindView(R.id.settings_download_thread)
@@ -120,6 +122,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mConnectOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false);
         mLoadCoverOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_LOADCOVER_ONLY_WIFI, false);
+        mOtherShowTopbar.bindPreference(PreferenceManager.PREF_OTHER_SHOW_TOPBAR,false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
         mOtherLaunch.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_LAUNCH,
@@ -240,6 +243,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mCheckUpdate.setColorStateList(stateList);
         mConnectOnlyWifi.setColorStateList(stateList);
         mLoadCoverOnlyWifi.setColorStateList(stateList);
+        mOtherShowTopbar.setColorStateList(stateList);
     }
 
     @OnClick(R.id.settings_other_storage)

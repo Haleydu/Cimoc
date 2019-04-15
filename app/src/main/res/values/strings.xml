@@ -162,6 +162,8 @@
     <string name="settings_search_auto_complete">开启搜索提示</string>
     <string name="settings_search_auto_complete_summary">根据输入的关键字弹出提示</string>
     <string name="settings_other">应用设置</string>
+    <string name="settings_other_show_topbar">显示通知栏</string>
+    <string name="settings_other_show_topbar_summary">阅读界面显示通知栏</string>
     <string name="settings_other_connect_only_wifi">仅WiFi联网</string>
     <string name="settings_other_connect_only_wifi_summary">非 WIFI 环境下禁止联网</string>
     <string name="settings_other_loadcover_only_wifi">禁止流量加载封面</string>
