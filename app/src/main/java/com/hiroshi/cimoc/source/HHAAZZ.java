@@ -54,7 +54,7 @@ public class HHAAZZ extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://hhaass.com/comicsearch/s.aspx?s=".concat(keyword);
+            final String url = "http://www.hhimm.com/comic/?act=search&st=".concat(keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -63,15 +63,13 @@ public class HHAAZZ extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("ul.se-list > li")) {
+        return new NodeIterator(body.list("div.cComicList > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit("a.pic", 1);
-                String title = node.text("a.pic > div > h3");
-                String cover = node.src("a.pic > img");
-                String update = node.textWithSubstring("a.pic > div > p:eq(4) > span", 0, 10);
-                String author = node.text("a.pic > div > p:eq(1)");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                final String cid = node.hrefWithSplit("a", 1);
+                final String title = node.attr("a", "title");
+                final String cover = node.src("a > img");
+                return new Comic(TYPE, cid, title, cover, null, null);
             }
         };
     }
@@ -83,19 +81,41 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://hhaass.com/comic/".concat(cid);
+        final String url = StringUtils.format("http://www.hhimm.com/manhua/%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
+    private String title = "";
+
     @Override
     public void parseInfo(String html, Comic comic) {
-        Node body = new Node(html);
-        String title = body.text("div.main > div > div.pic > div.con > h3");
-        String cover = body.src("div.main > div > div.pic > img");
-        String update = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(5)", 5);
-        String author = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(1)", 3);
-        String intro = body.text("#detail_block > div > p");
-        boolean status = isFinish(body.text("div.main > div > div.pic > div.con > p:eq(4)"));
+        final Node body = new Node(html);
+        final String cover = body.src("#about_style > img");
+        int index = 0;
+        String update = "", intro = "", author = "";
+        boolean status = false;
+        for (Node node : body.list("#about_kit > ul > li")) {
+            switch (index++) {
+                case 0:
+                    title = node.getChild("h1").text().trim();
+                    break;
+                case 1:
+                    author = node.text().replace("作者:", "").trim();
+                    break;
+                case 2:
+                    String test = node.text().replace("状态:", "").trim();
+                    status = "连载" != test;
+                    break;
+                case 4:
+                    update = node.text().replace("更新:", "").trim();
+                    break;
+                case 7:
+                    intro = node.text().replace("简介", "").trim().substring(1);
+                    break;
+                default:
+                    break;
+            }
+        }
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -103,10 +123,12 @@ public class HHAAZZ extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("#sort_div_p > a")) {
-            String title = node.attr("title");
-            String path = node.hrefWithSubString(17);
-            list.add(new Chapter(title, path));
+        for (Node node : body.list(".cVolList > ul")) {
+            for (Node cnode : node.list("li")) {
+                String title = cnode.attr("a", "title").replace(this.title, "").trim();
+                String path = cnode.href("a");
+                list.add(new Chapter(title, path));
+            }
         }
         return list;
     }
