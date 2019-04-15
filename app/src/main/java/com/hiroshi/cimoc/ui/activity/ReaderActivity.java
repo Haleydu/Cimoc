@@ -97,6 +97,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
 
     private boolean mHideInfo;
     private boolean mHideNav;
+    private boolean mShowTopbar;
     private int[] mClickArray;
     private int[] mLongClickArray;
     private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
@@ -133,6 +134,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     protected void initTheme() {
         super.initTheme();
         mHideNav = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_NAV, false);
+        mShowTopbar = mPreference.getBoolean(PreferenceManager.PREF_OTHER_SHOW_TOPBAR, false);
         if (!mHideNav || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
@@ -193,6 +195,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
             }
 
             getWindow().getDecorView().setSystemUiVisibility(options);
+        }
+
+        if (mShowTopbar) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        else{
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -387,7 +396,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
                 title.length() > titleLengthMax ?
                         title.substring(0, titleLengthMax).concat("...") :
                         title
-                );
+        );
     }
 
     @Override
