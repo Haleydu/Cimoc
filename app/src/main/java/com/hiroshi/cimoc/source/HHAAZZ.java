@@ -172,16 +172,47 @@ public class HHAAZZ extends MangaParser {
 
         //img key decode
         if (imgKey != null) {
-            return unsuan(imgKey);
+            return servers[0] + unsuan(imgKey);
         }
         return null;
     }
 
-    private String unsuan(String str) {
+    //https://stackoverflow.com/questions/2946067/what-is-the-java-equivalent-to-javascripts-string-fromcharcode
+    public static String fromCharCode(int... codePoints) {
+        return new String(codePoints, 0, codePoints.length);
+    }
 
-        
+    private String unsuan(String s) {
+        final String sw = "44123.com|hhcool.com|hhimm.com";
+        final String su = "www.hhimm.com";
+        boolean b = false;
 
-        return null;
+        for (int i = 0; i < sw.split("|").length; i++) {
+            if (su.indexOf(sw.split("|")[i]) > -1) {
+                b = true;
+                break;
+            }
+        }
+        if (!b)
+            return "";
+
+        final String x = s.substring(s.length() - 1);
+        final String w = "abcdefghijklmnopqrstuvwxyz";
+        int xi = w.indexOf(x) + 1;
+        final String sk = s.substring(s.length() - xi - 12, s.length() - xi - 1);
+        s = s.substring(0, s.length() - xi - 12);
+        String k = sk.substring(0, sk.length() - 1);
+        String f = sk.substring(sk.length() - 1);
+
+        for (int i = 0; i < k.length(); i++) {
+            s = s.replace(k.substring(i, i + 1), Integer.toString(i));
+        }
+        String[] ss = s.split(f);
+        s = "";
+        for (int i = 0; i < ss.length; i++) {
+            s += fromCharCode(Integer.parseInt(ss[i]));
+        }
+        return s;
     }
 
     @Override
