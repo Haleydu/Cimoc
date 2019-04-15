@@ -26,21 +26,11 @@ import okhttp3.Request;
 public class HHAAZZ extends MangaParser {
 
     public static final int TYPE = 2;
-    public static final String DEFAULT_TITLE = "手机汗汗";
+    public static final String DEFAULT_TITLE = "汗汗酷漫";
 
     private static final String[] servers = {
-            "http://x8.1112223333.com/dm01/",
-            "http://x8.1112223333.com/dm02/",
-            "http://x8.1112223333.com/dm03/",
-            "http://x8.1112223333.com/dm04/",
-            "http://x8.1112223333.com/dm05/",
-            "http://x8.1112223333.com/dm06/",
-            "http://x8.1112223333.com/dm07/",
-            "http://x8.1112223333.com/dm08/",
-            "http://x8.1112223333.com/dm09/",
-            "http://x8.1112223333.com/dm10/",
-            "http://x8.1112223333.com/dm11/",
-            "http://x8.1112223333.com/dm12/"
+            "http://20.94201314.net/dm08/",
+            "http://164.94201314.net/dm08/"
     };
 
     public HHAAZZ(Source source) {
@@ -54,7 +44,7 @@ public class HHAAZZ extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = "http://hhaass.com/comicsearch/s.aspx?s=".concat(keyword);
+            final String url = "http://www.hhimm.com/comic/?act=search&st=".concat(keyword);
             return new Request.Builder().url(url).build();
         }
         return null;
@@ -63,15 +53,13 @@ public class HHAAZZ extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("ul.se-list > li")) {
+        return new NodeIterator(body.list("div.cComicList > li")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit("a.pic", 1);
-                String title = node.text("a.pic > div > h3");
-                String cover = node.src("a.pic > img");
-                String update = node.textWithSubstring("a.pic > div > p:eq(4) > span", 0, 10);
-                String author = node.text("a.pic > div > p:eq(1)");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                final String cid = node.hrefWithSplit("a", 1);
+                final String title = node.attr("a", "title");
+                final String cover = node.src("a > img");
+                return new Comic(TYPE, cid, title, cover, null, null);
             }
         };
     }
@@ -83,19 +71,41 @@ public class HHAAZZ extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://hhaass.com/comic/".concat(cid);
+        final String url = StringUtils.format("http://www.hhimm.com/manhua/%s.html", cid);
         return new Request.Builder().url(url).build();
     }
 
+    private String title = "";
+
     @Override
     public void parseInfo(String html, Comic comic) {
-        Node body = new Node(html);
-        String title = body.text("div.main > div > div.pic > div.con > h3");
-        String cover = body.src("div.main > div > div.pic > img");
-        String update = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(5)", 5);
-        String author = body.textWithSubstring("div.main > div > div.pic > div.con > p:eq(1)", 3);
-        String intro = body.text("#detail_block > div > p");
-        boolean status = isFinish(body.text("div.main > div > div.pic > div.con > p:eq(4)"));
+        final Node body = new Node(html);
+        final String cover = body.src("#about_style > img");
+        int index = 0;
+        String update = "", intro = "", author = "";
+        boolean status = false;
+        for (Node node : body.list("#about_kit > ul > li")) {
+            switch (index++) {
+                case 0:
+                    title = node.getChild("h1").text().trim();
+                    break;
+                case 1:
+                    author = node.text().replace("作者:", "").trim();
+                    break;
+                case 2:
+                    String test = node.text().replace("状态:", "").trim();
+                    status = "连载" != test;
+                    break;
+                case 4:
+                    update = node.text().replace("更新:", "").trim();
+                    break;
+                case 7:
+                    intro = node.text().replace("简介", "").trim().substring(1);
+                    break;
+                default:
+                    break;
+            }
+        }
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -103,47 +113,106 @@ public class HHAAZZ extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("#sort_div_p > a")) {
-            String title = node.attr("title");
-            String path = node.hrefWithSubString(17);
-            list.add(new Chapter(title, path));
+        for (Node node : body.list(".cVolList > ul")) {
+            for (Node cnode : node.list("li")) {
+                String title = cnode.attr("a", "title").replace(this.title, "").trim();
+                String path = cnode.href("a");
+                list.add(new Chapter(title, path));
+            }
         }
         return list;
     }
 
+    private String _path;
+
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "http://hhaass.com/".concat(path);
+        String url = "http://www.hhimm.com".concat(path);
+        _path = path;
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String[] str = StringUtils.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
-        if (str != null) {
-            String[] result = unsuan(str[0]);
-            for (int i = 0; i != result.length; ++i) {
-                list.add(new ImageUrl(i + 1, servers[Integer.parseInt(str[1]) - 1].concat(result[i]), false));
-            }
+
+        //save page info
+        final String pathId = Node.splitHref(_path, 0);
+        final String pathS = Node.splitHref(_path, 4);
+
+        Node body = new Node(html);
+        int i = 1;
+        for (Node node : body.list("#iPageHtm > a")) {
+            list.add(new ImageUrl(i,
+                    StringUtils.format("http://www.hhimm.com/%s/%d.html?s=%s&d=0", pathId, i, pathS),
+                    true));
+
+            i++;
         }
+
         return list;
     }
 
-    private String[] unsuan(String str) {
-        int num = str.length() - str.charAt(str.length() - 1) + 'a';
-        String code = str.substring(num - 13, num - 3);
-        String cut = str.substring(num - 3, num - 2);
-        str = str.substring(0, num - 13);
-        for (int i = 0; i < 10; ++i) {
-            str = str.replace(code.charAt(i), (char) ('0' + i));
+    @Override
+    public Request getLazyRequest(String url) {
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public String parseLazy(String html, String url) {
+        Node body = new Node(html);
+
+        // get img key
+        final String imgEleIds[] = {"img1021", "img2391", "img7652", "imgCurr"};
+        String imgKey = null;
+        for (int i = 0; i < imgEleIds.length; i++) {
+            imgKey = body.attr("#".concat(imgEleIds[i]), "name");
+            if (imgKey != null) break;
         }
-        StringBuilder builder = new StringBuilder();
-        String[] array = str.split(cut);
-        for (int i = 0; i != array.length; ++i) {
-            builder.append((char) Integer.parseInt(array[i]));
+
+        //img key decode
+        if (imgKey != null) {
+            return servers[0] + unsuan(imgKey);
         }
-        return builder.toString().split("\\|");
+        return null;
+    }
+
+    //https://stackoverflow.com/questions/2946067/what-is-the-java-equivalent-to-javascripts-string-fromcharcode
+    public static String fromCharCode(int... codePoints) {
+        return new String(codePoints, 0, codePoints.length);
+    }
+
+    private String unsuan(String s) {
+        final String sw = "44123.com|hhcool.com|hhimm.com";
+        final String su = "www.hhimm.com";
+        boolean b = false;
+
+        for (int i = 0; i < sw.split("|").length; i++) {
+            if (su.indexOf(sw.split("|")[i]) > -1) {
+                b = true;
+                break;
+            }
+        }
+        if (!b)
+            return "";
+
+        final String x = s.substring(s.length() - 1);
+        final String w = "abcdefghijklmnopqrstuvwxyz";
+        int xi = w.indexOf(x) + 1;
+        final String sk = s.substring(s.length() - xi - 12, s.length() - xi - 1);
+        s = s.substring(0, s.length() - xi - 12);
+        String k = sk.substring(0, sk.length() - 1);
+        String f = sk.substring(sk.length() - 1);
+
+        for (int i = 0; i < k.length(); i++) {
+            s = s.replace(k.substring(i, i + 1), Integer.toString(i));
+        }
+        String[] ss = s.split(f);
+        s = "";
+        for (int i = 0; i < ss.length; i++) {
+            s += fromCharCode(Integer.parseInt(ss[i]));
+        }
+        return s;
     }
 
     @Override
@@ -266,3 +335,4 @@ public class HHAAZZ extends MangaParser {
     }
 
 }
+

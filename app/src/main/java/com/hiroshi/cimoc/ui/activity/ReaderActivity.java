@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
@@ -382,7 +381,13 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     @Override
     public void onChapterChange(Chapter chapter) {
         max = chapter.getCount();
-        mChapterTitle.setText(chapter.getTitle());
+        final String title = chapter.getTitle();
+        final int titleLengthMax = 15;
+        mChapterTitle.setText(
+                title.length() > titleLengthMax ?
+                        title.substring(0, titleLengthMax).concat("...") :
+                        title
+                );
     }
 
     @Override

@@ -156,7 +156,7 @@ public class MiGu extends MangaParser {
             JSONArray jpgJsonArr = json.getJSONObject("data").getJSONArray("jpgList");
             for (int i = 0; i < jpgJsonArr.length(); i++) {
                 JSONObject j = jpgJsonArr.getJSONObject(i);
-                list.add(new ImageUrl(i, j.getString("url"), false));
+                list.add(new ImageUrl(i + 1, j.getString("url"), false));
             }
         } catch (Exception e) {
             e.printStackTrace();

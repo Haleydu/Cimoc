@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -116,14 +118,16 @@ public class ManHuaDB extends MangaParser {
 
         // 获取本章的总页数
         String pageStr = body.text("ol.breadcrumb > li:eq(2)");
-        int page = Integer.parseInt(pageStr.substring(pageStr.length() - 4, pageStr.length() - 2));
+        Matcher pageNumMatcher = Pattern.compile("共\\s*(\\d+)").matcher(pageStr);
+        if (pageNumMatcher.find()) {
+            final int page = Integer.parseInt(pageNumMatcher.group(1));
+            String path = body.attr("ol.breadcrumb > li:eq(2) > a", "href");
+            path = path.substring(1, path.length() - 5);
 
-        String path = body.attr("ol.breadcrumb > li:eq(2) > a", "href");
-        path = path.substring(1, path.length() - 5);
-
-        list.add(new ImageUrl(1, StringUtils.format("https://www.manhuadb.com/%s_p.html", path), true));
-        for (int i = 2; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("https://www.manhuadb.com/%s_p%d.html", path, i), true));
+            list.add(new ImageUrl(1, StringUtils.format("https://www.manhuadb.com/%s_p.html", path), true));
+            for (int i = 2; i <= page; ++i) {
+                list.add(new ImageUrl(i, StringUtils.format("https://www.manhuadb.com/%s_p%d.html", path, i), true));
+            }
         }
         return list;
     }
