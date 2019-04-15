@@ -101,9 +101,9 @@ public class SourceManager {
                 case Webtoon.TYPE:
                     parser = new Webtoon(source);
                     break;
-                case HHSSEE.TYPE:
-                    parser = new HHSSEE(source);
-                    break;
+//                case HHSSEE.TYPE:
+//                    parser = new HHSSEE(source);
+//                    break;
                 case MH57.TYPE:
                     parser = new MH57(source);
                     break;
