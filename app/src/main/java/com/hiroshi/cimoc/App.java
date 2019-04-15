@@ -45,11 +45,12 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
+import android.support.multidex.MultiDexApplication;
 
 /**
  * Created by Hiroshi on 2016/7/5.
  */
-public class App extends Application implements AppGetter, Thread.UncaughtExceptionHandler {
+public class App extends MultiDexApplication implements AppGetter, Thread.UncaughtExceptionHandler {
 
     public static int mWidthPixels;
     public static int mHeightPixels;
