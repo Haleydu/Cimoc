@@ -29,18 +29,8 @@ public class HHAAZZ extends MangaParser {
     public static final String DEFAULT_TITLE = "手机汗汗";
 
     private static final String[] servers = {
-            "http://x8.1112223333.com/dm01/",
-            "http://x8.1112223333.com/dm02/",
-            "http://x8.1112223333.com/dm03/",
-            "http://x8.1112223333.com/dm04/",
-            "http://x8.1112223333.com/dm05/",
-            "http://x8.1112223333.com/dm06/",
-            "http://x8.1112223333.com/dm07/",
-            "http://x8.1112223333.com/dm08/",
-            "http://x8.1112223333.com/dm09/",
-            "http://x8.1112223333.com/dm10/",
-            "http://x8.1112223333.com/dm11/",
-            "http://x8.1112223333.com/dm12/"
+            "http://20.94201314.net/dm08/",
+            "http://164.94201314.net/dm08/"
     };
 
     public HHAAZZ(Source source) {
@@ -133,39 +123,65 @@ public class HHAAZZ extends MangaParser {
         return list;
     }
 
+    private String _path;
+
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "http://hhaass.com/".concat(path);
+        String url = "http://www.hhimm.com".concat(path);
+        _path = path;
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String[] str = StringUtils.match("sFiles=\"(.*?)\";var sPath=\"(\\d+)\"", html, 1, 2);
-        if (str != null) {
-            String[] result = unsuan(str[0]);
-            for (int i = 0; i != result.length; ++i) {
-                list.add(new ImageUrl(i + 1, servers[Integer.parseInt(str[1]) - 1].concat(result[i]), false));
-            }
+
+        //save page info
+        final String pathId = Node.splitHref(_path, 0);
+        final String pathS = Node.splitHref(_path, 4);
+
+        Node body = new Node(html);
+        int i = 1;
+        for (Node node : body.list("#iPageHtm > a")) {
+            list.add(new ImageUrl(i,
+                    StringUtils.format("http://www.hhimm.com/%s/%d.html?s=%s&d=0", pathId, i, pathS),
+                    true));
+
+            i++;
         }
+
         return list;
     }
 
-    private String[] unsuan(String str) {
-        int num = str.length() - str.charAt(str.length() - 1) + 'a';
-        String code = str.substring(num - 13, num - 3);
-        String cut = str.substring(num - 3, num - 2);
-        str = str.substring(0, num - 13);
-        for (int i = 0; i < 10; ++i) {
-            str = str.replace(code.charAt(i), (char) ('0' + i));
+    @Override
+    public Request getLazyRequest(String url) {
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public String parseLazy(String html, String url) {
+        Node body = new Node(html);
+
+        // get img key
+        final String imgEleIds[] = {"img1021", "img2391", "img7652", "imgCurr"};
+        String imgKey = null;
+        for (int i = 0; i < imgEleIds.length; i++) {
+            imgKey = body.attr("#".concat(imgEleIds[i]), "name");
+            if (imgKey != null) break;
         }
-        StringBuilder builder = new StringBuilder();
-        String[] array = str.split(cut);
-        for (int i = 0; i != array.length; ++i) {
-            builder.append((char) Integer.parseInt(array[i]));
+
+        //img key decode
+        if (imgKey != null) {
+            return unsuan(imgKey);
         }
-        return builder.toString().split("\\|");
+        return null;
+    }
+
+    private String unsuan(String str) {
+
+        
+
+        return null;
     }
 
     @Override
@@ -288,3 +304,4 @@ public class HHAAZZ extends MangaParser {
     }
 
 }
+

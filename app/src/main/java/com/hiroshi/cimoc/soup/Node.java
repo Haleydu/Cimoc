@@ -157,7 +157,7 @@ public class Node {
         return splitHref(href(cssQuery), index);
     }
 
-    private String splitHref(String str, int index) {
+    static public String splitHref(String str, int index) {
         if (str == null) {
             return null;
         }
