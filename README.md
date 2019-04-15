@@ -60,3 +60,19 @@ Online manga reader based on Android
 - （可选）在BrowserFilter中registUrlListener添加相应type，实现关联浏览器操作
 > 在app\src\main\java\com\hiroshi\cimoc\ui\activity\BrowserFilter.java中
 > 修改后运行app\src\main\GenAndroidManifest.fish，使用自动生成的BrowserFilter-data.xml替换AndroidManifest.xml中相应部分
+
+# eink设备推荐配置
+## cimoc设置
+阅读模式－翻页模式
+定义点击事件－左上－上一页，右下下一页
+启用快速翻页（减少）
+自动裁剪百边
+禁止双击放大
+启用通知栏
+## boox优化配置
+dpi－424
+字体加粗－
+a2刷新－打开
+动画过滤200
+全刷触发20
+全屏－关闭
