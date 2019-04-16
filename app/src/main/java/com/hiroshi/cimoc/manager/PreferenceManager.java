@@ -40,6 +40,7 @@ public class PreferenceManager {
     public static final String PREF_READER_PAGING = "pref_reader_paging";
     public static final String PREF_READER_PAGING_REVERSE = "pref_reader_paging_reverse";
     public static final String PREF_READER_WHITE_EDGE = "pref_reader_white_edge";
+    public static final String PREF_READER_WHITE_BACKGROUND = "pref_reader_white_background";
     public static final String PREF_READER_SCALE_FACTOR = "pref_reader_scale_factor";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";

@@ -96,6 +96,13 @@
                     app:summary="@string/settings_reader_white_edge_summary"
                     app:title="@string/settings_reader_white_edge" />
 
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_white_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:summary="@string/settings_reader_white_background_summary"
+                    app:title="@string/settings_reader_white_background" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_reader_scale_factor"
                     android:layout_width="match_parent"
