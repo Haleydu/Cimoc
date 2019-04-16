@@ -119,6 +119,8 @@
     <string name="settings_reader_mode">默认阅读模式</string>
     <string name="settings_reader_config">阅读配置</string>
     <string name="settings_reader_config_summary">自定义阅读模式下各项功能</string>
+    <string name="settings_reader_white_background">使用白色背景</string>
+    <string name="settings_reader_white_background_summary">推荐E-ink设备使用，OLED设备不推荐。</string>
     <string name="settings_reader_turn">阅读方向</string>
     <string name="settings_reader_orientation">屏幕方向</string>
     <string name="settings_reader_click_event">自定义点击事件</string>
