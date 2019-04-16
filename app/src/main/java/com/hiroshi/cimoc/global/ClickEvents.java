@@ -34,10 +34,26 @@ public class ClickEvents {
     }
 
     public static String[] getPageClickEvents() {
-        return new String[]{PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
-                PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM,
-                PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, PreferenceManager.PREF_READER_PAGE_CLICK_UP,
-                PreferenceManager.PREF_READER_PAGE_CLICK_DOWN};
+        return new String[]{
+                PreferenceManager.PREF_READER_PAGE_CLICK_LEFT,
+                PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
+                PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE,
+                PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT,
+                PreferenceManager.PREF_READER_PAGE_CLICK_UP,
+                PreferenceManager.PREF_READER_PAGE_CLICK_DOWN,
+                //joy
+                PreferenceManager.PREF_READER_PAGE_JOY_LT,
+                PreferenceManager.PREF_READER_PAGE_JOY_RT,
+                PreferenceManager.PREF_READER_PAGE_JOY_LEFT,
+                PreferenceManager.PREF_READER_PAGE_JOY_RIGHT,
+                PreferenceManager.PREF_READER_PAGE_JOY_UP,
+                PreferenceManager.PREF_READER_PAGE_JOY_DOWN,
+                PreferenceManager.PREF_READER_PAGE_JOY_B,
+                PreferenceManager.PREF_READER_PAGE_JOY_A,
+                PreferenceManager.PREF_READER_PAGE_JOY_X,
+                PreferenceManager.PREF_READER_PAGE_JOY_Y,
+        };
     }
 
     public static String[] getPageLongClickEvents() {
@@ -94,16 +110,16 @@ public class ClickEvents {
                 PreferenceManager.PREF_READER_STREAM_CLICK_UP,
                 PreferenceManager.PREF_READER_STREAM_CLICK_DOWN,
                 //joy
-                PreferenceManager.PREF_READER_PAGE_JOY_LT,
-                PreferenceManager.PREF_READER_PAGE_JOY_RT,
-                PreferenceManager.PREF_READER_PAGE_JOY_LEFT,
-                PreferenceManager.PREF_READER_PAGE_JOY_RIGHT,
-                PreferenceManager.PREF_READER_PAGE_JOY_UP,
-                PreferenceManager.PREF_READER_PAGE_JOY_DOWN,
-                PreferenceManager.PREF_READER_PAGE_JOY_B,
-                PreferenceManager.PREF_READER_PAGE_JOY_A,
-                PreferenceManager.PREF_READER_PAGE_JOY_X,
-                PreferenceManager.PREF_READER_PAGE_JOY_Y,
+                PreferenceManager.PREF_READER_STREAM_JOY_LT,
+                PreferenceManager.PREF_READER_STREAM_JOY_RT,
+                PreferenceManager.PREF_READER_STREAM_JOY_LEFT,
+                PreferenceManager.PREF_READER_STREAM_JOY_RIGHT,
+                PreferenceManager.PREF_READER_STREAM_JOY_UP,
+                PreferenceManager.PREF_READER_STREAM_JOY_DOWN,
+                PreferenceManager.PREF_READER_STREAM_JOY_B,
+                PreferenceManager.PREF_READER_STREAM_JOY_A,
+                PreferenceManager.PREF_READER_STREAM_JOY_X,
+                PreferenceManager.PREF_READER_STREAM_JOY_Y,
         };
     }
 
