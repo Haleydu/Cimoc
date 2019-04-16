@@ -42,14 +42,28 @@ public class ClickEvents {
     }
 
     public static int[] getPageClickEventChoice(PreferenceManager manager) {
-        int[] array = new int[7];
-        array[0] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, 0);
-        array[1] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_TOP, 0);
-        array[2] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, EVENT_SWITCH_CONTROL);
-        array[3] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM, 0);
-        array[4] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, 0);
-        array[5] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_UP, 0);
-        array[6] = manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_DOWN, 0);
+        final int[] array = {
+                //screen
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, EVENT_PREV_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_TOP, EVENT_PREV_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, EVENT_SWITCH_CONTROL),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM, EVENT_NEXT_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_RIGHT, EVENT_NEXT_PAGE),
+                //key
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_UP, EVENT_PREV_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_DOWN, EVENT_NEXT_PAGE),
+                //joy
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_LT, EVENT_PREV_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_RT, EVENT_NEXT_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_LEFT, EVENT_PREV_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_RIGHT, EVENT_NEXT_PAGE),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_UP, EVENT_LOAD_PREV),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_DOWN, EVENT_LOAD_NEXT),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_B, EVENT_EXIT_READER),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_A, EVENT_NULL),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_X, EVENT_SWITCH_CONTROL),
+                manager.getInt(PreferenceManager.PREF_READER_PAGE_JOY_Y, EVENT_SAVE_PICTURE),
+        };
         return array;
     }
 
@@ -77,19 +91,33 @@ public class ClickEvents {
     }
 
     public static int[] getStreamClickEventChoice(PreferenceManager manager) {
-        int[] array = new int[7];
-        array[0] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, 0);
-        array[1] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_TOP, 0);
-        array[2] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, EVENT_SWITCH_CONTROL);
-        array[3] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM, 0);
-        array[4] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, 0);
-        array[5] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, 0);
-        array[6] = manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, 0);
+        final int[] array = {
+                //screen
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, EVENT_NULL),//0
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_TOP, EVENT_NULL),//1
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, EVENT_SWITCH_CONTROL),//2
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM, EVENT_NULL),//3
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, EVENT_NULL),//4
+                //key
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, EVENT_NULL),//5
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, EVENT_NULL),//6
+                //joy
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_LT, EVENT_PREV_PAGE),//7
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_RT, EVENT_NEXT_PAGE),//8
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_LEFT, EVENT_NULL),//9
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_RIGHT, EVENT_NULL),//10
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_UP, EVENT_NULL),//11
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_DOWN, EVENT_NULL),//12
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_B, EVENT_NULL),//13
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_A, EVENT_NULL),//14
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_X, EVENT_SWITCH_CONTROL),//15
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_Y, EVENT_SAVE_PICTURE),//16
+        };
         return array;
     }
 
     public static int[] getStreamLongClickEventChoice(PreferenceManager manager) {
-        int[] array = new int[5];
+        int[] array = new int[7];
         array[0] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_LEFT, 0);
         array[1] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_TOP, 0);
         array[2] = manager.getInt(PreferenceManager.PREF_READER_STREAM_LONG_CLICK_MIDDLE, 0);

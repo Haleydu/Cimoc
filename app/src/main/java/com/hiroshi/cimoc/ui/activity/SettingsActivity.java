@@ -69,6 +69,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     CheckBoxPreference mReaderPagingReverse;
     @BindView(R.id.settings_reader_white_edge)
     CheckBoxPreference mReaderWhiteEdge;
+    @BindView(R.id.settings_reader_white_background)
+    CheckBoxPreference mReaderWhiteBackground;
     @BindView(R.id.settings_search_auto_complete)
     CheckBoxPreference mSearchAutoComplete;
     @BindView(R.id.settings_other_check_update)
@@ -81,7 +83,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     ChoicePreference mOtherTheme;
     @BindView(R.id.settings_reader_scale_factor)
     SliderPreference mReaderScaleFactor;
-    @BindView(R.id.settings_other_show_topbar)
+    @BindView(R.id.settings_reader_show_topbar)
     CheckBoxPreference mOtherShowTopbar;
     @BindView(R.id.settings_other_night_alpha)
     SliderPreference mOtherNightAlpha;
@@ -118,6 +120,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
         mReaderPagingReverse.bindPreference(PreferenceManager.PREF_READER_PAGING_REVERSE, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
+        mReaderWhiteBackground.bindPreference(PreferenceManager.PREF_READER_WHITE_BACKGROUND, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mConnectOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false);
@@ -239,6 +242,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPaging.setColorStateList(stateList);
         mReaderPagingReverse.setColorStateList(stateList);
         mReaderWhiteEdge.setColorStateList(stateList);
+        mReaderWhiteBackground.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
         mCheckUpdate.setColorStateList(stateList);
         mConnectOnlyWifi.setColorStateList(stateList);

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.binaryresource.BinaryResource;
@@ -93,6 +94,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     TextView mLoadingText;
     @BindView(R.id.reader_recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.reader_box)
+    RelativeLayout mReaderBox;
     private boolean isSavingPicture = false;
 
     private boolean mHideInfo;
@@ -163,6 +166,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
         turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_WHITE_BACKGROUND, false)) {
+            mReaderBox.setBackgroundResource(R.color.white);
+        }
         initSeekBar();
         initLayoutManager();
         initReaderAdapter();
@@ -199,8 +205,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
 
         if (mShowTopbar) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-        else{
+        } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
@@ -457,6 +462,40 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
                     value = mClickArray[6];
                     break;
+
+                case KeyEvent.KEYCODE_BUTTON_L1:
+                case KeyEvent.KEYCODE_BUTTON_L2:
+                    value = mClickArray[7];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_R1:
+                case KeyEvent.KEYCODE_BUTTON_R2:
+                    value = mClickArray[8];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_A:
+                    value = mClickArray[14];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_B:
+                    value = mClickArray[13];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_X:
+                    value = mClickArray[15];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_Y:
+                    value = mClickArray[16];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                    value = mClickArray[9];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    value = mClickArray[10];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_UP:
+                    value = mClickArray[11];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    value = mClickArray[12];
+                    break;
+
             }
             if (value != ClickEvents.EVENT_NULL) {
                 doClickEvent(value);

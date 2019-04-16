@@ -40,6 +40,7 @@ public class PreferenceManager {
     public static final String PREF_READER_PAGING = "pref_reader_paging";
     public static final String PREF_READER_PAGING_REVERSE = "pref_reader_paging_reverse";
     public static final String PREF_READER_WHITE_EDGE = "pref_reader_white_edge";
+    public static final String PREF_READER_WHITE_BACKGROUND = "pref_reader_white_background";
     public static final String PREF_READER_SCALE_FACTOR = "pref_reader_scale_factor";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
@@ -51,6 +52,16 @@ public class PreferenceManager {
     public static final String PREF_READER_PAGE_CLICK_RIGHT = "pref_reader_page_click_right";
     public static final String PREF_READER_PAGE_CLICK_UP = "pref_reader_page_click_up";
     public static final String PREF_READER_PAGE_CLICK_DOWN = "pref_reader_page_click_down";
+    public static final String PREF_READER_PAGE_JOY_LT = "pref_reader_page_joy_lt";
+    public static final String PREF_READER_PAGE_JOY_RT = "pref_reader_page_joy_rt";
+    public static final String PREF_READER_PAGE_JOY_A = "pref_reader_page_joy_a";
+    public static final String PREF_READER_PAGE_JOY_B = "pref_reader_page_joy_b";
+    public static final String PREF_READER_PAGE_JOY_X = "pref_reader_page_joy_x";
+    public static final String PREF_READER_PAGE_JOY_Y = "pref_reader_page_joy_y";
+    public static final String PREF_READER_PAGE_JOY_LEFT = "pref_reader_page_joy_left";
+    public static final String PREF_READER_PAGE_JOY_RIGHT = "pref_reader_page_joy_right";
+    public static final String PREF_READER_PAGE_JOY_UP = "pref_reader_page_joy_up";
+    public static final String PREF_READER_PAGE_JOY_DOWN = "pref_reader_page_joy_down";
     public static final String PREF_READER_PAGE_LONG_CLICK_LEFT = "pref_reader_page_long_click_left";
     public static final String PREF_READER_PAGE_LONG_CLICK_TOP = "pref_reader_page_long_click_top";
     public static final String PREF_READER_PAGE_LONG_CLICK_MIDDLE = "pref_reader_page_long_click_middle";
@@ -71,6 +82,16 @@ public class PreferenceManager {
     public static final String PREF_READER_STREAM_CLICK_RIGHT = "pref_reader_stream_click_right";
     public static final String PREF_READER_STREAM_CLICK_UP = "pref_reader_stream_click_up";
     public static final String PREF_READER_STREAM_CLICK_DOWN = "pref_reader_stream_click_down";
+    public static final String PREF_READER_STREAM_JOY_LT = "pref_reader_stream_joy_lt";
+    public static final String PREF_READER_STREAM_JOY_RT = "pref_reader_stream_joy_rt";
+    public static final String PREF_READER_STREAM_JOY_A = "pref_reader_stream_joy_a";
+    public static final String PREF_READER_STREAM_JOY_B = "pref_reader_stream_joy_b";
+    public static final String PREF_READER_STREAM_JOY_X = "pref_reader_stream_joy_x";
+    public static final String PREF_READER_STREAM_JOY_Y = "pref_reader_stream_joy_y";
+    public static final String PREF_READER_STREAM_JOY_LEFT = "pref_reader_stream_joy_left";
+    public static final String PREF_READER_STREAM_JOY_RIGHT = "pref_reader_stream_joy_right";
+    public static final String PREF_READER_STREAM_JOY_UP = "pref_reader_stream_joy_up";
+    public static final String PREF_READER_STREAM_JOY_DOWN = "pref_reader_stream_joy_down";
     public static final String PREF_READER_STREAM_LONG_CLICK_LEFT = "pref_reader_stream_long_click_left";
     public static final String PREF_READER_STREAM_LONG_CLICK_TOP = "pref_reader_stream_long_click_top";
     public static final String PREF_READER_STREAM_LONG_CLICK_MIDDLE = "pref_reader_stream_long_click_middle";

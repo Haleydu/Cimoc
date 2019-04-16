@@ -55,6 +55,13 @@
                     app:title="@string/settings_reader_keep_bright" />
 
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_show_topbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:summary="@string/settings_reader_show_topbar_summary"
+                    app:title="@string/settings_reader_show_topbar" />
+
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -95,6 +102,13 @@
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_white_edge_summary"
                     app:title="@string/settings_reader_white_edge" />
+
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_reader_white_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:summary="@string/settings_reader_white_background_summary"
+                    app:title="@string/settings_reader_white_background" />
 
                 <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_reader_scale_factor"
@@ -163,24 +177,19 @@
                     android:textSize="14sp" />
 
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
-                    android:id="@+id/settings_other_show_topbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:title="@string/settings_other_show_topbar"
-                    app:summary="@string/settings_other_show_topbar_summary"/>
-
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_connect_only_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_connect_only_wifi"
-                    app:summary="@string/settings_other_connect_only_wifi_summary"/>
+                    app:summary="@string/settings_other_connect_only_wifi_summary"
+                    app:title="@string/settings_other_connect_only_wifi" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_loadcover_only_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:title="@string/settings_other_loadcover_only_wifi"
-                    app:summary="@string/settings_other_loadcover_only_wifi_summary"/>
+                    app:summary="@string/settings_other_loadcover_only_wifi_summary"
+                    app:title="@string/settings_other_loadcover_only_wifi" />
+
                 <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_check_update"
                     android:layout_width="match_parent"

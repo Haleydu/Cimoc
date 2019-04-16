@@ -92,6 +92,38 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
                     showEventList(6);
                     return true;
+                case KeyEvent.KEYCODE_BUTTON_L1:
+                case KeyEvent.KEYCODE_BUTTON_L2:
+                    showEventList(7);
+                    return true;
+                case KeyEvent.KEYCODE_BUTTON_R1:
+                case KeyEvent.KEYCODE_BUTTON_R2:
+                    showEventList(8);
+                    return true;
+                case KeyEvent.KEYCODE_BUTTON_A:
+                    showEventList(14);
+                    return true;
+                case KeyEvent.KEYCODE_BUTTON_B:
+                    showEventList(13);
+                    return true;
+                case KeyEvent.KEYCODE_BUTTON_X:
+                    showEventList(15);
+                    return true;
+                case KeyEvent.KEYCODE_BUTTON_Y:
+                    showEventList(16);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                    showEventList(9);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    showEventList(10);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_UP:
+                    showEventList(11);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    showEventList(12);
+                    return true;
             }
         }
         return super.onKeyDown(keyCode, event);
