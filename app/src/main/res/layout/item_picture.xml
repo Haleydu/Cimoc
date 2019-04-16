@@ -9,4 +9,5 @@
     fresco:progressBarImage="@drawable/reader_progress"
     fresco:progressBarImageScaleType="center"
     fresco:retryImage="@drawable/ic_replay_white_24dp"
+    fresco:fadeDuration="0"
     fresco:retryImageScaleType="center" />
