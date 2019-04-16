@@ -60,7 +60,7 @@ public class UpdateHelper {
         list.add(U17.getDefaultSource());
         list.add(DM5.getDefaultSource());
         list.add(Webtoon.getDefaultSource());
-//        list.add(HHSSEE.getDefaultSource());
+        list.add(HHSSEE.getDefaultSource());
         list.add(MH57.getDefaultSource());
         list.add(MH50.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
