@@ -110,7 +110,19 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
                     showEventList(15);
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_Y:
-                    showEventList(116);
+                    showEventList(16);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                    showEventList(9);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    showEventList(10);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_UP:
+                    showEventList(11);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    showEventList(12);
                     return true;
             }
         }

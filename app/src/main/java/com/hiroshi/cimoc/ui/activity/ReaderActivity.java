@@ -462,6 +462,40 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
                 case KeyEvent.KEYCODE_VOLUME_DOWN:
                     value = mClickArray[6];
                     break;
+
+                case KeyEvent.KEYCODE_BUTTON_L1:
+                case KeyEvent.KEYCODE_BUTTON_L2:
+                    value = mClickArray[7];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_R1:
+                case KeyEvent.KEYCODE_BUTTON_R2:
+                    value = mClickArray[8];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_A:
+                    value = mClickArray[14];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_B:
+                    value = mClickArray[13];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_X:
+                    value = mClickArray[15];
+                    break;
+                case KeyEvent.KEYCODE_BUTTON_Y:
+                    value = mClickArray[16];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                    value = mClickArray[9];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    value = mClickArray[10];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_UP:
+                    value = mClickArray[11];
+                    break;
+                case KeyEvent.KEYCODE_DPAD_DOWN:
+                    value = mClickArray[12];
+                    break;
+
             }
             if (value != ClickEvents.EVENT_NULL) {
                 doClickEvent(value);
