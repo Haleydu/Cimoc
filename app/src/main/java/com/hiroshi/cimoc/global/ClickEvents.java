@@ -28,6 +28,11 @@ public class ClickEvents {
 
     private static String[] mEventTitle;
 
+    public enum JoyLocks {
+        LT,
+        RT
+    }
+
     public static String[] getPageClickEvents() {
         return new String[]{PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, PreferenceManager.PREF_READER_PAGE_CLICK_TOP,
                 PreferenceManager.PREF_READER_PAGE_CLICK_MIDDLE, PreferenceManager.PREF_READER_PAGE_CLICK_BOTTOM,
