@@ -101,16 +101,16 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
                     showEventList(8);
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_A:
-                    showEventList(9);
+                    showEventList(14);
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_B:
-                    showEventList(10);
+                    showEventList(13);
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_X:
-                    showEventList(11);
+                    showEventList(15);
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_Y:
-                    showEventList(12);
+                    showEventList(116);
                     return true;
             }
         }
