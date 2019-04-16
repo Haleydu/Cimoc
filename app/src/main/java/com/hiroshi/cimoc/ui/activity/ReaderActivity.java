@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.binaryresource.BinaryResource;
@@ -93,6 +94,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     TextView mLoadingText;
     @BindView(R.id.reader_recycler_view)
     RecyclerView mRecyclerView;
+    @BindView(R.id.reader_box)
+    RelativeLayout mReaderBox;
     private boolean isSavingPicture = false;
 
     private boolean mHideInfo;
@@ -163,6 +166,9 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
         turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
+        if (mPreference.getBoolean(PreferenceManager.PREF_READER_WHITE_BACKGROUND, false)) {
+            mReaderBox.setBackgroundResource(R.color.white);
+        }
         initSeekBar();
         initLayoutManager();
         initReaderAdapter();
@@ -199,8 +205,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
 
         if (mShowTopbar) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-        else{
+        } else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
