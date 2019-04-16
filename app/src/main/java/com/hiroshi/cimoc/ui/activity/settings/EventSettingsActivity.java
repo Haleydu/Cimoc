@@ -156,17 +156,11 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
         return super.onGenericMotionEvent(event);
     }
 
-    enum JoyLocks {
-        LT,
-        RT
-    }
-
     private boolean JoyLock[] = {false, false};
     private int JoyEvent[] = {7, 8};
     private final float thredhold = 0.3f;
 
-
-    private void checkKey(float val, JoyLocks joy) {
+    private void checkKey(float val, ClickEvents.JoyLocks joy) {
         //unlock
         if (JoyLock[joy.ordinal()] && val < this.thredhold) {
             JoyLock[joy.ordinal()] = false;
@@ -179,8 +173,8 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
     }
 
     private void processJoystickInput(MotionEvent event, int historyPos) {
-        checkKey(event.getAxisValue(MotionEvent.AXIS_GAS), JoyLocks.RT);
-        checkKey(event.getAxisValue(MotionEvent.AXIS_BRAKE), JoyLocks.LT);
+        checkKey(event.getAxisValue(MotionEvent.AXIS_GAS), ClickEvents.JoyLocks.RT);
+        checkKey(event.getAxisValue(MotionEvent.AXIS_BRAKE), ClickEvents.JoyLocks.LT);
     }
 
     private void showEventList(int index) {
