@@ -78,10 +78,28 @@ public class ClickEvents {
     }
 
     public static String[] getStreamClickEvents() {
-        return new String[]{PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, PreferenceManager.PREF_READER_STREAM_CLICK_TOP,
-                PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE, PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM,
-                PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, PreferenceManager.PREF_READER_STREAM_CLICK_UP,
-                PreferenceManager.PREF_READER_STREAM_CLICK_DOWN};
+        return new String[]{
+                //screen
+                PreferenceManager.PREF_READER_STREAM_CLICK_LEFT,
+                PreferenceManager.PREF_READER_STREAM_CLICK_TOP,
+                PreferenceManager.PREF_READER_STREAM_CLICK_MIDDLE,
+                PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM,
+                PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT,
+                //key
+                PreferenceManager.PREF_READER_STREAM_CLICK_UP,
+                PreferenceManager.PREF_READER_STREAM_CLICK_DOWN,
+                //joy
+                PreferenceManager.PREF_READER_PAGE_JOY_LT,
+                PreferenceManager.PREF_READER_PAGE_JOY_RT,
+                PreferenceManager.PREF_READER_PAGE_JOY_LEFT,
+                PreferenceManager.PREF_READER_PAGE_JOY_RIGHT,
+                PreferenceManager.PREF_READER_PAGE_JOY_UP,
+                PreferenceManager.PREF_READER_PAGE_JOY_DOWN,
+                PreferenceManager.PREF_READER_PAGE_JOY_B,
+                PreferenceManager.PREF_READER_PAGE_JOY_A,
+                PreferenceManager.PREF_READER_PAGE_JOY_X,
+                PreferenceManager.PREF_READER_PAGE_JOY_Y,
+        };
     }
 
     public static String[] getStreamLongClickEvents() {
