@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -127,6 +129,58 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+
+        // Check that the event came from a game controller
+        if ((event.getSource() & InputDevice.SOURCE_JOYSTICK) ==
+                InputDevice.SOURCE_JOYSTICK &&
+                event.getAction() == MotionEvent.ACTION_MOVE) {
+
+            // Process all historical movement samples in the batch
+            final int historySize = event.getHistorySize();
+
+            // Process the movements starting from the
+            // earliest historical position in the batch
+            for (int i = 0; i < historySize; i++) {
+                // Process the event at historical position i
+                processJoystickInput(event, i);
+            }
+
+            // Process the current movement sample in the batch (position -1)
+            processJoystickInput(event, -1);
+            return true;
+        }
+        return super.onGenericMotionEvent(event);
+    }
+
+    enum JoyLocks {
+        LT,
+        RT
+    }
+
+    private boolean JoyLock[] = {false, false};
+    private int JoyEvent[] = {7, 8};
+    private final float thredhold = 0.3f;
+
+
+    private void checkKey(float val, JoyLocks joy) {
+        //unlock
+        if (JoyLock[joy.ordinal()] && val < this.thredhold) {
+            JoyLock[joy.ordinal()] = false;
+        }
+        //lock
+        if(!JoyLock[joy.ordinal()] && val > this.thredhold){
+            JoyLock[joy.ordinal()] = true;
+            showEventList(JoyEvent[joy.ordinal()]);
+        }
+    }
+
+    private void processJoystickInput(MotionEvent event, int historyPos) {
+        checkKey(event.getAxisValue(MotionEvent.AXIS_GAS), JoyLocks.RT);
+        checkKey(event.getAxisValue(MotionEvent.AXIS_BRAKE), JoyLocks.LT);
     }
 
     private void showEventList(int index) {
