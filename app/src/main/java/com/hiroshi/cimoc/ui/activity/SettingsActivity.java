@@ -83,7 +83,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     ChoicePreference mOtherTheme;
     @BindView(R.id.settings_reader_scale_factor)
     SliderPreference mReaderScaleFactor;
-    @BindView(R.id.settings_other_show_topbar)
+    @BindView(R.id.settings_reader_show_topbar)
     CheckBoxPreference mOtherShowTopbar;
     @BindView(R.id.settings_other_night_alpha)
     SliderPreference mOtherNightAlpha;
