@@ -141,7 +141,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 R.string.settings_reader_controller_trig_threshold, DIALOG_REQUEST_READER_CONTROLLER_TRIG_THRESHOLD);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
                 R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
-        mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
+        mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 2,
                 R.string.settings_download_thread, DIALOG_REQUEST_DOWNLOAD_THREAD);
     }
 
