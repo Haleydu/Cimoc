@@ -50,6 +50,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     private static final int DIALOG_REQUEST_DOWNLOAD_SCAN = 6;
     private static final int DIALOG_REQUEST_OTHER_NIGHT_ALPHA = 7;
     private static final int DIALOG_REQUEST_READER_SCALE_FACTOR = 8;
+    private static final int DIALOG_REQUEST_READER_CONTROLLER_TRIG_THRESHOLD = 9;
 
     @BindViews({R.id.settings_reader_title, R.id.settings_download_title, R.id.settings_other_title, R.id.settings_search_title})
     List<TextView> mTitleList;
@@ -83,6 +84,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     ChoicePreference mOtherTheme;
     @BindView(R.id.settings_reader_scale_factor)
     SliderPreference mReaderScaleFactor;
+    @BindView(R.id.settings_reader_controller_trig_threshold)
+    SliderPreference mReaderControllerTrigThreshold;
     @BindView(R.id.settings_reader_show_topbar)
     CheckBoxPreference mOtherShowTopbar;
     @BindView(R.id.settings_other_night_alpha)
@@ -134,6 +137,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 ThemeUtils.THEME_BLUE, R.array.theme_items, DIALOG_REQUEST_OTHER_THEME);
         mReaderScaleFactor.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_SCALE_FACTOR, 200,
                 R.string.settings_reader_scale_factor, DIALOG_REQUEST_READER_SCALE_FACTOR);
+        mReaderControllerTrigThreshold.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_CONTROLLER_TRIG_THRESHOLD, 30,
+                R.string.settings_reader_controller_trig_threshold, DIALOG_REQUEST_READER_CONTROLLER_TRIG_THRESHOLD);
         mOtherNightAlpha.bindPreference(getFragmentManager(), PreferenceManager.PREF_OTHER_NIGHT_ALPHA, 0xB0,
                 R.string.settings_other_night_alpha, DIALOG_REQUEST_OTHER_NIGHT_ALPHA);
         mDownloadThread.bindPreference(getFragmentManager(), PreferenceManager.PREF_DOWNLOAD_THREAD, 1,
@@ -181,6 +186,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
                 break;
             case DIALOG_REQUEST_READER_SCALE_FACTOR:
                 mReaderScaleFactor.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
+                break;
+            case DIALOG_REQUEST_READER_CONTROLLER_TRIG_THRESHOLD:
+                mReaderControllerTrigThreshold.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_VALUE));
                 break;
             case DIALOG_REQUEST_OTHER_LAUNCH:
                 mOtherLaunch.setValue(bundle.getInt(EXTRA_DIALOG_RESULT_INDEX));

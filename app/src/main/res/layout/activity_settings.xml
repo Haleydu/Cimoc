@@ -118,6 +118,15 @@
                     app:min="100"
                     app:title="@string/settings_reader_scale_factor" />
 
+                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                    android:id="@+id/settings_reader_controller_trig_threshold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:max="100"
+                    app:min="1"
+                    app:summary="@string/settings_reader_controller_trig_threshold_summary"
+                    app:title="@string/settings_reader_controller_trig_threshold" />
+
                 <TextView
                     android:id="@+id/settings_download_title"
                     android:layout_width="match_parent"

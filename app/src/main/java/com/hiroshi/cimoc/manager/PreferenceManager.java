@@ -42,6 +42,7 @@ public class PreferenceManager {
     public static final String PREF_READER_WHITE_EDGE = "pref_reader_white_edge";
     public static final String PREF_READER_WHITE_BACKGROUND = "pref_reader_white_background";
     public static final String PREF_READER_SCALE_FACTOR = "pref_reader_scale_factor";
+    public static final String PREF_READER_CONTROLLER_TRIG_THRESHOLD = "pref_reader_controller_trig_threshold";
 
     public static final String PREF_READER_PAGE_TURN = "pref_reader_page_turn";
     public static final String PREF_READER_PAGE_ORIENTATION = "pref_reader_page_orientation";
