@@ -1,13 +1,10 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Pair;
-
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -15,9 +12,10 @@ import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.FormBody;
 import okhttp3.Headers;
@@ -66,23 +64,24 @@ public class CCMH extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list(".UpdateList > .itemBox")) {
+        return new NodeIterator(body.list(".list > div")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit(".itemTxt > a", 1);
-                String title = node.text(".itemTxt > a");
-                String cover = node.src(".itemImg > a > img");
-                if (cover.startsWith("//")) cover = "https:" + cover;
-                String update = node.text(".itemTxt > p.txtItme:eq(3)");
-                String author = node.text(".itemTxt > p.txtItme:eq(1)");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                String cid = node.hrefWithSplit("a", 1);
+                String title = node.textWithSplit("a", "\\s+", 0);
+                String cover = node.src("a > img");
+//                if (cover.startsWith("//")) cover = "https:" + cover;
+//                String update = node.text(".itemTxt > p.txtItme:eq(3)");
+//                boolean finish = node.textWithSplit("a","\\s+",1) == "完结";
+                String author = node.textWithSplit("a", "\\s+", 2);
+                return new Comic(TYPE, cid, title, cover, "", author);
             }
         };
     }
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("http://m.ccmh6.com/manhua/%s/", cid);
+        return StringUtils.format("http://m.ccmh6.com/manhua/%s", cid);
     }
 
     @Override
@@ -93,7 +92,7 @@ public class CCMH extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("http://m.ccmh6.com/manhua/%s/", cid);
+        String url = StringUtils.format("http://m.ccmh6.com/manhua/%s", cid);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url)
@@ -103,13 +102,14 @@ public class CCMH extends MangaParser {
     @Override
     public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String intro = body.text(".txtDesc");
-        String title = body.text("#comicName");
-        String cover = body.src("#Cover > img");
-        if (cover.startsWith("//")) cover = "https:" + cover;
-        String author = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(0)");
-        String update = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(4)");
-        boolean status = isFinish(body.text(".Introduct_Sub > .sub_r > .txtItme:eq(2) > a:eq(3)"));
+        String intro = body.text(".intro");
+        String title = body.text(".other > div > strong");
+        String cover = body.src(".cover > img");
+//        if (cover.startsWith("//")) cover = "https:" + cover;
+        String author = body.textWithSplit(".other", "\\s+|：", 8);
+        String update = body.textWithSplit(".other", "\\s+|：", 12)
+                .replace("[", "").replace("]", "");
+        boolean status = isFinish(body.textWithSplit(".other", "\\s+|：", 10));
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -117,18 +117,22 @@ public class CCMH extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list(".chapter-warp > ul > li > a")) {
-            String title = node.text();
-            String path = StringUtils.split(node.href(), "/", 3);
+        for (Node node : body.list(".list > a")) {
+            String title = node.attr("title");
+            String path = node.hrefWithSplit(2);
             list.add(new Chapter(title, path));
         }
 
         return Lists.reverse(list);
     }
 
+    private String _cid, _path;
+
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.ccmh6.com/manhua/%s/%s", cid, path);
+        String url = StringUtils.format("http://m.ccmh6.com/manhua/%s/%s.html", cid, path);
+        _cid = cid;
+        _path = path;
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url)
@@ -138,27 +142,34 @@ public class CCMH extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String arrayString = StringUtils.match("var chapterImages = \\[([\\s\\S]*?)\\];", html, 1);
-        String imagePath = StringUtils.match("var chapterPath = ([\\s\\S]*?);", html, 1).replace("\"", "");
 
-        if (arrayString != null) {
-            try {
-                String[] array = arrayString.split(",");
-                for (int i = 0; i != array.length; ++i) {
-                    String imageUrl;
-                    if (array[i].startsWith("\"http")) {
-                        imageUrl = array[i].replace("\"", "");
-                    } else {
-                        imageUrl = "https://res.manhuachi.com/" + imagePath + array[i].replace("\"", "");
-                    }
-                    list.add(new ImageUrl(i + 1, imageUrl, false));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        //find image count
+        Matcher pageCountMatcher = Pattern.compile("<a href=\"\\?p=(\\d+)\">\\d+<\\/a>").matcher(html);
+        int pageCount = 0;
+        while (pageCountMatcher.find()) {
+            final int pageCountTemp = Integer.parseInt(pageCountMatcher.group(1));
+            pageCount = pageCount > pageCountTemp ? pageCount : pageCountTemp;
         }
 
+        for (int i = 0; i < pageCount; i++) {
+            list.add(new ImageUrl(i, StringUtils.format("http://m.ccmh6.com/manhua/%s/%s.html?p=%d", _cid, _path, i + 1), true));
+        }
         return list;
+    }
+
+    @Override
+    public Request getLazyRequest(String url) {
+        return new Request.Builder()
+                .addHeader("Referer", StringUtils.format("http://m.ccmh6.com/manhua/%s/%s.html", _cid, _path))
+                .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 7.0;) Chrome/58.0.3029.110 Mobile")
+                .url(url).build();
+    }
+
+    @Override
+    public String parseLazy(String html, String url) {
+        Node body = new Node(html);
+        String src = body.src(".img > img");
+        return src;
     }
 
     @Override
