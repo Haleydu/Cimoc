@@ -103,29 +103,29 @@
                         app:summary="@string/backup_restore_settings_summary"/>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                <!--<LinearLayout-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:orientation="vertical">-->
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginBottom="10dp"
-                        android:text="@string/backup_cloud"
-                        android:textColor="?attr/colorPrimary"
-                        android:textSize="14sp" />
+                    <!--<TextView-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginLeft="16dp"-->
+                        <!--android:layout_marginTop="10dp"-->
+                        <!--android:layout_marginRight="16dp"-->
+                        <!--android:layout_marginBottom="10dp"-->
+                        <!--android:text="@string/backup_cloud"-->
+                        <!--android:textColor="?attr/colorPrimary"-->
+                        <!--android:textSize="14sp" />-->
 
-                    <com.hiroshi.cimoc.ui.widget.Option
-                        android:id="@+id/backup_cloud_restore"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:summary="@string/backup_cloud_restore_tag_summary"
-                        app:title="@string/backup_cloud_restore_tag" />
-                </LinearLayout>
+                    <!--<com.hiroshi.cimoc.ui.widget.Option-->
+                        <!--android:id="@+id/backup_cloud_restore"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--app:summary="@string/backup_cloud_restore_tag_summary"-->
+                        <!--app:title="@string/backup_cloud_restore_tag" />-->
+                <!--</LinearLayout>-->
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
