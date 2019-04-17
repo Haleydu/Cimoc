@@ -81,7 +81,7 @@ public class DownloadService extends Service implements AppGetter {
     public void onCreate() {
         super.onCreate();
         PreferenceManager manager = ((App) getApplication()).getPreferenceManager();
-        int num = manager.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 1);
+        int num = manager.getInt(PreferenceManager.PREF_DOWNLOAD_THREAD, 2);
         mWorkerArray = new LongSparseArray<>();
         mExecutorService = Executors.newFixedThreadPool(num);
         mHttpClient = App.getHttpClient();

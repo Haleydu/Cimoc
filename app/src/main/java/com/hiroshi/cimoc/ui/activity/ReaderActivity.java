@@ -35,7 +35,6 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.ReaderPresenter;
-import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter;
 import com.hiroshi.cimoc.ui.adapter.ReaderAdapter.OnLazyLoadListener;
 import com.hiroshi.cimoc.ui.view.ReaderView;
@@ -165,6 +164,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     @Override
     protected void initView() {
         mHideInfo = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
+        mControllerTrigThreshold = mPreference.getInt(PreferenceManager.PREF_READER_CONTROLLER_TRIG_THRESHOLD, 30) * 0.01f;
         mInfoLayout.setVisibility(mHideInfo ? View.INVISIBLE : View.VISIBLE);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
@@ -535,16 +535,16 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
 
     private boolean JoyLock[] = {false, false};
     private int JoyEvent[] = {7, 8};
-    private final float thredhold = 0.3f;
+    private float mControllerTrigThreshold = 0.3f;
 
 
     private void checkKey(float val, ClickEvents.JoyLocks joy) {
         //unlock
-        if (JoyLock[joy.ordinal()] && val < this.thredhold) {
+        if (JoyLock[joy.ordinal()] && val < this.mControllerTrigThreshold) {
             JoyLock[joy.ordinal()] = false;
         }
         //lock
-        if(!JoyLock[joy.ordinal()] && val > this.thredhold){
+        if (!JoyLock[joy.ordinal()] && val > this.mControllerTrigThreshold) {
             JoyLock[joy.ordinal()] = true;
             doClickEvent(mClickArray[JoyEvent[joy.ordinal()]]);
         }
