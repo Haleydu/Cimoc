@@ -123,6 +123,12 @@ public class MH50 extends MangaParser {
                 .build();
     }
 
+    private final String server[] = {
+//            "https://res.manhuachi.com/",
+            "https://res.333dm.com/",
+            "https://res02.333dm.com/"
+    };
+
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
@@ -137,7 +143,7 @@ public class MH50 extends MangaParser {
                     if (array[i].startsWith("\"http")) {
                         imageUrl = array[i].replace("\"", "");
                     } else {
-                        imageUrl = "https://res.manhuachi.com/" + imagePath + array[i].replace("\"", "");
+                        imageUrl = this.server[0] + imagePath + array[i].replace("\"", "");
                     }
                     list.add(new ImageUrl(i + 1, imageUrl, false));
                 }
