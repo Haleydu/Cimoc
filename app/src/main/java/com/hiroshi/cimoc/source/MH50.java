@@ -91,7 +91,7 @@ public class MH50 extends MangaParser {
     @Override
     public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String intro = body.text(".txtDesc");
+        String intro = body.text("#full-des");
         String title = body.text("#comicName");
         String cover = body.src("#Cover > img");
         if (cover.startsWith("//")) cover = "https:" + cover;
