@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -44,28 +46,30 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-//        if (page == 1) {
-//            String url = "http://s.acg.dmzj.com/comicsum/search.php?s=".concat(keyword);
-//            return new Request.Builder().url(url).build();
-//        }
+        if (page == 1) {
+            String url = StringUtils.format("http://s.acg.dmzj.com/comicsum/search.php?s=%s", keyword, page - 1);
+            return new Request.Builder().url(url).build();
+        }
         return null;
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        String jsonString = StringUtils.match("g_search_data = (.*);", html, 1);
         try {
-            return new JsonIterator(new JSONArray(jsonString)) {
+            Pattern p = Pattern.compile("(\\[.*?\\])");
+            Matcher m = p.matcher(html);
+            if (!m.find())
+                return null;
+
+            return new JsonIterator(new JSONArray(m.group(1))) {
                 @Override
                 protected Comic parse(JSONObject object) {
                     try {
                         String cid = object.getString("id");
                         String title = object.getString("name");
-                        String cover = object.getString("cover");
-                        long time = object.getLong("last_updatetime") * 1000;
-                        String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+                        String cover = object.getString("comic_cover");
                         String author = object.optString("authors");
-                        return new Comic(TYPE, cid, title, cover, update, author);
+                        return new Comic(TYPE, cid, title, cover, null, author);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
