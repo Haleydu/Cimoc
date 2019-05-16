@@ -28,7 +28,7 @@ import okhttp3.Request;
 public class MH50 extends MangaParser {
 
     public static final int TYPE = 80;
-    public static final String DEFAULT_TITLE = "50漫画";
+    public static final String DEFAULT_TITLE = "漫画堆";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
@@ -41,7 +41,7 @@ public class MH50 extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = StringUtils.format("https://m.50mh.com/search/?keywords=%s&page=%d", keyword, page);
+            String url = StringUtils.format("https://m.manhuadui.com/search/?keywords=%s&page=%d", keyword, page);
             return new Request.Builder()
                     .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                     .url(url)
@@ -70,18 +70,18 @@ public class MH50 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("https://m.50mh.com/manhua/%s/", cid);
+        return StringUtils.format("https://m.manhuadui.com/manhua/%s/", cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.50mh.com", "manhua\\/(\\w+)", 1));
+        filter.add(new UrlFilter("m.manhuadui.com", "manhua\\/(\\w+)", 1));
     }
 
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("https://m.50mh.com/manhua/%s/", cid);
+        String url = StringUtils.format("https://m.manhuadui.com/manhua/%s/", cid);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url)
@@ -116,7 +116,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.50mh.com/manhua/%s/%s", cid, path);
+        String url = StringUtils.format("https://m.manhuadui.com/manhua/%s/%s", cid, path);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url)
@@ -197,9 +197,9 @@ public class MH50 extends MangaParser {
                     .concat(args[CATEGORY_PROGRESS]).trim();
             String finalPath;
             if (path.isEmpty()) {
-                finalPath = StringUtils.format("https://m.50mh.com/list/");
+                finalPath = StringUtils.format("https://m.manhuadui.com/list/");
             } else {
-                finalPath = StringUtils.format("https://m.50mh.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
+                finalPath = StringUtils.format("https://m.manhuadui.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
             }
             return finalPath;
         }
@@ -358,7 +358,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://m.50mh.com/");
+        return Headers.of("Referer", "https://m.manhuadui.com/");
     }
 
 }
