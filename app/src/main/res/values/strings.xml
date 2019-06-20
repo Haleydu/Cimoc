@@ -15,7 +15,7 @@
     <string name="main_double_click">再按一次退出</string>
     <string name="main_last_read_fail">读取最后阅读失败</string>
     <string name="main_notice">欢迎使用</string>
-    <string name="main_notice_content">以下说明抄自酷安@人生亦梦:\n\n 1，这只是整合了各种源，请不要指望能免费看付费漫画，除非有盗版网站提供免费源\n 2，关于部分网站(看漫画等)，由于网站本身为了规避国内限制，所以国内ip无法看一些敏感漫画，但使用国外ip可以观看\n 3，你可以在cimoc支持的原网站上搜索漫画，然后分享到cimoc打开。可以解决部分漫画在cimoc中搜索不到，但原网站能搜索看到的问题\n\n下边我加的:\n\n1.个人比较怂,所以不支持任何收费漫画,本着不收律师函的小目标随缘更新\n2.酷安偶尔看看,有问题尽量发issue</string>
+    <string name="main_notice_content">我正在向tachiyomi转移中。</string>
     <string name="main_permission">权限请求</string>
     <string name="main_permission_content">下载、备份还原与保存图片功能需要访问SD卡的权限！\n如果没有存储权限，将会出现设置功能将闪退，备份功能无法使用等问题。请在之后的弹出框中确定授予权限！</string>
     <string name="main_permission_success">授权成功</string>
