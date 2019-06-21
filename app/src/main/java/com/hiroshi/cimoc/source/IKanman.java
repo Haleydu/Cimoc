@@ -31,7 +31,7 @@ public class IKanman extends MangaParser {
     // TODO 实测联通4G网络无法使用看漫画
 
     public static final int TYPE = 0;
-    public static final String DEFAULT_TITLE = "看漫画";
+    public static final String DEFAULT_TITLE = "漫画柜";
 
     private String referer = "";
 
@@ -46,7 +46,7 @@ public class IKanman extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("https://m.manhuagui.com/s/%s.html?page=%d&ajax=1", keyword, page);
+        String url = StringUtils.format("https://www.manhuagui.com/s/%s_p%d.html", keyword, page);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166  Safari/535.19")
                 .url(url)
@@ -56,15 +56,15 @@ public class IKanman extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("li > a")) {
+        return new NodeIterator(body.list("li.cf")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit(1);
-                String title = node.text("h3");
-                String cover = node.attr("div > img", "data-src");
-                String update = node.text("dl:eq(5) > dd");
-                String author = node.text("dl:eq(2) > dd");
-                return new Comic(TYPE, cid, title, cover, update, author);
+                String cid = node.hrefWithSplit("a.bcover", 1);
+                String title = node.text(".book-detail > dl > dt > a");
+                String cover = node.attr("a.bcover > img", "src");
+//                String update = node.text("dl:eq(5) > dd");
+//                String author = node.text("dl:eq(2) > dd");
+                return new Comic(TYPE, cid, title, cover, "", "");
             }
         };
     }
