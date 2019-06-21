@@ -166,7 +166,9 @@ public class MH50 extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         String arrayStringCode = StringUtils.match("var chapterImages =\\s*\"(.*?)\";", html, 1);
-        String arrayString = decrypt(arrayStringCode);
+        String arrayString = decrypt(arrayStringCode)
+                .replaceAll("\\[", "")
+                .replaceAll("\\]", "");
         String imagePath = StringUtils.match("var chapterPath = ([\\s\\S]*?);", html, 1).replace("\"", "");
 
         if (arrayString != null) {
