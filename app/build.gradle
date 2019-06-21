@@ -26,7 +26,6 @@ android {
         versionCode buildVersion
         versionName version
         resConfigs "en", "zh"
-//        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "demo"]
         multiDexEnabled true
     }
     signingConfigs {
