@@ -19,14 +19,7 @@ before_script:
 script:
 #- "./gradlew assembleRelease"
 - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew assembleDebug; fi'
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew assembleRelease; fi'
-before_cache:
-- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-cache:
-  directories:
-  - "$HOME/.m2"
-  - "$HOME/.gradle/caches/"
-  - "$HOME/.gradle/wrapper/"
+- 'if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./gradlew assembleRelease; fi'
 before_deploy:
   - echo gitVersion
   - git rev-list --all --count
