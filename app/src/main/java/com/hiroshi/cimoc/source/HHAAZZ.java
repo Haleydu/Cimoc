@@ -28,11 +28,6 @@ public class HHAAZZ extends MangaParser {
     public static final int TYPE = 2;
     public static final String DEFAULT_TITLE = "汗汗酷漫";
 
-    private static final String[] servers = {
-            "http://20.94201314.net/dm08/",
-            "http://164.94201314.net/dm08/"
-    };
-
     public HHAAZZ(Source source) {
         init(source, new Category());
     }
@@ -169,6 +164,8 @@ public class HHAAZZ extends MangaParser {
             imgKey = body.attr("#".concat(imgEleIds[i]), "name");
             if (imgKey != null) break;
         }
+
+        String[] servers = body.attr("#hdDomain", "value").split("\\|");
 
         //img key decode
         if (imgKey != null) {
