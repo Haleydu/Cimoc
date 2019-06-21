@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Base64;
 import android.util.Pair;
 
 import com.google.common.collect.Lists;
@@ -18,6 +19,11 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -129,10 +135,38 @@ public class MH50 extends MangaParser {
             "https://res02.333dm.com/"
     };
 
+    // ref: https://jueyue.iteye.com/blog/1830792
+    @Nullable
+    private String decryptAES(String value, String key, String ivs) {
+        try {
+            SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+            IvParameterSpec iv = new IvParameterSpec(ivs.getBytes());
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
+
+            byte[] code = Base64.decode(value, Base64.NO_WRAP);
+            return new String(cipher.doFinal(code));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private String decrypt(String code){
+        String key = "123456781234567G";
+        String iv = "ABCDEF1G34123412";
+
+        return decryptAES(code, key, iv);
+    }
+
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-        String arrayString = StringUtils.match("var chapterImages = \\[([\\s\\S]*?)\\];", html, 1);
+        String arrayStringCode = StringUtils.match("var chapterImages =\\s*\"(.*?)\";", html, 1);
+        String arrayString = decrypt(arrayStringCode);
         String imagePath = StringUtils.match("var chapterPath = ([\\s\\S]*?);", html, 1).replace("\"", "");
 
         if (arrayString != null) {
