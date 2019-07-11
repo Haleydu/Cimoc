@@ -175,6 +175,9 @@ public class SourceManager {
                 case MHLove.TYPE:
                     parser = new MHLove(source);
                     break;
+                case YYLS.TYPE:
+                    parser = new YYLS(source);
+                    break;
 
                 default:
                     parser = new Null();

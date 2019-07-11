@@ -86,6 +86,7 @@ public class UpdateHelper {
         list.add(Manhuatai.getDefaultSource());
         list.add(MHLove.getDefaultSource());
         list.add(GuFeng.getDefaultSource());
+        list.add(YYLS.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }
