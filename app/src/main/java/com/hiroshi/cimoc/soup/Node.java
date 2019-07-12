@@ -32,6 +32,10 @@ public class Node {
         return new Node(get().select(cssQuery).first());
     }
 
+    public Node getLastChild(String cssQuery) {
+        return new Node(get().select(cssQuery).last());
+    }
+
     public List<Node> list(String cssQuery) {
         List<Node> list = new LinkedList<>();
         Elements elements = element.select(cssQuery);

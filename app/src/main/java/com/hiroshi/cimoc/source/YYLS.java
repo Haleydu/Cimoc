@@ -79,12 +79,12 @@ public class YYLS extends MangaParser {
         Node body = new Node(html);
         String title = body.text("#main > div > div.entry-header.cf > div > h1");
         String cover = body.src("#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(1) > img");
-//        String update = body.getLast("div.entry-content.rich-content a").text().trim();
+        String update = body.getLastChild("div.entry-content.rich-content a").text().trim();
         String author = "";
         String intro = body.text("#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(2) > p");
         Matcher matcher = Pattern.compile("經典完結").matcher(html);
         boolean status = matcher.find();
-        comic.setInfo(title, cover, "", intro, author, status);
+        comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
@@ -129,8 +129,7 @@ public class YYLS extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-//        return new Node(html).getLast("div.entry-content.rich-content a").text().trim();
-        return null;
+        return new Node(html).getLastChild("div.entry-content.rich-content a").text().trim();
     }
 
     @Override
