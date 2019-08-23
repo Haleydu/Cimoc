@@ -131,8 +131,9 @@ public class MH50 extends MangaParser {
 
     private final String server[] = {
 //            "https://res.manhuachi.com/",
-            "https://res.333dm.com/",
-            "https://res02.333dm.com/"
+//            "https://res.333dm.com/",
+//            "https://res02.333dm.com/"
+            "https://mhcdn.manhuazj.com"
     };
 
     // ref: https://jueyue.iteye.com/blog/1830792
@@ -155,7 +156,7 @@ public class MH50 extends MangaParser {
     }
 
     @Nullable
-    private String decrypt(String code){
+    private String decrypt(String code) {
         String key = "123456781234567G";
         String iv = "ABCDEF1G34123412";
 
