@@ -76,6 +76,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
         db.execSQL("INSERT INTO \"SOURCE\" (\"_id\", \"TYPE\", \"TITLE\", \"ENABLE\")" +
                 " SELECT \"_id\", \"TYPE\", \"TITLE\", \"ENABLE\" FROM \"SOURCE2\"");
         db.execSQL("DROP TABLE \"SOURCE2\"");
+        db.execSQL("ALTER TABLE \"COMIC\" ADD COLUMN \"URL\" TEXT");
         db.setTransactionSuccessful();
         db.endTransaction();
     }
