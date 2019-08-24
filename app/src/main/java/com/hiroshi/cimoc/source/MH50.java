@@ -133,7 +133,7 @@ public class MH50 extends MangaParser {
 //            "https://res.manhuachi.com/",
 //            "https://res.333dm.com/",
 //            "https://res02.333dm.com/"
-            "https://mhcdn.manhuazj.com"
+            "https://mhcdn.manhuazj.com/"
     };
 
     // ref: https://jueyue.iteye.com/blog/1830792
@@ -178,6 +178,10 @@ public class MH50 extends MangaParser {
                 for (int i = 0; i != array.length; ++i) {
                     String imageUrl;
                     if (array[i].startsWith("\"http")) {
+                        imagePath = "showImage.php?url=";
+                        imageUrl = this.server[0] + imagePath + array[i].replace("\"", "").replace("\\/", "/");
+                    }
+                    else if (array[i].startsWith("\"http")) {
                         imageUrl = array[i].replace("\"", "");
                     } else {
                         imageUrl = this.server[0] + imagePath + array[i].replace("\"", "");
