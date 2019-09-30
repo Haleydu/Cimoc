@@ -76,12 +76,13 @@ public class MH50 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("https://m.manhuadui.com/manhua/%s/", cid);
+        return StringUtils.format("https://www.manhuadui.com/manhua/%s/", cid);
     }
 
     @Override
     protected void initUrlFilterList() {
         filter.add(new UrlFilter("m.manhuadui.com", "manhua\\/(\\w+)", 1));
+        filter.add(new UrlFilter("www.manhuadui.com", "manhua\\/(\\w+)", 1));
     }
 
 
@@ -122,7 +123,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.manhuadui.com/manhua/%s/%s", cid, path);
+        String url = StringUtils.format("https://www.manhuadui.com/manhua/%s/%s", cid, path);
         return new Request.Builder()
                 .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/12.0 Mobile/15A372 Safari/604.1")
                 .url(url)
