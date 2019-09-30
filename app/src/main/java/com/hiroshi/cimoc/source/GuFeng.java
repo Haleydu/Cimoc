@@ -94,7 +94,7 @@ public class GuFeng extends MangaParser {
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapter-list-1 > li > a")) {
+        for (Node node : new Node(html).list("ul[id^=chapter-list] > li > a")) {
             String title = node.text();
             String path = node.hrefWithSplit(2);
             list.add(0, new Chapter(title, path));
