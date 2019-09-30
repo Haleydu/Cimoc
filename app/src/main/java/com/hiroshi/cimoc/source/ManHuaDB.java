@@ -140,11 +140,7 @@ public class ManHuaDB extends MangaParser {
     @Override
     public String parseLazy(String html, String url) {
         Node body = new Node(html);
-        String path = body.attr("div.text-center > img.img-fluid", "src");
-        if (path != null) {
-            return "https://www.manhuadb.com" + path;
-        }
-        return null;
+        return body.attr("div.text-center > img.img-fluid", "src");
     }
 
     @Override
