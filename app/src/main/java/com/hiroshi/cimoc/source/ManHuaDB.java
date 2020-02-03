@@ -1,5 +1,8 @@
 package com.hiroshi.cimoc.source;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -9,14 +12,17 @@ import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -114,33 +120,42 @@ public class ManHuaDB extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
-        Node body = new Node(html);
+        Document document = Jsoup.parse(html);
 
-        // 获取本章的总页数
-        String pageStr = body.text("ol.breadcrumb > li:eq(2)");
-        Matcher pageNumMatcher = Pattern.compile("共\\s*(\\d+)").matcher(pageStr);
-        if (pageNumMatcher.find()) {
-            final int page = Integer.parseInt(pageNumMatcher.group(1));
-            String path = body.attr("ol.breadcrumb > li:eq(2) > a", "href");
-            path = path.substring(1, path.length() - 5);
+        //获取页面定义的图片host和pre
+        Element urlDefine = document.select(".vg-r-data").first();
+        String imageHost = urlDefine.attr("data-host").trim();
+        String imagePre = urlDefine.attr("data-img_pre").trim();
 
-            list.add(new ImageUrl(1, StringUtils.format("https://www.manhuadb.com/%s_p.html", path), true));
-            for (int i = 2; i <= page; ++i) {
-                list.add(new ImageUrl(i, StringUtils.format("https://www.manhuadb.com/%s_p%d.html", path, i), true));
-            }
+        //获取页面定义的图片信息变量img_data
+        String imageArrDataDefine = document.getElementsByTag("script").eq(7).first().html();
+        imageArrDataDefine = imageArrDataDefine.substring(16, imageArrDataDefine.length() - 2);
+        //进行base64转换
+        try {
+            imageArrDataDefine = DecryptionUtils.base64Decrypt(imageArrDataDefine);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return list;
+        }
+
+        JSONArray imageList = JSON.parseArray(imageArrDataDefine);
+        JSONObject image;
+        int total = imageList.size();
+        for (int i = 0; i < total; i++) {
+            image = imageList.getJSONObject(i);
+            list.add(new ImageUrl(image.getIntValue("p"), imageHost + imagePre + image.getString("img"), false));
         }
         return list;
     }
 
     @Override
     public Request getLazyRequest(String url) {
-        return new Request.Builder().url(url).build();
+        return null;
     }
 
     @Override
     public String parseLazy(String html, String url) {
-        Node body = new Node(html);
-        return body.attr("div.text-center > img.img-fluid", "src");
+        return null;
     }
 
     @Override
