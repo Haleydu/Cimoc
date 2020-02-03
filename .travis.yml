@@ -3,15 +3,15 @@ android:
   components:
   - tools
   - platform-tools
-  - build-tools-28.0.3
-  - android-28
+  - build-tools-29.0.0
+  - android-29
   - add-on
   - extra
 licenses:
 - android-sdk-license-.+
 before_install:
 - echo $TRAVIS_BUILD_NUMBER
-- yes | sdkmanager "platforms;android-28"
+- yes | sdkmanager "platforms;android-29"
 jdk:
 - oraclejdk8
 before_script:
