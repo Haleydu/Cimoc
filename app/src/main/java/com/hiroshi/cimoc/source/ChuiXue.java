@@ -102,8 +102,14 @@ public class ChuiXue extends MangaParser {
         return list;
     }
 
+    private String _cid = "";
+    private String _path = "";
+
     @Override
     public Request getImagesRequest(String cid, String path) {
+        _cid = cid;
+        _path = path;
+
         String url = StringUtils.format("http://www.chuixue.net/manhua/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
@@ -119,7 +125,7 @@ public class ChuiXue extends MangaParser {
                     String s_full = array[i].trim();
                     int index = s_full.indexOf("=");
                     String s = s_full.substring(index + 2, s_full.length() - 1);
-                    list.add(new ImageUrl(i + 1, "http://2.csc1998.com/" + s, false));
+                    list.add(new ImageUrl(i + 1, "http://chuixue1.tianshigege.com/" + s, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -141,7 +147,9 @@ public class ChuiXue extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://www.chuixue.net");
+        String referer = StringUtils.format("http://www.chuixue.net/manhua/%s/%s.html", _cid, _path);
+
+        return Headers.of("Referer", referer);
     }
 
 }
