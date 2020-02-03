@@ -124,6 +124,7 @@ public class BaiNian extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
+        String url = StringUtils.match("z_yurl='(.*?)'", html, 1);
         String str = StringUtils.match("z_img=\'\\[(.*?)\\]\'", html, 1);
         if (str != null && !str.equals("")) {
             try {
@@ -144,8 +145,8 @@ public class BaiNian extends MangaParser {
                     }
 
 //                    http://bnpic.comic123.net/upload/files/15/2619/15489140020.jpg
-//                    http://bnpic.comic123.net/images/comic/25/48730/1522165706dcYCM4Z4HjkbKrlQ.jpg
-                    list.add(new ImageUrl(i + 1, "http://bnpic.comic123.net/" + prevStr + s, false));
+//                    http://bnpic.comic123.net/images/comic/2ain: github.com. Please check that this domain has been added to a service.5/48730/1522165706dcYCM4Z4HjkbKrlQ.jpg
+                    list.add(new ImageUrl(i + 1, url + prevStr + s, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
