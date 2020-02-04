@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -115,7 +116,7 @@ public class Tencent extends MangaParser {
             String path = node.href("a").substring("/chapter/index/id/518333/cid/".length());
             list.add(new Chapter(title, path));
         }
-        return list;
+        return Lists.reverse(list);
     }
 
     @Override
