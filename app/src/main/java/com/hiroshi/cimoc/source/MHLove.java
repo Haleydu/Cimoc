@@ -29,7 +29,7 @@ public class MHLove extends MangaParser {
     public static final String DEFAULT_TITLE = "漫画Love";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
+        return new Source(null, DEFAULT_TITLE, TYPE, false);
     }
 
     public MHLove(Source source) {
