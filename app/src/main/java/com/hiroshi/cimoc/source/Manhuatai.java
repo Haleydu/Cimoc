@@ -7,6 +7,7 @@ import android.util.Pair;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.Manga;
@@ -32,6 +33,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Headers;
 import okhttp3.Request;
@@ -146,36 +148,45 @@ public class Manhuatai extends MangaParser {
         return Lists.reverse(list);
     }
 
+    private String _path = null;
+
     //获取漫画图片Request
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.manhuatai.com/%s/%s.html", cid, path);//于2018.3失效
-//        String url = StringUtils.format("https://m.manhuatai.com%s", path);
+        _path = path;
+        String url = StringUtils.format("https://m.manhuatai.com/api/getcomicinfo_body?product_id=2&productname=mht&platformname=wap&comic_newid=%s", cid);
         return new Request.Builder().url(url).build();
     }
 
-
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html)  {
         List<ImageUrl> list = new LinkedList<>();
-        MDocument document = new MDocument(html);
-        String elScriptList = document.text("#comiclist > script:nth-child(2)");
-        String str = StringUtils.match("<script>var mh_info=(\\{[^}]*\\}).*", elScriptList, 1);
-        Gson gson = new Gson();
-        MhInfo mh_info = gson.fromJson(str, MhInfo.class);
-        int offset = mh_info.imgpath.charAt(1) - '%';
-        ArrayList<Character> list1 = new ArrayList<Character>();
-        for (int i = 0; i < mh_info.imgpath.length(); i++) {
-            list1.add((char) (mh_info.imgpath.charAt(i) - offset));
+        try {
+            JSONObject object = new JSONObject(html);
+            if (object.getInt("status") != 0) {
+                return list;
+            }
+
+            JSONArray chapters = object.getJSONObject("data").getJSONArray("comic_chapter");
+            JSONObject chapter = null;
+            for (int i = 0; i < chapters.length(); i++) {
+                chapter = chapters.getJSONObject(i);
+                String a = chapter.getString("chapter_id");
+                if(a.equals(_path)) {
+                    break;
+                }
+            }
+
+            String ImagePattern = "http://mhpic." + chapter.getString("chapter_domain") + chapter.getString("rule") + "-mht.low.webp";
+
+            for (int index = chapter.getInt("start_num"); index <= chapter.getInt("end_num"); index++) {
+                String image = ImagePattern.replaceFirst("\\$\\$", Integer.toString(index));
+                list.add(new ImageUrl(index, image, false));
+            }
+        } catch (JSONException ex) {
+            // ignore
         }
-        String imgpath = org.apache.commons.lang3.StringUtils.join(list1, ",").replaceAll(",", "");
-        String b = mh_info.comic_size;
-        String c = "mhpic." + mh_info.domain;
-        for (int i = 0; i < mh_info.totalimg; i++) {
-            String d = (mh_info.startimg + i) + ".jpg" + b;
-            String e = "https://" + c + "/comic/" + imgpath + d;
-            list.add(new ImageUrl(i + 1, e, false));
-        }
+
         return list;
     }
 
