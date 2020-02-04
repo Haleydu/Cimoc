@@ -73,7 +73,7 @@ public class App extends MultiDexApplication implements AppGetter, Thread.Uncaug
     private static Activity sActivity;
 
     // 默认Github源
-    private static String UPDATE_CURRENT_URL = "https://api.github.com/repos/RebornQ/Cimoc/releases/latest";
+    private static String UPDATE_CURRENT_URL = "https://api.github.com/repos/feilongfl/Cimoc/releases/latest";
 
     @Override
     public void onCreate() {
