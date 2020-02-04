@@ -126,7 +126,7 @@
                 <data
                     android:host="m.dmzj.com"
                     android:scheme="https" />
-                <data
+                <!-- <data
                     android:host="www.manhuagui.com"
                     android:scheme="http" />
                 <data
@@ -143,7 +143,7 @@
                     android:scheme="http" />
                 <data
                     android:host="m.manhuagui.com"
-                    android:scheme="https" />
+                    android:scheme="https" /> -->
                 <data
                     android:host="m.5qmh.com"
                     android:scheme="http" />
@@ -186,12 +186,12 @@
                 <data
                     android:host="m.migudm.cn"
                     android:scheme="https" />
-                <data
+                <!-- <data
                     android:host="h5.manhua.163.com"
                     android:scheme="http" />
                 <data
                     android:host="h5.manhua.163.com"
-                    android:scheme="https" />
+                    android:scheme="https" /> -->
                 <data
                     android:host="99770.hhxxee.com"
                     android:scheme="http" />
