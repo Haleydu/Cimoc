@@ -123,7 +123,7 @@ public class PuFei extends MangaParser {
                 str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://res.img.pufei.net/" + array[i], false));
+                    list.add(new ImageUrl(i + 1, "http://res.img.1fi4b.cn/" + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
