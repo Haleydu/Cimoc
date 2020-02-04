@@ -128,7 +128,7 @@ public class Manhuatai extends MangaParser {
         String cover = body.attr("div.detail-cover > img", "data-src");
         cover = "https:" + cover;
 //        Log.i("Cover", cover);
-        String update = body.text("span.update");
+        String update = body.text("span.update").substring(0,10);
         String author = null;
         String intro = body.text("div#js_comciDesc > p.desc-content");
 //        boolean status = isFinish(body.text("div.jshtml > ul > li:nth-child(2)").substring(3));
