@@ -246,8 +246,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 //            );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
-        mLastText = ButterKnife.findById(header, R.id.drawer_last_title);
-        mDraweeView = ButterKnife.findById(header, R.id.drawer_last_cover);
+        mLastText = header.findViewById(R.id.drawer_last_title);
+        mDraweeView = header.findViewById(R.id.drawer_last_cover);
         mLastText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

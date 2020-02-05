@@ -36,7 +36,7 @@ public class SliderDialogFragment extends DialogFragment implements DialogInterf
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_slider, null);
         int[] item = getArguments().getIntArray(DialogCaller.EXTRA_DIALOG_ITEMS);
-        mSeekBar = ButterKnife.findById(view, R.id.dialog_slider_bar);
+        mSeekBar = view.findViewById(R.id.dialog_slider_bar);
         mSeekBar.setMin(item[0]);
         mSeekBar.setMax(item[1]);
         mSeekBar.setProgress(item[1]);
