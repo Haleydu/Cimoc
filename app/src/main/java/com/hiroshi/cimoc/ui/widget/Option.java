@@ -41,8 +41,8 @@ public class Option extends FrameLayout {
         String title = typedArray.getString(R.styleable.Option_title);
         String summary = typedArray.getString(R.styleable.Option_summary);
 
-        mTitleView = ButterKnife.findById(this, R.id.custom_option_title);
-        mSummaryView = ButterKnife.findById(this, R.id.custom_option_summary);
+        mTitleView = this.findViewById(R.id.custom_option_title);
+        mSummaryView = this.findViewById(R.id.custom_option_summary);
 
         mTitleView.setText(title);
         mSummaryView.setText(summary);

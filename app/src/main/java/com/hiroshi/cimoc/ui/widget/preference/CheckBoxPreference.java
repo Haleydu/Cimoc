@@ -51,9 +51,9 @@ public class CheckBoxPreference extends FrameLayout implements View.OnClickListe
         String title = typedArray.getString(R.styleable.Option_title);
         String summary = typedArray.getString(R.styleable.Option_summary);
 
-        mCheckBox = ButterKnife.findById(this, R.id.custom_option_checkbox);
-        TextView titleView = ButterKnife.findById(this, R.id.custom_option_title);
-        TextView summaryView = ButterKnife.findById(this, R.id.custom_option_summary);
+        mCheckBox = this.findViewById(R.id.custom_option_checkbox);
+        TextView titleView = this.findViewById(R.id.custom_option_title);
+        TextView summaryView = this.findViewById(R.id.custom_option_summary);
 
         titleView.setText(title);
         summaryView.setText(summary);
