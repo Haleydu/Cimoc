@@ -54,7 +54,9 @@
 -keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
 public static java.lang.String TABLENAME;
 }
--keep class **$Properties
+#ref: https://juejin.im/post/5d5fb53b51882554a13f8b6a
+#-keep class **$Properties
+-keep class **$Properties{*;}
 -dontwarn org.greenrobot.greendao.database.**
 -dontwarn org.greenrobot.greendao.rx.**
 
