@@ -21,8 +21,8 @@ import rx.schedulers.Schedulers;
 public class Update {
 
     private static final String UPDATE_URL = "https://api.github.com/repos/feilongfl/cimoc/releases/latest";
-    private static final String SERVER_FILENAME = "name";
-    private static final String LIST = "list";
+    private static final String SERVER_FILENAME = "tag_name";
+//    private static final String LIST = "list";
 
     public static Observable<String> check() {
         return Observable.create(new Observable.OnSubscribe<String>() {
