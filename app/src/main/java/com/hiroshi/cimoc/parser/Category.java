@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.parser;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 import android.util.Pair;
 
 import java.lang.annotation.Retention;

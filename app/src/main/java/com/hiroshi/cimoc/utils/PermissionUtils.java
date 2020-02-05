@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.utils;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by Hiroshi on 2016/10/20.

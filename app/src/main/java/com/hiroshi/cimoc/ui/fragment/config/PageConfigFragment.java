@@ -1,23 +1,19 @@
 package com.hiroshi.cimoc.ui.fragment.config;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.util.Log;
+import androidx.annotation.RequiresApi;
+
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.DialogCaller;
 import com.hiroshi.cimoc.global.ClickEvents;
-import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.ui.activity.settings.EventSettingsActivity;
 import com.hiroshi.cimoc.ui.fragment.BaseFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
-import com.hiroshi.cimoc.ui.fragment.dialog.ItemDialogFragment;
 import com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference;
 import com.hiroshi.cimoc.ui.widget.preference.ChoicePreference;
 import com.hiroshi.cimoc.ui.widget.preference.SliderPreference;
