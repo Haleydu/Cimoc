@@ -36,6 +36,7 @@ deploy:
     repo: feilongfl/Cimoc
     branch:
       - release-tci
+      - dev
     tags: true
 notifications:
   webhooks:
