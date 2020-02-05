@@ -81,7 +81,8 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
     implementation 'org.greenrobot:greendao:3.2.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.3' // for support android low api devices,not update
+    //noinspection GradleDependency : for support android low api devices,not update OKHTTP
+    implementation 'com.squareup.okhttp3:okhttp:3.12.3'
     implementation 'com.facebook.fresco:fresco:2.0.0'
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
