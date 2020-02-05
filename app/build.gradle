@@ -19,6 +19,11 @@ android {
     compileSdkVersion 29
     buildToolsVersion '29.0.3'
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.hiroshi.cimoc"
         minSdkVersion 15
@@ -70,20 +75,20 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.jakewharton:butterknife:10.1.0'
+    implementation 'com.jakewharton:butterknife:10.2.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
     implementation 'org.greenrobot:greendao:3.2.2'
     implementation 'com.squareup.okhttp3:okhttp:3.12.3' // for support android low api devices,not update
-    implementation 'com.facebook.fresco:fresco:1.11.0'
+    implementation 'com.facebook.fresco:fresco:2.0.0'
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.adw.library:discrete-seekbar:1.0.1'
     implementation 'io.reactivex:rxjava:1.3.8'
     implementation 'io.reactivex:rxandroid:1.2.1'
     api 'com.google.guava:guava:27.0.1-android'
-    implementation 'androidx.multidex:multidex:2.0.0'
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.alibaba:fastjson:1.1.70.android'
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.alibaba:fastjson:1.2.62'
 }
