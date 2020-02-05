@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.graphics.Point;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import androidx.recyclerview.widget.RecyclerView;
+
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;

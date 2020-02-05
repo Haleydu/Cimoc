@@ -2,7 +2,7 @@ package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
 import android.graphics.RectF;
-import android.support.v4.widget.ScrollerCompat;
+import androidx.core.widget.ScrollerCompat;
 import android.view.View;
 
 /**

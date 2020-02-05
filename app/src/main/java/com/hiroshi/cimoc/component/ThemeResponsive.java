@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.component;
 
-import android.support.annotation.ColorRes;
+import androidx.annotation.ColorRes;
 
 /**
  * Created by Hiroshi on 2016/12/2.
