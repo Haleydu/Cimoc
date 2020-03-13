@@ -14,6 +14,8 @@ import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by Hiroshi on 2016/7/8.
@@ -28,6 +30,17 @@ public class DecryptionUtils {
         cipher.init(Cipher.DECRYPT_MODE, key);
         byte[] result = cipher.doFinal(cipherBytes);
         return new String(result, "UTF-8");
+    }
+
+    // ref: https://jueyue.iteye.com/blog/1830792
+    public static String aesDecrypt(String value, String key, String ivs) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        IvParameterSpec iv = new IvParameterSpec(ivs.getBytes());
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
+
+        byte[] code = Base64.decode(value, Base64.NO_WRAP);
+        return new String(cipher.doFinal(code));
     }
 
     public static String base64Decrypt(String cipherString) throws UnsupportedEncodingException {
