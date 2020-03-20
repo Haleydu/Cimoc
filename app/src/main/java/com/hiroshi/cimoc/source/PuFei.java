@@ -46,7 +46,7 @@ public class PuFei extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "";
         if (page == 1) {
-            url = StringUtils.format("http://m.pufei.net/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
+            url = StringUtils.format("http://m.pufei8.com/e/search/?searchget=1&tbname=mh&show=title,player,playadmin,bieming,pinyin,playadmin&tempid=4&keyboard=%s",
                     URLEncoder.encode(keyword, "GB2312"));
         }
         return new Request.Builder().url(url).build();
@@ -71,17 +71,17 @@ public class PuFei extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "http://m.pufei.net/manhua/".concat(cid);
+        return "http://m.pufei8.com/manhua/".concat(cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.pufei.net"));
+        filter.add(new UrlFilter("m.pufei8.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "http://m.pufei.net/manhua/".concat(cid);
+        String url = "http://m.pufei8.com/manhua/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -110,7 +110,7 @@ public class PuFei extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.pufei.net/manhua/%s/%s.html", cid, path);
+        String url = StringUtils.format("http://m.pufei8.com/manhua/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -123,7 +123,7 @@ public class PuFei extends MangaParser {
                 str = DecryptionUtils.evalDecrypt(DecryptionUtils.base64Decrypt(str));
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, "http://res.img.1fi4b.cn/" + array[i], false));
+                    list.add(new ImageUrl(i + 1, "http://res.img.fffimage.com/" + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -159,7 +159,7 @@ public class PuFei extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.pufei.net");
+        return Headers.of("Referer", "http://m.pufei8.com");
     }
 
     private static class Category extends MangaCategory {
