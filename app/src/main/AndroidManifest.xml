@@ -20,7 +20,7 @@
         tools:ignore="UnusedAttribute">
         <activity
             android:name=".ui.activity.MainActivity"
-            android:screenOrientation="fullSensor"
+            android:screenOrientation="unspecified"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,46 +30,46 @@
         </activity>
         <activity
             android:name=".ui.activity.ResultActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.DetailActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.ChapterActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.TagEditorActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.TaskActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.SettingsActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.settings.ReaderConfigActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.BackupActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.AboutActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.CategoryActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.SearchActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.SourceDetailActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.PartFavoriteActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.DirPickerActivity"
-            android:screenOrientation="fullSensor" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".ui.activity.settings.EventSettingsActivity"
             android:configChanges="orientation|screenSize" />
