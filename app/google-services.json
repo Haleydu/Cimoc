@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "271512521468",
+    "firebase_url": "https://cimoc-11974.firebaseio.com",
+    "project_id": "cimoc-11974",
+    "storage_bucket": "cimoc-11974.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271512521468:android:33b6c6b6fc4513381da579",
+        "android_client_info": {
+          "package_name": "com.hiroshi.cimoc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271512521468-ipurfdujhq4lo9j54sdtocqborsjlgkb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChjVPhKrCinTfKx7gmJLCB85c1zT5EerY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271512521468-ipurfdujhq4lo9j54sdtocqborsjlgkb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
