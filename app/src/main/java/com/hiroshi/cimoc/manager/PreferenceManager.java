@@ -31,6 +31,7 @@ public class PreferenceManager {
     public static final String PREF_APP_VERSION = "pref_app_version";
 
     public static final String PREF_MAIN_NOTICE = "pref_main_notice";
+    public static final String PREF_MAIN_NOTICE_LAST = "pref_main_notice_last";
 
     public static final String PREF_READER_MODE = "pref_reader_mode";
     public static final String PREF_READER_KEEP_BRIGHT = "pref_reader_keep_on";

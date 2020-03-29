@@ -90,4 +90,5 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.2.62'
     implementation 'com.google.firebase:firebase-analytics:17.2.3'
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta02'
+    implementation 'com.google.firebase:firebase-config:19.1.3'
 }
