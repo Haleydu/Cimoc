@@ -96,6 +96,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     CheckBoxPreference mConnectOnlyWifi;
     @BindView(R.id.settings_other_loadcover_only_wifi)
     CheckBoxPreference mLoadCoverOnlyWifi;
+    @BindView(R.id.settings_firebase_event)
+    CheckBoxPreference mFireBaseEvent;
 
     private SettingsPresenter mPresenter;
 
@@ -128,6 +130,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mConnectOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false);
         mLoadCoverOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_LOADCOVER_ONLY_WIFI, false);
+        mFireBaseEvent.bindPreference(PreferenceManager.PREF_OTHER_FIREBASE_EVENT, true);
         mOtherShowTopbar.bindPreference(PreferenceManager.PREF_OTHER_SHOW_TOPBAR,false);
         mReaderMode.bindPreference(getFragmentManager(), PreferenceManager.PREF_READER_MODE,
                 PreferenceManager.READER_MODE_PAGE, R.array.reader_mode_items, DIALOG_REQUEST_READER_MODE);
@@ -255,6 +258,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mCheckUpdate.setColorStateList(stateList);
         mConnectOnlyWifi.setColorStateList(stateList);
         mLoadCoverOnlyWifi.setColorStateList(stateList);
+        mFireBaseEvent.setColorStateList(stateList);
         mOtherShowTopbar.setColorStateList(stateList);
     }
 
