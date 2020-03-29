@@ -56,7 +56,7 @@ public class AboutActivity extends BackActivity implements AboutView, AdapterVie
     protected void initView() {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-            mVersionName.setText(StringUtils.format("version: %s (%s)", info.versionName, info.versionCode));
+            mVersionName.setText(StringUtils.format("Version  %s (%s)", info.versionName, info.versionCode));
         } catch (Exception e) {
             e.printStackTrace();
         }

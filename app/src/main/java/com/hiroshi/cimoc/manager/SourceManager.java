@@ -187,6 +187,9 @@ public class SourceManager {
                 case CopyMH.TYPE:
                     parser = new CopyMH(source);
                     break;
+                case MangaBZ.TYPE:
+                    parser = new MangaBZ(source);
+                    break;
                 default:
                     parser = new Null();
                     break;

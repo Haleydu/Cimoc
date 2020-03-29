@@ -290,7 +290,7 @@
     <string name="common_execute_fail">操作失败</string>
     <string name="common_operation_select">操作选择</string>
     <string name="common_null">null</string>
-    <string name="about_version">haleydu</string>
+    <string name="about_version">作者 Haleydu</string>
     <string name="detail_disqus">评论</string>
 
     <!--登陆相关-->
