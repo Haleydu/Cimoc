@@ -138,8 +138,8 @@ public class ClickEvents {
                 manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_BOTTOM, EVENT_NULL),//3
                 manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_RIGHT, EVENT_NULL),//4
                 //key
-                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, EVENT_NULL),//5
-                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, EVENT_NULL),//6
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, EVENT_PREV_PAGE),//5
+                manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, EVENT_NEXT_PAGE),//6
                 //joy
                 manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_LT, EVENT_PREV_PAGE),//7
                 manager.getInt(PreferenceManager.PREF_READER_STREAM_JOY_RT, EVENT_NEXT_PAGE),//8

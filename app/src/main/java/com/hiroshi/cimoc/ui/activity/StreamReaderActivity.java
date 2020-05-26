@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
@@ -114,7 +115,7 @@ public class StreamReaderActivity extends ReaderActivity {
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
         if (turn == PreferenceManager.READER_TURN_ATB) {
-            mRecyclerView.smoothScrollBy(0, -point.y);
+            mRecyclerView.smoothScrollBy(0, -point.y+point.y/5);
         } else {
             mRecyclerView.smoothScrollBy(-point.x, 0);
         }
@@ -128,7 +129,7 @@ public class StreamReaderActivity extends ReaderActivity {
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
         if (turn == PreferenceManager.READER_TURN_ATB) {
-            mRecyclerView.smoothScrollBy(0, point.y);
+            mRecyclerView.smoothScrollBy(0, point.y-point.y/5);
         } else {
             mRecyclerView.smoothScrollBy(point.x, 0);
         }
