@@ -20,7 +20,7 @@ import rx.schedulers.Schedulers;
  */
 public class Update {
 
-    private static final String UPDATE_URL = "https://api.github.com/repos/feilongfl/cimoc/releases/latest";
+    private static final String UPDATE_URL = "https://api.github.com/repos/Haleydu/cimoc/releases/latest";
     private static final String SERVER_FILENAME = "tag_name";
 //    private static final String LIST = "list";
 

@@ -74,7 +74,7 @@ public class EHentai extends MangaParser {
         String intro = body.text("#gj");
         String author = body.text("#taglist > table > tbody > tr > td:eq(1) > div > a[id^=ta_artist]");
 //        String cover = body.href("#gdt > .gdtm > div > a");
-        String cover = "https://github.com/feilongfl/Cimoc/raw/release-tci/screenshot/icon.png";
+        String cover = "https://github.com/Haleydu/Cimoc/raw/release-tci/screenshot/icon.png";
         comic.setInfo(title, cover, update, intro, author, true);
     }
 

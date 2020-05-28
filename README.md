@@ -5,19 +5,19 @@
 Android 平台在线漫画阅读器  
 Online manga reader based on Android
 
-[![Build Status](https://travis-ci.org/feilongfl/Cimoc.svg?branch=release-tci)](https://travis-ci.org/feilongfl/Cimoc)
-[![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-feilongfl-cimoc-release-tci)
-[![GitHub release](https://img.shields.io/github/release/feilongfl/Cimoc.svg)](https://github.com/feilongfl/Cimoc/releases)
+[![Build Status](https://travis-ci.org/Haleydu/Cimoc.svg?branch=release-tci)](https://travis-ci.org/Haleydu/Cimoc)
+[![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-Haleydu-cimoc-release-tci)
+[![GitHub release](https://img.shields.io/github/release/Haleydu/Cimoc.svg)](https://github.com/feilongfl/Cimoc/releases)
 [![Join the chat at https://gitter.im/flcimoc/Lobby](https://badges.gitter.im/flcimoc/Lobby.svg)](https://gitter.im/flcimoc/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![](https://img.shields.io/github/downloads/feilongfl/cimoc/total.svg)](https://github.com/feilongfl/Cimoc/releases)
+[![](https://img.shields.io/github/downloads/Haleydu/cimoc/total.svg)](https://github.com/Haleydu/Cimoc/releases)
 
 # 下载
 > 所有release由`travis-ci`编译发布，如果在release界面某个版本没有apk，那么要么是正在编译，要么就是编译失败了
 > 使用`pre-release`版本会在每次启动时显示检查更新提示。
 
 # 漫画源
-> 漫画源工作情况可以在[project](https://github.com/feilongfl/Cimoc/projects/2)中进行查看，请尽量不要重复issues
-> 各位大佬们提交漫画源相关issue请按照[模板](https://github.com/feilongfl/Cimoc/issues/new?assignees=&labels=%E6%BC%AB%E7%94%BB%E6%BA%90%E9%97%AE%E9%A2%98&template=comic-source-issues.md&title=%5BCS%5D)填写，方便检查问题。
+> 漫画源工作情况可以在[project](https://github.com/Haleydu/Cimoc/projects/2)中进行查看，请尽量不要重复issues
+> 各位大佬们提交漫画源相关issue请按照[模板](https://github.com/Haleydu/Cimoc/issues/new?assignees=&labels=%E6%BC%AB%E7%94%BB%E6%BA%90%E9%97%AE%E9%A2%98&template=comic-source-issues.md&title=%5BCS%5D)填写，方便检查问题。
 
 # 功能简介
 - 翻页阅读（Page Reader）

@@ -33,7 +33,7 @@ deploy:
   file: "app/build/outputs/apk/release/Cimoc.apk"
   skip_cleanup: true
   on:
-    repo: feilongfl/Cimoc
+    repo: Haleydu/Cimoc
     branch:
       - release-tci
     tags: true
