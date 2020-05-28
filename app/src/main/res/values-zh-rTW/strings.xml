@@ -262,7 +262,7 @@
     <string name="common_execute_fail">操作失敗</string>
     <string name="common_operation_select">操作選擇</string>
     <string name="common_null">null</string>
-    <string name="about_version">飛龍</string>
+    <string name="about_version">haleydu</string>
     <string name="detail_disqus">評論</string>
 
     <!--登入相關-->

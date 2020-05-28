@@ -219,11 +219,11 @@
     <string name="home_page_gitter">Gitter</string>
     <string name="home_page_gitter_url">https://gitter.im/flcimoc/Lobby</string>
     <string name="home_page_comiclist">Comiclist</string>
-    <string name="home_page_comiclist_url">https://cimoc.netlify.com/</string>
+    <string name="home_page_comiclist_url">https://www.baidu.com/</string>
     <string name="about_resource">源代码</string>
     <string name="about_resource_url">https://github.com/Haleydu/Cimoc</string>
     <string name="about_resource_ori">原作仓库</string>
-    <string name="about_resource_ori_url">https://github.com/Arachnid-27/Cimoc</string>
+    <string name="about_resource_ori_url">https://github.com/feilongfl/Cimoc</string>
     <string name="about_support">意见反馈</string>
     <string name="about_support_url">https://github.com/Haleydu/Cimoc/issues</string>
     <string name="about_update">检查更新</string>
@@ -290,7 +290,7 @@
     <string name="common_execute_fail">操作失败</string>
     <string name="common_operation_select">操作选择</string>
     <string name="common_null">null</string>
-    <string name="about_version">飞龙</string>
+    <string name="about_version">haleydu</string>
     <string name="detail_disqus">评论</string>
 
     <!--登陆相关-->

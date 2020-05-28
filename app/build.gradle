@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 
 def buildVersion = 329
-def version = "v1.4.14"
+def version = "v1.5.2"
 
 def cmdGetTagname = 'git describe --tags'
 def cmdGetCommitNums = 'git rev-list HEAD --count'
