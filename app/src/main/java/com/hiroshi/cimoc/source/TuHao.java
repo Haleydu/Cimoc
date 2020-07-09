@@ -39,19 +39,19 @@ public class TuHao extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "";
         if (page == 1) {
-            url = StringUtils.format("https://m.tohomh123.com/action/Search?keyword=%s", keyword);
+            url = StringUtils.format("https://www.toho8.cn/action/Search?keyword=%s", keyword);
         }
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public String getUrl(String cid) {
-        return "https://m.tohomh123.com/".concat(cid).concat("/");
+        return "https://www.toho8.cn/".concat(cid).concat("/");
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.tohomh123.com", "\\w+", 0));
+        filter.add(new UrlFilter("www.toho8.cn", "\\w+", 0));
     }
 
     @Override
@@ -72,7 +72,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://m.tohomh123.com/".concat(cid).concat("/");
+        String url = "https://www.toho8.cn/".concat(cid).concat("/");
         return new Request.Builder().url(url).build();
     }
 
@@ -113,7 +113,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.tohomh123.com/%s/%s.html", cid, path);
+        String url = StringUtils.format("https://www.toho8.cn/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -166,7 +166,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://m.tohomh123.com");
+        return Headers.of("Referer", "https://www.toho8.cn");
     }
 
 }

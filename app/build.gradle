@@ -30,10 +30,16 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file(".key.jks")
-            storePassword System.getenv("KEYSTORE_PASS")
-            keyAlias System.getenv("ALIAS_NAME")
-            keyPassword System.getenv("ALIAS_PASS")
+            storeFile file("../hellovr10.jks")
+            storePassword '123456'
+            keyAlias 'vr'
+            keyPassword '123456'
+        }
+        debug {
+            storeFile file("../hellovr10.jks")
+            storePassword '123456'
+            keyAlias 'vr'
+            keyPassword '123456'
         }
     }
     buildTypes {
