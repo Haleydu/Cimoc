@@ -178,7 +178,9 @@ public class SourceManager {
                 case YYLS.TYPE:
                     parser = new YYLS(source);
                     break;
-
+                case CpManHua.TYPE:
+                    parser = new CpManHua(source);
+                    break;
                 default:
                     parser = new Null();
                     break;

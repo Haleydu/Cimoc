@@ -63,6 +63,7 @@ public class App extends MultiDexApplication implements AppGetter, Thread.Uncaug
     private DocumentFile mDocumentFile;
     private static PreferenceManager mPreferenceManager;
     private ControllerBuilderProvider mBuilderProvider;
+    
     private RecyclerView.RecycledViewPool mRecycledPool;
     private DaoSession mDaoSession;
     private ActivityLifecycle mActivityLifecycle;

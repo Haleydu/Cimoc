@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.source.BaiNian;
 import com.hiroshi.cimoc.source.BuKa;
 import com.hiroshi.cimoc.source.Cartoonmad;
 import com.hiroshi.cimoc.source.ChuiXue;
+import com.hiroshi.cimoc.source.CpManHua;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.Hhxxee;
@@ -78,6 +79,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(ChuiXue.TYPE);
         list.add(ManHuaDB.TYPE);
         list.add(TuHao.TYPE);
+        list.add(CpManHua.TYPE);
 
         return list;
     }
