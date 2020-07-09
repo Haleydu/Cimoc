@@ -5,10 +5,10 @@
 Android 平台在线漫画阅读器  
 Online manga reader based on Android
 
-[![Build Status](https://travis-ci.org/Haleydu/Cimoc.svg?branch=release-tci)](https://travis-ci.org/Haleydu/Cimoc)
-[![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-Haleydu-cimoc-release-tci)
-[![GitHub release](https://img.shields.io/github/release/Haleydu/Cimoc.svg)](https://github.com/feilongfl/Cimoc/releases)
-[![Join the chat at https://gitter.im/flcimoc/Lobby](https://badges.gitter.im/flcimoc/Lobby.svg)](https://gitter.im/flcimoc/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/github/Haleydu/Cimoc.svg?branch=release-tci)](https://travis-ci.com/github/Haleydu/Cimoc)
+[![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-haleydu-cimoc-release-tci)
+[![GitHub release](https://img.shields.io/github/release/Haleydu/Cimoc.svg)](https://github.com/Haleydu/Cimoc/releases)
+[![Join the chat at https://gitter.im/Haleydu_Cimoc/community](https://badges.gitter.im/Haleydu_Cimoc/community.svg)](https://gitter.im/Haleydu_Cimoc/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![](https://img.shields.io/github/downloads/Haleydu/cimoc/total.svg)](https://github.com/Haleydu/Cimoc/releases)
 
 # 下载
