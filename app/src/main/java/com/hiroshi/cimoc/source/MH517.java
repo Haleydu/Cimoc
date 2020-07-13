@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -10,6 +12,7 @@ import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -55,7 +58,9 @@ public class MH517 extends MangaParser {
                 final String cid = node.href("a.ImgA");
                 final String title = node.text("a.txtA");
                 final String cover = node.attr("a.ImgA > img", "src");
-                return new Comic(TYPE, cid, title, cover, "", "");
+                final String update = node.text("");
+                final String author = node.text("");
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -83,8 +88,8 @@ public class MH517 extends MangaParser {
         Node body = new Node(html);
         String title = body.attr("div#Cover > img", "title");
         String cover = body.src("div#Cover > img");
-        String update = "";
-        String author = "";
+        String update = body.text("span.date" );
+        String author = body.text("");
         String intro = body.text("p.txtDesc");
         boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
@@ -112,7 +117,9 @@ public class MH517 extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
         Matcher pageMatcher = Pattern.compile("qTcms_S_m_murl_e=\"(.*?)\"").matcher(html);
-        if (!pageMatcher.find()) return null;
+        if (!pageMatcher.find()) {
+            return null;
+        }
         try {
             final String imgArrStr = DecryptionUtils.base64Decrypt(pageMatcher.group(1));
             int i = 0;
