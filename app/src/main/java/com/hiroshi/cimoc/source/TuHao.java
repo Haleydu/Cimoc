@@ -1,5 +1,8 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -9,14 +12,20 @@ import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Headers;
 import okhttp3.Request;
+
+import static com.hiroshi.cimoc.core.Manga.getResponseBody;
 
 /**
  * Created by ZhiWen on 2019/02/25.
@@ -39,61 +48,57 @@ public class TuHao extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "";
         if (page == 1) {
-            url = StringUtils.format("https://www.toho8.cn/action/Search?keyword=%s", keyword);
+            //https://m.tuhaomh.com/e/search/index.php?searchget=1&tempid=1&tbname=book&show=title,writer&keyboard=%s
         }
+        url = StringUtils.format("https://m.tuhaomh.com/e/search/index.php?searchget=1&tempid=1&tbname=book&show=title,writer&keyboard=%s",
+                //URLEncoder.encode(keyword, "GB2312"));
+                keyword);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public String getUrl(String cid) {
-        return "https://www.toho8.cn/".concat(cid).concat("/");
+        return "https://m.tuhaomh.com/".concat(cid).concat("/");
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("www.toho8.cn", "\\w+", 0));
+        filter.add(new UrlFilter("m.tuhaomh.com", "\\w+", 0));
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("#classList_1 > ul > li")) {
+        return new NodeIterator(body.list("div.bd > ul.comic-sort > li")) {
             @Override
             protected Comic parse(Node node) {
-
-                String title = node.attr("a", "title");
+                String title = node.attr("div.comic-item > div.thumbnail >a","title");
+                title = title.replace("<font color='red'>", "");
+                title = title.replace("</font>", "");
                 String urls = node.attr("a", "href");
-                String cid = urls.substring(1, urls.length() - 1);
-                String cover = node.attr("a > div > img", "src");
-                return new Comic(TYPE, cid, title, cover, null, null);
+                String cid = urls.substring(1, urls.length());
+                String cover = node.attr("div.comic-item > div.thumbnail > a > img", "data-src");
+                String update = node.text("div.comic-item > div.thumbnail > a > span.chapter");
+                return new Comic(TYPE, cid, title, cover, update, null);
             }
         };
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://www.toho8.cn/".concat(cid).concat("/");
+        String url = "https://m.tuhaomh.com/"+ cid;
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String cover = body.src("div.coverForm > img");
-        String intro = body.text("div.detailContent > p");
-        String title = body.text("div.detailForm > div > div > h1");
+        String cover = body.attr("div.mk-detail > div.comic-info > div.cover-bg > img.thumbnail","data-src");
+        String intro = body.text("p.content");
+        String title = body.text("h1.name");
 
-        String update = "";
-        String author = "";
-        List<Node> upDateAndAuth = body.list("div.detailForm > div > div > p");
-
-        if (upDateAndAuth.size() == 5) {
-            update = upDateAndAuth.get(3).text().substring(5).trim();
-            author = upDateAndAuth.get(2).text().substring(3).trim();
-        } else {
-            update = upDateAndAuth.get(2).text().substring(5).trim();
-            author = upDateAndAuth.get(1).text().substring(3).trim();
-        }
+        String update = body.text("time#updateTime");
+        String author = body.text("span.author");
 
         // 连载状态
         boolean status = isFinish("连载");
@@ -103,9 +108,9 @@ public class TuHao extends MangaParser {
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapterList_1 > ul > li > a")) {
-            String title = node.text();
-            String path = node.hrefWithSplit(1);
+        for (Node node : new Node(html).list("div.mk-chapterlist-box > div.bd > ul.chapterlist > li.item")) {
+            String title = node.text("a.chapterBtn");
+            String path = node.attr("a","href");
             list.add(new Chapter(title, path));
         }
         return list;
@@ -113,28 +118,29 @@ public class TuHao extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://www.toho8.cn/%s/%s.html", cid, path);
+        String url = "https://m.tuhaomh.com"+ path;
+        imgurl = url;
         return new Request.Builder().url(url).build();
     }
+    private String imgurl = "";
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
+        Node body = new Node(html);
+        int total = Integer.parseInt(body.text("span.total-page"));
+        String img = body.attr("img#comic_pic","src");
+        list.add(new ImageUrl(0, img, false));
 
-        String str = StringUtils.match("var pl = \'(.*?)\'", html, 1);
-        // 得到 https://mh2.wan1979.com/upload/jiemoren/1989998/
-        String prevStr = str.substring(0, str.length() - 8);
-
-        // 得到 0000
-        int lastStr = Integer.parseInt(str.substring(str.length() - 8, str.length() - 4));
-        int pagNum = Integer.parseInt(StringUtils.match("var pcount=(.*?);", html, 1));
-
-        if (str != null) {
+        if (imgurl != null) {
             try {
-                for (int i = lastStr; i < pagNum + lastStr; i++) {
-                    String url = StringUtils.format("%s%04d.jpg", prevStr, i);
-//                  https://mh2.wan1979.com/upload/jiemoren/1989998/0000.jpg
-                    list.add(new ImageUrl(i + 1, url, false));
+                for (int i = 1; i < total; i++) {
+                    String imghtml = "-"+i+".html";
+                    String targetUrl = imgurl.replace(".html", imghtml);
+                    String imhtml = getResponseBody(App.getHttpClient(), new Request.Builder().url(targetUrl).build());
+                    Node body1 = new Node(imhtml);
+                    String img1 = body1.attr("img#comic_pic","src");
+                    list.add(new ImageUrl(i, img1, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -151,22 +157,12 @@ public class TuHao extends MangaParser {
     @Override
     public String parseCheck(String html) {
         // 这里表示的是更新时间
-        Node body = new Node(html);
-
-        String update = "";
-        List<Node> upDateAndAuth = body.list("div.detailForm > div > div > p");
-
-        if (upDateAndAuth.size() == 5) {
-            update = upDateAndAuth.get(3).text().substring(5).trim();
-        } else {
-            update = upDateAndAuth.get(2).text().substring(5).trim();
-        }
-        return update;
+        return new Node(html).text("time#updateTime");
     }
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://www.toho8.cn");
+        return Headers.of("Referer", "https://m.tuhaomh.com");
     }
 
 }
