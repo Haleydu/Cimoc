@@ -123,7 +123,7 @@ public class MH50 extends MangaParser {
 
     @Nullable
     private String decrypt(String code) {
-        String key = "123456781234567G";
+        String key = "1231994MHB123456";
         String iv = "ABCDEF1G34123412";
         try {
             return DecryptionUtils.aesDecrypt(code, key, iv);
