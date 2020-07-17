@@ -87,7 +87,7 @@ public class UpdateHelper {
         list.add(MHLove.getDefaultSource());
         list.add(GuFeng.getDefaultSource());
         list.add(YYLS.getDefaultSource());
-        list.add(CpManHua.getDefaultSource());
+        list.add(Comic18.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }

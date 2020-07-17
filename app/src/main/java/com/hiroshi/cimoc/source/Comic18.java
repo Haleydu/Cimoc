@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -13,7 +12,6 @@ import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.HttpUtils;
-import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONException;
@@ -29,40 +27,37 @@ import java.util.regex.Pattern;
 import okhttp3.Headers;
 import okhttp3.Request;
 
-public class CpManHua extends MangaParser {
+public class Comic18 extends MangaParser {
 
     public static final int TYPE = 72;
-    public static final String DEFAULT_TITLE = "拷贝漫画";
+    public static final String DEFAULT_TITLE = "禁漫天堂";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
-    public CpManHua(Source source) {
+    public Comic18(Source source) {
         init(source, null);
     }
 
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         if (page != 1) return null;
-        String url = StringUtils.format("https://www.copymanga.com/search?q=%s", keyword);
-        //LogUtil.i(url);
-
+        String url = StringUtils.format("https://18comic.vip/search/photos?search_query=%s&main_tag=0", keyword);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) throws JSONException {
-        //LogUtil.iLength("hrd",html);
         Node body = new Node(html);
-        return new NodeIterator(body.list("div.tab-content > div.tab-pane > div.row")) {
+        return new NodeIterator(body.list("div#wrapper > div.container > div.row > div > div.row > div")) {
             @Override
             protected Comic parse(Node node) {
-                final String cid = node.href("div.exemptComicItem-img > a");
-                final String title = node.text("div.exemptComicItem-txt-box > div.exemptComicItem-txt > a > p");
-                final String cover = node.attr("div.exemptComicItem-img > a > img", "src");
-                final String update = node.text("");
-                final String author = node.text("span.exemptComicItem-txt-span");
+                final String cid = node.href("div.thumb-overlay > a");
+                final String title = node.text("span.video-title");
+                final String cover = node.attr("div.thumb-overlay > a > img", "data-original");
+                final String update = node.text("div.video-views");
+                final String author = "";
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
@@ -70,30 +65,29 @@ public class CpManHua extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "https://www.copymanga.com" + cid;
+        return "https://18comic.vip" + cid;
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("www.copymanga.com", ".*", 0));
+        filter.add(new UrlFilter("18comic.vip"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("https://www.copymanga.com/%s/", cid);
-        return HttpUtils.getSimpleMobileRequest(url);
+        String url = "https://18comic.vip" + cid;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String intro = body.text("#full-des");
-        String title = body.text("#comicName");
-        String cover = body.src("#Cover > img");
-        if (cover.startsWith("//")) cover = "https:" + cover;
-        String author = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(0)");
-        String update = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(4)");
-        boolean status = isFinish(body.text(".Introduct_Sub > .sub_r > .txtItme:eq(2) > a:eq(3)"));
+        String intro = body.text("div.col-lg-7 > div > div:eq(6)");
+        String title = body.text("div.panel-heading > div");
+        String cover = body.attr("img#album_photo_cover","src");
+        String author = body.text("div.col-lg-7 > div > div:eq(3) > span > a");
+        String update = body.text("div.episode > ul > a > li > span:eq(1)");
+        boolean status = isFinish(body.text("div.col-lg-7 > div > div:eq(2) > span > a(1)"));
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -101,33 +95,41 @@ public class CpManHua extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list(".chapter-warp > ul > li > a")) {
-            String title = node.text();
-            String path = StringUtils.split(node.href(), "/", 3);
-            list.add(new Chapter(title, path));
+        for (Node node : body.list("div.episode > ul > a")) {
+            String titlearray[] = (node.text("li").split("\\s+"));
+            String path = node.href();
+            list.add(new Chapter(titlearray[0], path));
         }
-
-        return Lists.reverse(list);
+        return list;
     }
 
+    private String imgpath = "";
     @Override
     public Request getImagesRequest(String cid, String path) {
-        path = StringUtils.format("https://www.copymanga.com%s/%s.html", cid, path);
-        return new Request.Builder().url(path).build();
+        String url = "https://18comic.vip"+path;
+        imgpath = path;
+        return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
-        Matcher pageMatcher = Pattern.compile("qTcms_S_m_murl_e=\"(.*?)\"").matcher(html);
-        if (!pageMatcher.find()) return null;
         try {
-            final String imgArrStr = DecryptionUtils.base64Decrypt(pageMatcher.group(1));
             int i = 0;
-            for (String item : imgArrStr.split("\\$.*?\\$")) {
-                list.add(new ImageUrl(i++, item, false));
+            for (Node node : new Node(html).list("img.lazy_img")) {
+                String img1 = node.attr("img","src");
+                String img2 = node.attr("img","data-original");
+                String reg[] = imgpath.split("\\/");
+                if (img1.contains(reg[2])){
+                    list.add(new ImageUrl(i++, img1, false));
+                }else if (img2.contains(reg[2])){
+                    list.add(new ImageUrl(i++, img2, false));
+                }
             }
-        } finally {
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }finally {
             return list;
         }
     }
@@ -140,6 +142,6 @@ public class CpManHua extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://www.copymanga.com/");
+        return Headers.of("Referer", "https://18comic.vip/");
     }
 }

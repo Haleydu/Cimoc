@@ -178,8 +178,8 @@ public class SourceManager {
                 case YYLS.TYPE:
                     parser = new YYLS(source);
                     break;
-                case CpManHua.TYPE:
-                    parser = new CpManHua(source);
+                case Comic18.TYPE:
+                    parser = new Comic18(source);
                     break;
                 default:
                     parser = new Null();

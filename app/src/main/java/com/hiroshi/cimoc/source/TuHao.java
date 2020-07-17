@@ -58,7 +58,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "https://m.tuhaomh.com/".concat(cid).concat("/");
+        return "https://m.tuhaomh.com/"+ cid;
     }
 
     @Override
