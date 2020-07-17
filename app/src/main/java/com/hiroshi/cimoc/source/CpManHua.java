@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.source;
 
-import com.alibaba.fastjson.JSONArray;
+
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -13,11 +13,13 @@ import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.HttpUtils;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,19 +46,24 @@ public class CpManHua extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         if (page != 1) return null;
         String url = StringUtils.format("https://www.copymanga.com/search?q=%s", keyword);
+        //LogUtil.i(url);
+
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) throws JSONException {
+        //LogUtil.iLength("hrd",html);
         Node body = new Node(html);
-        return new NodeIterator(body.list("ul#listbody > li")) {
+        return new NodeIterator(body.list("div.tab-content > div.tab-pane > div.row")) {
             @Override
             protected Comic parse(Node node) {
-                final String cid = node.href("a.ImgA");
-                final String title = node.text("a.txtA");
-                final String cover = node.attr("a.ImgA > img", "src");
-                return new Comic(TYPE, cid, title, cover, "", "");
+                final String cid = node.href("div.exemptComicItem-img > a");
+                final String title = node.text("div.exemptComicItem-txt-box > div.exemptComicItem-txt > a > p");
+                final String cover = node.attr("div.exemptComicItem-img > a > img", "src");
+                final String update = node.text("");
+                final String author = node.text("span.exemptComicItem-txt-span");
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }

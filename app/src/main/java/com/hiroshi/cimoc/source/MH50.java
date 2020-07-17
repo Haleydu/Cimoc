@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.alibaba.fastjson.JSONArray;
@@ -16,6 +17,7 @@ import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.HttpUtils;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.net.URLEncoder;
@@ -119,7 +121,7 @@ public class MH50 extends MangaParser {
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
-    private final String[] server = {"https://mhcdn.manhuazj.com"};
+    private final String[] server = {"https://img01.eshanyao.com", "https://manga9.mlxsc.com",};
 
     @Nullable
     private String decrypt(String code) {
@@ -154,6 +156,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public List<ImageUrl> parseImages(String html) {
+        LogUtil.iLength("hrd",html);
         List<ImageUrl> list = new LinkedList<>();
 
         //该章节的所有图片url，aes加密
@@ -168,6 +171,7 @@ public class MH50 extends MangaParser {
         for (int i = 0; i != imageListSize; ++i) {
             String key = imageList.getString(i);
             String imageUrl = getImageUrlByKey(key, server[0], chapterPath);
+
             list.add(new ImageUrl(i + 1, imageUrl, false));
         }
 

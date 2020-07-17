@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.utils;
 
 import android.util.Base64;
+import android.util.Log;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
@@ -16,6 +17,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
 
 /**
  * Created by Hiroshi on 2016/7/8.
@@ -34,12 +36,11 @@ public class DecryptionUtils {
 
     // ref: https://jueyue.iteye.com/blog/1830792
     public static String aesDecrypt(String value, String key, String ivs) throws Exception {
-        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
-        IvParameterSpec iv = new IvParameterSpec(ivs.getBytes());
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+        IvParameterSpec iv = new IvParameterSpec(ivs.getBytes("UTF-8"));
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
-
-        byte[] code = Base64.decode(value, Base64.NO_WRAP);
+        byte[] code = Base64.decode(value, Base64.DEFAULT);
         return new String(cipher.doFinal(code));
     }
 
