@@ -33,7 +33,7 @@ public class Comic18 extends MangaParser {
     public static final String DEFAULT_TITLE = "禁漫天堂";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
+        return new Source(null, DEFAULT_TITLE, TYPE, false);
     }
 
     public Comic18(Source source) {

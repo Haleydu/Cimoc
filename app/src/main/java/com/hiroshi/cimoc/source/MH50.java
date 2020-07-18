@@ -121,7 +121,7 @@ public class MH50 extends MangaParser {
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
-    private final String[] server = {"https://img01.eshanyao.com", "https://manga9.mlxsc.com",};
+    private final String[] server = {"https://mhcdn.manhuazj.com"};
 
     @Nullable
     private String decrypt(String code) {
