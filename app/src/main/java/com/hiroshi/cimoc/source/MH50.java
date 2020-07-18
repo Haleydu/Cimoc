@@ -121,7 +121,7 @@ public class MH50 extends MangaParser {
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
-    private final String[] server = {"https://mhcdn.manhuazj.com"};
+    private final String[] server = {"https://mhcdn.manhuazj.com","https://manga8.mlxsc.com","https://manga9.mlxsc.com"};
 
     @Nullable
     private String decrypt(String code) {
@@ -170,7 +170,7 @@ public class MH50 extends MangaParser {
         int imageListSize = imageList.size();
         for (int i = 0; i != imageListSize; ++i) {
             String key = imageList.getString(i);
-            String imageUrl = getImageUrlByKey(key, server[0], chapterPath);
+            String imageUrl = getImageUrlByKey(key, server[1], chapterPath);
 
             list.add(new ImageUrl(i + 1, imageUrl, false));
         }
