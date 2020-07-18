@@ -136,9 +136,9 @@ public class MH50 extends MangaParser {
 
     //根据文件名获取图片url，参考common.js中getChapterImage函数
     private String getImageUrlByKey(String key, String domain, String chapter) {
-        if (Pattern.matches("\\^https?://(images.dmzj.com|imgsmall.dmzj.com)/i", key)) {
+        if (key.startsWith("http://images.dmzj.com")) {
             try {
-                return domain + "/showImage.php?url=" + URLEncoder.encode(key, "utf-8");
+                return domain +"/showImage.php?url=" + key;
             } catch (Exception e) {
                 return null;
             }
@@ -171,7 +171,7 @@ public class MH50 extends MangaParser {
         for (int i = 0; i != imageListSize; ++i) {
             String key = imageList.getString(i);
             String imageUrl = getImageUrlByKey(key, server[1], chapterPath);
-
+            Log.d("hrd imageUrl",imageUrl);
             list.add(new ImageUrl(i + 1, imageUrl, false));
         }
 
