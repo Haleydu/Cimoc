@@ -100,7 +100,7 @@ public class Comic18 extends MangaParser {
             String path = node.href();
             list.add(new Chapter(titlearray[0], path));
         }
-        return list;
+        return Lists.reverse(list);
     }
 
     private String imgpath = "";
