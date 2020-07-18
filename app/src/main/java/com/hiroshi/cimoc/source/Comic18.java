@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -43,7 +45,7 @@ public class Comic18 extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         if (page != 1) return null;
-        String url = StringUtils.format("https://18comic.vip/search/photos?search_query=%s&main_tag=0", keyword);
+        String url = StringUtils.format("https://18comic.fun/search/photos?search_query=%s&main_tag=0", keyword);
         return new Request.Builder().url(url).build();
     }
 
@@ -65,17 +67,17 @@ public class Comic18 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "https://18comic.vip" + cid;
+        return "https://18comic.fun" + cid;
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("18comic.vip"));
+        filter.add(new UrlFilter("18comic.fun"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://18comic.vip" + cid;
+        String url = "https://18comic.fun" + cid;
         return new Request.Builder().url(url).build();
     }
 
@@ -86,7 +88,7 @@ public class Comic18 extends MangaParser {
         String title = body.text("div.panel-heading > div");
         String cover = body.attr("img#album_photo_cover","src");
         String author = body.text("div.col-lg-7 > div > div:eq(3) > span > a");
-        String update = body.text("div.episode > ul > a > li > span:eq(1)");
+        String update = body.attr("div.col-lg-7 > div > div:eq(8) > span","content");
         boolean status = isFinish(body.text("div.col-lg-7 > div > div:eq(2) > span > a(1)"));
         comic.setInfo(title, cover, update, intro, author, status);
     }
@@ -100,13 +102,19 @@ public class Comic18 extends MangaParser {
             String path = node.href();
             list.add(new Chapter(titlearray[0], path));
         }
+        if (list.isEmpty()){
+            body = new Node(html);
+            String title = body.text("a#reading");
+            String path = body.href("a#reading");
+            list.add(new Chapter(title, path));
+        }
         return Lists.reverse(list);
     }
 
     private String imgpath = "";
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "https://18comic.vip"+path;
+        String url = "https://18comic.fun"+path;
         imgpath = path;
         return new Request.Builder().url(url).build();
     }
@@ -142,6 +150,6 @@ public class Comic18 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://18comic.vip/");
+        return Headers.of("Referer", "https://18comic.fun/");
     }
 }
