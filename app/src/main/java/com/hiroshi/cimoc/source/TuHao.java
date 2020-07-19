@@ -2,7 +2,9 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Log;
 
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -49,10 +51,10 @@ public class TuHao extends MangaParser {
         String url = "";
         if (page == 1) {
             //https://m.tuhaomh.com/e/search/index.php?searchget=1&tempid=1&tbname=book&show=title,writer&keyboard=%s
+            url = StringUtils.format("https://m.tuhaomh.com/e/search/index.php?searchget=1&tempid=1&tbname=book&show=title,writer&keyboard=%s",
+                    //URLEncoder.encode(keyword, "GB2312"));
+                    keyword);
         }
-        url = StringUtils.format("https://m.tuhaomh.com/e/search/index.php?searchget=1&tempid=1&tbname=book&show=title,writer&keyboard=%s",
-                //URLEncoder.encode(keyword, "GB2312"));
-                keyword);
         return new Request.Builder().url(url).build();
     }
 
@@ -63,7 +65,7 @@ public class TuHao extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.tuhaomh.com", "\\w+", 0));
+        filter.add(new UrlFilter("m.tuhaomh.com"));
     }
 
     @Override
@@ -78,10 +80,22 @@ public class TuHao extends MangaParser {
                 String urls = node.attr("a", "href");
                 String cid = urls.substring(1, urls.length());
                 String cover = node.attr("div.comic-item > div.thumbnail > a > img", "data-src");
-                String update = node.text("div.comic-item > div.thumbnail > a > span.chapter");
+                String update =  getHtml(cid).text("time#updateTime");
                 return new Comic(TYPE, cid, title, cover, update, null);
             }
         };
+    }
+
+    private Node getHtml(String cid) {
+        Node bodyupdate = null;
+        try {
+            String url = "https://m.tuhaomh.com/" + cid;
+            String imhtml = getResponseBody(App.getHttpClient(), new Request.Builder().url(url).build());
+            bodyupdate = new Node(imhtml);
+        } catch (Manga.NetworkErrorException e) {
+            e.printStackTrace();
+        }
+        return bodyupdate;
     }
 
     @Override
@@ -113,7 +127,7 @@ public class TuHao extends MangaParser {
             String path = node.attr("a","href");
             list.add(new Chapter(title, path));
         }
-        return list;
+        return Lists.reverse(list);
     }
 
     @Override
