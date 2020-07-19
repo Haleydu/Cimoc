@@ -1,6 +1,7 @@
 package com.hiroshi.cimoc.source;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.App;
@@ -9,6 +10,7 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
+import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
@@ -19,13 +21,16 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 
 import static com.hiroshi.cimoc.core.Manga.getResponseBody;
 
@@ -43,7 +48,7 @@ public class TuHao extends MangaParser {
     }
 
     public TuHao(Source source) {
-        init(source, null);
+        init(source, new TuHao.Category());
     }
 
     @Override
@@ -80,8 +85,10 @@ public class TuHao extends MangaParser {
                 String urls = node.attr("a", "href");
                 String cid = urls.substring(1, urls.length());
                 String cover = node.attr("div.comic-item > div.thumbnail > a > img", "data-src");
-                String update =  getHtml(cid).text("time#updateTime");
-                return new Comic(TYPE, cid, title, cover, update, null);
+                Node bodyNext = getHtml(cid);
+                String update =  bodyNext.text("time#updateTime");
+                String author = bodyNext.text("span.author");
+                return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
     }
@@ -177,6 +184,106 @@ public class TuHao extends MangaParser {
     @Override
     public Headers getHeader() {
         return Headers.of("Referer", "https://m.tuhaomh.com");
+    }
+    @Override
+    public Request getCategoryRequest(String format, int page){
+        String url = format.replace("https://www.tuhaomh.com/","https://www.tuhaomh.com/allcomic/");
+        return new Request.Builder().url(url).build();
+    }
+
+    @Override
+    public List<Comic> parseCategory(String html, int page) {
+        List<Comic> list = new LinkedList<>();
+        LogUtil.iLength("parseCategory",html);
+        Node body = new Node(html);
+        for (Node node : body.list("div#comicListBox > ul > li")) {//li > a
+            String title = node.attr("a","title");
+            String urls = node.attr("a", "href");
+            String cid = urls.substring(1, urls.length());
+            String cover = node.attr("img", "data-src");
+            Node bodyNext = getHtml(cid);
+            String update =  bodyNext.text("time#updateTime");
+            String author = bodyNext.text("span.author");
+            list.add(new Comic(TYPE, cid, title, cover, update, author));
+        }
+        return list;
+    }
+
+    private static class Category extends MangaCategory {
+
+        @Override
+        public boolean isComposite() {
+            return true;
+        }
+
+        @Override
+        public String getFormat(String... args) {
+            Log.d("hrd getFormat",StringUtils.format("https://www.tuhaomh.com/allcomic/0-1-20-newstime-%s-%s-%s-1.html", args[CATEGORY_SUBJECT], args[CATEGORY_AREA], args[CATEGORY_PROGRESS]));
+            return StringUtils.format("https://www.tuhaomh.com/0-1-20-newstime-%s-%s-%s-1.html",
+                    args[CATEGORY_SUBJECT], args[CATEGORY_AREA], args[CATEGORY_PROGRESS]);
+        }
+
+        @Override
+        public List<Pair<String, String>> getSubject() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", "all"));
+            list.add(Pair.create("热血", "热血"));
+            list.add(Pair.create("玄幻", "玄幻"));
+            list.add(Pair.create("搞笑", "搞笑"));
+            list.add(Pair.create("恋爱", "恋爱"));
+            list.add(Pair.create("穿越", "穿越"));
+            list.add(Pair.create("漫改", "漫改"));
+            list.add(Pair.create("霸总", "霸总"));
+            list.add(Pair.create("都市", "都市"));
+            list.add(Pair.create("古风", "古风"));
+            list.add(Pair.create("恐怖", "恐怖"));
+            list.add(Pair.create("生活", "生活"));
+            list.add(Pair.create("科幻", "科幻"));
+            list.add(Pair.create("校园", "校园"));
+            list.add(Pair.create("体育", "体育"));
+            list.add(Pair.create("动作", "动作"));
+            list.add(Pair.create("历史", "历史"));
+            list.add(Pair.create("悬疑", "悬疑"));
+            list.add(Pair.create("修真", "修真"));
+            list.add(Pair.create("游戏", "游戏"));
+            list.add(Pair.create("战争", "战争"));
+            list.add(Pair.create("后宫", "后宫"));
+            list.add(Pair.create("真人", "真人"));
+            list.add(Pair.create("萝莉", "萝莉"));
+
+            return list;
+        }
+
+        @Override
+        public boolean hasArea() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getArea() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", "all"));
+            list.add(Pair.create("国产", "国"));
+            list.add(Pair.create("韩漫", "韩"));
+            list.add(Pair.create("日漫", "日"));
+
+            return list;
+        }
+
+        @Override
+        public boolean hasProgress() {
+            return true;
+        }
+
+        @Override
+        public List<Pair<String, String>> getProgress() {
+            List<Pair<String, String>> list = new ArrayList<>();
+            list.add(Pair.create("全部", "all"));
+            list.add(Pair.create("连载", "0"));
+            list.add(Pair.create("完结", "1"));
+            return list;
+        }
+
     }
 
 }
