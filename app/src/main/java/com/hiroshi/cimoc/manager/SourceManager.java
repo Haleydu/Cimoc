@@ -181,6 +181,9 @@ public class SourceManager {
                 case Comic18.TYPE:
                     parser = new Comic18(source);
                     break;
+                case Ohmanhua.TYPE:
+                    parser = new Ohmanhua(source);
+                    break;
                 default:
                     parser = new Null();
                     break;

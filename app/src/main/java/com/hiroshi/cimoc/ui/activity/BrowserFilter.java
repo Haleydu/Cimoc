@@ -27,6 +27,7 @@ import com.hiroshi.cimoc.source.PuFei;
 import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Ohmanhua;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(ManHuaDB.TYPE);
         list.add(TuHao.TYPE);
         list.add(Comic18.TYPE);
+        list.add(Ohmanhua.TYPE);
 
         return list;
     }

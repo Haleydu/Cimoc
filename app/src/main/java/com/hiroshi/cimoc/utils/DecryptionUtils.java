@@ -24,6 +24,14 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class DecryptionUtils {
 
+    public static String decryptAES(String value, String  key) throws Exception {
+        SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(), "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] code = Base64.decode(value, Base64.NO_WRAP);
+        return new String(cipher.doFinal(code));
+    }
+
     public static String desDecrypt(String keyString, String cipherString) throws Exception {
         byte[] cipherBytes = Base64.decode(cipherString, Base64.DEFAULT);
         DESKeySpec keySpec = new DESKeySpec(keyString.getBytes());
