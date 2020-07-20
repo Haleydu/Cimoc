@@ -20,7 +20,7 @@ android {
     buildToolsVersion '29.0.3'
 
     defaultConfig {
-        applicationId "com.hiroshi.cimoc"
+        applicationId "com.haleydu.cimoc"
         minSdkVersion 15
         targetSdkVersion 29
         versionCode buildVersion
