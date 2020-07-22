@@ -9,7 +9,7 @@ assignees: ''
 
 # 这是一个漫画源问题
 
-> 漫画源工作情况可以在[project](https://github.com/Haleydu/Cimoc/projects/2)中进行查看，请尽量不要重复
+> 漫画源工作情况可以在[project](https://github.com/Haleydu/Cimoc/projects/1)中进行查看，请尽量不要重复
 > 请您在提交本问题前仔细完成下面问题以便更好地解决问题.
 > 如果有多个漫画源出错，请不要合并在一起，谢谢
 
@@ -36,4 +36,8 @@ assignees: ''
 具体版本: 
 
 ## 您使用的cimoc版本
-V1.4.8.8xxx
+- [ ] v1.5.4
+- [ ] v1.5.5
+- [ ] v1.5.6
+- [ ] v1.5.7
+具体版本: 
