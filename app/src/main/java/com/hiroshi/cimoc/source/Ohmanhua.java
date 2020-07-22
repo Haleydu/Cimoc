@@ -67,10 +67,19 @@ public class Ohmanhua extends MangaParser {
                 String cid = node.href("dd > h1 > a");
                 String title = node.text("dd > h1 > a");
                 String cover = node.attr("dt > a", "data-original");
-                String author = node.text("dd > ul > li:eq(3)").replace("作者","");
-                String update = node.text("dd > ul > li:eq(4)").replace("更新","");
+                String author = node.text("dd > ul > li:eq(3)");
+                String update = node.text("dd > ul > li:eq(4)");
+
+                if (!author.contains("作者")){
+                    author = update;
+                }
+                if (!update.contains("更新")){
+                    update = node.text("dd > ul > li:eq(5)");
+                }
                 //Log.d("getSearchIterator",cid + ","+title+ "," + cover + ","+author +","+update);
-                return new Comic(TYPE, cid, title, cover, update, author);
+                return new Comic(TYPE, cid, title, cover,
+                        update.replace("更新",""),
+                        author.replace("作者",""));
             }
         };
     }
@@ -96,12 +105,24 @@ public class Ohmanhua extends MangaParser {
         Node body = new Node(html);
         String title = body.text("dl.fed-deta-info > dd > h1");
         String cover = body.attr("dl.fed-deta-info > dt > a","data-original");
-        String update = body.text("dl.fed-deta-info > dd > ul > li:eq(2)").replace("更新","");
-        String author = body.text("dl.fed-deta-info > dd > ul > li:eq(1) > a");
         String intro = body.text("div.fed-tabs-boxs > div > p");
-        boolean status = isFinish(body.text("dl.fed-deta-info > dd > ul > li:eq(0) > a"));
+        String statusStr = body.text("dl.fed-deta-info > dd > ul > li:eq(0)");
+        String author = body.text("dl.fed-deta-info > dd > ul > li:eq(1)");
+        String update = body.text("dl.fed-deta-info > dd > ul > li:eq(2)");
+
+        if (!statusStr.contains("状态")){
+            statusStr = author;
+        }
+        if (!author.contains("作者")){
+            author = update;
+        }
+        if (!update.contains("更新")){
+            update = body.text("dl.fed-deta-info > dd > ul > li:eq(3) > a");
+        }
+        boolean status = isFinish(statusStr.replace("状态",""));
+
         //Log.d("parseInfo",status + ","+title+ "," + cover + ","+author +","+update + ","+intro);
-        comic.setInfo(title, cover, update, intro, author, status);
+        comic.setInfo(title, cover, update.replace("更新",""), intro, author.replace("作者",""), status);
     }
 
     @Override
