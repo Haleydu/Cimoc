@@ -150,7 +150,7 @@ public class Download {
             String jsonString = getJsonFromChapter(task.getTitle(), task.getPath());
             DocumentFile dir1 = DocumentUtils.getOrCreateSubDirectory(root, DOWNLOAD);
             DocumentFile dir2 = DocumentUtils.getOrCreateSubDirectory(dir1, String.valueOf(task.getSource()));
-            DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getCid());
+            DocumentFile dir3 = DocumentUtils.getOrCreateSubDirectory(dir2, task.getCid().replaceAll("/|\\?", ""));
             DocumentFile dir4 = DocumentUtils.getOrCreateSubDirectory(dir3, DecryptionUtils.urlDecrypt(task.getPath().replaceAll("/|\\?", "-")));
             if (dir4 != null) {
                 DocumentFile file = DocumentUtils.getOrCreateFile(dir4, FILE_INDEX);
@@ -222,8 +222,11 @@ public class Download {
     }
 
     public static DocumentFile getChapterDir(DocumentFile root, Comic comic, Chapter chapter, String title) {
-        DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD, String.valueOf(comic.getSource()),
-                comic.getCid(), DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-")));
+        DocumentFile result = DocumentUtils.findFile(root, DOWNLOAD,
+                String.valueOf(comic.getSource()),
+                comic.getCid().replaceAll("/|\\?", ""),
+                DecryptionUtils.urlDecrypt(chapter.getPath().replaceAll("/|\\?", "-"))
+        );
         if (result == null) {
             result = DocumentUtils.findFile(root, DOWNLOAD, title, comic.getTitle(), chapter.getTitle());
         }
