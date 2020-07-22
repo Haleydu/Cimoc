@@ -29,6 +29,11 @@ Online manga reader based on Android
 - 本地漫画（Local Reader）
 - 本地备份恢复（Local Backup）
 
+# 软件使用说明
+- 安装完成后，直接点击搜索，搜索想看的漫画即可
+- 安装可能会报毒，如果信不过本作者的可以下载apk后，进行在线查毒分析，全部代码我都自己分析了一遍没有后门，没有木马，没有病毒。
+- 后期有时间会把被误报病毒的那些代码处理了。
+
 # 感谢以下的开源项目及作者
 - [Android Open Source Project](http://source.android.com/)
 - [ButterKnife](https://github.com/JakeWharton/butterknife)
@@ -92,6 +97,12 @@ Online manga reader based on Android
 本人喜欢看漫画，无奈没有好用的漫画软件，市面上的软件不是漫画源不足，就是一堆广告。
 正版软件上同一个应用上漫画源不是全都有，又有一大堆广告，打开个正版漫画apk还需要看好几秒广告。
 漫源不足时，只能下载其他平台的应用，才能满足我的需求，下的应用多了严重消耗手机内存。
+
+# 软件更新方向：
+- 能正常看大部分漫画
+- 界面简洁为主
+- 拒绝广告
+- 解决apk影响体验的问题
 
 # 免责声明：
 如果更新软件的过程中有什么侵权的地方，请在github上留言或者私信我，提供相关版权证明，会马上删除侵权部分的内容。
