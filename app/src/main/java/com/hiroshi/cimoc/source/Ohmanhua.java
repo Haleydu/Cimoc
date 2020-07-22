@@ -175,7 +175,12 @@ public class Ohmanhua extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("dl.fed-deta-info > dd > ul > li:eq(2)").replace("更新","");
+        Node body = new Node(html);
+        String update = body.text("dl.fed-deta-info > dd > ul > li:eq(2)");
+        if (!update.contains("更新")){
+            update = body.text("dl.fed-deta-info > dd > ul > li:eq(3) > a");
+        }
+        return update.replace("更新","");
     }
 
     @Override
