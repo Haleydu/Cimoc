@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.parser;
 
 import android.net.Uri;
 
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -28,7 +29,7 @@ public interface Parser {
      * @param keyword 关键字
      * @param page    页码
      */
-    Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException;
+    Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException, Exception;
 
     /**
      * 获取搜索结果迭代器，这里不直接解析成列表是为了多图源搜索时，不同图源漫画穿插的效果
@@ -67,7 +68,7 @@ public interface Parser {
      *
      * @param html 页面源代码
      */
-    List<Chapter> parseChapter(String html);
+    List<Chapter> parseChapter(String html) throws JSONException;
 
     /**
      * 图片列表的 HTTP 请求
@@ -85,7 +86,7 @@ public interface Parser {
      *
      * @param html 页面源代码
      */
-    List<ImageUrl> parseImages(String html);
+    List<ImageUrl> parseImages(String html) throws Manga.NetworkErrorException, JSONException;
 
     /**
      * 图片惰性加载的 HTTP 请求

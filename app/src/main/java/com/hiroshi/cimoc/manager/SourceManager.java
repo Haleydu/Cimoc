@@ -184,6 +184,9 @@ public class SourceManager {
                 case Ohmanhua.TYPE:
                     parser = new Ohmanhua(source);
                     break;
+                case CopyMH.TYPE:
+                    parser = new CopyMH(source);
+                    break;
                 default:
                     parser = new Null();
                     break;

@@ -89,6 +89,7 @@ public class UpdateHelper {
         list.add(YYLS.getDefaultSource());
         list.add(Comic18.getDefaultSource());
         list.add(Ohmanhua.getDefaultSource());
+        list.add(CopyMH.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }
