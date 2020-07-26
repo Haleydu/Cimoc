@@ -4,7 +4,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
@@ -38,7 +38,7 @@ public class EditorDialogFragment extends DialogFragment implements DialogInterf
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_editor, null);
-        mEditText = ButterKnife.findById(view, R.id.dialog_editor_text);
+        mEditText = view.findViewById(R.id.dialog_editor_text);
         mEditText.setText(getArguments().getString(DialogCaller.EXTRA_DIALOG_CONTENT));
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))

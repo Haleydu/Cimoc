@@ -1,8 +1,8 @@
 package com.hiroshi.cimoc.ui.widget;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Hiroshi on 2016/8/13.

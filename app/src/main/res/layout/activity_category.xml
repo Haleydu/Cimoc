@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/category_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -36,7 +36,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_subject"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -63,7 +63,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_area"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -90,7 +90,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_reader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -117,7 +117,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -144,7 +144,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_year"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -171,21 +171,21 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/category_spinner_order"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/category_action_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:src="@drawable/ic_search_white_24dp" />
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <include layout="@layout/custom_night_mask" />
 </FrameLayout>

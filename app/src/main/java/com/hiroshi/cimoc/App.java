@@ -1,14 +1,13 @@
 package com.hiroshi.cimoc;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.multidex.MultiDex;
-import android.support.v7.widget.RecyclerView;
+import androidx.multidex.MultiDex;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -23,7 +22,6 @@ import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.misc.ActivityLifecycle;
 import com.hiroshi.cimoc.model.DaoMaster;
 import com.hiroshi.cimoc.model.DaoSession;
-import com.hiroshi.cimoc.network.HttpDns;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.adapter.GridAdapter;
 import com.hiroshi.cimoc.utils.DocumentUtils;
@@ -31,8 +29,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -45,7 +41,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
-import android.support.multidex.MultiDexApplication;
+import androidx.multidex.MultiDexApplication;
 
 /**
  * Created by Hiroshi on 2016/7/5.

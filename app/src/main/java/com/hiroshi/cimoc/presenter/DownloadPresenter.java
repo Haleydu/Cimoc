@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.manager.ComicManager;

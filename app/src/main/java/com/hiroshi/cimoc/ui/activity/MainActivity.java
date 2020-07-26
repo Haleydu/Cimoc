@@ -2,38 +2,44 @@ package com.hiroshi.cimoc.ui.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StyleRes;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
-import com.hiroshi.cimoc.core.Update;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.PreferenceManager;
@@ -248,8 +254,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 //            );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
-        mLastText = ButterKnife.findById(header, R.id.drawer_last_title);
-        mDraweeView = ButterKnife.findById(header, R.id.drawer_last_cover);
+        mLastText = header.findViewById(R.id.drawer_last_title);
+        mDraweeView = header.findViewById(R.id.drawer_last_cover);
         mLastText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -496,10 +502,35 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     }
 
     private boolean showAuthorNotice() {
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(3600)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+        mFirebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config);
+        mFirebaseRemoteConfig.fetchAndActivate()
+                .addOnCompleteListener(this, new OnCompleteListener<Boolean>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Boolean> task) {
+                        if (task.isSuccessful()) {
+                            boolean updated = task.getResult();
+                            Log.d("FireBase_FirstOpenMsg", "Config params updated: " + updated);
+                        } else {
+                            Log.d("FireBase_FirstOpenMsg", "Config params updated Failed. ");
+                        }
+
+                        String showMsg = mFirebaseRemoteConfig.getString("first_open_msg");
+                        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)
+                                || showMsg.compareTo(mPreference.getString(PreferenceManager.PREF_MAIN_NOTICE_LAST, "")) != 0) {
+                            mPreference.putString(PreferenceManager.PREF_MAIN_NOTICE_LAST, showMsg);
+                            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
+                                    showMsg, false, DIALOG_REQUEST_NOTICE);
+                            fragment.show(getFragmentManager(), null);
+                        }
+                    }
+                });
+
         if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.main_notice,
-                    R.string.main_notice_content, false, DIALOG_REQUEST_NOTICE);
-            fragment.show(getFragmentManager(), null);
             return true;
         }
         return false;

@@ -1,6 +1,6 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.core.Local;

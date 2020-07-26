@@ -4,7 +4,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.View;
 
 import com.hiroshi.cimoc.R;
@@ -36,7 +36,7 @@ public class SliderDialogFragment extends DialogFragment implements DialogInterf
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_slider, null);
         int[] item = getArguments().getIntArray(DialogCaller.EXTRA_DIALOG_ITEMS);
-        mSeekBar = ButterKnife.findById(view, R.id.dialog_slider_bar);
+        mSeekBar = view.findViewById(R.id.dialog_slider_bar);
         mSeekBar.setMin(item[0]);
         mSeekBar.setMax(item[1]);
         mSeekBar.setProgress(item[1]);

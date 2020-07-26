@@ -178,6 +178,9 @@ public class SourceManager {
                 case YYLS.TYPE:
                     parser = new YYLS(source);
                     break;
+                case MangaBZ.TYPE:
+                    parser = new MangaBZ(source);
+                    break;
 
                 default:
                     parser = new Null();

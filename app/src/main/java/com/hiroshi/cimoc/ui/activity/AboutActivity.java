@@ -3,23 +3,19 @@ package com.hiroshi.cimoc.ui.activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
-import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.SwitchCompat;
+import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.SwitchCompat;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.Constants;
 import com.hiroshi.cimoc.R;
-import com.hiroshi.cimoc.core.Update;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.AboutPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.view.AboutView;
-import com.hiroshi.cimoc.ui.widget.CustomToast;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 

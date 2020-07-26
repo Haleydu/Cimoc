@@ -169,6 +169,8 @@
     <string name="settings_other_storage_edit_neutral">選擇路徑</string>
     <string name="settings_other_clear_cache">清理緩存</string>
     <string name="settings_other_clear_cache_summary">清理線上漫畫的緩存資料</string>
+    <string name="settings_other_firebase_event">Firebase數據收集</string>
+    <string name="settings_other_firebase_event_summary">允許程序通過Firebase收集您的使用情況，以便於分析程序和漫畫源的工作狀態。</string>
 
     <string name="backup_save">備份</string>
     <string name="backup_save_comic_auto">自動備份</string>

@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.ui.widget.preference;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.support.v7.widget.AppCompatCheckBox;
+import androidx.appcompat.widget.AppCompatCheckBox;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
-import com.hiroshi.cimoc.ui.widget.CustomToast;
 
 import butterknife.ButterKnife;
 
@@ -52,9 +51,9 @@ public class CheckBoxPreference extends FrameLayout implements View.OnClickListe
         String title = typedArray.getString(R.styleable.Option_title);
         String summary = typedArray.getString(R.styleable.Option_summary);
 
-        mCheckBox = ButterKnife.findById(this, R.id.custom_option_checkbox);
-        TextView titleView = ButterKnife.findById(this, R.id.custom_option_title);
-        TextView summaryView = ButterKnife.findById(this, R.id.custom_option_summary);
+        mCheckBox = this.findViewById(R.id.custom_option_checkbox);
+        TextView titleView = this.findViewById(R.id.custom_option_title);
+        TextView summaryView = this.findViewById(R.id.custom_option_summary);
 
         titleView.setText(title);
         summaryView.setText(summary);
