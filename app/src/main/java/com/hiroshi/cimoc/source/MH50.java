@@ -36,7 +36,6 @@ public class MH50 extends MangaParser {
 
     public static final int TYPE = 80;
     public static final String DEFAULT_TITLE = "漫画堆";
-    public static final String website = "https://www.manhuabei.com";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
@@ -48,22 +47,25 @@ public class MH50 extends MangaParser {
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
-        String url = StringUtils.format("%s/search/?keywords=%s&page=%d", website, keyword, page);
-        return HttpUtils.getSimpleMobileRequest(url);
+        if (page == 1) {
+            String url = StringUtils.format("https://m.manhuabei.com/search/?keywords=%s&page=%d", keyword, page);
+            return HttpUtils.getSimpleMobileRequest(url);
+        }
+        return null;
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("ul.list_con_li > li.list-comic")) {
+        return new NodeIterator(body.list(".UpdateList > .itemBox")) {
             @Override
             protected Comic parse(Node node) {
-                String cid = node.hrefWithSplit("a", 1);
-                String title = node.attr("a","title");
-                String cover = node.src("img");
+                String cid = node.hrefWithSplit(".itemTxt > a", 1);
+                String title = node.text(".itemTxt > a");
+                String cover = node.src(".itemImg > a > img");
                 if (cover.startsWith("//")) cover = "https:" + cover;
-                String update = node.text("p.newPage");
-                String author = node.text("p.auth");
+                String update = node.text(".itemTxt > p.txtItme:eq(3)");
+                String author = node.text(".itemTxt > p.txtItme:eq(1)");
                 return new Comic(TYPE, cid, title, cover, update, author);
             }
         };
@@ -71,30 +73,30 @@ public class MH50 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("%s/manhua/%s/", website, cid);
+        return StringUtils.format("https://m.manhuabei.com/manhua/%s/", cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter(website));
+        filter.add(new UrlFilter("m.manhuabei.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("%s/manhua/%s/", website, cid);
+        String url = StringUtils.format("https://m.manhuabei.com/manhua/%s/", cid);
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
     @Override
     public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
-        String intro = body.text("p.comic_deCon_d");
-        String title = body.text("div.comic_deCon > h1");
-        String cover = body.src("div.comic_i_img > img");
+        String intro = body.text("#full-des");
+        String title = body.text("#comicName");
+        String cover = body.src("#Cover > img");
         if (cover.startsWith("//")) cover = "https:" + cover;
-        String author = body.text("ul.comic_deCon_liO > li.eq(0)");
-        String update = "";
-        boolean status = isFinish(body.text("ul.comic_deCon_liO > li.eq(1)"));
+        String author = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(0)");
+        String update = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(4)");
+        boolean status = isFinish(body.text(".Introduct_Sub > .sub_r > .txtItme:eq(2) > a:eq(3)"));
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
@@ -102,9 +104,9 @@ public class MH50 extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("div.zj_list_con > ul > li")) {
-            String title = node.attr("a", "title");
-            String path = StringUtils.split(node.href("a"), "/", 3);
+        for (Node node : body.list(".chapter-warp > ul > li > a")) {
+            String title = node.text();
+            String path = StringUtils.split(node.href(), "/", 3);
             list.add(new Chapter(title, path));
         }
 
@@ -113,7 +115,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("%s/manhua/%s/%s", website, cid, path);
+        String url = StringUtils.format("https://m.manhuabei.com/manhua/%s/%s", cid, path);
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
@@ -163,7 +165,7 @@ public class MH50 extends MangaParser {
         List<ImageUrl> list = new LinkedList<>();
 
         //该章节的所有图片url，aes加密
-        String arrayStringCode = decrypt(StringUtils.match("var chapterImages =[\\s\\n]*\"(.*?)\";", html, 1));
+        String arrayStringCode = decrypt(StringUtils.match("var chapterImages =\\s*\"(.*?)\";", html, 1));
         if (arrayStringCode == null) return list;
         JSONArray imageList = JSONArray.parseArray(arrayStringCode);
 
@@ -224,9 +226,9 @@ public class MH50 extends MangaParser {
                     .concat(args[CATEGORY_PROGRESS]).trim();
             String finalPath;
             if (path.isEmpty()) {
-                finalPath = StringUtils.format("%s/list/", website);
+                finalPath = StringUtils.format("https://m.manhuabei.com/list/");
             } else {
-                finalPath = StringUtils.format("%s/list/%s/?page=%%d", website, path).replaceAll("\\s+", "-");
+                finalPath = StringUtils.format("https://m.manhuabei.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
             }
             return finalPath;
         }
@@ -387,7 +389,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", website);
+        return Headers.of("Referer", "https://m.manhuabei.com/");
     }
 
 }
