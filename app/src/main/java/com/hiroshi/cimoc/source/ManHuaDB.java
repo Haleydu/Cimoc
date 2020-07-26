@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.source;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -71,7 +72,7 @@ public class ManHuaDB extends MangaParser {
             protected Comic parse(Node node) {
                 String cid = node.hrefWithSplit(1);
                 String title = node.attr("title");
-                String cover = node.attr("img", "src");
+                String cover = node.attr("img", "data-original");
                 return new Comic(TYPE, cid, title, cover, null, null);
             }
         };
@@ -120,31 +121,26 @@ public class ManHuaDB extends MangaParser {
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
-        Document document = Jsoup.parse(html);
 
-        //获取页面定义的图片host和pre
-        Element urlDefine = document.select(".vg-r-data").first();
-        String imageHost = urlDefine.attr("data-host").trim();
-        String imagePre = urlDefine.attr("data-img_pre").trim();
-
-        //获取页面定义的图片信息变量img_data
-        String imageArrDataDefine = document.getElementsByTag("script").eq(7).first().html();
-        imageArrDataDefine = imageArrDataDefine.substring(16, imageArrDataDefine.length() - 2);
-        //进行base64转换
         try {
-            imageArrDataDefine = DecryptionUtils.base64Decrypt(imageArrDataDefine);
+            final String imageHost = StringUtils.match("data-host=\"(.*?)\"", html, 1);
+            final String imagePre = StringUtils.match("data-img_pre=\"(.*?)\"", html, 1);
+            final String base64Data = StringUtils.match("var img_data = '(.*?)';", html, 1);
+            final String jsonStr = DecryptionUtils.base64Decrypt(base64Data);
+            final JSONArray imageList = JSON.parseArray(jsonStr);
+
+            for(int i = 0; i < imageList.size(); i++ ) {
+                final JSONObject image = imageList.getJSONObject(i);
+
+                final String imageUrl = imageHost + imagePre + image.getString("img");
+
+                list.add(new ImageUrl(image.getIntValue("p"), imageUrl, false));
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
-            return list;
         }
 
-        JSONArray imageList = JSON.parseArray(imageArrDataDefine);
-        JSONObject image;
-        int total = imageList.size();
-        for (int i = 0; i < total; i++) {
-            image = imageList.getJSONObject(i);
-            list.add(new ImageUrl(image.getIntValue("p"), imageHost + imagePre + image.getString("img"), false));
-        }
         return list;
     }
 
