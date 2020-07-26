@@ -65,6 +65,7 @@ public class TuHao extends MangaParser {
                 String cid = node.hrefWithSplit("li > a", 1);
                 String cover = node.attr("a.pic > img", "src");
                 String update = node.text("li.updata > a > span");
+
                 return new Comic(TYPE, cid, title, cover, update, null);
             }
         };
@@ -83,7 +84,7 @@ public class TuHao extends MangaParser {
         String intro = body.text("p#comic-description");
         String title = body.text("div.cy_title > h1");
 
-        String update = "";
+        String update = body.text("div.cy_zhangjie_top > p >font");;
         String author = body.text("div.cy_xinxi > span:eq(0)");
 
         // 连载状态
