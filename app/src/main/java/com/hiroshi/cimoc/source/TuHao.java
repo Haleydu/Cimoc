@@ -26,6 +26,7 @@ public class TuHao extends MangaParser {
 
     public static final int TYPE = 24;
     public static final String DEFAULT_TITLE = "土豪漫画";
+    public static final String website = "tuhao456.com";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
@@ -39,73 +40,63 @@ public class TuHao extends MangaParser {
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         String url = "";
         if (page == 1) {
-            url = StringUtils.format("https://m.tohomh123.com/action/Search?keyword=%s", keyword);
+            url = StringUtils.format("https://%s/sort/?key=%s", website, keyword);
         }
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public String getUrl(String cid) {
-        return "https://m.tohomh123.com/".concat(cid).concat("/");
+        return "https://".concat(website).concat("/").concat(cid).concat("/");
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.tohomh123.com", "\\w+", 0));
+        filter.add(new UrlFilter(website, "\\w+", 0));
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        return new NodeIterator(body.list("#classList_1 > ul > li")) {
+        return new NodeIterator(body.list("div.cy_list_mh > ul")) {
             @Override
             protected Comic parse(Node node) {
-
-                String title = node.attr("a", "title");
-                String urls = node.attr("a", "href");
-                String cid = urls.substring(1, urls.length() - 1);
-                String cover = node.attr("a > div > img", "src");
-                return new Comic(TYPE, cid, title, cover, null, null);
+                String title = node.text("li.title > a");
+                String cid = node.hrefWithSplit("li > a", 1);
+                String cover = node.attr("a.pic > img", "src");
+                String update = node.text("li.updata > a > span");
+                return new Comic(TYPE, cid, title, cover, update, null);
             }
         };
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://m.tohomh123.com/".concat(cid).concat("/");
+        String url = "https://" + website + "/manhua/" + cid + "/";
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String cover = body.src("div.coverForm > img");
-        String intro = body.text("div.detailContent > p");
-        String title = body.text("div.detailForm > div > div > h1");
+        String cover = body.src("img.pic");
+        String intro = body.text("p#comic-description");
+        String title = body.text("div.cy_title > h1");
 
         String update = "";
-        String author = "";
-        List<Node> upDateAndAuth = body.list("div.detailForm > div > div > p");
-
-        if (upDateAndAuth.size() == 5) {
-            update = upDateAndAuth.get(3).text().substring(5).trim();
-            author = upDateAndAuth.get(2).text().substring(3).trim();
-        } else {
-            update = upDateAndAuth.get(2).text().substring(5).trim();
-            author = upDateAndAuth.get(1).text().substring(3).trim();
-        }
+        String author = body.text("div.cy_xinxi > span:eq(0)");
 
         // 连载状态
-        boolean status = isFinish("连载");
+        boolean status = isFinish(body.text("div.cy_xinxi > span:eq(1) > a"));
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
-        for (Node node : new Node(html).list("#chapterList_1 > ul > li > a")) {
+        for (Node node : new Node(html).list("div.cy_plist > ul > li")) {
             String title = node.text();
-            String path = node.hrefWithSplit(1);
+            String path = node.hrefWithSplit("a", 1);
             list.add(new Chapter(title, path));
         }
         return list;
@@ -113,7 +104,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.tohomh123.com/%s/%s.html", cid, path);
+        String url = StringUtils.format("https://%s/chapter/%s.html", website, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -121,25 +112,13 @@ public class TuHao extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
 
-        String str = StringUtils.match("var pl = \'(.*?)\'", html, 1);
-        // 得到 https://mh2.wan1979.com/upload/jiemoren/1989998/
-        String prevStr = str.substring(0, str.length() - 8);
+        String str = StringUtils.match("\"page_url\":\"(.*?)\",", html, 1);
 
-        // 得到 0000
-        int lastStr = Integer.parseInt(str.substring(str.length() - 8, str.length() - 4));
-        int pagNum = Integer.parseInt(StringUtils.match("var pcount=(.*?);", html, 1));
-
-        if (str != null) {
-            try {
-                for (int i = lastStr; i < pagNum + lastStr; i++) {
-                    String url = StringUtils.format("%s%04d.jpg", prevStr, i);
-//                  https://mh2.wan1979.com/upload/jiemoren/1989998/0000.jpg
-                    list.add(new ImageUrl(i + 1, url, false));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        int i = 0;
+        for(String url : str.split("\\|72cms\\|")) {
+            list.add(new ImageUrl(i + 1, url, false));
         }
+
         return list;
     }
 
@@ -166,7 +145,7 @@ public class TuHao extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://m.tohomh123.com");
+        return Headers.of("Referer", "https://m.tohomh456.com");
     }
 
 }
