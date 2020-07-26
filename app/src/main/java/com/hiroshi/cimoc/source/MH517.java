@@ -117,14 +117,14 @@ public class MH517 extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new ArrayList<>();
         Matcher pageMatcher = Pattern.compile("qTcms_S_m_murl_e=\"(.*?)\"").matcher(html);
-        if (!pageMatcher.find()) {
-            return null;
-        }
+        final String mangaid = StringUtils.match("var qTcms_S_m_id=\"(\\w+?)\";", html, 1);
+        if (!pageMatcher.find()) return null;
         try {
             final String imgArrStr = DecryptionUtils.base64Decrypt(pageMatcher.group(1));
             int i = 0;
             for (String item : imgArrStr.split("\\$.*?\\$")) {
-                list.add(new ImageUrl(i++, item, false));
+                final String url = "http://m.517manhua.com/statics/pic/?p=" + item + "&wapif=1&picid=" + mangaid + "&m_httpurl=";
+                list.add(new ImageUrl(i++, url, false));
             }
         } finally {
             return list;
@@ -138,7 +138,7 @@ public class MH517 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.517manhua.com/lanmu/shenqiangyiyaochuan/951330.html");
+        return Headers.of("Referer", "http://m.517manhua.com/");
     }
 
 }
