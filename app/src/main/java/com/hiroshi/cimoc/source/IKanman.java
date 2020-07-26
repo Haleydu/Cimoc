@@ -151,10 +151,12 @@ public class IKanman extends MangaParser {
                 JSONObject object = new JSONObject(jsonString);
                 String chapterId = object.getString("cid");
                 String path = object.getString("path");
-                String md5 = object.getJSONObject("sl").getString("md5");
+//                String md5 = object.getJSONObject("sl").getString("md5");
+                String e = object.getJSONObject("sl").getString("e");
+                String m = object.getJSONObject("sl").getString("m");
                 JSONArray array = object.getJSONArray("files");
                 for (int i = 0; i != array.length(); ++i) {
-                    String url = StringUtils.format("https://i.hamreus.com%s%s?cid=%s&md5=%s", path, array.getString(i), chapterId, md5);
+                    String url = StringUtils.format("https://i.hamreus.com%s%s?e=%s&m=%s", path, array.getString(i), e, m);
                     list.add(new ImageUrl(i + 1, url, false));
                 }
             } catch (Exception e) {
