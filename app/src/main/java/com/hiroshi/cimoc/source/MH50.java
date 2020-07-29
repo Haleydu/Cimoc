@@ -129,8 +129,8 @@ public class MH50 extends MangaParser {
     @Nullable
     private String decrypt(String code) {
         //感谢破解秘钥的大佬zzy94269664
-        String key = "1231M8H8B8123456";
-        String iv = "A1B2C3D4E5F6G789";
+        String key = "1739ZAQ12345bbG1";
+        String iv = "ABCDEF1G341234bb";
         try {
             return DecryptionUtils.aesDecrypt(code, key, iv);
         } catch (Exception e) {
