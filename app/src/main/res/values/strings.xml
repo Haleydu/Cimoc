@@ -11,11 +11,12 @@
     <string name="drawer_light">日间模式</string>
     <string name="drawer_night">夜间模式</string>
     <string name="drawer_backup">备份</string>
+    <string name="drawer_update">非最新版本请点击更新</string>
 
     <string name="main_double_click">再按一次退出</string>
     <string name="main_last_read_fail">读取最后阅读失败</string>
     <string name="main_notice">欢迎使用</string>
-    <string name="main_notice_content">有问题上github或gitter留言</string>
+    <string name="main_notice_content">有问题上github或gitter留言 \n 本软件为免费软件</string>
     <string name="main_permission">权限请求</string>
     <string name="main_permission_content">下载、备份还原与保存图片功能需要访问SD卡的权限！\n如果没有存储权限，将会出现设置功能将闪退，备份功能无法使用等问题。请在之后的弹出框中确定授予权限！</string>
     <string name="main_permission_success">授权成功</string>

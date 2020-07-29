@@ -47,5 +47,9 @@
             android:id="@+id/drawer_comiclist"
             android:icon="@drawable/ic_class_black_24dp"
             android:title="@string/drawer_list"/>
+        <item
+            android:visible="false"
+            android:id="@+id/drawer_comicUpdate"
+            android:title="@string/drawer_update"/>
     </group>
 </menu>

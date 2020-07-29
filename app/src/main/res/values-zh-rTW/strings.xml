@@ -9,6 +9,7 @@
     <string name="drawer_light">日間模式</string>
     <string name="drawer_night">夜間模式</string>
     <string name="drawer_backup">備份</string>
+    <string name="drawer_update">非最新版本請點擊更新</string>
 
     <string name="main_double_click">再按一次退出</string>
     <string name="main_last_read_fail">讀取最後閱讀失敗</string>

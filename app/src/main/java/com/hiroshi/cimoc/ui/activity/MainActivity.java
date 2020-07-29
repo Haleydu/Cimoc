@@ -354,7 +354,15 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     mDrawerLayout.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.drawer_comiclist:
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_comiclist_url)));
+                    Intent intentBaidu = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.home_page_comiclist_url)));
+                    try {
+                        startActivity(intentBaidu);
+                    } catch (Exception e) {
+                        showSnackbar(R.string.about_resource_fail);
+                    }
+                    break;
+                case R.id.drawer_comicUpdate:
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.about_update_url)));
                     try {
                         startActivity(intent);
                     } catch (Exception e) {
@@ -443,6 +451,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     public void onUpdateReady() {
         HintUtils.showToast(this, R.string.main_ready_update);
+
+        mNavigationView.getMenu().findItem(R.id.drawer_comicUpdate).setVisible(true);
 //        Update.update(this);
     }
 
