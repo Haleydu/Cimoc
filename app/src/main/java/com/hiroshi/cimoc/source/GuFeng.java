@@ -120,7 +120,7 @@ public class GuFeng extends MangaParser {
                     // 去掉首末两端的双引号
                     String s = array[i].substring(1, array[i].length() - 1);
                     // http://res.gufengmh8.com/images/comic/159/316518/1519527843Efo9qfJOY9Jb_VP4.jpg
-                    list.add(new ImageUrl(i + 1, "https://res.gufengmh8.com/" + urlPrev + s, false));
+                    list.add(new ImageUrl(i + 1, "https://res.xiaoqinre.com/" + urlPrev + s, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
