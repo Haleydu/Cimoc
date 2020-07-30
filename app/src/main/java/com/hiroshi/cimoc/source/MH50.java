@@ -175,12 +175,11 @@ public class MH50 extends MangaParser {
         int imageListSize = imageList.size();
         for (int i = 0; i != imageListSize; ++i) {
             String key = imageList.getString(i);
-            String imageUrl = getImageUrlByKey(key, server[1], chapterPath);
+            String imageUrl = getImageUrlByKey(key, server[3], chapterPath);
             if(imageUrl.contains("images.dmzj.com"))
-                imageUrl = "https://img01.eshanyao.com/showImage.php?url=" + imageUrl;
+                imageUrl = imageUrl.replace("%","%25");
             list.add(new ImageUrl(i + 1, imageUrl, false));
         }
-
         return list;
     }
 
