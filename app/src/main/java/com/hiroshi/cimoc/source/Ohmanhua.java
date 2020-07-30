@@ -156,7 +156,7 @@ public class Ohmanhua extends MangaParser {
                 String imgRelativePath = StringUtils.match("imgpath:\"(.+?)\"",decryptedData,1);
                 String startImg = StringUtils.match("startimg:([0-9]+?),",decryptedData,1);
                 String totalPages = StringUtils.match("totalimg:([0-9]+?),",decryptedData,1);
-                for (int i = Integer.parseInt(startImg); i != Integer.parseInt(totalPages); ++i) {
+                for (int i = Integer.parseInt(startImg); i <= Integer.parseInt(totalPages); ++i) {
                     String jpg = StringUtils.format("%04d.jpg", i);
                     //LogUtil.iLength("parseImages url",serverUrl + imgRelativePath + jpg);
                     list.add(new ImageUrl(i + 1, serverUrl + imgRelativePath + jpg, false));
