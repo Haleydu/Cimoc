@@ -9,6 +9,7 @@ Online manga reader based on Android
 [![codebeat badge](https://codebeat.co/badges/a22ca260-494d-4be8-9e3d-fc9c8f7d0f73)](https://codebeat.co/projects/github-com-haleydu-cimoc-release-tci)
 [![GitHub release](https://img.shields.io/github/release/Haleydu/Cimoc.svg)](https://github.com/Haleydu/Cimoc/releases)
 [![Join the chat at https://gitter.im/Haleydu_Cimoc/community](https://badges.gitter.im/Haleydu_Cimoc/community.svg)](https://gitter.im/Haleydu_Cimoc/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHaleydu%2FCimoc.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FHaleydu%2FCimoc?ref=badge_shield)
 [![](https://img.shields.io/github/downloads/Haleydu/cimoc/total.svg)](https://github.com/Haleydu/Cimoc/releases)
 
 # 下载
@@ -109,3 +110,7 @@ Online manga reader based on Android
 > 关于淘宝售卖和会员破解
 请二次开发软件遵守软件许可证。  
 本程序没有任何破解网站VIP的功能，仅仅作为网页浏览器显示网站免费浏览部分，淘宝卖家自行添加的破解或其他功能与本程序无任何关系。
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHaleydu%2FCimoc.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FHaleydu%2FCimoc?ref=badge_large)
