@@ -29,14 +29,13 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: SVka7J99K5/DGL8LVEEnMqX5vIAVw6/bUDJbC41TdKASfWR3Huy97I8xkwiJ947b2eGIlmwVJLR9GD6akeVaUUvpTKr0PXAm7nMdFrkfAaN5ovruqrcnjIYQ/Y0u3yj2JESAuQIpR4ggJ9xWu1OwVfDpDfIFCsLlAKMyok+Bc5/J3SCnAfly0X61e+rs+223pc8GW3Dvaqp/cMo5OiCfhebvVMmXIAENjvKYdciTnxjz5DRzsBDwzSZW/mRn96wgdroGOuoBYUll8EOoHD/yPCbmrRZcvk/DCvRojvwMmOvP7g38DcIbmvYr04MKnHyfvkAWNZNR0k2k5IIe+b2j7HPHqv6g6LN2nysarjW0kA+EzMq9R8lyaLwY1umzs3iavc/BQBVYggP8ItN4cO1gAfefm2dB8Wt9cH7Sr3OJpvQPNDMS1RNhjl0Xo9fR5uLy0BN7n31f3OcChfyOpsM0zFUZGvL7WrxMtABH6lG9DuCzvXvLaThsZQAXNcZyzrwdQMK2YVd//WUuOSiLwq207fa2hadV6q+PpEsX4M1ugOB4Z7FyQ0Se9kzYPgXKrfdtOvbt2yeLYUpUBW6qh+rQ7JMhRG0xK9x9MYZdmf096+0HqC+CVM4/zE0+dpnc8fagL44Wfrs825kUI7sBpgKp6cJQNGSlrZCCda/sJbmddQo=
+    secure: E9xS1Hsc6R7Yz/+ViS+2IrFxh4jeBobnr23OALY0jcLvXef0fH0d6r8hmYWFotc4PTU0gtQDAb+sqgGxPECJ6lxY+pZ30YeTeUlgCvioSL8Ud7hXaSGoRQ0BjDlkRpy4VIUOFiHITuOUuTKFhY2oa7KRFmw2qy9L2XFDXRanAlnxYFrtAffxSZFa589X2UR/Dw2kezyEYMhW3gpRH8mXoSf2SqUGfEB3EMNL/AeC2OoJVUmmJDoNqlFBY6a8uaO4XzisbGlWM423lRtGl2p31SxkRX7LK3MXZk7UsnLRzFmdEoTxS6tBahc6d+xtI3aVeG5CTzakhq12egdkWf9RHH9LRGuXe1n2CMtwaLyvz+lyVMGRwZ3Dwo9O4J/4EKtYiUBqu9kemkmTQSu25BDkH8sgiAnP+q4+JZuRh+8L5bllgJEjycHe3xhiwDsbyguDKOsBzn0VS171Dd92a7F73OHXQz5//aH7lEAVX7uFYW2Ak3Trgzb/S3Odn/S2B3cbnmc6eyNoeltbcw8WBdZYd0wONSV5nklI9ewUfQ5ZU2CuQLy3wh8hAdcjefqxDEqL1p+phLCA57uq/7Zk9pNSEploJu7E0+acIaLt+OoMd2gDdao+wRS/g4g8X3rEme8pCPeX9DQ8QrqzxNNC4vCJX2LHVEdBhtgLlhSyGT5V+YQ=
   file: "app/build/outputs/apk/release/Cimoc.apk"
   skip_cleanup: true
   on:
     repo: Haleydu/Cimoc
     branch:
       - release-tci
-      - dev
     tags: true
 notifications:
   webhooks:
