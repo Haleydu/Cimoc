@@ -28,19 +28,11 @@ before_deploy:
   - echo $TRAVIS_BUILD_NUMBER
 deploy:
   provider: releases
-  api_key: $GITHUB_TOKEN
-    secure: E9xS1Hsc6R7Yz/+ViS+2IrFxh4jeBobnr23OALY0jcLvXef0fH0d6r8hmYWFotc4PTU0gtQDAb+sqgGxPECJ6lxY+pZ30YeTeUlgCvioSL8Ud7hXaSGoRQ0BjDlkRpy4VIUOFiHITuOUuTKFhY2oa7KRFmw2qy9L2XFDXRanAlnxYFrtAffxSZFa589X2UR/Dw2kezyEYMhW3gpRH8mXoSf2SqUGfEB3EMNL/AeC2OoJVUmmJDoNqlFBY6a8uaO4XzisbGlWM423lRtGl2p31SxkRX7LK3MXZk7UsnLRzFmdEoTxS6tBahc6d+xtI3aVeG5CTzakhq12egdkWf9RHH9LRGuXe1n2CMtwaLyvz+lyVMGRwZ3Dwo9O4J/4EKtYiUBqu9kemkmTQSu25BDkH8sgiAnP+q4+JZuRh+8L5bllgJEjycHe3xhiwDsbyguDKOsBzn0VS171Dd92a7F73OHXQz5//aH7lEAVX7uFYW2Ak3Trgzb/S3Odn/S2B3cbnmc6eyNoeltbcw8WBdZYd0wONSV5nklI9ewUfQ5ZU2CuQLy3wh8hAdcjefqxDEqL1p+phLCA57uq/7Zk9pNSEploJu7E0+acIaLt+OoMd2gDdao+wRS/g4g8X3rEme8pCPeX9DQ8QrqzxNNC4vCJX2LHVEdBhtgLlhSyGT5V+YQ=
-  file: "app/build/outputs/apk/release/Cimoc.apk"
-  skip_cleanup: true
+  api_key:
+    secure: jTKF+LORoR5pXPd5XsVoRgtlx0vqMN8wuvuH680KT/AgrFh2usKIaBCUmM2KYYnwbnxT5lm5eX58lr22mVAn0OzajBGhiilWpQuoDcI3aU0vfki7awFILq/n3tnMvewtz4b89w9dDKPFz/AEdBd1W5gDr/y8A4VLpi6n7n8GPdq/8rk0LHJSxsgKVN9hpzXNBgDCxt2AzH20ZFcUaN7mgVbiL+cQC/9r+zNLkhBqph8TFGU//L+P5mbpVSvd2zJZHwJ27WGeWM5sndgilXEFi2HYVR/mJxqiVLqlnpI9i+e7TzRUoEcuWW8+UcDz4XcCOGMZFjNPgbT1kXwusNKrLU1Dh81qeseeFVZuGgA0DIXczvDTG/U/B4GMT3rIXL6W9eow+J8upZ4WfWkZe6gp57SpBt+FS5bqoiIN/pSp8Bur/NH2hVoCIYpReQ/8l43LF2EfgHSUibiPDiZpsHcihmZ5oZqXb4sxDEy6Rd4pVPr3BD54O46NYcjyATsLoCRI9IU4xEwv1W+Etw4FarMAW80AiS232X4B4MnQ7nm83BZkSI5/YbeqB5yOvK7jCwRoZCdQFUPmOWRC3sVTbNDlRdiY2oJWtE8WoiEIG3GIm/Qy+/9WyGmEuNb7BIy3PGlBEhzTbT//BXh06PJfg9+IkocecJrgTBNXOLkZPYO+BKs=
+  file: app/build/outputs/apk/release/Cimoc.apk
   on:
     repo: Haleydu/Cimoc
-    branch:
-      - release-tci
+    branch: release-tci
     tags: true
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/f2c42f2c1f06e4ac7bd0
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: always     # options: [always|never|change] default: always
+  skip_cleanup: true
