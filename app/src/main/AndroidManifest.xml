@@ -22,7 +22,7 @@
 
         <activity
             android:name=".ui.activity.MainActivity"
-            android:screenOrientation="unspecified"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,55 +32,55 @@
         </activity>
         <activity
             android:name=".ui.activity.ResultActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.DetailActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.ChapterActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.TagEditorActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.TaskActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.SettingsActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.settings.ReaderConfigActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.BackupActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.AboutActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.CategoryActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.SearchActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.SourceDetailActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.PartFavoriteActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.DirPickerActivity"
-            android:screenOrientation="unspecified" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.settings.EventSettingsActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.PageReaderActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.StreamReaderActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <service android:name=".service.DownloadService" />
 
