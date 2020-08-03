@@ -124,6 +124,8 @@
     <string name="settings_reader_controller_trig_threshold_summary">设置摇杆及扳机键触发阈值</string>
     <string name="settings_reader_white_background">使用白色背景</string>
     <string name="settings_reader_white_background_summary">推荐E-ink设备使用，OLED设备不推荐。</string>
+    <string name="settings_reader_volume_key_controls">音量键控制翻页</string>
+    <string name="settings_reader_volume_key_controls_summary">音量键控制翻页</string>
     <string name="settings_reader_turn">阅读方向</string>
     <string name="settings_reader_orientation">屏幕方向</string>
     <string name="settings_reader_click_event">自定义点击事件</string>

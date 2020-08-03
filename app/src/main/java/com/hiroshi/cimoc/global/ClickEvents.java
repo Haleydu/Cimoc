@@ -63,6 +63,13 @@ public class ClickEvents {
     }
 
     public static int[] getPageClickEventChoice(PreferenceManager manager) {
+        if (!manager.getBoolean(PreferenceManager.PREF_READER_VOLUME_KEY_CONTROLS_PAGE_TURNING, false)) {
+            manager.putInt(PreferenceManager.PREF_READER_PAGE_CLICK_UP, EVENT_NULL);
+            manager.putInt(PreferenceManager.PREF_READER_PAGE_CLICK_DOWN, EVENT_NULL);
+        } else {
+            manager.putInt(PreferenceManager.PREF_READER_PAGE_CLICK_UP, EVENT_PREV_PAGE);
+            manager.putInt(PreferenceManager.PREF_READER_PAGE_CLICK_DOWN, EVENT_NEXT_PAGE);
+        }
         final int[] array = {
                 //screen
                 manager.getInt(PreferenceManager.PREF_READER_PAGE_CLICK_LEFT, EVENT_PREV_PAGE),
@@ -130,6 +137,13 @@ public class ClickEvents {
     }
 
     public static int[] getStreamClickEventChoice(PreferenceManager manager) {
+        if (!manager.getBoolean(PreferenceManager.PREF_READER_VOLUME_KEY_CONTROLS_PAGE_TURNING, false)) {
+            manager.putInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, EVENT_NULL);
+            manager.putInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, EVENT_NULL);
+        }else {
+            manager.putInt(PreferenceManager.PREF_READER_STREAM_CLICK_UP, EVENT_PREV_PAGE);
+            manager.putInt(PreferenceManager.PREF_READER_STREAM_CLICK_DOWN, EVENT_NEXT_PAGE);
+        }
         final int[] array = {
                 //screen
                 manager.getInt(PreferenceManager.PREF_READER_STREAM_CLICK_LEFT, EVENT_NULL),//0

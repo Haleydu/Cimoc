@@ -74,6 +74,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     CheckBoxPreference mReaderWhiteEdge;
     @BindView(R.id.settings_reader_white_background)
     CheckBoxPreference mReaderWhiteBackground;
+    @BindView(R.id.settings_reader_volume_key)
+    CheckBoxPreference mReaderVolumeKeyControls;
     @BindView(R.id.settings_search_auto_complete)
     CheckBoxPreference mSearchAutoComplete;
     @BindView(R.id.settings_other_check_update)
@@ -127,6 +129,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderPagingReverse.bindPreference(PreferenceManager.PREF_READER_PAGING_REVERSE, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mReaderWhiteBackground.bindPreference(PreferenceManager.PREF_READER_WHITE_BACKGROUND, false);
+        mReaderVolumeKeyControls.bindPreference(PreferenceManager.PREF_READER_VOLUME_KEY_CONTROLS_PAGE_TURNING, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
         mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
         mConnectOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false);
@@ -259,6 +262,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mConnectOnlyWifi.setColorStateList(stateList);
         mLoadCoverOnlyWifi.setColorStateList(stateList);
         mOtherShowTopbar.setColorStateList(stateList);
+        mReaderCloseAutoResizeImage.setColorStateList(stateList);
+        mReaderVolumeKeyControls.setColorStateList(stateList);
     }
 
     @OnClick(R.id.settings_other_storage)
