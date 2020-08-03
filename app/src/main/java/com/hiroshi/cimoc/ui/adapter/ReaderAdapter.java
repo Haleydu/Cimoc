@@ -13,6 +13,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.view.DraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
@@ -53,7 +54,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
     private boolean isWhiteEdge;
     private boolean isBanTurn;
     private boolean isDoubleTap;
+    private boolean isCloseAutoResizeImage;
     private float mScaleFactor;
+
 
     public ReaderAdapter(Context context, List<ImageUrl> list) {
         super(context, list);
@@ -133,11 +136,11 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             // TODO 切图后可能需要修改图片高度和宽度
             MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isPagingReverse, isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
-/*            if (isNeedResize(imageUrl)) {
+           if (!isCloseAutoResizeImage) {
                 ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
                         new ResizeOptions(App.mHeightPixels, App.mWidthPixels);
                 imageRequestBuilder.setResizeOptions(options);
-            }*/
+            }
             imageRequestBuilder.setRequestListener(new BaseRequestListener() {
                 @Override
                 public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
@@ -186,6 +189,10 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
 
     public void setPagingReverse(boolean pagingReverse) {
         isPagingReverse = pagingReverse;
+    }
+
+    public void setCloseAutoResizeImage(boolean closeAutoResizeImage) {
+        isCloseAutoResizeImage = closeAutoResizeImage;
     }
 
     public void setWhiteEdge(boolean whiteEdge) {

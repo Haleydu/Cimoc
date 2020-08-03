@@ -66,6 +66,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     CheckBoxPreference mReaderBanDoubleClick;
     @BindView(R.id.settings_reader_paging)
     CheckBoxPreference mReaderPaging;
+    @BindView(R.id.settings_reader_closeautoresizeimage)
+    CheckBoxPreference mReaderCloseAutoResizeImage;
     @BindView(R.id.settings_reader_paging_reverse)
     CheckBoxPreference mReaderPagingReverse;
     @BindView(R.id.settings_reader_white_edge)
@@ -121,6 +123,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderHideNav.bindPreference(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mReaderBanDoubleClick.bindPreference(PreferenceManager.PREF_READER_BAN_DOUBLE_CLICK, false);
         mReaderPaging.bindPreference(PreferenceManager.PREF_READER_PAGING, false);
+        mReaderCloseAutoResizeImage.bindPreference(PreferenceManager.PREF_READER_CLOSEAUTORESIZEIMAGE, false);
         mReaderPagingReverse.bindPreference(PreferenceManager.PREF_READER_PAGING_REVERSE, false);
         mReaderWhiteEdge.bindPreference(PreferenceManager.PREF_READER_WHITE_EDGE, false);
         mReaderWhiteBackground.bindPreference(PreferenceManager.PREF_READER_WHITE_BACKGROUND, false);

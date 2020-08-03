@@ -154,8 +154,10 @@
     <string name="settings_reader_hide_nav">隐藏导航栏</string>
     <string name="settings_reader_hide_nav_summary">阅读状态底部隐藏导航栏</string>
     <string name="settings_reader_paging">自动切割大图</string>
+    <string name="settings_reader_closeautoresizeimage">关闭自动调整图像大小</string>
     <string name="settings_reader_paging_reverse">反向切割大图</string>
     <string name="settings_reader_paging_summary">阅读状态自动切割大图</string>
+    <string name="settings_reader_closeautoresizeimage_summary">阅读状态关闭自动调整图像大小\n(提升速度，但是图片可能模糊)</string>
     <string name="settings_reader_paging_reverse_summary">交换大图切割后位置</string>
     <string name="settings_reader_scale_factor">双击放大百分比</string>
     <string name="settings_download">下载设置</string>
