@@ -6,4 +6,9 @@
         android:icon="@drawable/ic_search_white_24dp"
         android:title="@string/comic_search"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/comic_inverseSelection"
+        android:title="@string/comic_inverseSelection"
+        android:icon="@drawable/ic_sync_white_24dp"
+        app:showAsAction="ifRoom" />
 </menu>

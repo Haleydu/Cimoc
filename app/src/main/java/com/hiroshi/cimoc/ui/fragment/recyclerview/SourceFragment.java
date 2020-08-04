@@ -77,6 +77,14 @@ public class SourceFragment extends RecyclerViewFragment implements SourceView, 
                 Intent intent = new Intent(getActivity(), SearchActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.comic_inverseSelection:
+                for (int i = 0; i < mSourceAdapter.getItemCount(); i++) {
+                    Source source = mSourceAdapter.getItem(i);
+                    source.setEnable(!source.getEnable());
+                    mPresenter.update(source);
+                }
+                mSourceAdapter.notifyDataSetChanged();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

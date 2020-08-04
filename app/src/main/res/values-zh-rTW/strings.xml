@@ -68,6 +68,7 @@
     <string name="comic_load_tag_fail">讀取標籤失敗</string>
     <string name="comic_status_continue">連載</string>
     <string name="comic_status_finish">完結</string>
+    <string name="comic_inverseSelection">反選</string>
     <string name="comic_tag_select">標籤選擇</string>
     <string name="comic_info">漫畫資訊</string>
     <string name="comic_info_not_found">找不到漫畫資訊</string>
