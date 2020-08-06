@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "778433201097",
+    "firebase_url": "https://cimoc-22552.firebaseio.com",
+    "project_id": "cimoc-22552",
+    "storage_bucket": "cimoc-22552.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778433201097:android:2f14f48813d48d02abde18",
+        "android_client_info": {
+          "package_name": "com.haleydu.cimoc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778433201097-u4crr7e5v7gin8lprnqd3hgbrdfu1jso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPbQeXVQxcva6uNfReARSZ8WnNQza7HQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778433201097-u4crr7e5v7gin8lprnqd3hgbrdfu1jso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
