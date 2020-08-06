@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.SearchPresenter;
 import com.hiroshi.cimoc.ui.adapter.AutoCompleteAdapter;
+import com.hiroshi.cimoc.ui.fragment.dialog.MultiAdpaterDialogFragment;
 import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.SearchView;
 import com.hiroshi.cimoc.utils.CollectionUtils;
@@ -126,8 +127,8 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                         arr1[i] = mSourceList.get(i).getElement().getTitle();
                         arr2[i] = mSourceList.get(i).isEnable();
                     }
-                    MultiDialogFragment fragment =
-                            MultiDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
+                    MultiAdpaterDialogFragment fragment =
+                            MultiAdpaterDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
                     fragment.show(getFragmentManager(), null);
                     break;
                 }
