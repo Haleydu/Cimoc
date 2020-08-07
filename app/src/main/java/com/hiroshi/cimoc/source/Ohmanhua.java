@@ -31,7 +31,7 @@ import okhttp3.Request;
 import static com.hiroshi.cimoc.utils.DecryptionUtils.desDecrypt;
 
 /**
- * Created by FEILONG on 2017/12/21.
+ * Created by Haleyd on 2020/8/7.
  */
 
 public class Ohmanhua extends MangaParser {
@@ -91,7 +91,7 @@ public class Ohmanhua extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter(baseUrl));
+        filter.add(new UrlFilter("www.ohmanhua.com"));
     }
 
     @Override
@@ -145,7 +145,6 @@ public class Ohmanhua extends MangaParser {
 
     @Override
     public List<ImageUrl> parseImages(String html) {
-        //LogUtil.iLength("html",html);
         List<ImageUrl> list = new LinkedList<>();
         String encodedData = StringUtils.match("C_DATA=\\'(.+?)\\'", html, 1);
         if (encodedData != null) {
@@ -158,8 +157,7 @@ public class Ohmanhua extends MangaParser {
                 String totalPages = StringUtils.match("totalimg:([0-9]+?),",decryptedData,1);
                 for (int i = Integer.parseInt(startImg); i <= Integer.parseInt(totalPages); ++i) {
                     String jpg = StringUtils.format("%04d.jpg", i);
-                    //LogUtil.iLength("parseImages url",serverUrl + imgRelativePath + jpg);
-                    list.add(new ImageUrl(i + 1, serverUrl + imgRelativePath + jpg, false));
+                    list.add(new ImageUrl(i, serverUrl + imgRelativePath + jpg, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
