@@ -189,9 +189,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             checkUpdate();
         }
 
-        if (!showAuthorNotice()) {
-            showPermission();
-        }
+        showAuthorNotice();
+        showPermission();
     }
 
 //    public void getUesrInfo() {
@@ -419,7 +418,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         switch (requestCode) {
             case DIALOG_REQUEST_NOTICE:
                 mPreference.putBoolean(PreferenceManager.PREF_MAIN_NOTICE, true);
-                showPermission();
+                //showPermission();
                 break;
             case DIALOG_REQUEST_PERMISSION:
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
@@ -510,7 +509,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         }
     }
 
-    private boolean showAuthorNotice() {
+    private void showAuthorNotice() {
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
                 .setMinimumFetchIntervalInSeconds(3600)
@@ -538,11 +537,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         }
                     }
                 });
-
-        if (!mPreference.getBoolean(PreferenceManager.PREF_MAIN_NOTICE, false)) {
-            return true;
-        }
-        return false;
     }
 
     private void showPermission() {
@@ -574,8 +568,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 return getString(R.string.drawer_comic);
             case PreferenceManager.HOME_SOURCE:
                 return getString(R.string.drawer_source);
-            case PreferenceManager.HOME_TAG:
-                return getString(R.string.drawer_tag);
+//            case PreferenceManager.HOME_TAG:
+//                return getString(R.string.drawer_tag);
         }
     }
 
