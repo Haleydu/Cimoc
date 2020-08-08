@@ -176,6 +176,8 @@
     <string name="settings_other_loadcover_only_wifi_summary">非 WIFI 环境下使用缓存加载封面</string>
     <string name="settings_other_check_update">自動檢查漫畫更新</string>
     <string name="settings_other_check_update_summary">WIFI 下自動檢查漫畫更新</string>
+    <string name="settings_check_update">檢查軟件更新</string>
+    <string name="settings_check_update_summary">關閉後不提示更新</string>
     <string name="settings_other_launch">預設啟動頁</string>
     <string name="settings_other_theme">主題顏色</string>
     <string name="settings_other_night_alpha">夜間模式亮度</string>

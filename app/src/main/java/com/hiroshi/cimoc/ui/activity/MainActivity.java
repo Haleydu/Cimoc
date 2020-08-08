@@ -28,7 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -55,18 +54,18 @@ import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.PermissionUtils;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-//auth0
+
 
 /**
  * Created by Hiroshi on 2016/7/1.
+ * fixed by Haleydu on 2020/8/8.
  */
 public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
     private static final int DIALOG_REQUEST_NOTICE = 0;
     private static final int DIALOG_REQUEST_PERMISSION = 1;
-    private static final int DIALOG_REQUEST_LOGOUT = 2;
+    //private static final int DIALOG_REQUEST_LOGOUT = 2;
 
     private static final int REQUEST_ACTIVITY_SETTINGS = 0;
 
@@ -182,7 +181,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mPresenter.loadLast();
 
         //检查App更新
-        String updateUrl = null;
+        String updateUrl;
         if (mPreference.getBoolean(PreferenceManager.PREF_UPDATE_APP_AUTO, true)) {
             if ((updateUrl = App.getPreferenceManager().getString(PreferenceManager.PREF_UPDATE_CURRENT_URL)) != null) {
                 App.setUpdateCurrentUrl(updateUrl);
@@ -256,18 +255,15 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         View header = mNavigationView.getHeaderView(0);
         mLastText = header.findViewById(R.id.drawer_last_title);
         mDraweeView = header.findViewById(R.id.drawer_last_cover);
-        mLastText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mPresenter.checkLocal(mLastId)) {
-                    Intent intent = TaskActivity.createIntent(MainActivity.this, mLastId);
-                    startActivity(intent);
-                } else if (mLastSource != -1 && mLastCid != null) {
-                    Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
-                    startActivity(intent);
-                } else {
-                    HintUtils.showToast(MainActivity.this, R.string.common_execute_fail);
-                }
+        mLastText.setOnClickListener(v -> {
+            if (mPresenter.checkLocal(mLastId)) {
+                Intent intent = TaskActivity.createIntent(MainActivity.this, mLastId);
+                startActivity(intent);
+            } else if (mLastSource != -1 && mLastCid != null) {
+                Intent intent = DetailActivity.createIntent(MainActivity.this, null, mLastSource, mLastCid);
+                startActivity(intent);
+            } else {
+                HintUtils.showToast(MainActivity.this, R.string.common_execute_fail);
             }
         });
         mControllerBuilderProvider = new ControllerBuilderProvider(this,
@@ -332,6 +328,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -400,6 +397,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         mCurrentFragment.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
@@ -459,8 +457,9 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     public void onUpdateReady() {
         HintUtils.showToast(this, R.string.main_ready_update);
-
-        mNavigationView.getMenu().findItem(R.id.drawer_comicUpdate).setVisible(true);
+        if (mPreference.getBoolean(PreferenceManager.PREF_OTHER_CHECK_SOFTWARE_UPDATE, true)){
+            mNavigationView.getMenu().findItem(R.id.drawer_comicUpdate).setVisible(true);
+        }
 //        Update.update(this);
     }
 

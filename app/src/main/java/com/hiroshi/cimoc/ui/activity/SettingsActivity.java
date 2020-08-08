@@ -79,7 +79,9 @@ public class SettingsActivity extends BackActivity implements SettingsView {
     @BindView(R.id.settings_search_auto_complete)
     CheckBoxPreference mSearchAutoComplete;
     @BindView(R.id.settings_other_check_update)
-    CheckBoxPreference mCheckUpdate;
+    CheckBoxPreference mCheckCimocUpdate;
+    @BindView(R.id.settings_check_update)
+    CheckBoxPreference mCheckSoftwareUpdate;
     @BindView(R.id.settings_reader_mode)
     ChoicePreference mReaderMode;
     @BindView(R.id.settings_other_launch)
@@ -133,7 +135,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderWhiteBackground.bindPreference(PreferenceManager.PREF_READER_WHITE_BACKGROUND, false);
         mReaderVolumeKeyControls.bindPreference(PreferenceManager.PREF_READER_VOLUME_KEY_CONTROLS_PAGE_TURNING, false);
         mSearchAutoComplete.bindPreference(PreferenceManager.PREF_SEARCH_AUTO_COMPLETE, false);
-        mCheckUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
+        mCheckCimocUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_UPDATE, false);
+        mCheckSoftwareUpdate.bindPreference(PreferenceManager.PREF_OTHER_CHECK_SOFTWARE_UPDATE, true);
         mConnectOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_CONNECT_ONLY_WIFI, false);
         mLoadCoverOnlyWifi.bindPreference(PreferenceManager.PREF_OTHER_LOADCOVER_ONLY_WIFI, false);
         mFireBaseEvent.bindPreference(PreferenceManager.PREF_OTHER_FIREBASE_EVENT, true);
@@ -162,6 +165,7 @@ public class SettingsActivity extends BackActivity implements SettingsView {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case DIALOG_REQUEST_OTHER_STORAGE:
@@ -261,7 +265,8 @@ public class SettingsActivity extends BackActivity implements SettingsView {
         mReaderWhiteEdge.setColorStateList(stateList);
         mReaderWhiteBackground.setColorStateList(stateList);
         mSearchAutoComplete.setColorStateList(stateList);
-        mCheckUpdate.setColorStateList(stateList);
+        mCheckCimocUpdate.setColorStateList(stateList);
+        mCheckSoftwareUpdate.setColorStateList(stateList);
         mConnectOnlyWifi.setColorStateList(stateList);
         mLoadCoverOnlyWifi.setColorStateList(stateList);
         mFireBaseEvent.setColorStateList(stateList);

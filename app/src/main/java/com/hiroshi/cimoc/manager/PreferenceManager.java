@@ -112,6 +112,7 @@ public class PreferenceManager {
     public static final String PREF_UPDATE_CURRENT_URL = "pref_update_current_url";
 
     public static final String PREF_OTHER_CHECK_UPDATE = "pref_other_check_update";
+    public static final String PREF_OTHER_CHECK_SOFTWARE_UPDATE = "pref_other_check_software_update";
     public static final String PREF_OTHER_CONNECT_ONLY_WIFI = "pref_other_connect_only_wifi";
     public static final String PREF_OTHER_LOADCOVER_ONLY_WIFI = "pref_other_loadcover_only_wifi";
     public static final String PREF_OTHER_FIREBASE_EVENT = "pref_other_firebase_event";

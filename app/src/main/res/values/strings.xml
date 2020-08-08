@@ -180,6 +180,8 @@
     <string name="settings_other_loadcover_only_wifi_summary">非 WIFI 环境下使用缓存加载封面</string>
     <string name="settings_other_check_update">自动检查漫画更新</string>
     <string name="settings_other_check_update_summary">WIFI 环境下自动检查漫画更新</string>
+    <string name="settings_check_update">检查软件更新</string>
+    <string name="settings_check_update_summary">关闭后不提示更新</string>
     <string name="settings_other_launch">默认启动页</string>
     <string name="settings_other_theme">主题颜色</string>
     <string name="settings_other_night_alpha">夜间模式亮度</string>
