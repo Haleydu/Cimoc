@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.source.*;
+import com.hiroshi.cimoc.source.WebtoonDongManManHua;
 
 import java.util.List;
 
@@ -189,6 +190,9 @@ public class SourceManager {
                     break;
                 case MangaBZ.TYPE:
                     parser = new MangaBZ(source);
+                    break;
+                case WebtoonDongManManHua.TYPE:
+                    parser = new WebtoonDongManManHua(source);
                     break;
                 default:
                     parser = new Null();

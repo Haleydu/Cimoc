@@ -29,6 +29,7 @@ import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
 import com.hiroshi.cimoc.source.Ohmanhua;
+import com.hiroshi.cimoc.source.WebtoonDongManManHua;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(Comic18.TYPE);
         list.add(Ohmanhua.TYPE);
         list.add(CopyMH.TYPE);
+        list.add(WebtoonDongManManHua.TYPE);
 
         return list;
     }

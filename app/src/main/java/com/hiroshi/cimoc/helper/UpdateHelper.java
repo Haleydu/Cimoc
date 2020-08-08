@@ -7,6 +7,7 @@ import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoSession;
 import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.source.*;
+import com.hiroshi.cimoc.source.WebtoonDongManManHua;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,7 @@ public class UpdateHelper {
         list.add(Comic18.getDefaultSource());
         list.add(Ohmanhua.getDefaultSource());
         list.add(CopyMH.getDefaultSource());
+        list.add(WebtoonDongManManHua.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }
