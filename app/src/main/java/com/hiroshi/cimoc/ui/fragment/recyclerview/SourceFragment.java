@@ -85,6 +85,22 @@ public class SourceFragment extends RecyclerViewFragment implements SourceView, 
                 }
                 mSourceAdapter.notifyDataSetChanged();
                 break;
+            case R.id.comic_allSelection:
+                for (int i = 0; i < mSourceAdapter.getItemCount(); i++) {
+                    Source source = mSourceAdapter.getItem(i);
+                    source.setEnable(true);
+                    mPresenter.update(source);
+                }
+                mSourceAdapter.notifyDataSetChanged();
+                break;
+            case R.id.comic_AllDeselect:
+                for (int i = 0; i < mSourceAdapter.getItemCount(); i++) {
+                    Source source = mSourceAdapter.getItem(i);
+                    source.setEnable(false);
+                    mPresenter.update(source);
+                }
+                mSourceAdapter.notifyDataSetChanged();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

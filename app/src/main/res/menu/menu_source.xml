@@ -8,7 +8,14 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/comic_inverseSelection"
-        android:title="@string/comic_inverseSelection"
-        android:icon="@drawable/ic_sync_white_24dp"
-        app:showAsAction="ifRoom" />
+        android:title="@string/comic_inverse_selection"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/comic_allSelection"
+        android:title="@string/comic_all_selection"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/comic_AllDeselect"
+        android:title="@string/comic_all_deselect"
+        app:showAsAction="never" />
 </menu>

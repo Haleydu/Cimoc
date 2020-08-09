@@ -88,7 +88,7 @@ public class MultiAdpaterDialogFragment extends DialogFragment implements Dialog
         builder.setTitle(getArguments().getInt(DialogCaller.EXTRA_DIALOG_TITLE))
                 .setView(getlistview)
                 .setPositiveButton(R.string.dialog_positive, this)
-                .setNeutralButton(R.string.comic_inverseSelection,this);
+                .setNeutralButton(R.string.comic_inverse_selection,this);
         return builder.create();
     }
 
