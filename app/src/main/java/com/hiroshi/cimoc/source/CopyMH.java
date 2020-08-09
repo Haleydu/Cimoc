@@ -1,7 +1,6 @@
 package com.hiroshi.cimoc.source;
 
 import android.util.Base64;
-import android.util.Log;
 
 import com.facebook.common.util.Hex;
 import com.hiroshi.cimoc.model.Chapter;
@@ -74,7 +73,6 @@ public class CopyMH extends MangaParser {
                         String title = jChineseConvertor.t2s(object.getString("name"));
                         String cover = object.getString("cover");
                         String author = object.getJSONArray("author").getJSONObject(0).getString("name").trim();
-                        Log.d("hrd cid", cid + "," + title + "," + cover + "," + author);
                         return new Comic(TYPE, cid, title, cover, null, author);
                     } catch (Exception e) {
                         e.printStackTrace();
