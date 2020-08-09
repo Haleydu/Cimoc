@@ -82,6 +82,10 @@ public class Backup {
         return load(root, SUFFIX_CSBF);
     }
 
+    public static Observable<String[]> loadClearBackup(DocumentFile root) {
+        return load(root, SUFFIX_CIMOC, SUFFIX_CFBF, SUFFIX_CTBF, SUFFIX_CSBF);
+    }
+
     private static Observable<String[]> load(final DocumentFile root, final String... suffix) {
         return Observable.create(new Observable.OnSubscribe<String[]>() {
             @Override
@@ -264,6 +268,18 @@ public class Backup {
                 } catch (JSONException e) {
                     subscriber.onError(e);
                 }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<Integer> clearBackup(final DocumentFile root) {
+        return Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                DocumentFile dir = DocumentUtils.getOrCreateSubDirectory(root, BACKUP);
+                if (dir != null) dir.delete();
+                subscriber.onNext(1);
+                subscriber.onCompleted();
             }
         }).subscribeOn(Schedulers.io());
     }

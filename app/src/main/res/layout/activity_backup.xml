@@ -53,6 +53,7 @@
                         app:title="@string/backup_save_comic" />
 
                     <com.hiroshi.cimoc.ui.widget.Option
+                        android:visibility="gone"
                         android:id="@+id/backup_save_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -90,6 +91,7 @@
                         app:title="@string/backup_restore_comic" />
 
                     <com.hiroshi.cimoc.ui.widget.Option
+                        android:visibility="gone"
                         android:id="@+id/backup_restore_tag"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -101,6 +103,32 @@
                         android:layout_height="wrap_content"
                         app:title="@string/backup_restore_settings"
                         app:summary="@string/backup_restore_settings_summary"/>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/backup_clear"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp" />
+
+                    <com.hiroshi.cimoc.ui.widget.Option
+                        android:id="@+id/backup_clear_record"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:summary="@string/backup_clear_record_summary"
+                        app:title="@string/backup_clear_record" />
+
                 </LinearLayout>
 
                 <!--<LinearLayout-->

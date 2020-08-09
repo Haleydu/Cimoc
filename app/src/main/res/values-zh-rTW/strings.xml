@@ -206,6 +206,8 @@
     <string name="backup_restore_comic_summary">恢復收藏和歷史漫畫</string>
     <string name="backup_restore_tag">恢復標籤</string>
     <string name="backup_restore_tag_summary">恢復標籤及相應漫畫</string>
+    <string name="backup_restore_settings">恢复设置</string>
+    <string name="backup_restore_settings_summary">恢复所有个人配置</string>
     <string name="backup_cloud">雲端</string>
     <string name="backup_cloud_restore_tag">從雲端恢復</string>
     <string name="backup_cloud_restore_tag_summary">從雲端恢復收藏的漫畫</string>
@@ -215,6 +217,10 @@
     <string name="backup_cloud_backup_tag_summary">備份收藏漫畫到雲端</string>
     <string name="backup_cloud_sync_tag">自動同步</string>
     <string name="backup_cloud_sync_tag_summary">自動同步收藏到雲端</string>
+    <string name="backup_clear">清除</string>
+    <string name="backup_clear_record">清除备份记录</string>
+    <string name="backup_clear_record_summary">清除所有备份记录，清除后请尽快备份以免数据丢失</string>
+
 
     <string name="home_page">首頁</string>
     <string name="home_page_cimqus">Cimqus</string>
@@ -281,6 +287,8 @@
     <string name="common_keyword_empty">關鍵字為空</string>
     <string name="common_parse_error">解析錯誤</string>
     <string name="common_execute_success">操作成功</string>
+    <string name="common_execute_clear_success">清理成功</string>
+    <string name="common_execute_clear_fail">清理失败</string>
     <string name="common_execute_fail">操作失敗</string>
     <string name="common_operation_select">操作選擇</string>
     <string name="common_null">null</string>

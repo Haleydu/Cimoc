@@ -95,6 +95,22 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                 }));
     }
 
+    public void loadClearBackupFile() {
+        mCompositeSubscription.add(Backup.loadClearBackup(mBaseView.getAppInstance().getDocumentFile())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<String[]>() {
+                    @Override
+                    public void call(String[] file) {
+                        mBaseView.onClearFileLoadSuccess(file);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onFileLoadFail();
+                    }
+                }));
+    }
+
     public void saveComic() {
         mCompositeSubscription.add(mComicManager.listFavoriteOrHistoryInRx()
                 .map(new Func1<List<Comic>, Integer>() {
@@ -233,6 +249,22 @@ public class BackupPresenter extends BasePresenter<BackupView> {
                     @Override
                     public void call(Throwable throwable) {
                         mBaseView.onBackupRestoreFail();
+                    }
+                }));
+    }
+
+    public void clearBackup() {
+        mCompositeSubscription.add(Backup.clearBackup(mBaseView.getAppInstance().getDocumentFile())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer pair) {
+                        mBaseView.onClearBackupSuccess();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onClearBackupFail();
                     }
                 }));
     }

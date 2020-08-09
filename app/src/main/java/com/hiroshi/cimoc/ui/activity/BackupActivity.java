@@ -8,6 +8,7 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.presenter.BackupPresenter;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.ui.fragment.dialog.ChoiceDialogFragment;
+import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.BackupView;
 import com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference;
 import com.hiroshi.cimoc.utils.PermissionUtils;
@@ -25,6 +26,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     private static final int DIALOG_REQUEST_RESTORE_COMIC = 0;
     private static final int DIALOG_REQUEST_RESTORE_TAG = 1;
     private static final int DIALOG_REQUEST_RESTORE_SETTINGS = 2;
+    private static final int DIALOG_REQUEST_RESTORE_CLEAR = 3;
 
     @BindView(R.id.backup_layout)
     View mLayoutView;
@@ -103,6 +105,15 @@ public class BackupActivity extends BackActivity implements BackupView {
         }
     }
 
+    @OnClick(R.id.backup_clear_record) void onClearRecordClick() {
+        showProgressDialog();
+        if (PermissionUtils.hasStoragePermission(this)) {
+            mPresenter.loadClearBackupFile();
+        } else {
+            onFileLoadFail();
+        }
+    }
+
     @Override
     public void onDialogResult(int requestCode, Bundle bundle) {
         switch (requestCode) {
@@ -117,6 +128,10 @@ public class BackupActivity extends BackActivity implements BackupView {
             case DIALOG_REQUEST_RESTORE_SETTINGS:
                 showProgressDialog();
                 mPresenter.restoreSetting(bundle.getString(EXTRA_DIALOG_RESULT_VALUE));
+                break;
+            case DIALOG_REQUEST_RESTORE_CLEAR:
+                showProgressDialog();
+                mPresenter.clearBackup();
                 break;
         }
     }
@@ -143,6 +158,14 @@ public class BackupActivity extends BackActivity implements BackupView {
     }
 
     @Override
+    public void onClearFileLoadSuccess(String[] file) {
+        hideProgressDialog();
+        MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.backup_clear_record,
+                R.string.backup_clear_record_notice_summary, false, DIALOG_REQUEST_RESTORE_CLEAR);
+        fragment.show(getFragmentManager(), null);
+    }
+
+    @Override
     public void onFileLoadFail() {
         hideProgressDialog();
         showSnackbar(R.string.backup_restore_not_found);
@@ -152,6 +175,18 @@ public class BackupActivity extends BackActivity implements BackupView {
     public void onBackupRestoreSuccess() {
         hideProgressDialog();
         showSnackbar(R.string.common_execute_success);
+    }
+
+    @Override
+    public void onClearBackupSuccess() {
+        hideProgressDialog();
+        showSnackbar(R.string.common_execute_clear_success);
+    }
+
+    @Override
+    public void onClearBackupFail() {
+        hideProgressDialog();
+        showSnackbar(R.string.common_execute_clear_fail);
     }
 
     @Override

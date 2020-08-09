@@ -210,6 +210,8 @@
     <string name="backup_restore_comic_summary">恢复收藏和历史漫画</string>
     <string name="backup_restore_tag">恢复标签</string>
     <string name="backup_restore_tag_summary">恢复标签及相应漫画</string>
+    <string name="backup_restore_settings">恢复设置</string>
+    <string name="backup_restore_settings_summary">恢复所有个人配置</string>
     <string name="backup_cloud">云端</string>
     <string name="backup_cloud_restore_tag">从云端恢复</string>
     <string name="backup_cloud_restore_tag_summary">从云端恢复收藏的漫画</string>
@@ -219,8 +221,10 @@
     <string name="backup_cloud_backup_tag_summary">备份收藏漫画到云端</string>
     <string name="backup_cloud_sync_tag">自动同步</string>
     <string name="backup_cloud_sync_tag_summary">自动同步收藏到云</string>
-    <string name="backup_restore_settings">恢复设置</string>
-    <string name="backup_restore_settings_summary">恢复所有个人配置</string>
+    <string name="backup_clear">清除</string>
+    <string name="backup_clear_record">清除备份记录</string>
+    <string name="backup_clear_record_summary">清除收藏、历史、个人配置的所有备份记录</string>
+    <string name="backup_clear_record_notice_summary">清除后请尽快备份以免备份数据丢失，无法恢复备份内容</string>
 
     <string name="home_page">主页</string>
     <string name="home_page_url">https://github.com/Haleydu/Cimoc</string>
@@ -297,6 +301,8 @@
     <string name="common_keyword_empty">关键字为空</string>
     <string name="common_parse_error">解析错误</string>
     <string name="common_execute_success">操作成功</string>
+    <string name="common_execute_clear_success">清理成功</string>
+    <string name="common_execute_clear_fail">清理失败</string>
     <string name="common_execute_fail">操作失败</string>
     <string name="common_operation_select">操作选择</string>
     <string name="common_null">null</string>

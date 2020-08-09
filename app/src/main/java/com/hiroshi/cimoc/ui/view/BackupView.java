@@ -22,6 +22,12 @@ public interface BackupView extends BaseView, DialogCaller {
 
     void onSettingsFileLoadSuccess(String[] file);
 
+    void onClearFileLoadSuccess(String[] file);
+
     void onFileLoadFail();
+
+    void onClearBackupSuccess();
+
+    void onClearBackupFail();
 
 }
