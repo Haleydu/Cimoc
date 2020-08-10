@@ -94,10 +94,31 @@ public class WebtoonDongManManHua extends MangaParser {
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("ul#_listUl > li > a")) {
-            String title = node.text("span.subj > span");
-            String path = "https:" + node.href();
-            list.add(new Chapter(title, path));
+        for (Node nodePage : body.list("div.detail_lst > div.paginate > a")) {
+            String urlPage = nodePage.href();
+            if (urlPage.equals("#")){
+                for (Node node : body.list("ul#_listUl > li > a")) {
+                    String title = node.text("span.subj > span");
+                    String path = "https:" + node.href();
+                    list.add(new Chapter(title, path));
+                }
+            }else {
+                try {
+                    String htmlPage = getResponseBody(
+                            App.getHttpClient(),
+                            new Request.Builder().url(baseUrl + urlPage)
+                                    .addHeader("Referer", "www.dongmanmanhua.cn")
+                                    .build());
+                    Node bodyPage = new Node(htmlPage);
+                    for (Node node : bodyPage.list("ul#_listUl > li > a")) {
+                        String title = node.text("span.subj > span");
+                        String path = "https:" + node.href();
+                        list.add(new Chapter(title, path));
+                    }
+                } catch (Manga.NetworkErrorException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return list;
     }
