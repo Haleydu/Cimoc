@@ -90,31 +90,47 @@ public class WebtoonDongManManHua extends MangaParser {
         comic.setInfo(title, cover, update, intro, author, status);
     }
 
+    public List<Chapter> parseChapter(Node body){
+        List<Chapter> list = new LinkedList<>();
+        for (Node node : body.list("ul#_listUl > li > a")) {
+            String title = node.text("span.subj > span")+" "+node.text("span.tx");
+            String path = "https:" + node.href();
+            list.add(new Chapter(title, path));
+        }
+        return list;
+    }
+
     @Override
     public List<Chapter> parseChapter(String html) {
+        //下次再优化吧，这样写比较容易但是效率低。
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         for (Node nodePage : body.list("div.detail_lst > div.paginate > a")) {
             String urlPage = nodePage.href();
-            if (urlPage.equals("#")){
-                for (Node node : body.list("ul#_listUl > li > a")) {
-                    String title = node.text("span.subj > span");
-                    String path = "https:" + node.href();
-                    list.add(new Chapter(title, path));
-                }
-            }else {
+            String urlPageTag = nodePage.attr("a","class");
+            if (urlPage.equals("#") && (urlPageTag==null || urlPageTag.equals(""))){
+                list.addAll(parseChapter(body));
+            }else if (urlPageTag==null || urlPageTag.equals("")){
                 try {
-                    String htmlPage = getResponseBody(
-                            App.getHttpClient(),
-                            new Request.Builder().url(baseUrl + urlPage)
-                                    .addHeader("Referer", "www.dongmanmanhua.cn")
-                                    .build());
-                    Node bodyPage = new Node(htmlPage);
-                    for (Node node : bodyPage.list("ul#_listUl > li > a")) {
-                        String title = node.text("span.subj > span");
-                        String path = "https:" + node.href();
-                        list.add(new Chapter(title, path));
-                    }
+                    String pageTagUrl = baseUrl + urlPage;
+                    Request request = new Request.Builder()
+                            .url(pageTagUrl)
+                            .addHeader("Referer", "www.dongmanmanhua.cn")
+                            .build();
+                    String htmlPage = getResponseBody(App.getHttpClient(), request);
+                    list.addAll(parseChapter(new Node(htmlPage)));
+                } catch (Manga.NetworkErrorException e) {
+                    e.printStackTrace();
+                }
+            }else if (urlPageTag.equals("pg_next")){
+                try {
+                    String pageTagUrl = baseUrl + urlPage;
+                    Request request = new Request.Builder()
+                            .url(pageTagUrl)
+                            .addHeader("Referer", "www.dongmanmanhua.cn")
+                            .build();
+                    String htmlPageNext = getResponseBody(App.getHttpClient(), request);
+                    list.addAll(parseChapter(htmlPageNext));
                 } catch (Manga.NetworkErrorException e) {
                     e.printStackTrace();
                 }
