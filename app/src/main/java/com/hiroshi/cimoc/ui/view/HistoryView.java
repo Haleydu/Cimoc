@@ -13,7 +13,7 @@ public interface HistoryView extends GridView {
 
     void onItemUpdate(MiniComic comic);
 
-    void OnComicRestore(List<MiniComic> list);
+    void OnComicRestore(List<Object> list);
 
     void onHistoryClearSuccess();
 

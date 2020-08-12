@@ -5,11 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.SourceManager;
@@ -24,6 +31,7 @@ import com.hiroshi.cimoc.ui.fragment.dialog.MultiDialogFragment;
 import com.hiroshi.cimoc.ui.view.PartFavoriteView;
 import com.hiroshi.cimoc.utils.HintUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,7 +73,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     protected void initView() {
         super.initView();
-        mGridAdapter = new GridAdapter(this, new LinkedList<MiniComic>());
+        mGridAdapter = new GridAdapter(this, new LinkedList<Object>());
         mGridAdapter.setSymbol(true);
         mGridAdapter.setProvider(((App) getApplication()).getBuilderProvider());
         mGridAdapter.setTitleGetter(SourceManager.getInstance(this).new TitleGetter());
@@ -106,7 +114,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mGridAdapter.getItem(position);
+        MiniComic comic = (MiniComic) mGridAdapter.getItem(position);
         Intent intent = DetailActivity.createIntent(this, comic.getId(), -1, null);
         startActivity(intent);
     }
@@ -114,7 +122,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     @Override
     public boolean onItemLongClick(View view, int position) {
         if (isDeletable) {
-            mSavedComic = mGridAdapter.getItem(position);
+            mSavedComic = (MiniComic) mGridAdapter.getItem(position);
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                     R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
             fragment.show(getFragmentManager(), null);
@@ -147,9 +155,10 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     }
 
     @Override
-    public void onComicLoadSuccess(List<MiniComic> list) {
+    public void onComicLoadSuccess(List<Object> list) {
         hideProgressBar();
         mGridAdapter.addAll(list);
+
     }
 
     @Override
@@ -167,7 +176,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     }
 
     @Override
-    public void onComicInsertSuccess(List<MiniComic> list) {
+    public void onComicInsertSuccess(List<Object> list) {
         hideProgressDialog();
         mGridAdapter.addAll(list);
         HintUtils.showToast(this, R.string.common_execute_success);
@@ -215,5 +224,4 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
     protected boolean isNavTranslation() {
         return true;
     }
-
 }

@@ -38,7 +38,7 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
         addSubscription(RxEvent.EVENT_COMIC_HISTORY_RESTORE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.OnComicRestore((List<MiniComic>) rxEvent.getData());
+                mBaseView.OnComicRestore((List<Object>) rxEvent.getData());
             }
         });
     }
@@ -49,16 +49,16 @@ public class HistoryPresenter extends BasePresenter<HistoryView> {
 
     public void load() {
         mCompositeSubscription.add(mComicManager.listHistoryInRx()
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                .compose(new ToAnotherList<>(new Func1<Comic, Object>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
                 }))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
+                .subscribe(new Action1<List<Object>>() {
                     @Override
-                    public void call(List<MiniComic> list) {
+                    public void call(List<Object> list) {
                         mBaseView.onComicLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {

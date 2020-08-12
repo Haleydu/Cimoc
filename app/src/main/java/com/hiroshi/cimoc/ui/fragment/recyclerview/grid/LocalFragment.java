@@ -74,15 +74,19 @@ public class LocalFragment extends GridFragment implements LocalView {
                     showProgressDialog();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         Uri uri = data.getData();
-                        int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        getActivity().getContentResolver().takePersistableUriPermission(uri, flags);
-                        mPresenter.scan(DocumentFile.fromTreeUri(getActivity(), uri));
+                        if (uri != null) {
+                            int flags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            getActivity().getContentResolver().takePersistableUriPermission(uri, flags);
+                            mPresenter.scan(DocumentFile.fromTreeUri(getActivity(), uri));
+                        }
                     } else {
                         String path = data.getStringExtra(Extra.EXTRA_PICKER_PATH);
-                        if (!StringUtils.isEmpty(path)) {
-                            mPresenter.scan(DocumentFile.fromFile(new File(path)));
-                        } else {
-                            onExecuteFail();
+                        if (path != null) {
+                            if (!StringUtils.isEmpty(path)) {
+                                mPresenter.scan(DocumentFile.fromFile(new File(path)));
+                            } else {
+                                onExecuteFail();
+                            }
                         }
                     }
                     break;
@@ -92,7 +96,7 @@ public class LocalFragment extends GridFragment implements LocalView {
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mGridAdapter.getItem(position);
+        MiniComic comic = (MiniComic) mGridAdapter.getItem(position);
         Intent intent = TaskActivity.createIntent(getActivity(), comic.getId());
         startActivity(intent);
     }
@@ -128,7 +132,7 @@ public class LocalFragment extends GridFragment implements LocalView {
     }
 
     @Override
-    public void onLocalScanSuccess(List<MiniComic> list) {
+    public void onLocalScanSuccess(List<Object> list) {
         hideProgressDialog();
         mGridAdapter.addAll(list);
     }

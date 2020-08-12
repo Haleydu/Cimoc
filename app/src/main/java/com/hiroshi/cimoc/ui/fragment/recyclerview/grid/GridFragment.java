@@ -23,6 +23,9 @@ import com.hiroshi.cimoc.ui.view.GridView;
 import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,13 +46,13 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
 
     @Override
     protected BaseAdapter initAdapter() {
-        mGridAdapter = new GridAdapter(getActivity(), new LinkedList<MiniComic>());
+        mGridAdapter = new GridAdapter(getActivity(), new LinkedList<>());
         mGridAdapter.setProvider(getAppInstance().getBuilderProvider());
         mGridAdapter.setTitleGetter(SourceManager.getInstance(this).new TitleGetter());
         mRecyclerView.setRecycledViewPool(getAppInstance().getGridRecycledPool());
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(@NotNull RecyclerView recyclerView, int newState) {
                 switch (newState) {
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         getAppInstance().getBuilderProvider().pause();
@@ -78,7 +81,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
 
     @Override
     public void onItemClick(View view, int position) {
-        MiniComic comic = mGridAdapter.getItem(position);
+        MiniComic comic = (MiniComic) mGridAdapter.getItem(position);
         Intent intent = comic.isLocal() ? TaskActivity.createIntent(getActivity(), comic.getId()) :
                 DetailActivity.createIntent(getActivity(), comic.getId(), -1, null);
         startActivity(intent);
@@ -86,7 +89,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
 
     @Override
     public boolean onItemLongClick(View view, int position) {
-        mSavedId = mGridAdapter.getItem(position).getId();
+        mSavedId = ((MiniComic)mGridAdapter.getItem(position)).getId();
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
                 getOperationItems(), DIALOG_REQUEST_OPERATION);
         fragment.setTargetFragment(this, 0);
@@ -95,7 +98,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     }
 
     @Override
-    public void onComicLoadSuccess(List<MiniComic> list) {
+    public void onComicLoadSuccess(List<Object> list) {
         mGridAdapter.addAll(list);
     }
 
@@ -153,5 +156,4 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
     protected int getLayoutRes() {
         return R.layout.fragment_grid;
     }
-
 }
