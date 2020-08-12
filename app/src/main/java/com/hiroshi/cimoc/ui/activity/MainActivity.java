@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
@@ -40,6 +43,7 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.component.ThemeResponsive;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
@@ -194,6 +198,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
         showAuthorNotice();
         showPermission();
+        initAdView();
     }
 
     @Override
@@ -265,6 +270,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         View header = mNavigationView.getHeaderView(0);
         mLastText = header.findViewById(R.id.drawer_last_title);
         mDraweeView = header.findViewById(R.id.drawer_last_cover);
+
+        mAdView = header.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         mLastText.setOnClickListener(v -> {
             if (mPresenter.checkLocal(mLastId)) {
                 Intent intent = TaskActivity.createIntent(MainActivity.this, mLastId);
@@ -592,6 +602,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     @Override
     protected View getLayoutView() {
         return mDrawerLayout;
+    }
+
+    private AdView mAdView;
+    public void initAdView() {
+
     }
 
 }

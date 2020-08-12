@@ -19,14 +19,27 @@ else {
 }
 version = cmdGetTagname.execute().text.trim()
 
-def app_id = "ca-app-pub-3940256099942544~3347511713"
-def unit_id = "ca-app-pub-3940256099942544/2247696110"
-//def app_id = "ca-app-pub-7627119713262112~4561316171"
-//def unit_id = "ca-app-pub-7627119713262112/6345773775"
+//def app_id = "ca-app-pub-3940256099942544~3347511713"
+//def favorite_unit_id = "ca-app-pub-3940256099942544/2247696110"
+//def history_unit_id = "ca-app-pub-3940256099942544/2247696110"
+//def download_unit_id = "ca-app-pub-3940256099942544/2247696110"
+//def local_unit_id = "ca-app-pub-3940256099942544/2247696110"
+//def banners_id = "ca-app-pub-3940256099942544/6300978111"
+
+def app_id = "ca-app-pub-7627119713262112~4561316171"
+def favorite_unit_id = "ca-app-pub-7627119713262112/6345773775"
+def history_unit_id = "ca-app-pub-7627119713262112/8397114244"
+def download_unit_id = "ca-app-pub-7627119713262112/2661555923"
+def local_unit_id = "ca-app-pub-7627119713262112/1101062243"
+def banners_id = "ca-app-pub-7627119713262112/8423048872"
 
 if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
     app_id = System.getenv("ADMOB_APP_ID")
-    unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
+    favorite_unit_id = System.getenv("ADMOB_NATIVE_FAVORITE_UNIT_ID")
+    history_unit_id = System.getenv("ADMOB_NATIVE_HISTORY_UNIT_ID")
+    download_unit_id = System.getenv("ADMOB_NATIVE_DOWNLOAD_UNIT_ID")
+    local_unit_id = System.getenv("ADMOB_NATIVE_LOCAL_UNIT_ID")
+    banners_id = System.getenv("ADMOB_BANNER_UNIT_ID")
 }
 android {
     compileSdkVersion 29
@@ -46,7 +59,12 @@ android {
         resConfigs "en", "zh"
         multiDexEnabled true
 
-        buildConfigField ("String","NATIVE_UNIT_ID","\""+unit_id+"\"")
+        buildConfigField ("String","ADMOB_NATIVE_FAVORITE_UNIT_ID","\""+favorite_unit_id+"\"")
+        buildConfigField ("String","ADMOB_NATIVE_HISTORY_UNIT_ID","\""+history_unit_id+"\"")
+        buildConfigField ("String","ADMOB_NATIVE_DOWNLOAD_UNIT_ID","\""+download_unit_id+"\"")
+        buildConfigField ("String","ADMOB_NATIVE_LOCAL_UNIT_ID","\""+local_unit_id+"\"")
+
+        resValue "string", "ADMOB_BANNER_UNIT_ID", "\""+banners_id+"\""
     }
     signingConfigs {
         release {

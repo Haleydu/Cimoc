@@ -119,7 +119,6 @@ public class HistoryFragment extends GridFragment implements HistoryView {
         return new String[]{getString(R.string.comic_info), getString(R.string.history_delete)};
     }
 
-
     public static final int NUMBER_OF_ADS = 5;
     private AdLoader adLoader;
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
@@ -139,7 +138,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
     }
 
     private void loadNativeAds() {
-        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), BuildConfig.NATIVE_UNIT_ID);
+        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), BuildConfig.ADMOB_NATIVE_HISTORY_UNIT_ID);
         adLoader = builder.forUnifiedNativeAd(
                 new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
                     @Override

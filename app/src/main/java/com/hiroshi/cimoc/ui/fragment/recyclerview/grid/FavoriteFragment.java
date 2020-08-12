@@ -197,7 +197,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         return new String[]{getString(R.string.comic_info), getString(R.string.favorite_delete)};
     }
 
-    public static final int NUMBER_OF_ADS = 1;
+    public static final int NUMBER_OF_ADS = 3;
     private AdLoader adLoader;
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
 
@@ -215,7 +215,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     }
 
     private void loadNativeAds() {
-        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), BuildConfig.NATIVE_UNIT_ID);
+        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), BuildConfig.ADMOB_NATIVE_FAVORITE_UNIT_ID);
         adLoader = builder.forUnifiedNativeAd(
                 new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
                     @Override

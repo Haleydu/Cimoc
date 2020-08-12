@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="250dp"
     android:background="?attr/colorPrimary">
 
     <com.facebook.drawee.view.SimpleDraweeView
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="8dp">
 
         <TextView
@@ -27,5 +27,15 @@
             android:maxLines="2"
             android:padding="8dp"
             android:textColor="@color/white" />
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/ADMOB_BANNER_UNIT_ID">
+        </com.google.android.gms.ads.AdView>
     </LinearLayout>
 </FrameLayout>
