@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface GridView extends BaseView, DialogCaller, ThemeResponsive {
 
-    void onComicLoadSuccess(List<MiniComic> list);
+    void onComicLoadSuccess(List<Object> list);
 
     void onComicLoadFail();
 

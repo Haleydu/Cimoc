@@ -53,7 +53,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
         addSubscription(RxEvent.EVENT_COMIC_FAVORITE_RESTORE, new Action1<RxEvent>() {
             @Override
             public void call(RxEvent rxEvent) {
-                mBaseView.OnComicRestore((List<MiniComic>) rxEvent.getData());
+                mBaseView.OnComicRestore((List<Object>) rxEvent.getData());
             }
         });
         addSubscription(RxEvent.EVENT_COMIC_READ, new Action1<RxEvent>() {
@@ -76,16 +76,16 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     public void load() {
         mCompositeSubscription.add(mComicManager.listFavoriteInRx()
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                .compose(new ToAnotherList<>(new Func1<Comic, Object>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
                 }))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
+                .subscribe(new Action1<List<Object>>() {
                     @Override
-                    public void call(List<MiniComic> list) {
+                    public void call(List<Object> list) {
                         mBaseView.onComicLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {

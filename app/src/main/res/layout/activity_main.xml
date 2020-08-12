@@ -28,7 +28,8 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:headerLayout="@layout/custom_drawer_header"
-            app:menu="@menu/menu_main"></com.google.android.material.navigation.NavigationView>
+            app:menu="@menu/menu_main">
+        </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 
     <include layout="@layout/custom_night_mask" />

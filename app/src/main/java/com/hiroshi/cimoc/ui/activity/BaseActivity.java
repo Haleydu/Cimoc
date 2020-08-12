@@ -50,6 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
         initView();
         initData();
         initUser();
+        initAdMob();
     }
 
     @Override
@@ -119,6 +120,9 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     }
 
     protected void initUser() {
+    }
+
+    protected void initAdMob() {
     }
 
     protected abstract int getLayoutRes();

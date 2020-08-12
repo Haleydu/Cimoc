@@ -13,6 +13,6 @@ public interface LocalView extends GridView, DialogCaller {
 
     void onLocalDeleteSuccess(long id);
 
-    void onLocalScanSuccess(List<MiniComic> list);
+    void onLocalScanSuccess(List<Object> list);
 
 }

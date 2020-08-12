@@ -87,16 +87,16 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
     public void load(long id) {
         mTagId = id;
         mCompositeSubscription.add(getObservable(id)
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                .compose(new ToAnotherList<>(new Func1<Comic, Object>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
                 }))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
+                .subscribe(new Action1<List<Object>>() {
                     @Override
-                    public void call(List<MiniComic> list) {
+                    public void call(List<Object> list) {
                         mBaseView.onComicLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {
@@ -107,15 +107,16 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
                 }));
     }
 
-    private List<Long> buildIdList(List<MiniComic> list) {
+    private List<Long> buildIdList(List<Object> list) {
         List<Long> result = new ArrayList<>(list.size());
-        for (MiniComic comic : list) {
+        for (Object O_comic : list) {
+            MiniComic comic = (MiniComic) O_comic;
             result.add(comic.getId());
         }
         return result;
     }
 
-    public void loadComicTitle(List<MiniComic> list) {
+    public void loadComicTitle(List<Object> list) {
         // TODO 不使用 in
         mCompositeSubscription.add(mComicManager.listFavoriteNotIn(buildIdList(list))
                 .compose(new ToAnotherList<>(new Func1<Comic, String>() {
@@ -143,7 +144,7 @@ public class PartFavoritePresenter extends BasePresenter<PartFavoriteView> {
         // Todo 异步
         if (check != null && mSavedComic != null && check.length == mSavedComic.size()) {
             List<TagRef> rList = new ArrayList<>();
-            List<MiniComic> cList = new ArrayList<>();
+            List<Object> cList = new ArrayList<>();
             for (int i = 0; i != check.length; ++i) {
                 if (check[i]) {
                     MiniComic comic = new MiniComic(mSavedComic.valueAt(i));

@@ -11,7 +11,7 @@ public interface FavoriteView extends GridView {
 
     void OnComicFavorite(MiniComic comic);
 
-    void OnComicRestore(List<MiniComic> list);
+    void OnComicRestore(List<Object> list);
 
     void OnComicUnFavorite(long id);
 

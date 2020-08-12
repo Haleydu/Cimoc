@@ -49,16 +49,16 @@ public class LocalPresenter extends BasePresenter<LocalView> {
 
     public void load() {
         mCompositeSubscription.add(mComicManager.listLocalInRx()
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                .compose(new ToAnotherList<>(new Func1<Comic, Object>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
                 }))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
+                .subscribe(new Action1<List<Object>>() {
                     @Override
-                    public void call(List<MiniComic> list) {
+                    public void call(List<Object> list) {
                         mBaseView.onComicLoadSuccess(list);
                     }
                 }, new Action1<Throwable>() {
@@ -125,16 +125,16 @@ public class LocalPresenter extends BasePresenter<LocalView> {
                         return processScanResult(pairs);
                     }
                 })
-                .compose(new ToAnotherList<>(new Func1<Comic, MiniComic>() {
+                .compose(new ToAnotherList<>(new Func1<Comic, Object>() {
                     @Override
                     public MiniComic call(Comic comic) {
                         return new MiniComic(comic);
                     }
                 }))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<MiniComic>>() {
+                .subscribe(new Action1<List<Object>>() {
                     @Override
-                    public void call(List<MiniComic> list) {
+                    public void call(List<Object> list) {
                         mBaseView.onLocalScanSuccess(list);
                     }
                 }, new Action1<Throwable>() {

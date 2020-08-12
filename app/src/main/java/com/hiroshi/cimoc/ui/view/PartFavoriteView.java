@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface PartFavoriteView extends BaseView, DialogCaller {
 
-    void onComicLoadSuccess(List<MiniComic> list);
+    void onComicLoadSuccess(List<Object> list);
 
     void onComicLoadFail();
 
@@ -19,7 +19,7 @@ public interface PartFavoriteView extends BaseView, DialogCaller {
 
     void onComicTitleLoadFail();
 
-    void onComicInsertSuccess(List<MiniComic> list);
+    void onComicInsertSuccess(List<Object> list);
 
     void onComicInsertFail();
 
