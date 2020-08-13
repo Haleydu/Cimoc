@@ -162,6 +162,9 @@ public class GridAdapter extends BaseAdapter<Object> {
 
     public void removeItemById(long id) {
         for (Object O_comic : mDataSet) {
+            if (O_comic instanceof UnifiedNativeAd){
+                continue;
+            }
             MiniComic comic = (MiniComic) O_comic;
             if (id == comic.getId()) {
                 remove(comic);
@@ -174,6 +177,9 @@ public class GridAdapter extends BaseAdapter<Object> {
         int count = 0;
         if (symbol) {
             for (Object O_comic : mDataSet) {
+                if (O_comic instanceof UnifiedNativeAd){
+                    continue;
+                }
                 MiniComic comic = (MiniComic) O_comic;
                 if (!comic.isHighlight()) {
                     break;
@@ -187,6 +193,9 @@ public class GridAdapter extends BaseAdapter<Object> {
     public void cancelAllHighlight() {
         int count = 0;
         for (Object O_comic : mDataSet) {
+            if (O_comic instanceof UnifiedNativeAd){
+                continue;
+            }
             MiniComic comic = (MiniComic) O_comic;
             if (!comic.isHighlight()) {
                 break;
