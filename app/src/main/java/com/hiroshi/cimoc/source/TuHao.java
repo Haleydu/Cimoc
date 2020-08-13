@@ -117,7 +117,7 @@ public class TuHao extends MangaParser {
 
         int i = 0;
         for(String url : str.split("\\|72cms\\|")) {
-            list.add(new ImageUrl(i + 1, url, false));
+            list.add(new ImageUrl(++i, url, false));
         }
 
         return list;

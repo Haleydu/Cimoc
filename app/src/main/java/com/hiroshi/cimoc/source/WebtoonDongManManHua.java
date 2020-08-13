@@ -152,7 +152,7 @@ public class WebtoonDongManManHua extends MangaParser {
         int i = 1;
         for (Node node : body.list("div#_imageList > img")) {
             String url = node.attr("img", "data-url");
-            list.add(new ImageUrl(i, url, false));
+            list.add(new ImageUrl(i++, url, false));
         }
         if (!list.isEmpty()) return list;
 
