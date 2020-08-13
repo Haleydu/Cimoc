@@ -5,10 +5,8 @@ import android.graphics.Rect;
 import android.net.Uri;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -42,7 +40,7 @@ import butterknife.BindView;
 public class GridAdapter extends BaseAdapter<Object> {
 
     public static final int TYPE_GRID = 2016101213;
-    private static final int UNIFIED_NATIVE_AD_VIEW_TYPE = 2020121201;
+    private static final int UNIFIED_NATIVE_AD_VIEW_TYPE_GRID = 2020121201;
 
     private ControllerBuilderProvider mProvider;
     private SourceManager.TitleGetter mTitleGetter;
@@ -56,7 +54,7 @@ public class GridAdapter extends BaseAdapter<Object> {
     public int getItemViewType(int position) {
         Object recyclerViewItem = mDataSet.get(position);
         if (recyclerViewItem instanceof UnifiedNativeAd) {
-            return UNIFIED_NATIVE_AD_VIEW_TYPE;
+            return UNIFIED_NATIVE_AD_VIEW_TYPE_GRID;
         }
         return TYPE_GRID;
     }
@@ -65,7 +63,7 @@ public class GridAdapter extends BaseAdapter<Object> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case UNIFIED_NATIVE_AD_VIEW_TYPE:
+            case UNIFIED_NATIVE_AD_VIEW_TYPE_GRID:
                 View unifiedNativeLayoutView = mInflater.inflate(R.layout.item_grid_ad, parent, false);
                 return new UnifiedNativeAdViewHolder(unifiedNativeLayoutView);
             case TYPE_GRID:
@@ -73,8 +71,6 @@ public class GridAdapter extends BaseAdapter<Object> {
                 View view = mInflater.inflate(R.layout.item_grid, parent, false);
                 return new GridHolder(view);
         }
-
-
     }
 
     @Override
@@ -82,7 +78,7 @@ public class GridAdapter extends BaseAdapter<Object> {
         super.onBindViewHolder(holder, position);
         int viewType = getItemViewType(position);
         switch (viewType) {
-            case UNIFIED_NATIVE_AD_VIEW_TYPE:
+            case UNIFIED_NATIVE_AD_VIEW_TYPE_GRID:
                 UnifiedNativeAd nativeAd = (UnifiedNativeAd) mDataSet.get(position);
                 populateNativeAdView(nativeAd, ((UnifiedNativeAdViewHolder) holder).getAdView());
                 break;
@@ -222,8 +218,6 @@ public class GridAdapter extends BaseAdapter<Object> {
         }
     }
 
-
-
     class UnifiedNativeAdViewHolder extends RecyclerView.ViewHolder {
 
         private UnifiedNativeAdView adView;
@@ -234,12 +228,14 @@ public class GridAdapter extends BaseAdapter<Object> {
 
         UnifiedNativeAdViewHolder(View view) {
             super(view);
-            adView = (UnifiedNativeAdView) view.findViewById(R.id.ad_view);
+            adView = (UnifiedNativeAdView) view.findViewById(R.id.ad_grid_view);
 
-            adView.setMediaView((MediaView) adView.findViewById(R.id.ad_media));
-            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
-            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
-            adView.setBodyView(adView.findViewById(R.id.ad_body));
+            adView.setMediaView((MediaView) adView.findViewById(R.id.ad_grid_media));
+            adView.setIconView(adView.findViewById(R.id.ad_grid_app_icon));
+            adView.setHeadlineView(adView.findViewById(R.id.ad_grid_headline));
+            adView.setBodyView(adView.findViewById(R.id.ad_grid_body));
+            adView.setStarRatingView(adView.findViewById(R.id.ad_grid_stars));
+            adView.setAdvertiserView(adView.findViewById(R.id.ad_grid_advertiser));
         }
     }
 
@@ -260,6 +256,21 @@ public class GridAdapter extends BaseAdapter<Object> {
         } else {
             adView.getBodyView().setVisibility(View.VISIBLE);
             ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+        }
+
+        if (nativeAd.getStarRating() == null) {
+            adView.getStarRatingView().setVisibility(View.INVISIBLE);
+        } else {
+            ((RatingBar) adView.getStarRatingView())
+                    .setRating(nativeAd.getStarRating().floatValue());
+            adView.getStarRatingView().setVisibility(View.VISIBLE);
+        }
+
+        if (nativeAd.getAdvertiser() == null) {
+            adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+        } else {
+            ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
+            adView.getAdvertiserView().setVisibility(View.VISIBLE);
         }
 
         // Assign native ad object to the native view.

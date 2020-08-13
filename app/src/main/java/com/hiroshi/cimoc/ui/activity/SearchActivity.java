@@ -1,6 +1,9 @@
 package com.hiroshi.cimoc.ui.activity;
 
 import android.os.Bundle;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
@@ -101,6 +104,10 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
             mArrayAdapter = new AutoCompleteAdapter(this);
             mEditText.setAdapter(mArrayAdapter);
         }
+
+        AdView mAdView = findViewById(R.id.adView_search);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.gms.ads.formats.UnifiedNativeAdView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:id="@+id/ad_result_view"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:fresco="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@color/white"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="10dp">
+
+        <com.google.android.gms.ads.formats.MediaView
+            android:id="@+id/result_comic_media_view_ad"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            fresco:actualImageScaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/result_comic_advertiser_ad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/result_comic_stars_ad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/result_comic_headline_ad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/result_comic_advertiser_ad"
+            android:layout_toRightOf="@id/result_comic_media_view_ad"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:paddingRight="4dp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/result_comic_body_ad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/result_comic_headline_ad"
+            android:layout_alignLeft="@id/result_comic_headline_ad"
+            android:layout_marginTop="6dp"
+            android:layout_toLeftOf="@id/result_comic_advertiser_ad"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="16sp" />
+    </RelativeLayout>
+</com.google.android.gms.ads.formats.UnifiedNativeAdView>
