@@ -54,6 +54,17 @@
             android:textSize="12sp" />
     </RelativeLayout>
 
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView_chapter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/ADMOB_BANNER_CHAPTER_UNIT_ID">
+    </com.google.android.gms.ads.AdView>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

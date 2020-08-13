@@ -32,6 +32,7 @@ def history_unit_id = "ca-app-pub-7627119713262112/8397114244"
 def download_unit_id = "ca-app-pub-7627119713262112/2661555923"
 def local_unit_id = "ca-app-pub-7627119713262112/1101062243"
 def banners_id = "ca-app-pub-7627119713262112/8423048872"
+def banners_chapter_id = "ca-app-pub-7627119713262112/2788374970"
 
 //if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
 //    app_id = System.getenv("ADMOB_APP_ID")
@@ -40,6 +41,7 @@ def banners_id = "ca-app-pub-7627119713262112/8423048872"
 //    download_unit_id = System.getenv("ADMOB_NATIVE_DOWNLOAD_UNIT_ID")
 //    local_unit_id = System.getenv("ADMOB_NATIVE_LOCAL_UNIT_ID")
 //    banners_id = System.getenv("ADMOB_BANNER_UNIT_ID")
+//    banners_chapter_id = System.getenv("ADMOB_BANNER_CHAPTER_UNIT_ID")
 //}
 android {
     compileSdkVersion 29
@@ -65,6 +67,7 @@ android {
         buildConfigField ("String","ADMOB_NATIVE_LOCAL_UNIT_ID","\""+local_unit_id+"\"")
 
         resValue "string", "ADMOB_BANNER_UNIT_ID", "\""+banners_id+"\""
+        resValue "string", "ADMOB_BANNER_CHAPTER_UNIT_ID", "\""+banners_chapter_id+"\""
     }
     signingConfigs {
         release {

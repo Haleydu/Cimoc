@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.widget.ChapterButton;
@@ -89,6 +91,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         super.onBindViewHolder(holder, position);
         if (position == 0) {
             HeaderHolder headerHolder = (HeaderHolder) holder;
+            AdRequest adRequest = new AdRequest.Builder().build();
+            headerHolder.mAdView.loadAd(adRequest);
             if (title != null) {
                 if (cover != null) {
                     headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
@@ -170,6 +174,8 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         TextView mComicUpdate;
         @BindView(R.id.item_header_comic_author)
         TextView mComicAuthor;
+        @BindView(R.id.adView_chapter)
+        AdView mAdView;
 
         HeaderHolder(View view) {
             super(view);

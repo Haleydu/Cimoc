@@ -198,7 +198,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
         showAuthorNotice();
         showPermission();
-        initAdView();
     }
 
     @Override
@@ -271,7 +270,7 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         mLastText = header.findViewById(R.id.drawer_last_title);
         mDraweeView = header.findViewById(R.id.drawer_last_cover);
 
-        mAdView = header.findViewById(R.id.adView);
+        AdView mAdView = header.findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
@@ -603,10 +602,4 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     protected View getLayoutView() {
         return mDrawerLayout;
     }
-
-    private AdView mAdView;
-    public void initAdView() {
-
-    }
-
 }
