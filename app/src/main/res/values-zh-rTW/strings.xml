@@ -16,10 +16,11 @@
     <string name="main_notice">歡迎使用</string>
     <string name="main_notice_content">有问题上github或gitter留言</string>
     <string name="main_permission">權限請求</string>
-    <string name="main_permission_content">下載、備份還原與儲存圖片功能需要存取 SD 卡的權限！ \n如果沒有儲存權限，將會出現設定功能將閃退，備份功能無法使用等問題。請在之後的彈出框中確定授予權限！</string>
+    <string name="main_permission_content">下載、軟件升級、備份還原與儲存圖片功能需要存取 SD 卡的權限！ \n如果沒有儲存權限，將會出現設定功能將閃退，備份功能無法使用等問題。請在之後的彈出框中確定授予權限！</string>
     <string name="main_permission_success">取得權限成功</string>
     <string name="main_permission_fail">取得權限失敗</string>
     <string name="main_ready_update">檢測到新版本</string>
+    <string name="main_start_update">升級到：</string>
 
     <string name="search_menu_source">圖源</string>
     <string name="search_keyword_empty">關鍵字為空</string>

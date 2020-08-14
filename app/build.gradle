@@ -149,6 +149,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
     implementation 'com.google.firebase:firebase-config:19.2.0'
     implementation 'com.google.firebase:firebase-ads:19.3.0'
+    implementation 'com.king.app:app-updater:1.0.8-androidx'
+    implementation 'com.king.app:app-dialog:1.0.8-androidx'
 }
 repositories {
     mavenCentral()

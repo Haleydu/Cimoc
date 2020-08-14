@@ -16,4 +16,5 @@ public interface MainView extends BaseView, DialogCaller {
 
     void onUpdateReady();
 
+    void onUpdateReady(String versionName, String content, String mUrl, int versionCode, String md5);
 }
