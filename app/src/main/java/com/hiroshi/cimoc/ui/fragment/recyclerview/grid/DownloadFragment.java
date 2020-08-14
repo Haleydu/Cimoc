@@ -8,8 +8,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -56,7 +58,10 @@ public class DownloadFragment extends GridFragment implements DownloadView {
     @Override
     protected void initData() {
         mPresenter.load();
-        loadNativeAds();
+        if(!App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_REDUCE_AD, false)) {
+            loadNativeAds();
+        }
+
     }
 
     @Override
@@ -171,7 +176,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
         return new String[]{getString(R.string.comic_info), getString(R.string.download_delete)};
     }
 
-    public static final int NUMBER_OF_ADS = 3;
+    public static int NUMBER_OF_ADS = 3;
     private AdLoader adLoader;
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
 

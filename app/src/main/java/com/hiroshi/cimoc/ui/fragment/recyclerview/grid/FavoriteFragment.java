@@ -8,6 +8,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
@@ -51,6 +52,9 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     protected void initView() {
         super.initView();
         mGridAdapter.setSymbol(true);
+        if(App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_REDUCE_AD, false)) {
+            NUMBER_OF_ADS=1;
+        }
         loadNativeAds();
     }
 
@@ -197,7 +201,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         return new String[]{getString(R.string.comic_info), getString(R.string.favorite_delete)};
     }
 
-    public static final int NUMBER_OF_ADS = 3;
+    public static int NUMBER_OF_ADS = 3;
     private AdLoader adLoader;
     private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
 
