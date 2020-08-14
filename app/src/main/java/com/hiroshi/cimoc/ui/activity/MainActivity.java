@@ -481,7 +481,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     @Override
     public void onUpdateReady(String versionName, String content, String mUrl, int versionCode, String md5) {
-        //HintUtils.showToast(this, R.string.main_ready_update);
         this.versionName = versionName;
         this.content = content;
         this.mUrl = mUrl;
@@ -489,8 +488,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         this.versionCode = versionCode;
         if (mPreference.getBoolean(PreferenceManager.PREF_OTHER_CHECK_SOFTWARE_UPDATE, true)) {
             mNavigationView.getMenu().findItem(R.id.drawer_comicUpdate).setVisible(true);
+            update.startUpdate(versionName, content, mUrl, versionCode, md5);
+        }else {
+            HintUtils.showToast(this, R.string.main_ready_update);
         }
-        update.startUpdate(versionName, content, mUrl, versionCode, md5);
     }
 
     @Override
