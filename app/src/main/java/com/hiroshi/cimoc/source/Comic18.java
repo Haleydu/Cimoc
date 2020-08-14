@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -12,8 +10,6 @@ import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
-import com.hiroshi.cimoc.utils.DecryptionUtils;
-import com.hiroshi.cimoc.utils.HttpUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONException;
@@ -45,7 +41,7 @@ public class Comic18 extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         if (page != 1) return null;
-        String url = StringUtils.format("https://18comic.fun/search/photos?search_query=%s&main_tag=0", keyword);
+        String url = StringUtils.format("https://18comic1.biz/search/photos?search_query=%s&main_tag=0", keyword);
         return new Request.Builder().url(url).build();
     }
 
@@ -67,45 +63,52 @@ public class Comic18 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "https://18comic.fun" + cid;
+        return "https://18comic1.biz" + cid;
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("18comic.fun"));
+        filter.add(new UrlFilter("18comic1.biz"));
+        filter.add(new UrlFilter("18comic2.biz"));
+        filter.add(new UrlFilter("18comic3.biz"));
+        filter.add(new UrlFilter("18comic.vip"));
+        filter.add(new UrlFilter("18comic.org"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://18comic.fun" + cid;
+        String url = "https://18comic1.biz" + cid;
         return new Request.Builder().url(url).build();
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
-        Node body = new Node(html);
-        String intro = body.text("div.col-lg-7 > div > div:eq(6)");
-        String title = body.text("div.panel-heading > div");
-        String cover = body.attr("img#album_photo_cover","src");
-        String author = body.text("div.col-lg-7 > div > div:eq(3) > span > a");
-        String update = body.attr("div.col-lg-7 > div > div:eq(8) > span","content");
-        boolean status = isFinish(body.text("div.col-lg-7 > div > div:eq(2) > span > a(1)"));
-        comic.setInfo(title, cover, update, intro, author, status);
+    public void parseInfo(String html, Comic comic) {
+        try {
+            Node body = new Node(html);
+            String intro = body.text("#intro-block > div:eq(6)");
+            String title = body.text("div.panel-heading > div");
+            String cover = body.attr("img.lazy_img.img-responsive","src").trim();
+            String author = body.text("#intro-block > div:eq(3) > span");
+            String update = body.attr("#intro-block > div:eq(8) > span","content");
+            boolean status = isFinish(body.text("#intro-block > div:eq(2) > span"));
+            comic.setInfo(title, cover, update, intro, author, status);
+        }catch (Exception e){
+
+        }
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-        for (Node node : body.list("div.episode > ul > a")) {
-            String titlearray[] = (node.text("li").split("\\s+"));
+
+        String startTitle = body.text(".col.btn.btn-primary.dropdown-toggle.reading").trim();
+        String startPath = body.href(".col.btn.btn-primary.dropdown-toggle.reading");
+        list.add(new Chapter(startTitle, startPath));
+
+        for (Node node : body.list("#episode-block > div > div.episode > ul > a")) {
+            String title = node.text("li").trim();
             String path = node.href();
-            list.add(new Chapter(titlearray[0], path));
-        }
-        if (list.isEmpty()){
-            body = new Node(html);
-            String title = body.text("a#reading");
-            String path = body.href("a#reading");
             list.add(new Chapter(title, path));
         }
         return Lists.reverse(list);
@@ -114,7 +117,7 @@ public class Comic18 extends MangaParser {
     private String imgpath = "";
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "https://18comic.fun"+path;
+        String url = "https://18comic1.biz"+path;
         imgpath = path;
         return new Request.Builder().url(url).build();
     }
@@ -150,6 +153,6 @@ public class Comic18 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://18comic.fun/");
+        return Headers.of("Referer", "https://18comic1.biz/");
     }
 }
