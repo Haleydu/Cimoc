@@ -105,19 +105,36 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     public List<Chapter> parseChapter(String html) {
+//        List<Chapter> list = new LinkedList<>();
+//        Node body = new Node(html);
+//        for (Node node : body.list("div.list > ul > li > a")) {
+//            String title = node.text("span");
+//            String path = StringUtils.split(node.href(), "/", 3);
+//            list.add(new Chapter(title, path));
+//        }
+//        return Lists.reverse(list);
+
         List<Chapter> list = new LinkedList<>();
-        Node body = new Node(html);
-        for (Node node : body.list("div.list > ul > li > a")) {
-            String title = node.text("span");
-            String path = StringUtils.split(node.href(), "/", 3);
-            list.add(new Chapter(title, path));
+        try {
+            String JsonString = StringUtils.match("\"chapter\":\\[(.*\\}\\]\\})\\],", html, 1);
+            JSONObject object = new JSONObject(JsonString);
+            JSONArray data = object.getJSONArray("data");
+            for (int j = 0; j != data.length(); ++j) {
+                JSONObject chapter = data.getJSONObject(j);
+                String title = chapter.getString("chapter_name");
+                String path = chapter.getString("id");
+                //Integer.parseInt(chapter.getString("chapter_order"));
+                list.add(new Chapter(title, path));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return Lists.reverse(list);
+        return list;
     }
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://m.dmzj.com/view/%s/%s", cid, path);
+        String url = StringUtils.format("http://m.dmzj.com/view/%s/%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
