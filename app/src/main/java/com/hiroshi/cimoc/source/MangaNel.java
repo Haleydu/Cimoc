@@ -59,6 +59,7 @@ public class MangaNel extends MangaParser {
      */
     @Override
     public Request getSearchRequest(String keyword, int page) {
+        if (page !=1 ) return null;
         String url = "https://manganelo.com/search/story/" + keyword;
         return new Request.Builder().url(url).build();
     }
