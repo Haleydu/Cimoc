@@ -182,6 +182,11 @@ public class SourceManager {
                 case Comic18.TYPE:
                     parser = new Comic18(source);
                     break;
+
+                //haleydu
+                case Mangakakalot.TYPE:
+                    parser = new Mangakakalot(source);
+                    break;
                 case Ohmanhua.TYPE:
                     parser = new Ohmanhua(source);
                     break;
