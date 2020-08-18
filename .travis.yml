@@ -36,10 +36,4 @@ deploy:
     branch: release-tci
     tags: true
   skip_cleanup: true
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/0ecc6bd870c911bd6222
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: always     # options: [always|never|change] default: always
+
