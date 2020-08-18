@@ -30,7 +30,7 @@ Online manga reader based on Android
 - 本地备份恢复（Local Backup）
 
 # 软件使用说明
-- 安装完成后，直接点击搜索，搜索想看的漫画即可
+- 安装完成后，直接点击右上角的搜索，即可搜索到漫画
 - 全部代码我都自己分析了一遍没有后门，没有木马，没有病毒，代码是开源的大家也可以帮忙分析
 - 软件会被腾讯报毒，信不过本作者的可以下载apk后，进行在线查毒分析
 - 代码是开源的，apk是travis自动编译发布的，不放心的可以自己编译apk安装
@@ -50,9 +50,8 @@ Online manga reader based on Android
 - [PhotoDraweeView](https://github.com/ongakuer/PhotoDraweeView)
 - [Rhino](https://github.com/mozilla/rhino)
 - [BlazingChain](https://github.com/tommyettinger/BlazingChain)
+- [AppUpdater](https://gitee.com/jenly1314/AppUpdater)
 
-# ToDo
-- 要是能多线程检查更新就好了，我本地收藏两百多，每次检查更新要好久
 
 # 应用截图
 <img src="./screenshot/01.png" width="250">
@@ -71,7 +70,7 @@ Online manga reader based on Android
 > 在app\src\main\java\com\hiroshi\cimoc\ui\activity\BrowserFilter.java中
 > 修改后运行app\src\main\GenAndroidManifest.fish，使用自动生成的BrowserFilter-data.xml替换AndroidManifest.xml中相应部分
 
-# eink设备推荐配置
+
 ## cimoc设置
 - 阅读模式－翻页模式
 - 定义点击事件－左上－上一页，右下下一页
@@ -87,15 +86,8 @@ Online manga reader based on Android
 - 全刷触发20
 - 全屏－关闭
 
-# 控制器使用说明
-> 如果嫌举着平板太累，可以把平板放支架上，用手柄翻页 :smile:   
-> 不过暂时只能在阅读界面使用 
-
-我用的是xbox手柄开发的（蓝色的那个，不过貌似颜色没什么关系）  
-默认b返回左右肩键和扳机键翻页
-
 # 软件更新方向：
-- 能正常看大部分漫画
+- 能正常搜索解析网络上大部分免费的漫画
 - 界面简洁为主
 - 解决apk影响体验的问题
 
@@ -105,8 +97,13 @@ Online manga reader based on Android
 - 打算加入Google的广告系统，通过广告收入来维持服务器运转
 - 如果有大佬愿意赞助服务器的，会取消软件内的预置广告。
 
+# 关于淘宝售卖和会员破解
+- 请二次开发软件遵守软件许可证。
+- 本程序没有任何破解网站VIP的功能，仅仅作为网页浏览器显示网站免费浏览部分，淘宝卖家自行添加的破解或其他功能与本程序无任何关系。
+
 # 免责声明：
-如果更新软件的过程中有什么侵权的地方，请在github上留言或者私信我，提供相关版权证明，会马上删除侵权部分的内容。
-> 关于淘宝售卖和会员破解
-请二次开发软件遵守软件许可证。  
-本程序没有任何破解网站VIP的功能，仅仅作为网页浏览器显示网站免费浏览部分，淘宝卖家自行添加的破解或其他功能与本程序无任何关系。
+- 如果更新软件的过程中有什么侵权的地方，请在github上留言或者私信我，提供相关版权证明，会马上删除侵权部分的内容。
+- 本软件开发，是为了码农之间的技术交流，以及解决软件测试过程中出现的各种bug，本软件的代码全部开源。
+- 软件不是为看漫画而开发的，看漫画请用feilongfl版本或用Tachiyomi。下载软件测试后，请于24小时内删除。
+- 后期如进行到了服务器的开发，会开个新分支公开服务器开发所用的代码，以及公开服务器内存放的所有内容，服务器存放的内容均来源于网站上的免费内容，如服务器内有侵权的内容会立马删除。
+- 本软件不以盈利为目的，广告收入全部用于服务器维护和开发。

@@ -192,6 +192,8 @@
     <string name="settings_other_clear_cache_summary">清理線上漫畫的緩存資料</string>
     <string name="settings_other_firebase_event">Firebase數據收集</string>
     <string name="settings_other_firebase_event_summary">允許程序通過Firebase收集您的使用情況，以便於分析程序和漫畫源的工作狀態。</string>
+    <string name="settings_other_reduce_ad">減少頁面廣告</string>
+    <string name="settings_other_reduce_ad_summary">減少歷史和收藏的廣告，下載和本地頁不顯示廣告</string>
 
     <string name="backup_save">備份</string>
     <string name="backup_save_comic_auto">自動備份</string>

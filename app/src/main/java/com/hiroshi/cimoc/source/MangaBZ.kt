@@ -11,6 +11,7 @@ import com.hiroshi.cimoc.parser.SearchIterator
 import com.hiroshi.cimoc.parser.UrlFilter
 import com.hiroshi.cimoc.soup.Node
 import com.hiroshi.cimoc.utils.DecryptionUtils
+import com.hiroshi.cimoc.utils.StringUtils
 import okhttp3.Headers
 import okhttp3.Request
 import java.io.UnsupportedEncodingException
@@ -62,8 +63,9 @@ class MangaBZ(source: Source?) : MangaParser() {
         val body = Node(html)
         val title = body.text(".detail-info-title")
         val cover = body.src(".detail-info-cover")
-        val update = body.text(".detail-list-form-title")
-        val author = body.text(".detail-info-tip")
+        val update = StringUtils.match("(..月..號 | ....-..-..)",
+                body.text(".detail-list-form-title"), 1)
+        val author = body.text(".detail-info-tip > span > a")
         val intro = body.text(".detail-info-content")
         val status = isFinish(".detail-list-form-title")
         comic.setInfo(title, cover, update, intro, author, status)

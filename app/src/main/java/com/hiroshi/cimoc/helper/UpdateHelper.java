@@ -66,6 +66,7 @@ public class UpdateHelper {
         list.add(MH50.getDefaultSource());
         list.add(Dmzjv2.getDefaultSource());
         list.add(MangaNel.getDefaultSource());
+        list.add(Mangakakalot.getDefaultSource());
         list.add(PuFei.getDefaultSource());
         list.add(Cartoonmad.getDefaultSource());
         list.add(Animx2.getDefaultSource());

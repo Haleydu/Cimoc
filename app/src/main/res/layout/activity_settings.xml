@@ -234,6 +234,14 @@
                     app:summary="@string/settings_other_firebase_event_summary"
                     app:title="@string/settings_other_firebase_event" />
 
+                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                    android:id="@+id/settings_other_reduce_ad"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:summary="@string/settings_other_reduce_ad_summary"
+                    app:title="@string/settings_other_reduce_ad" />
+
+
                 <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_launch"
                     android:layout_width="match_parent"
