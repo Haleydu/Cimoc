@@ -19,35 +19,38 @@ else {
 }
 version = cmdGetTagname.execute().text.trim()
 
-//def app_id = "ca-app-pub-3940256099942544~3347511713"
-//def favorite_unit_id = "ca-app-pub-3940256099942544/2247696110"
-//def history_unit_id = "ca-app-pub-3940256099942544/2247696110"
-//def download_unit_id = "ca-app-pub-3940256099942544/2247696110"
-//def local_unit_id = "ca-app-pub-3940256099942544/2247696110"
-//def banners_id = "ca-app-pub-3940256099942544/6300978111"
-
-def app_id = "ca-app-pub-7627119713262112~4561316171"
-def favorite_unit_id = "ca-app-pub-7627119713262112/6345773775"
-def history_unit_id = "ca-app-pub-7627119713262112/8397114244"
-def download_unit_id = "ca-app-pub-7627119713262112/2661555923"
-def local_unit_id = "ca-app-pub-7627119713262112/1101062243"
-def search_unit_id = "ca-app-pub-7627119713262112/6391033471"
-def banners_id = "ca-app-pub-7627119713262112/8423048872"
-def banners_chapter_id = "ca-app-pub-7627119713262112/2788374970"
-def banners_search_id = "ca-app-pub-7627119713262112/1081375788"
-def insert_home_id = "ca-app-pub-7627119713262112/3346137541"
+def app_id = "ca-app-pub-3940256099942544~3347511713"
+def favorite_unit_id = "ca-app-pub-3940256099942544/2247696110"
+def history_unit_id = "ca-app-pub-3940256099942544/2247696110"
+def download_unit_id = "ca-app-pub-3940256099942544/2247696110"
+def local_unit_id = "ca-app-pub-3940256099942544/2247696110"
+def search_unit_id = "ca-app-pub-3940256099942544/2247696110"
+def banners_id = "ca-app-pub-3940256099942544/6300978111"
+def banners_chapter_id = "ca-app-pub-3940256099942544/6300978111"
+def banners_search_id = "ca-app-pub-3940256099942544/6300978111"
+def insert_home_id = "ca-app-pub-3940256099942544/1033173712"
 
 if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
-    app_id = System.getenv("ADMOB_APP_ID")
-    favorite_unit_id = System.getenv("ADMOB_NATIVE_FAVORITE_UNIT_ID")
-//    history_unit_id = System.getenv("ADMOB_NATIVE_HISTORY_UNIT_ID")
-//    download_unit_id = System.getenv("ADMOB_NATIVE_DOWNLOAD_UNIT_ID")
-//    local_unit_id = System.getenv("ADMOB_NATIVE_LOCAL_UNIT_ID")
-//    search_unit_id = System.getenv("ADMOB_NATIVE_SEARCH_UNIT_ID")
-//    banners_id = System.getenv("ADMOB_BANNER_UNIT_ID")
-//    banners_chapter_id = System.getenv("ADMOB_BANNER_CHAPTER_UNIT_ID")
-//    banners_search_id = System.getenv("ADMOB_BANNER_SEARCH_UNIT_ID")
-//    insert_home_id = System.getenv("ADMOB_INSERT_HOME_ID")
+//    app_id = "ca-app-pub-7627119713262112~4561316171"
+//    favorite_unit_id = "ca-app-pub-7627119713262112/6345773775"
+//    history_unit_id = "ca-app-pub-7627119713262112/8397114244"
+//    download_unit_id = "ca-app-pub-7627119713262112/2661555923"
+//    local_unit_id = "ca-app-pub-7627119713262112/1101062243"
+//    search_unit_id = "ca-app-pub-7627119713262112/6391033471"
+//    banners_id = "ca-app-pub-7627119713262112/8423048872"
+//    banners_chapter_id = "ca-app-pub-7627119713262112/2788374970"
+//    banners_search_id = "ca-app-pub-7627119713262112/1081375788"
+//    insert_home_id = "ca-app-pub-7627119713262112/3346137541"
+ app_id = System.getenv("ADMOB_APP_ID")
+ favorite_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
+ history_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
+ download_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
+ local_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
+ search_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
+ banners_id = System.getenv("ADMOB_BANNER_ID")
+ banners_chapter_id = System.getenv("ADMOB_BANNER_ID")
+ banners_search_id = System.getenv("ADMOB_BANNER_ID")
+ insert_home_id = System.getenv("ADMOB_INSERT_ID")
 }
 
 android {
