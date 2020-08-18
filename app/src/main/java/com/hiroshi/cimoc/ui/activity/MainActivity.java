@@ -122,6 +122,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         Log.e("hrd ADMOB_NATIVE_UNIT_ID_OK", BuildConfig.ADMOB_NATIVE_UNIT_ID_OK);
         Log.e("hrd ADMOB_BANNER_ID_OK", BuildConfig.ADMOB_BANNER_ID_OK);
         Log.e("hrd ADMOB_INSERT_ID_OK", BuildConfig.ADMOB_INSERT_ID_OK);
+
+        Log.e("hrd ADMOB_NATIVE_UNIT_ID", BuildConfig.ADMOB_NATIVE_DOWNLOAD_UNIT_ID);
     }
 
 //    private void login() {
