@@ -41,16 +41,16 @@ if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
 //    banners_chapter_id = "ca-app-pub-7627119713262112/2788374970"
 //    banners_search_id = "ca-app-pub-7627119713262112/1081375788"
 //    insert_home_id = "ca-app-pub-7627119713262112/3346137541"
- app_id = System.getenv("ADMOB_APP_ID")
- favorite_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
- history_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
- download_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
- local_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
- search_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID")
- banners_id = System.getenv("ADMOB_BANNER_ID")
- banners_chapter_id = System.getenv("ADMOB_BANNER_ID")
- banners_search_id = System.getenv("ADMOB_BANNER_ID")
- insert_home_id = System.getenv("ADMOB_INSERT_ID")
+ app_id = System.getenv("ADMOB_APP_ID_OK")
+ favorite_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID_OK")
+ history_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID_OK")
+ download_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID_OK")
+ local_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID_OK")
+ search_unit_id = System.getenv("ADMOB_NATIVE_UNIT_ID_OK")
+ banners_id = System.getenv("ADMOB_BANNER_ID_OK")
+ banners_chapter_id = System.getenv("ADMOB_BANNER_ID_OK")
+ banners_search_id = System.getenv("ADMOB_BANNER_ID_OK")
+ insert_home_id = System.getenv("ADMOB_INSERT_ID_OK")
 }
 
 android {
