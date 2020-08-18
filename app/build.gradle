@@ -37,9 +37,9 @@ def banners_chapter_id = "ca-app-pub-7627119713262112/2788374970"
 def banners_search_id = "ca-app-pub-7627119713262112/1081375788"
 def insert_home_id = "ca-app-pub-7627119713262112/3346137541"
 
-//if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
-//    app_id = System.getenv("ADMOB_APP_ID")
-//    favorite_unit_id = System.getenv("ADMOB_NATIVE_FAVORITE_UNIT_ID")
+if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
+    app_id = System.getenv("ADMOB_APP_ID")
+    favorite_unit_id = System.getenv("ADMOB_NATIVE_FAVORITE_UNIT_ID")
 //    history_unit_id = System.getenv("ADMOB_NATIVE_HISTORY_UNIT_ID")
 //    download_unit_id = System.getenv("ADMOB_NATIVE_DOWNLOAD_UNIT_ID")
 //    local_unit_id = System.getenv("ADMOB_NATIVE_LOCAL_UNIT_ID")
@@ -48,7 +48,8 @@ def insert_home_id = "ca-app-pub-7627119713262112/3346137541"
 //    banners_chapter_id = System.getenv("ADMOB_BANNER_CHAPTER_UNIT_ID")
 //    banners_search_id = System.getenv("ADMOB_BANNER_SEARCH_UNIT_ID")
 //    insert_home_id = System.getenv("ADMOB_INSERT_HOME_ID")
-//}
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.3'
