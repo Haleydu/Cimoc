@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import com.hiroshi.cimoc.BuildConfig;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -117,6 +118,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
         initDrawerToggle();
         initNavigation();
         initFragment();
+        Log.e("hrd ADMOB_APP_ID_OK", BuildConfig.ADMOB_APP_ID_OK);
+        Log.e("hrd ADMOB_NATIVE_UNIT_ID_OK", BuildConfig.ADMOB_NATIVE_UNIT_ID_OK);
+        Log.e("hrd ADMOB_BANNER_ID_OK", BuildConfig.ADMOB_BANNER_ID_OK);
+        Log.e("hrd ADMOB_INSERT_ID_OK", BuildConfig.ADMOB_INSERT_ID_OK);
     }
 
 //    private void login() {

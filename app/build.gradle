@@ -78,6 +78,11 @@ android {
         buildConfigField ("String","ADMOB_NATIVE_SEARCH_UNIT_ID","\""+search_unit_id+"\"")
         buildConfigField ("String","ADMOB_INSERT_HOME_ID","\""+insert_home_id+"\"")
 
+        buildConfigField ("String","ADMOB_BANNER_ID_OK","\""+banners_chapter_id+"\"")
+        buildConfigField ("String","ADMOB_NATIVE_UNIT_ID_OK","\""+favorite_unit_id+"\"")
+        buildConfigField ("String","ADMOB_INSERT_ID_OK","\""+insert_home_id+"\"")
+        buildConfigField ("String","ADMOB_APP_ID_OK","\""+app_id+"\"")
+
         resValue "string", "ADMOB_BANNER_UNIT_ID", "\""+banners_id+"\""
         resValue "string", "ADMOB_BANNER_CHAPTER_UNIT_ID", "\""+banners_chapter_id+"\""
         resValue "string", "ADMOB_BANNER_SEARCH_UNIT_ID", "\""+banners_search_id+"\""
