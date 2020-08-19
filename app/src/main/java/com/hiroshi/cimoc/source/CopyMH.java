@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.source;
 import android.util.Base64;
 
 import com.facebook.common.util.Hex;
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -124,7 +125,7 @@ public class CopyMH extends MangaParser {
             String path = array.getJSONObject(i).getString("uuid");
             list.add(new Chapter(title, path));
         }
-        return list;
+        return Lists.reverse(list);
     }
 
     @Override
