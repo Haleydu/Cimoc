@@ -136,6 +136,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
         int offset = (mGridAdapter.getDateSet().size() / mNativeAds.size()) + 1;
         int index = 0;
         for (UnifiedNativeAd ad : mNativeAds) {
+            if (mGridAdapter.getItemCount() == 0) return;
             mGridAdapter.add(index, ad);
             index = index + offset;
         }

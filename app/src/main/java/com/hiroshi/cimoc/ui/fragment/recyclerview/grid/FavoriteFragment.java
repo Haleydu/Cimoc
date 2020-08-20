@@ -214,6 +214,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         for (UnifiedNativeAd ad : mNativeAds) {
             mGridAdapter.add(index, ad);
             index = index + offset;
+            if (mGridAdapter.getItemCount() == 0) return;
         }
         mGridAdapter.notifyDataSetChanged();
     }
