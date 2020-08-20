@@ -94,6 +94,7 @@ public class UpdateHelper {
         list.add(Ohmanhua.getDefaultSource());
         list.add(CopyMH.getDefaultSource());
         list.add(WebtoonDongManManHua.getDefaultSource());
+        list.add(MH160.getDefaultSource());
         session.getSourceDao().insertOrReplaceInTx(list);
     }
 }

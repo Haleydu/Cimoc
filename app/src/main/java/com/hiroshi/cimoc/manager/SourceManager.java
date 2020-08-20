@@ -199,6 +199,9 @@ public class SourceManager {
                 case WebtoonDongManManHua.TYPE:
                     parser = new WebtoonDongManManHua(source);
                     break;
+                case MH160.TYPE:
+                    parser = new MH160(source);
+                    break;
                 default:
                     parser = new Null();
                     break;
