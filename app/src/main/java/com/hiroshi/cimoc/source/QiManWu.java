@@ -4,133 +4,136 @@ import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.model.Source;
-import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaParser;
+import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+
 /**
  * Created by Haleydu on 2020/8/20.
  */
 
-public class QiMiaoMH extends MangaParser {
+public class QiManWu extends MangaParser {
 
     public static final int TYPE = 53;
-    public static final String DEFAULT_TITLE = "奇妙漫画";
+    public static final String DEFAULT_TITLE = "奇漫屋";
     public static final String baseUrl = "http://qiman5.com";
 
-    public QiMiaoMH(Source source) {
+    public QiManWu(Source source) {
         init(source, null);
     }
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, false);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page != 1) return null;
-        try {
-            String url = StringUtils.format(baseUrl+"/action/Search?keyword=", URLEncoder.encode(keyword, "UTF-8"));
-            RequestBody body = new FormBody.Builder().add("keyword", keyword).build();
-
-            return new Request.Builder().url(url).post(body).addHeader("Referer", baseUrl).build();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
+        String url = baseUrl + "/spotlight/?keyword=" + keyword;
+        //url = "https://comic.mkzcdn.com/search/keyword/";
+        RequestBody body = new FormBody.Builder()
+                .add("keyword", keyword)
+                .build();
+        return new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("Referer", baseUrl)
+                .addHeader("Host", "qiman5.com")
+                .build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
-        try {
-            JSONObject js = new JSONObject(html);
-            return new JsonIterator(js.getJSONArray("records")) {
-                @Override
-                protected Comic parse(JSONObject object) {
-                    try {
-                        String cid = object.getString("bookId");
-                        String title = object.getString("title");
-                        String cover = object.getString("cover");
-                        String author = object.getString("author");
-                        return new Comic(TYPE, cid, title, cover, null, author);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+        Node body = new Node(html);
+        return new NodeIterator(body.list(".search-result > .comic-list-item")) {
+            @Override
+            protected Comic parse(Node node) {
+                String cid = node.href("a");
+                String title = node.text("p.comic-name");
+                String cover = node.attr("img", "src");
+                String author = node.text("p.comic-author");
+                return new Comic(TYPE, cid, title, cover, null, author);
+            }
+        };
     }
 
     @Override
     public String getUrl(String cid) {
-        return "https://h5.manhua.163.com/source/".concat(cid);
+        return baseUrl.concat(cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("h5.manhua.163.com"));
+        filter.add(new UrlFilter(baseUrl));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://h5.manhua.163.com/source/".concat(cid);
+        String url = baseUrl.concat(cid);
         return new Request.Builder().url(url).build();
     }
 
+    private static String ChapterHtml;
+
     @Override
     public void parseInfo(String html, Comic comic) {
+        ChapterHtml = html;
         Node body = new Node(html);
-        String update = "null";
-        String title = body.text(".sr-detail__heading");
-        String intro = body.attr(".share-button", "summary");
-        String author = body.text(".sr-detail__author-text");
-        String cover = body.attr(".share-button", "pic");
-        comic.setInfo(title, cover, update, intro, author, true);
+        String update = body.text(".box-back2 > :eq(4)").replace("更新时间：", "");
+        String title = body.text(".box-back2 > h1");
+        String intro = body.text("span.comic-intro");
+        String author = body.text(".box-back2 > :eq(2)");
+        String cover = body.src(".box-back1 > img");
+        boolean status = isFinish(body.text(".box-back2 > p.txtItme.c1"));
+        comic.setInfo(title, cover, update, intro, author, status);
     }
 
     @Override
     public Request getChapterRequest(String html, String cid) {
-        String url = StringUtils.format("https://h5.manhua.163.com/book/catalog/%s.json", cid);
-        return new Request.Builder().url(url).build();
+        String url = "http://qiman5.com/bookchapter/";
+        String id = Objects.requireNonNull(StringUtils.match(" data: \\{ \"id\":(.*?),", html, 1)).trim();
+        String id2 = Objects.requireNonNull(StringUtils.match(", \"id2\":(.*?)\\},", html, 1)).trim();
+        RequestBody body = new FormBody.Builder().add("id", id).add("id2", id2).build();
+        return new Request.Builder().url(url).post(body)
+                .addHeader("Referer", baseUrl)
+                .addHeader("Host", "qiman5.com")
+                .build();
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
+        for (Node node : new Node(ChapterHtml).list("div.catalog-list > ul > li")) {
+            String title = node.text("a");
+            String path = node.attr("li", "data-id");
+            list.add(new Chapter(title, path));
+        }
         try {
-            JSONObject js = new JSONObject(html);
-            JSONArray jsarr = js.getJSONObject("catalog")
-                    .getJSONArray("sections")
-                    .getJSONObject(0)
-                    .getJSONArray("sections");
-
-            for (int i = 0; i < jsarr.length(); i++) {
-                String title = jsarr.getJSONObject(i).getString("title");
-                String path = jsarr.getJSONObject(i).getString("sectionId");
+            JSONArray array = new JSONArray(html);
+            for (int i = 0; i != array.length(); ++i) {
+                JSONObject chapter = array.getJSONObject(i);
+                String title = chapter.getString("name");
+                String path = chapter.getString("id");
                 list.add(new Chapter(title, path));
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
@@ -138,23 +141,21 @@ public class QiMiaoMH extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        //https://h5.manhua.163.com/reader/section/4458002705630123099/4457282705880101050.json
-        String url = StringUtils.format("https://h5.manhua.163.com/reader/section/%s/%s.json", cid, path);
+        String url = StringUtils.format("http://qiman5.com%s%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
-
+        String str = StringUtils.match("eval\\((.*?\\}\\))\\)", html, 0);
         try {
-            JSONObject js = new JSONObject(html);
-            JSONArray jsarr = js.getJSONArray("images");
-
-            for (int i = 0; i < jsarr.length(); i++) {
-                list.add(new ImageUrl(i + 1, jsarr.getJSONObject(i).getString("highUrl"), false));
+            str = DecryptionUtils.evalDecrypt(str, "newImgs");
+            String[] array = str.split(",");
+            for (int i = 0; i != array.length; ++i) {
+                list.add(new ImageUrl(i + 1, array[i], false));
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -173,7 +174,6 @@ public class QiMiaoMH extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://h5.manhua.163.com");
+        return Headers.of("Referer", baseUrl);
     }
-
 }

@@ -76,7 +76,7 @@ public class UpdateHelper {
         list.add(Tencent.getDefaultSource());
         list.add(BuKa.getDefaultSource());
         list.add(EHentai.getDefaultSource());
-        list.add(NetEase.getDefaultSource());
+        list.add(QiManWu.getDefaultSource());
         list.add(Hhxxee.getDefaultSource());
         list.add(ChuiXue.getDefaultSource());
         list.add(BaiNian.getDefaultSource());

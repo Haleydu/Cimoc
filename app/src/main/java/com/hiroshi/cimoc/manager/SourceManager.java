@@ -134,8 +134,8 @@ public class SourceManager {
                 case EHentai.TYPE:
                     parser = new EHentai(source);
                     break;
-                case NetEase.TYPE:
-                    parser = new NetEase(source);
+                case QiManWu.TYPE:
+                    parser = new QiManWu(source);
                     break;
                 case Hhxxee.TYPE:
                     parser = new Hhxxee(source);
