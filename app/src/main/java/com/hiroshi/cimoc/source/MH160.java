@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -29,7 +31,7 @@ public class MH160 extends MangaParser {
     public static final String baseUrl = "https://m.mh160.co";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, true);
+        return new Source(null, DEFAULT_TITLE, TYPE, false);
     }
 
     public MH160(Source source) {
@@ -62,6 +64,11 @@ public class MH160 extends MangaParser {
                 return new Comic(TYPE, cid, title, cover, update, null);
             }
         };
+    }
+
+    @Override
+    public String getUrl(String cid) {
+        return baseUrl + cid;
     }
 
     @Override
@@ -112,14 +119,21 @@ public class MH160 extends MangaParser {
     public List<ImageUrl> parseImages(String html) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("qTcms_S_m_murl_e=\"(.*?)\"", html, 1);
+        String id = StringUtils.match("qTcms_S_p_id=\"(.*?)\"", html, 1);
         if (str != null) {
             try {
                 str = DecryptionUtils.base64Decrypt(str);
                 String[] array = str.split("\\$qingtiandy\\$");
                 String preUrl = "";
-                if(!array[0].contains("http")){
+                if(Integer.parseInt(id)>542724){
+                    preUrl = " https://mhpic5.miyeye.cn:20208";
+                }else {
+                    preUrl = "https://res.gezhengzhongyi.cn:20207";
+                }
+                if (Integer.parseInt(id)>884998){
                     preUrl = "https://mhpic88.miyeye.cn:20207";
                 }
+
                 for (int i = 0; i != array.length; ++i) {
                     list.add(new ImageUrl(i + 1, preUrl + array[i], false));
                 }
@@ -139,11 +153,6 @@ public class MH160 extends MangaParser {
     public String parseCheck(String html) {
         // 这里表示的是更新时间
         return new Node(html).text("div.mh-chapter-record > span > em");
-    }
-
-    @Override
-    public Headers getHeader() {
-        return Headers.of("Referer", baseUrl,"Host","www.mh160.co");
     }
 
 }

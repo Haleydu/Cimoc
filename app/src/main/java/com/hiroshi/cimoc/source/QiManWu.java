@@ -16,24 +16,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.FormBody;
 import okhttp3.Headers;
 import okhttp3.Request;
-
-//import com.google.gson.JsonObject;
+import okhttp3.RequestBody;
 
 /**
- * Created by FEILONG on 2017/12/21.
+ * Created by Haleydu on 2020/8/20.
  */
 
-public class NetEase extends MangaParser {
+public class QiMiaoMH extends MangaParser {
 
     public static final int TYPE = 53;
-    public static final String DEFAULT_TITLE = "网易漫画";
+    public static final String DEFAULT_TITLE = "奇妙漫画";
+    public static final String baseUrl = "http://qiman5.com";
 
-    public NetEase(Source source) {
+    public QiMiaoMH(Source source) {
         init(source, null);
     }
 
@@ -42,10 +44,17 @@ public class NetEase extends MangaParser {
     }
 
     @Override
-    public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
-        String url = StringUtils.format("https://h5.manhua.163.com/search/book/key/data.json?key=%s&page=%d&pageSize=10&target=3",
-                keyword, page);
-        return new Request.Builder().url(url).build();
+    public Request getSearchRequest(String keyword, int page) {
+        if (page != 1) return null;
+        try {
+            String url = StringUtils.format(baseUrl+"/action/Search?keyword=", URLEncoder.encode(keyword, "UTF-8"));
+            RequestBody body = new FormBody.Builder().add("keyword", keyword).build();
+
+            return new Request.Builder().url(url).post(body).addHeader("Referer", baseUrl).build();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
