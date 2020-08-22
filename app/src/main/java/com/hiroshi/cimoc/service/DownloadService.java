@@ -8,6 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+
 import android.util.Pair;
 
 import com.hiroshi.cimoc.App;
@@ -226,6 +227,7 @@ public class DownloadService extends Service implements AppGetter {
                     response = mHttpClient.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String displayName = buildFileName(num, url);
+                        displayName = displayName.replaceAll("[:/(\\\\)(\\?)<>\"(\\|)(\\.)]", "_");
                         DocumentFile file = DocumentUtils.getOrCreateFile(parent, displayName);
                         DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
                         return true;

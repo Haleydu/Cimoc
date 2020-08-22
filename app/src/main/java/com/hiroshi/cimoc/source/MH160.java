@@ -14,6 +14,7 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -149,6 +150,11 @@ public class MH160 extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).text("div.cy_zhangjie_top > :eq(2) > font");
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", baseUrl);
     }
 
 }

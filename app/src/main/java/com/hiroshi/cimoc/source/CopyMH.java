@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 import java.util.List;
 
+import okhttp3.Headers;
 import okhttp3.Request;
 import taobe.tec.jcc.JChineseConvertor;
 
@@ -166,5 +167,10 @@ public class CopyMH extends MangaParser {
     @Override
     public String parseCheck(String html) {
         return new Node(html).text("div.col-9.comicParticulars-title-right > ul > li:nth-child(5) > span.comicParticulars-right-txt");
+    }
+
+    @Override
+    public Headers getHeader() {
+        return Headers.of("Referer", website);
     }
 }
