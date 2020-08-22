@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.annotation.SuppressLint;
 import android.util.Base64;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -15,15 +14,12 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
-import java.io.UnsupportedEncodingException;
-
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Headers;
 import okhttp3.Request;
-
-import static com.hiroshi.cimoc.utils.DecryptionUtils.desDecrypt;
 
 /**
  * Created by Haleyd on 2020/8/7.
@@ -33,7 +29,7 @@ public class Ohmanhua extends MangaParser {
 
     public static final int TYPE = 71;
     public static final String DEFAULT_TITLE = "oh漫画";
-    public static final String baseUrl = "https://www.ohmanhua.com";
+    private static final String baseUrl = "https://www.ohmanhua.com";
     private static final String serverUrl = "https://img.ohmanhua.com/comic/";
 
     public Ohmanhua(Source source) {
@@ -45,7 +41,7 @@ public class Ohmanhua extends MangaParser {
     }
 
     @Override
-    public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
+    public Request getSearchRequest(String keyword, int page) {
         String url = "";
         if (page == 1) {
             url = StringUtils.format(baseUrl+"/search?searchString=%s", keyword);
@@ -95,7 +91,7 @@ public class Ohmanhua extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public void parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("dl.fed-deta-info > dd > h1");
         String cover = body.attr("dl.fed-deta-info > dt > a","data-original");
@@ -148,7 +144,8 @@ public class Ohmanhua extends MangaParser {
                 String imgRelativePath = StringUtils.match("imgpath:\"(.+?)\"",decryptedData,1);
                 String startImg = StringUtils.match("startimg:([0-9]+?),",decryptedData,1);
                 String totalPages = StringUtils.match("totalimg:([0-9]+?),",decryptedData,1);
-                for (int i = Integer.parseInt(startImg); i <= Integer.parseInt(totalPages); ++i) {
+                for (int i = Integer.parseInt(Objects.requireNonNull(startImg));
+                     i <= Integer.parseInt(Objects.requireNonNull(totalPages)); ++i) {
                     String jpg = StringUtils.format("%04d.jpg", i);
                     list.add(new ImageUrl(i, serverUrl + imgRelativePath + jpg, false));
                 }
