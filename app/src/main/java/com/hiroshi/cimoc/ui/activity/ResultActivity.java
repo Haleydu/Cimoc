@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
@@ -159,6 +164,16 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public void onSearchSuccess(Comic comic) {
         hideProgressBar();
         mResultAdapter.add(comic);
+        if(App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_FIREBASE_EVENT, true)) {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CHARACTER, getIntent().getStringExtra(Extra.EXTRA_KEYWORD));
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "bySearch");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT, comic.getTitle());
+            bundle.putInt(FirebaseAnalytics.Param.SOURCE, comic.getSource());
+            bundle.putBoolean(FirebaseAnalytics.Param.SUCCESS, true);
+            FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+        }
     }
 
     @Override
@@ -177,6 +192,15 @@ public class ResultActivity extends BackActivity implements ResultView, BaseAdap
     public void onSearchError() {
         hideProgressBar();
         showSnackbar(R.string.result_empty);
+        if(App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_FIREBASE_EVENT, true)) {
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CHARACTER, getIntent().getStringExtra(Extra.EXTRA_KEYWORD));
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "bySearch");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT, getString(R.string.result_empty));
+            bundle.putBoolean(FirebaseAnalytics.Param.SUCCESS, false);
+            FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SEARCH, bundle);
+        }
     }
 
     @Override
