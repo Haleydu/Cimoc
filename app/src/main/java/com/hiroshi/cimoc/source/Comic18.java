@@ -152,6 +152,11 @@ public class Comic18 extends MangaParser {
     }
 
     @Override
+    public String parseCheck(String html) {
+        return new Node(html).attr("#intro-block > div:eq(8) > span","content");
+    }
+
+    @Override
     public Headers getHeader() {
         return Headers.of("Referer", "https://18comic1.biz/");
     }

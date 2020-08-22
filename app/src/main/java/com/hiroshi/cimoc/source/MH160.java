@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -16,7 +14,6 @@ import com.hiroshi.cimoc.utils.StringUtils;
 import java.util.LinkedList;
 import java.util.List;
 
-import okhttp3.Headers;
 import okhttp3.Request;
 
 /**
@@ -28,7 +25,7 @@ public class MH160 extends MangaParser {
 
     public static final int TYPE = 28;
     public static final String DEFAULT_TITLE = "漫画160";
-    public static final String baseUrl = "https://m.mh160.co";
+    private static final String baseUrl = "https://m.mh160.co";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, false);
@@ -151,8 +148,7 @@ public class MH160 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        // 这里表示的是更新时间
-        return new Node(html).text("div.mh-chapter-record > span > em");
+        return new Node(html).text("div.cy_zhangjie_top > :eq(2) > font");
     }
 
 }

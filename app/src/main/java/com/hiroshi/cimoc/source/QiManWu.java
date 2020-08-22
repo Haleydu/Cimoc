@@ -96,7 +96,9 @@ public class QiManWu extends MangaParser {
     public void parseInfo(String html, Comic comic) {
         ChapterHtml = html;
         Node body = new Node(html);
-        String update = body.text(".box-back2 > :eq(4)").replace("更新时间：", "");
+        String update = body.text(".box-back2 > :eq(4)");
+        if (!update.contains("更新时间：")) update = body.text(".box-back2 > :eq(3)");
+        update = update.replace("更新时间：", "");
         String title = body.text(".box-back2 > h1");
         String intro = body.text("span.comic-intro");
         String author = body.text(".box-back2 > :eq(2)");
@@ -169,7 +171,11 @@ public class QiManWu extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("div.book-detail > div.cont-list > dl:eq(2) > dd");
+        Node body = new Node(html);
+        String update = body.text(".box-back2 > :eq(4)");
+        if (!update.contains("更新时间：")) update = body.text(".box-back2 > :eq(3)");
+        update = update.replace("更新时间：", "");
+        return update;
     }
 
     @Override
