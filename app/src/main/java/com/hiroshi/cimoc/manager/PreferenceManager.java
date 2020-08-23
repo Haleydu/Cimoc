@@ -138,6 +138,10 @@ public class PreferenceManager {
     public static final String PREFERENCES_USER_EMAIL = "user_email";
     public static final String PREFERENCES_USER_ID = "user_id";
     private static final String PREFERENCES_NAME = "cimoc_preferences";
+
+    public static final String PREFERENCES_MH50_KEY_MSG = "preferences_mh50_key_msg";
+    public static final String PREFERENCES_MH50_IV_MSG = "preferences_mh50_iv_msg";
+
     private SharedPreferences mSharedPreferences;
 
     public PreferenceManager(Context context) {

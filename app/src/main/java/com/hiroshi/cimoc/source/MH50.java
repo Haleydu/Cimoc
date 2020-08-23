@@ -1,9 +1,12 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
+import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -128,8 +131,8 @@ public class MH50 extends MangaParser {
 
     @Nullable
     private String decrypt(String code) {
-        String key = "KA58ZAQ54321bbG1";
-        String iv = "A1B2C3DEF1G321bb";
+        String key = App.getPreferenceManager().getString(PreferenceManager.PREFERENCES_MH50_KEY_MSG, "KA58ZAQ54321bbG1");
+        String iv = App.getPreferenceManager().getString(PreferenceManager.PREFERENCES_MH50_IV_MSG, "A1B2C3DEF1G321bb");
         try {
             return DecryptionUtils.aesDecrypt(code, key, iv);
         } catch (Exception e) {
