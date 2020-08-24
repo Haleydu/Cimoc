@@ -594,11 +594,11 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                         String mh50_key = mFirebaseRemoteConfig.getString("mh50_key_msg");
                         String mh50_iv = mFirebaseRemoteConfig.getString("mh50_iv_msg");
 
-                        if (!mh50_key.equals(mPreference.getString(PreferenceManager.PREFERENCES_MH50_KEY_MSG, "KA58ZAQ54321bbG1"))){
+                        if (!mh50_key.equals(mPreference.getString(PreferenceManager.PREFERENCES_MH50_KEY_MSG, "KA58ZAQ321oobbG8"))){
                             mPreference.putString(PreferenceManager.PREFERENCES_MH50_KEY_MSG, mh50_key);
                             Toast.makeText(MainActivity.this,"漫画堆key已更新",Toast.LENGTH_LONG).show();
                         }
-                        if (!mh50_iv.equals(mPreference.getString(PreferenceManager.PREFERENCES_MH50_IV_MSG, "A1B2C3DEF1G321bb"))){
+                        if (!mh50_iv.equals(mPreference.getString(PreferenceManager.PREFERENCES_MH50_IV_MSG, "A1B2C3DEF1G321o8"))){
                             mPreference.putString(PreferenceManager.PREFERENCES_MH50_IV_MSG, mh50_iv);
                             Toast.makeText(MainActivity.this,"漫画堆iv已更新",Toast.LENGTH_LONG).show();
                         }
