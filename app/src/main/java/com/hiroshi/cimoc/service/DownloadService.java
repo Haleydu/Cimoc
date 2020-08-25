@@ -227,7 +227,7 @@ public class DownloadService extends Service implements AppGetter {
                     response = mHttpClient.newCall(request).execute();
                     if (response.isSuccessful()) {
                         String displayName = buildFileName(num, url);
-                        displayName = displayName.replaceAll("[:/(\\\\)(\\?)<>\"(\\|)(\\.)]", "_");
+                        displayName = displayName.replaceAll("[:/(\\\\)(\\?)<>\"(\\|)(\\.)]", "_")+".jpg";
                         DocumentFile file = DocumentUtils.getOrCreateFile(parent, displayName);
                         DocumentUtils.writeBinaryToFile(mContentResolver, file, response.body().byteStream());
                         return true;
