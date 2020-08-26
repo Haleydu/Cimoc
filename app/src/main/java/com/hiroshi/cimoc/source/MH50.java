@@ -16,6 +16,8 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.HttpUtils;
@@ -101,16 +103,29 @@ public class MH50 extends MangaParser {
         String update = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(4)");
         boolean status = isFinish(body.text(".Introduct_Sub > .sub_r > .txtItme:eq(2) > a:eq(3)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE_INFO, comic));
+        this.comic=comic;
     }
 
+    private Comic comic;
     @Override
     public List<Chapter> parseChapter(String html) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
+        int i=0;
         for (Node node : body.list(".chapter-warp > ul > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"0000"+i);
+
             String title = node.text();
             String path = StringUtils.split(node.href(), "/", 3);
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id,sourceComic,title, path));
+            i++;
         }
 
         return Lists.reverse(list);

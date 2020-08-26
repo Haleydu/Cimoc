@@ -24,4 +24,5 @@ public interface DetailView extends BaseView {
 
     void onTaskAddFail();
 
+    void onPreLoadSuccess(List<Chapter> list,Comic comic);
 }

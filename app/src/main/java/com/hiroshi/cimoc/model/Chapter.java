@@ -3,9 +3,16 @@ package com.hiroshi.cimoc.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.NotNull;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * Created by Hiroshi on 2016/7/2.
+ * fixed by Haleydu on 2020/8/25.
  */
+@Entity
 public class Chapter implements Parcelable {
 
     public final static Parcelable.Creator<Chapter> CREATOR = new Parcelable.Creator<Chapter>() {
@@ -19,6 +26,10 @@ public class Chapter implements Parcelable {
             return new Chapter[size];
         }
     };
+    @Id(autoincrement = true)
+    private Long id;
+    @NotNull
+    private Long sourceComic;
     private String title;
     private String path;
     private int count;
@@ -26,7 +37,31 @@ public class Chapter implements Parcelable {
     private boolean download;
     private long tid;
 
-    public Chapter(String title, String path, int count, boolean complete, boolean download, long tid) {
+    public Chapter(Long id,Long sourceComic,String title, String path, long tid) {
+        this(id,sourceComic,title, path, 0, false, false, tid);
+    }
+
+    public Chapter(Long id,Long sourceComic,String title, String path) {
+        this(id,sourceComic,title, path, 0, false, false, -1);
+    }
+
+    public Chapter(String title, String path) {
+        this.title = title;
+        this.path = path;
+        this.count = 0;
+        this.complete = false;
+        this.download = false;
+        this.tid = -1;
+    }
+    
+    public Chapter(Parcel source) {
+        this(source.readLong(), source.readLong(),source.readString(), source.readString(), source.readInt(), source.readByte() == 1, source.readByte() == 1, source.readLong());
+    }
+
+    @Generated(hash = 342970835)
+    public Chapter(Long id, @NotNull Long sourceComic, String title, String path, int count, boolean complete, boolean download, long tid) {
+        this.id = id;
+        this.sourceComic = sourceComic;
         this.title = title;
         this.path = path;
         this.count = count;
@@ -35,16 +70,8 @@ public class Chapter implements Parcelable {
         this.tid = tid;
     }
 
-    public Chapter(String title, String path, long tid) {
-        this(title, path, 0, false, false, tid);
-    }
-
-    public Chapter(String title, String path) {
-        this(title, path, 0, false, false, -1);
-    }
-
-    public Chapter(Parcel source) {
-        this(source.readString(), source.readString(), source.readInt(), source.readByte() == 1, source.readByte() == 1, source.readLong());
+    @Generated(hash = 393170288)
+    public Chapter() {
     }
 
     public String getTitle() {
@@ -87,6 +114,22 @@ public class Chapter implements Parcelable {
         this.tid = tid;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getSourceComic() {
+        return sourceComic;
+    }
+
+    public void setSourceComic(Long sourceComic) {
+        this.sourceComic = sourceComic;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o instanceof Chapter && ((Chapter) o).path.equals(path);
@@ -104,12 +147,30 @@ public class Chapter implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeLong(sourceComic);
         dest.writeString(title);
         dest.writeString(path);
         dest.writeInt(count);
         dest.writeByte((byte) (complete ? 1 : 0));
         dest.writeByte((byte) (download ? 1 : 0));
         dest.writeLong(tid);
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public boolean getComplete() {
+        return this.complete;
+    }
+
+    public boolean getDownload() {
+        return this.download;
     }
 
 }

@@ -180,6 +180,10 @@ public class ComicManager {
         mComicDao.update(comic);
     }
 
+    public void insertOrReplace(Comic comic) {
+        mComicDao.insertOrReplace(comic);
+    }
+
     public void updateOrDelete(Comic comic) {
         if (comic.getFavorite() == null && comic.getHistory() == null && comic.getDownload() == null) {
             mComicDao.delete(comic);

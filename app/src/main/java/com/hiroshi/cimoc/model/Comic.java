@@ -36,14 +36,14 @@ public class Comic {
     private String chapter;
     private String url;
 
-    @Transient
+
     private String intro;
-    @Transient
+
     private String author;
 
     public Comic(int source, String cid, String title, String cover, String update, String author) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, update,
-                null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null,null,null);
         this.author = author;
     }
 
@@ -54,13 +54,13 @@ public class Comic {
 
     public Comic(int source, String cid, String title, String cover, long download) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, null,
-                null, null, null, download, null, null, null, null);
+                null, null, null, download, null, null, null, null,null,null);
     }
 
-    @Generated(hash = 2020487280)
+    @Generated(hash = 705801731)
     public Comic(Long id, int source, @NotNull String cid, @NotNull String title, @NotNull String cover, boolean highlight,
-                 boolean local, String update, Boolean finish, Long favorite, Long history, Long download, String last, Integer page,
-                 String chapter, String url) {
+            boolean local, String update, Boolean finish, Long favorite, Long history, Long download, String last, Integer page,
+            String chapter, String url, String intro, String author) {
         this.id = id;
         this.source = source;
         this.cid = cid;
@@ -77,6 +77,8 @@ public class Comic {
         this.page = page;
         this.chapter = chapter;
         this.url = url;
+        this.intro = intro;
+        this.author = author;
     }
 
     @Generated(hash = 1347984162)

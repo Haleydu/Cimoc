@@ -174,7 +174,9 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     case OPERATION_DELETE:
                         showProgressDialog();
                         List<Chapter> list = new ArrayList<>(1);
-                        list.add(new Chapter(mSavedTask.getTitle(), mSavedTask.getPath(), mSavedTask.getId()));
+                        Long sourceComic =  Long.parseLong(mSavedTask.getSource()+"0000"+mSavedTask.getId());
+                        Long id = Long.parseLong(sourceComic+"0000"+0);
+                        list.add(new Chapter(id,sourceComic,mSavedTask.getTitle(), mSavedTask.getPath(), mSavedTask.getId()));
                         if (!mPresenter.getComic().getLocal()) {
                             mBinder.getService().removeDownload(mSavedTask.getId());
                         }
@@ -199,8 +201,11 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
                     break;
                 case R.id.task_delete:
                     ArrayList<Chapter> list = new ArrayList<>(mTaskAdapter.getItemCount());
+                    int i = 0;
                     for (Task task : mTaskAdapter.getDateSet()) {
-                        list.add(new Chapter(task.getTitle(), task.getPath(), task.getId()));
+                        Long sourceComic = Long.parseLong(task.getSource()+"0000"+task.getId());
+                        Long id = Long.parseLong(sourceComic+"0000"+i);
+                        list.add(new Chapter(id,sourceComic, task.getTitle(), task.getPath(), task.getId()));
                     }
                     Intent intent = ChapterActivity.createIntent(this, list);
                     startActivityForResult(intent, REQUEST_CODE_DELETE);
@@ -235,12 +240,16 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
 
     private void startReader(String path, boolean preview) {
         List<Chapter> list = new ArrayList<>();
+        int i=0;
         for (Task t : mTaskAdapter.getDateSet()) {
+            Long sourceComic = Long.parseLong(t.getSource()+"0000"+t.getId());
+            Long id = Long.parseLong(sourceComic+""+i);
             if (preview && t.getProgress() > 0) {
-                list.add(new Chapter(t.getTitle(), t.getPath(), t.getProgress(), true, true, t.getId()));
+                list.add(new Chapter(id,sourceComic, t.getTitle(), t.getPath(), t.getProgress(), true, true, t.getId()));
             } else if (t.getState() == Task.STATE_FINISH) {
-                list.add(new Chapter(t.getTitle(), t.getPath(), t.getMax(), true, true, t.getId()));
+                list.add(new Chapter(id,sourceComic, t.getTitle(), t.getPath(), t.getMax(), true, true, t.getId()));
             }
+            i++;
         }
         if (mTaskOrder) {
             Collections.reverse(list);

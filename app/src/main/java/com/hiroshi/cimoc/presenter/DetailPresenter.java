@@ -1,8 +1,11 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.manager.ChapterManager;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TagRefManager;
@@ -10,6 +13,7 @@ import com.hiroshi.cimoc.manager.TaskManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
+import com.hiroshi.cimoc.model.Tag;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.rx.RxBus;
 import com.hiroshi.cimoc.rx.RxEvent;
@@ -24,6 +28,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -32,6 +37,7 @@ import rx.schedulers.Schedulers;
 public class DetailPresenter extends BasePresenter<DetailView> {
 
     private ComicManager mComicManager;
+    private ChapterManager mChapterManager;
     private TaskManager mTaskManager;
     private TagRefManager mTagRefManager;
     private SourceManager mSourceManager;
@@ -40,6 +46,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
     @Override
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
+        mChapterManager = ChapterManager.getInstance(mBaseView);
         mTaskManager = TaskManager.getInstance(mBaseView);
         mTagRefManager = TagRefManager.getInstance(mBaseView);
         mSourceManager = SourceManager.getInstance(mBaseView);
@@ -60,6 +67,16 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 }
             }
         });
+        addSubscription(RxEvent.EVENT_COMIC_UPDATE_INFO, new Action1<RxEvent>() {
+            @Override
+            public void call(RxEvent rxEvent) {
+                if (mComic.getId() != null) {
+                    Comic comic = (Comic) rxEvent.getData();
+                    mComicManager.insertOrReplace(comic);
+                    mComic = mComicManager.load(comic.getId());
+                }
+            }
+        });
     }
 
     public void load(long id, int source, String cid) {
@@ -69,6 +86,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
             mComic = mComicManager.load(id);
         }
         cancelHighlight();
+        preLoad();
         load();
     }
 
@@ -84,9 +102,38 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     chapter.setDownload(true);
                     chapter.setCount(task.getProgress());
                     chapter.setComplete(task.isFinish());
+                    mChapterManager.update(chapter);
                 }
             }
         }
+    }
+
+    public void preLoad() {
+        if(mComic.getId()==null) {
+            return;
+        }
+        mCompositeSubscription.add(mChapterManager.getListChapter(Long.parseLong(mComic.getSource()+"0000"+mComic.getId()))
+                .doOnNext(new Action1<List<Chapter>>() {
+                    @Override
+                    public void call(List<Chapter> list) {
+                        if (mComic.getId() != null) {
+                            updateChapterList(list);
+                        }
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Chapter>>() {
+                    @Override
+                    public void call(List<Chapter> list) {
+                        mBaseView.onPreLoadSuccess(list,mComic);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBaseView.onComicLoadSuccess(mComic);
+                        mBaseView.onParseError();
+                    }
+                }));
     }
 
     private void load() {
@@ -103,6 +150,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .subscribe(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
+                        //mChapterManager.insertOrReplace(list);
                         mBaseView.onComicLoadSuccess(mComic);
                         mBaseView.onChapterLoadSuccess(list);
                     }
@@ -229,5 +277,4 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                     }
                 }));
     }
-
 }
