@@ -112,7 +112,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
         if(mComic.getId()==null) {
             return;
         }
-        mCompositeSubscription.add(mChapterManager.getListChapter(Long.parseLong(mComic.getSource()+"0000"+mComic.getId()))
+        mCompositeSubscription.add(mChapterManager.getListChapter(Long.parseLong(mComic.getSource()+"000"+mComic.getId()))
                 .doOnNext(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
@@ -150,7 +150,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .subscribe(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
-                        //mChapterManager.insertOrReplace(list);
+                        mChapterManager.insertOrReplace(list);
                         mBaseView.onComicLoadSuccess(mComic);
                         mBaseView.onChapterLoadSuccess(list);
                     }

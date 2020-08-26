@@ -120,7 +120,7 @@ public class MH50 extends MangaParser {
             } else {
                 sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
             }
-            Long id = Long.parseLong(sourceComic+"0000"+i);
+            Long id = Long.parseLong(sourceComic+"000"+i);
 
             String title = node.text();
             String path = StringUtils.split(node.href(), "/", 3);
