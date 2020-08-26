@@ -124,7 +124,7 @@ public class MH50 extends MangaParser {
 
             String title = node.text();
             String path = StringUtils.split(node.href(), "/", 3);
-            list.add(new Chapter(id,sourceComic,title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
             i++;
         }
 
