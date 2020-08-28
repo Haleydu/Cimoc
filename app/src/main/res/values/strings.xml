@@ -261,6 +261,8 @@
     <string name="dialog_negative">取消</string>
     <string name="dialog_close">关闭</string>
     <string name="dialog_doing">正在执行中</string>
+    <string name="app_dialog_update">升级</string>
+
 
     <string name="local_delete">删除漫画</string>
     <string name="local_delete_confirm">是否删除漫画（不会删除文件）</string>
