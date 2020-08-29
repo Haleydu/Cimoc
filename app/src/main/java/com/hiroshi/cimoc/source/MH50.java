@@ -104,12 +104,10 @@ public class MH50 extends MangaParser {
         boolean status = isFinish(body.text(".Introduct_Sub > .sub_r > .txtItme:eq(2) > a:eq(3)"));
         comic.setInfo(title, cover, update, intro, author, status);
         RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE_INFO, comic));
-        this.comic=comic;
     }
 
-    private Comic comic;
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
@@ -121,7 +119,6 @@ public class MH50 extends MangaParser {
                 sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
             }
             Long id = Long.parseLong(sourceComic+"000"+i);
-
             String title = node.text();
             String path = StringUtils.split(node.href(), "/", 3);
             list.add(new Chapter(id, sourceComic, title, path));
@@ -178,7 +175,7 @@ public class MH50 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html,Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
 
         //该章节的所有图片url，aes加密
@@ -193,9 +190,13 @@ public class MH50 extends MangaParser {
         for (int i = 0; i != imageListSize; ++i) {
             String key = imageList.getString(i);
             String imageUrl = getImageUrlByKey(key, server[3], chapterPath);
-            if(imageUrl.contains("images.dmzj.com"))
-                imageUrl = imageUrl.replace("%","%25");
-            list.add(new ImageUrl(i + 1, imageUrl, false));
+            if(imageUrl.contains("images.dmzj.com")) {
+                imageUrl = imageUrl.replace("%", "%25");
+            }
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            //list.add(new ImageUrl(i + 1, imageUrl, false));
+            list.add(new ImageUrl(id, comicChapter, i + 1, imageUrl, false));
         }
         return list;
     }

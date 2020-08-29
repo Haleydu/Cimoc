@@ -2,12 +2,16 @@ package com.hiroshi.cimoc.presenter;
 
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
+import com.google.android.gms.common.images.ImageManager;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.core.Storage;
+import com.hiroshi.cimoc.manager.ChapterManager;
 import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.ImageUrlManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
@@ -36,7 +40,9 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     private final static int LOAD_PREV = 2;
     private final static int LOAD_NEXT = 3;
 
-    private ChapterManger mChapterManger;
+    private ReaderChapterManger mReaderChapterManger;
+    private ImageUrlManager mImageUrlManager;
+    private ChapterManager mChapterManager;
     private ComicManager mComicManager;
     private SourceManager mSourceManager;
     private Comic mComic;
@@ -50,6 +56,8 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
     protected void onViewAttach() {
         mComicManager = ComicManager.getInstance(mBaseView);
         mSourceManager = SourceManager.getInstance(mBaseView);
+        mImageUrlManager = ImageUrlManager.getInstance(mBaseView);
+        mChapterManager = ChapterManager.getInstance(mBaseView);
     }
 
     @Override
@@ -86,7 +94,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
         mComic = mComicManager.load(id);
         for (int i = 0; i != array.length; ++i) {
             if (array[i].getPath().equals(mComic.getLast())) {
-                this.mChapterManger = new ChapterManger(array, i);
+                this.mReaderChapterManger = new ReaderChapterManger(array, i);
                 images(getObservable(array[i]));
             }
         }
@@ -94,7 +102,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void loadNext() {
         if (status == LOAD_NULL && isShowNext) {
-            Chapter chapter = mChapterManger.getNextChapter();
+            Chapter chapter = mReaderChapterManger.getNextChapter();
             if (chapter != null) {
                 status = LOAD_NEXT;
                 images(getObservable(chapter));
@@ -108,7 +116,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void loadPrev() {
         if (status == LOAD_NULL && isShowPrev) {
-            Chapter chapter = mChapterManger.getPrevChapter();
+            Chapter chapter = mReaderChapterManger.getPrevChapter();
             if (chapter != null) {
                 status = LOAD_PREV;
                 images(getObservable(chapter));
@@ -127,20 +135,21 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                     DocumentFile.fromFile(new File(Uri.parse(chapter.getPath()).getPath()));
             return Local.images(dir, chapter);
         }
+
         return chapter.isComplete() ? Download.images(mBaseView.getAppInstance().getDocumentFile(),
                 mComic, chapter, mSourceManager.getParser(mComic.getSource()).getTitle()) :
-                Manga.getChapterImage(mComic, mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
+                Manga.getChapterImage(chapter, mSourceManager.getParser(mComic.getSource()), mComic.getCid(), chapter.getPath());
     }
 
     public void toNextChapter() {
-        Chapter chapter = mChapterManger.nextChapter();
+        Chapter chapter = mReaderChapterManger.nextChapter();
         if (chapter != null) {
             updateChapter(chapter, true);
         }
     }
 
     public void toPrevChapter() {
-        Chapter chapter = mChapterManger.prevChapter();
+        Chapter chapter = mReaderChapterManger.prevChapter();
         if (chapter != null) {
             updateChapter(chapter, false);
         }
@@ -197,10 +206,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 .subscribe(new Action1<List<ImageUrl>>() {
                     @Override
                     public void call(List<ImageUrl> list) {
+                        mImageUrlManager.insertOrReplace(list);
                         Chapter chapter;
                         switch (status) {
                             case LOAD_INIT:
-                                chapter = mChapterManger.moveNext();
+                                chapter = mReaderChapterManger.moveNext();
                                 chapter.setCount(list.size());
                                 if (!chapter.getTitle().equals(mComic.getTitle())) {
                                     mComic.setChapter(chapter.getTitle());
@@ -210,12 +220,12 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                                 mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
                                 break;
                             case LOAD_PREV:
-                                chapter = mChapterManger.movePrev();
+                                chapter = mReaderChapterManger.movePrev();
                                 chapter.setCount(list.size());
                                 mBaseView.onPrevLoadSuccess(list);
                                 break;
                             case LOAD_NEXT:
-                                chapter = mChapterManger.moveNext();
+                                chapter = mReaderChapterManger.moveNext();
                                 chapter.setCount(list.size());
                                 mBaseView.onNextLoadSuccess(list);
                                 break;
@@ -225,6 +235,35 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        Chapter chapter;
+                        List<ImageUrl> list;
+                        switch (status) {
+                            case LOAD_INIT:
+                                chapter = mReaderChapterManger.moveNext();
+                                list = mImageUrlManager.getListImageUrl(chapter.getId());
+                                chapter.setCount(list.size());
+                                if (!chapter.getTitle().equals(mComic.getTitle())) {
+                                    mComic.setChapter(chapter.getTitle());
+                                    mComicManager.update(mComic);
+                                }
+                                mBaseView.onChapterChange(chapter);
+                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
+                                break;
+                            case LOAD_PREV:
+                                chapter = mReaderChapterManger.movePrev();
+                                list = mImageUrlManager.getListImageUrl(chapter.getId());
+                                chapter.setCount(list.size());
+                                mBaseView.onPrevLoadSuccess(list);
+                                break;
+                            case LOAD_NEXT:
+                                chapter = mReaderChapterManger.moveNext();
+                                list = mImageUrlManager.getListImageUrl(chapter.getId());
+                                chapter.setCount(list.size());
+                                mBaseView.onNextLoadSuccess(list);
+                                break;
+                        }
+                        status = LOAD_NULL;
+
                         mBaseView.onParseError();
                         if (status != LOAD_INIT && ++count < 2) {
                             status = LOAD_NULL;
@@ -233,14 +272,14 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }));
     }
 
-    private class ChapterManger {
+    private class ReaderChapterManger {
 
         private Chapter[] array;
         private int index;
         private int prev;
         private int next;
 
-        ChapterManger(Chapter[] array, int index) {
+        ReaderChapterManger(Chapter[] array, int index) {
             this.array = array;
             this.index = index;
             prev = index + 1;

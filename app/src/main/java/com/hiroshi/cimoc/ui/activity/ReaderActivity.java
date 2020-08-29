@@ -409,12 +409,12 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     @Override
-    public void onImageLoadSuccess(int id, String url) {
+    public void onImageLoadSuccess(Long id, String url) {
         mReaderAdapter.update(id, url);
     }
 
     @Override
-    public void onImageLoadFail(int id) {
+    public void onImageLoadFail(Long id) {
         mReaderAdapter.update(id, null);
     }
 

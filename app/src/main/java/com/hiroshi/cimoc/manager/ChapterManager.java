@@ -1,12 +1,9 @@
 package com.hiroshi.cimoc.manager;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ChapterDao;
 import com.hiroshi.cimoc.model.ChapterDao.Properties;
-import com.hiroshi.cimoc.model.Comic;
 
 import java.util.List;
 import java.util.concurrent.Callable;

@@ -243,20 +243,20 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         return current;
     }
 
-    public int getPositionById(int id) {
+    public int getPositionById(Long id) {
         int size = mDataSet.size();
         for (int i = 0; i < size; ++i) {
-            if (mDataSet.get(i).getId() == id) {
+            if (mDataSet.get(i).getId().equals(id)) {
                 return i;
             }
         }
         return -1;
     }
 
-    public void update(int id, String url) {
+    public void update(Long id, String url) {
         for (int i = 0; i < mDataSet.size(); ++i) {
             ImageUrl imageUrl = mDataSet.get(i);
-            if (imageUrl.getId() == id && imageUrl.isLoading()) {
+            if (imageUrl.getId().equals(id) && imageUrl.isLoading()) {
                 if (url == null) {
                     imageUrl.setLoading(false);
                     return;

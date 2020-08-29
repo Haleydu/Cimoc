@@ -30,9 +30,9 @@ public interface ReaderView extends BaseView {
 
     void onChapterChange(Chapter chapter);
 
-    void onImageLoadSuccess(int id, String url);
+    void onImageLoadSuccess(Long id, String url);
 
-    void onImageLoadFail(int id);
+    void onImageLoadFail(Long id);
 
     void onPictureSaveSuccess(Uri uri);
 

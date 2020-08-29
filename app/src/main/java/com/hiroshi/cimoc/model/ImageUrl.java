@@ -21,7 +21,7 @@ public class ImageUrl {
     private static AtomicInteger count = new AtomicInteger(0);
 
     @Id
-    private int id; // 唯一标识
+    private Long id; // 唯一标识
     @NotNull
     private Long comicChapter;
     private int num;    // 章节的第几页
@@ -49,7 +49,6 @@ public class ImageUrl {
     }
 
     public ImageUrl(int num, String[] urls, String chapter, int state, boolean lazy) {
-        this.id = count.getAndAdd(1);
         this.num = num;
         this.urls = urls;
         this.chapter = chapter;
@@ -61,8 +60,13 @@ public class ImageUrl {
         this.success = false;
     }
 
-    @Generated(hash = 1436754094)
-    public ImageUrl(int id, @NotNull Long comicChapter, int num, String[] urls,
+    public ImageUrl(Long id,Long comicChapter,int num, String url, boolean lazy) {
+       this(id, comicChapter, num, new String[]{url}, null, STATE_NULL,
+               0, 0, lazy, false, false, false);
+    }
+
+    @Generated(hash = 254698487)
+    public ImageUrl(Long id, @NotNull Long comicChapter, int num, String[] urls,
             String chapter, int state, int height, int width, boolean lazy, boolean loading,
             boolean success, boolean download) {
         this.id = id;
@@ -79,11 +83,10 @@ public class ImageUrl {
         this.download = download;
     }
 
-    @Generated(hash = 792005330)
     public ImageUrl() {
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -176,7 +179,7 @@ public class ImageUrl {
         return o instanceof ImageUrl && ((ImageUrl) o).id == id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -147,8 +147,16 @@ public class Chapter implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeLong(sourceComic);
+        if (id !=null) {
+            dest.writeLong(id);
+        }else {
+            dest.writeLong(0L);
+        }
+        if (sourceComic !=null){
+            dest.writeLong(sourceComic);
+        } else {
+            dest.writeLong(0L);
+        }
         dest.writeString(title);
         dest.writeString(path);
         dest.writeInt(count);

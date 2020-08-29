@@ -123,7 +123,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
         canvas.restoreToCount(count);
     }
 
-    public void update(int id) {
+    public void update(Long id) {
         Object tag = getTag();
         if (tag == null || (int) tag != id) {
             setTag(id);

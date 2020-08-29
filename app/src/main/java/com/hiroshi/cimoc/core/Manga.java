@@ -84,7 +84,10 @@ public class Manga {
                         if (request != null) {
                             html = getResponseBody(App.getHttpClient(), request);
                         }
-                        list = parser.parseChapter(html);
+                        list = parser.parseChapter(html,comic);
+                        if (list == null) {
+                            list = parser.parseChapter(html);
+                        }
 //                        mongo.UpdateComicBase(comic, list);
                     }
                     if (!list.isEmpty()) {
@@ -122,7 +125,7 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static Observable<List<ImageUrl>> getChapterImage(final Comic mComic,
+    public static Observable<List<ImageUrl>> getChapterImage(final Chapter chapter,
                                                              final Parser parser,
                                                              final String cid,
                                                              final String path) {
@@ -138,7 +141,10 @@ public class Manga {
                     if (list.isEmpty()) {
                         Request request = parser.getImagesRequest(cid, path);
                         html = getResponseBody(App.getHttpClient(), request);
-                        list = parser.parseImages(html);
+                        list = parser.parseImages(html,chapter);
+                        if (list == null) {
+                            list = parser.parseImages(html);
+                        }
 //                        if (!list.isEmpty()) {
 //                            mongo.InsertComicChapter(mComic, path, list);
 //                        }

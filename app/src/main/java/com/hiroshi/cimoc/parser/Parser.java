@@ -70,6 +70,8 @@ public interface Parser {
      */
     List<Chapter> parseChapter(String html) throws JSONException;
 
+    List<Chapter> parseChapter(String html, Comic comic) throws JSONException;
+
     /**
      * 图片列表的 HTTP 请求
      *
@@ -88,6 +90,7 @@ public interface Parser {
      */
     List<ImageUrl> parseImages(String html) throws Manga.NetworkErrorException, JSONException;
 
+    List<ImageUrl> parseImages(String html,Chapter chapter) throws Manga.NetworkErrorException, JSONException;
     /**
      * 图片惰性加载的 HTTP 请求
      *
