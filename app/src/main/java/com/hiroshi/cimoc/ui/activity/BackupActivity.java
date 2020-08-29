@@ -161,7 +161,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     public void onClearFileLoadSuccess(String[] file) {
         hideProgressDialog();
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.backup_clear_record,
-                R.string.backup_clear_record_notice_summary, false, DIALOG_REQUEST_RESTORE_CLEAR);
+                R.string.backup_clear_record_notice_summary, true, DIALOG_REQUEST_RESTORE_CLEAR);
         fragment.show(getFragmentManager(), null);
     }
 

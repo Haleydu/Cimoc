@@ -247,6 +247,7 @@
     <string name="dialog_positive">確定</string>
     <string name="dialog_negative">取消</string>
     <string name="dialog_doing">正在執行中</string>
+    <string name="app_dialog_update">升級</string>
 
     <string name="local_delete">刪除漫畫</string>
     <string name="local_delete_confirm">是否刪除漫畫(不會刪除檔案)</string>

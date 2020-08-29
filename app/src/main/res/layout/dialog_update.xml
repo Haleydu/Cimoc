@@ -15,6 +15,7 @@
         android:padding="6dp"
         android:lines="1"
         android:textSize="16sp"
+        android:textColor="@color/white"
         android:background="?attr/colorPrimary" />
     <TextView
         android:id="@+id/tvContent"
@@ -22,6 +23,12 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_marginBottom="6dp"
+        android:textIsSelectable="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:longClickable="true"
+        android:autoLink="web"
+        android:linksClickable="true"
         android:lineSpacingMultiplier="1" />
     <include layout="@layout/app_dialog_line_h"/>
     <LinearLayout
@@ -47,7 +54,7 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:layout_weight="1"
-            android:text="@string/app_dialog_ok"
+            android:text="@string/app_dialog_update"
             android:textSize="16sp"
             android:textColor="@color/app_dialog_button_color_selector"
             android:background="?android:attr/selectableItemBackground"/>

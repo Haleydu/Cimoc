@@ -31,7 +31,8 @@ import rx.schedulers.Schedulers;
 public class Update {
 
     private static final String UPDATE_URL = "https://api.github.com/repos/Haleydu/cimoc/releases/latest";
-    private static final String UPDATE_URL_GITEE = "https://raw.githubusercontent.com/Haleydu/update/master/Update.json";
+    private static final String UPDATE_URL_GITHUB = "https://raw.githubusercontent.com/Haleydu/update/master/Update.json";
+    private static final String UPDATE_URL_GITEE = "https://gitee.com/Haleydu/update/raw/master/Update.json";
     private static final String SERVER_FILENAME = "tag_name";
     private AppUpdater mAppUpdater;
 //    private static final String LIST = "list";
