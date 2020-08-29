@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -203,7 +204,30 @@ public class DM5 extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).textWithSubstring("#mhinfo > div.innr9 > div.innr90 > div.innr92 > span:eq(9)", 5, -10);
+        Node body = new Node(html);
+        String update = body.text("#tempc > div.detail-list-title > span.s > span");
+        if (update != null) {
+            Calendar calendar = Calendar.getInstance();
+            if (update.contains("今天") || update.contains("分钟前")) {
+                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            } else if (update.contains("昨天")) {
+                calendar.add(Calendar.DATE, -1);
+                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            } else if (update.contains("前天")) {
+                calendar.add(Calendar.DATE, -2);
+                update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.getTime());
+            } else {
+                String result = StringUtils.match("\\d+-\\d+-\\d+", update, 0);
+                if (result == null) {
+                    String[] rs = StringUtils.match("(\\d+)月(\\d+)号", update, 1, 2);
+                    if (rs != null) {
+                        result = calendar.get(Calendar.YEAR) + "-" + rs[0] + "-" + rs[1];
+                    }
+                }
+                update = result;
+            }
+        }
+        return update;
     }
 
     @Override

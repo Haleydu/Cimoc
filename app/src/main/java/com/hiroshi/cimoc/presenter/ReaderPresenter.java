@@ -240,44 +240,52 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        Chapter chapter;
-                        List<ImageUrl> list;
-                        switch (status) {
-                            case LOAD_INIT:
-                                chapter = mReaderChapterManger.moveNext();
-                                list = mImageUrlManager.getListImageUrl(chapter.getId());
-                                chapter.setCount(list.size());
-                                if (!chapter.getTitle().equals(mComic.getTitle())) {
-                                    mComic.setChapter(chapter.getTitle());
-                                    mComicManager.update(mComic);
-                                }
-                                mBaseView.onChapterChange(chapter);
-                                mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
-                                break;
-                            case LOAD_PREV:
-                                chapter = mReaderChapterManger.movePrev();
-                                list = mImageUrlManager.getListImageUrl(chapter.getId());
-                                chapter.setCount(list.size());
-                                mBaseView.onPrevLoadSuccess(list);
-                                break;
-                            case LOAD_NEXT:
-                                chapter = mReaderChapterManger.moveNext();
-                                list = mImageUrlManager.getListImageUrl(chapter.getId());
-                                chapter.setCount(list.size());
-                                mBaseView.onNextLoadSuccess(list);
-                                break;
-                        }
-                        status = LOAD_NULL;
-
-                        mBaseView.onParseError();
-                        if (status != LOAD_INIT && ++count < 2) {
+                        try{
+                            Chapter chapter;
+                            List<ImageUrl> list;
+                            switch (status) {
+                                case LOAD_INIT:
+                                    chapter = mReaderChapterManger.moveNext();
+                                    list = mImageUrlManager.getListImageUrl(chapter.getId());
+                                    if (list!=null && list.size()!=0) {
+                                        chapter.setCount(list.size());
+                                        if (!chapter.getTitle().equals(mComic.getTitle())) {
+                                            mComic.setChapter(chapter.getTitle());
+                                            mComicManager.update(mComic);
+                                        }
+                                        mBaseView.onChapterChange(chapter);
+                                        mBaseView.onInitLoadSuccess(list, mComic.getPage(), mComic.getSource(), mComic.getLocal());
+                                    }
+                                    break;
+                                case LOAD_PREV:
+                                    chapter = mReaderChapterManger.movePrev();
+                                    list = mImageUrlManager.getListImageUrl(chapter.getId());
+                                    if (list!=null && list.size()!=0) {
+                                        chapter.setCount(list.size());
+                                        mBaseView.onPrevLoadSuccess(list);
+                                    }
+                                    break;
+                                case LOAD_NEXT:
+                                    chapter = mReaderChapterManger.moveNext();
+                                    list = mImageUrlManager.getListImageUrl(chapter.getId());
+                                    if (list!=null && list.size()!=0) {
+                                        chapter.setCount(list.size());
+                                        mBaseView.onNextLoadSuccess(list);
+                                    }
+                                    break;
+                            }
                             status = LOAD_NULL;
+                        } finally {
+                            mBaseView.onParseError();
+                            if (status != LOAD_INIT && ++count < 2) {
+                                status = LOAD_NULL;
+                            }
                         }
                     }
                 }));
     }
 
-    private class ReaderChapterManger {
+    private static class ReaderChapterManger {
 
         private Chapter[] array;
         private int index;
