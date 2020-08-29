@@ -1,6 +1,5 @@
 package com.hiroshi.cimoc.source;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.alibaba.fastjson.JSONArray;
@@ -406,7 +405,6 @@ public class MH50 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://m.manhuabei.com/");
+        return Headers.of("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36");
     }
-
 }

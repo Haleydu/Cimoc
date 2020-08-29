@@ -131,7 +131,8 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         for (int i = 0; i != urls.length; ++i) {
             final String url = urls[i];
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
-                    .newBuilderWithSource(Uri.parse(url));
+                    .newBuilderWithSource(Uri.parse(url))
+                    .setProgressiveRenderingEnabled(true);
 
             // TODO 切图后可能需要修改图片高度和宽度
             MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isPagingReverse, isWhiteEdge);
