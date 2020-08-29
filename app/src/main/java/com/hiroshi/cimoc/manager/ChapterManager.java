@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.manager;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ChapterDao;
@@ -78,7 +80,9 @@ public class ChapterManager {
     }
 
     public void update(Chapter chapter) {
-        mChapterDao.update(chapter);
+        if (chapter.getId()!=null) {
+            mChapterDao.update(chapter);
+        }
     }
 
     public void deleteByKey(long key) {

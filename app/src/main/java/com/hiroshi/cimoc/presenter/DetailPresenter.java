@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.core.Backup;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
@@ -111,7 +113,7 @@ public class DetailPresenter extends BasePresenter<DetailView> {
                 .doOnNext(new Action1<List<Chapter>>() {
                     @Override
                     public void call(List<Chapter> list) {
-                        if (mComic.getId() != null) {
+                        if (mComic.getId() != null && list.size()!=0) {
                             updateChapterList(list);
                         }
                     }

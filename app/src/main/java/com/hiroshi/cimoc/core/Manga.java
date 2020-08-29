@@ -142,7 +142,7 @@ public class Manga {
                         Request request = parser.getImagesRequest(cid, path);
                         html = getResponseBody(App.getHttpClient(), request);
                         list = parser.parseImages(html,chapter);
-                        if (list == null) {
+                        if (list == null || list.size()==0) {
                             list = parser.parseImages(html);
                         }
 //                        if (!list.isEmpty()) {

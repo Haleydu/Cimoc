@@ -21,6 +21,7 @@ import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.ui.view.ReaderView;
 import com.hiroshi.cimoc.utils.StringUtils;
+import com.hiroshi.cimoc.utils.pictureUtils;
 
 import java.io.File;
 import java.io.InputStream;
@@ -184,7 +185,11 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     private String buildPictureName(String title, int page, String url) {
         String suffix = StringUtils.split(url, "\\.", -1);
-        suffix = suffix == null ? "jpg" : suffix.split("\\?")[0];
+        String suffixOriginal= suffix.split("\\?")[0].toLowerCase();
+        if (!pictureUtils.isPictureFormat(suffixOriginal)){
+            suffixOriginal = "jpg";
+        }
+        suffix = suffixOriginal;
         return StringUtils.format("%s_%s_%03d.%s", StringUtils.filter(mComic.getTitle()), StringUtils.filter(title), page, suffix);
     }
 
