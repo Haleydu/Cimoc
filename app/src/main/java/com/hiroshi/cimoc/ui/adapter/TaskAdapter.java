@@ -5,11 +5,14 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Task;
 import com.hiroshi.cimoc.utils.StringUtils;

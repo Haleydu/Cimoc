@@ -6,6 +6,8 @@ import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ChapterDao;
 import com.hiroshi.cimoc.model.ChapterDao.Properties;
+import com.hiroshi.cimoc.model.Comic;
+import com.hiroshi.cimoc.model.ComicDao;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -51,6 +53,13 @@ public class ChapterManager {
                 .rx()
                 .list();
     }
+
+    public Chapter getChapter(String path,String title) {
+        return mChapterDao.queryBuilder()
+                .where(ChapterDao.Properties.Path.eq(path),ChapterDao.Properties.Title.eq(title))
+                .unique();
+    }
+
 
     public Chapter load(long id) {
         return mChapterDao.load(id);

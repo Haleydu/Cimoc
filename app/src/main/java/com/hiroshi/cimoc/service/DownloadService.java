@@ -9,6 +9,7 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.App;
@@ -17,6 +18,7 @@ import com.hiroshi.cimoc.component.AppGetter;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.global.Extra;
+import com.hiroshi.cimoc.manager.ChapterManager;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TaskManager;
@@ -58,6 +60,7 @@ public class DownloadService extends Service implements AppGetter {
     private NotificationWrapper mNotification;
     private TaskManager mTaskManager;
     private SourceManager mSourceManager;
+    private ChapterManager mChapterManager;
     private ContentResolver mContentResolver;
 
     public static Intent createIntent(Context context, Task task) {
@@ -89,6 +92,7 @@ public class DownloadService extends Service implements AppGetter {
         mTaskManager = TaskManager.getInstance(this);
         mSourceManager = SourceManager.getInstance(this);
         mContentResolver = getContentResolver();
+        mChapterManager = ChapterManager.getInstance(this);
     }
 
     @Override
@@ -274,7 +278,7 @@ public class DownloadService extends Service implements AppGetter {
         private List<ImageUrl> onDownloadParse() throws InterruptedIOException {
             mTask.setState(Task.STATE_PARSE);
             RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_TASK_STATE_CHANGE, Task.STATE_PARSE, mTask.getId()));
-            return Manga.getImageUrls(mParse, mTask.getSource(), mTask.getCid(), mTask.getPath());
+            return Manga.getImageUrls(mParse, mTask.getSource(), mTask.getCid(), mTask.getPath(), mTask.getTitle(), mChapterManager);
         }
 
         private void onDownloadProgress(int progress) {
