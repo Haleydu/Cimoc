@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
+
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -7,10 +9,13 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,6 +75,11 @@ public class MH160 extends MangaParser {
     }
 
     @Override
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("m.mh160.co"));
+    }
+
+    @Override
     public Request getInfoRequest(String cid) {
         String url = baseUrl + cid;
         return new Request.Builder()
@@ -93,12 +103,23 @@ public class MH160 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic)  {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("#mh-chapter-list-ol-0 > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text("p");
             String path = node.href();
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -114,26 +135,29 @@ public class MH160 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html,Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("qTcms_S_m_murl_e=\"(.*?)\"", html, 1);
-        String id = StringUtils.match("qTcms_S_p_id=\"(.*?)\"", html, 1);
+        String str_id = StringUtils.match("qTcms_S_p_id=\"(.*?)\"", html, 1);
         if (str != null) {
             try {
                 str = DecryptionUtils.base64Decrypt(str);
                 String[] array = str.split("\\$qingtiandy\\$");
                 String preUrl = "";
-                if(Integer.parseInt(id)>542724){
-                    preUrl = " https://mhpic5.miyeye.cn:20208";
+                if(Integer.parseInt(str_id)>542724){
+                    preUrl = "https://mhpic5.miyeye.cn:20208";
                 }else {
                     preUrl = "https://res.gezhengzhongyi.cn:20207";
                 }
-                if (Integer.parseInt(id)>884998){
+                if (Integer.parseInt(str_id)>884998){
                     preUrl = "https://mhpic88.miyeye.cn:20207";
                 }
 
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, preUrl + array[i], false));
+                    String url = preUrl + array[i];
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter, i + 1, url, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -154,7 +178,6 @@ public class MH160 extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", baseUrl);
+        return Headers.of("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
     }
-
 }

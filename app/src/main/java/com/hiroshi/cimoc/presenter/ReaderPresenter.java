@@ -2,9 +2,7 @@ package com.hiroshi.cimoc.presenter;
 
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
-import com.google.android.gms.common.images.ImageManager;
 import com.hiroshi.cimoc.core.Download;
 import com.hiroshi.cimoc.core.Local;
 import com.hiroshi.cimoc.core.Manga;

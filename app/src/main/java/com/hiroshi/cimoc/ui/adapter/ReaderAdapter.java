@@ -150,7 +150,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             });
             request[i] = imageRequestBuilder.build();
         }
-        builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true);
+        builder.setOldController(draweeView.getController()).setTapToRetryEnabled(true).setRetainImageOnFailure(true);
         draweeView.setController(builder.setFirstAvailableImageRequests(request).build());
     }
 
