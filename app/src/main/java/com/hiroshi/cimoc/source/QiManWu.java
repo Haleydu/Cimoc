@@ -93,7 +93,7 @@ public class QiManWu extends MangaParser {
     private static String ChapterHtml;
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         ChapterHtml = html;
         Node body = new Node(html);
         String update = body.text(".box-back2 > :eq(4)");
@@ -105,6 +105,7 @@ public class QiManWu extends MangaParser {
         String cover = body.src(".box-back1 > img");
         boolean status = isFinish(body.text(".box-back2 > p.txtItme.c1"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
@@ -120,20 +121,41 @@ public class QiManWu extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int k=0;
         for (Node node : new Node(ChapterHtml).list("div.catalog-list > ul > li")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+k);
+
             String title = node.text("a");
             String path = node.attr("li", "data-id");
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            k++;
         }
         try {
             JSONArray array = new JSONArray(html);
             for (int i = 0; i != array.length(); ++i) {
+                Long sourceComic=null;
+                if (comic.getId() == null) {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                } else {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                }
+                Long id = Long.parseLong(sourceComic+"000"+k);
+
                 JSONObject chapter = array.getJSONObject(i);
                 String title = chapter.getString("name");
                 String path = chapter.getString("id");
-                list.add(new Chapter(title, path));
+
+                list.add(new Chapter(id, sourceComic, title, path));
+                k++;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,14 +170,16 @@ public class QiManWu extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("eval\\((.*?\\}\\))\\)", html, 0);
         try {
             str = DecryptionUtils.evalDecrypt(str, "newImgs");
             String[] array = str.split(",");
             for (int i = 0; i != array.length; ++i) {
-                list.add(new ImageUrl(i + 1, array[i], false));
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
+                list.add(new ImageUrl(id,comicChapter,i + 1, array[i], false));
             }
         } catch (Exception e) {
             e.printStackTrace();

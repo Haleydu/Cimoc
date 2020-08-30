@@ -93,7 +93,7 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.main-bar > h1");
         String cover = body.src("div.book-detail > div.cont-list > div.thumb > img");
@@ -102,16 +102,28 @@ public class MH57 extends MangaParser {
         String intro = body.text("#bookIntro");
         boolean status = isFinish(body.text("div.book-detail > div.cont-list > div.thumb > i"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
+        int i=0;
         for (Node node : body.list("#chapterList > ul > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text();
             String path = node.hrefWithSplit(1);
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -123,7 +135,7 @@ public class MH57 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String packed = StringUtils.match("eval(.*?)\\n", html, 1);
         if (packed != null) {
@@ -137,7 +149,9 @@ public class MH57 extends MangaParser {
                     if(url.indexOf("http://") == -1){
                         url = servers[0] + url;
                     }
-                    list.add(new ImageUrl(i + 1, url, false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter, i + 1, url, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

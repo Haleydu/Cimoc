@@ -95,7 +95,7 @@ public class CopyMH extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String cover = body.attr("div.comicParticulars-left-img.loadingIcon > img", "data-src");
         String intro = body.text("p.intro");
@@ -108,6 +108,8 @@ public class CopyMH extends MangaParser {
         boolean finish = isFinish(status);
 
         comic.setInfo(title, cover, update, intro, author, finish);
+
+        return comic;
     }
 
     @Override
@@ -117,14 +119,22 @@ public class CopyMH extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) throws JSONException {
+    public List<Chapter> parseChapter(String html, Comic comic) throws JSONException {
         List<Chapter> list = new LinkedList<>();
         JSONObject jsonObject = new JSONObject(html);
         JSONArray array = jsonObject.getJSONObject("results").getJSONArray("list");
         for (int i = 0; i < array.length(); ++i) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = array.getJSONObject(i).getString("name");
             String path = array.getJSONObject(i).getString("uuid");
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
         }
         return Lists.reverse(list);
     }
@@ -136,7 +146,7 @@ public class CopyMH extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = new Node(html);
         String data = body.attr("div.disposableData", "disposable");
@@ -150,8 +160,10 @@ public class CopyMH extends MangaParser {
             String jsonString = DecryptionUtils.aesDecrypt(encode, key, iv);
             JSONArray array = new JSONArray(jsonString);
             for (int i = 0; i < array.length(); ++i) {
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
                 String url = array.getJSONObject(i).getString("url");
-                list.add(new ImageUrl(i + 1, url, false));
+                list.add(new ImageUrl(id, comicChapter,i + 1, url, false));
             }
         } catch (Exception e) {
             e.printStackTrace();

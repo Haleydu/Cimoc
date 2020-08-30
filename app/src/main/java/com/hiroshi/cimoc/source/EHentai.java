@@ -67,7 +67,7 @@ public class EHentai extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String update = body.textWithSubstring("#gdd > table > tbody > tr:eq(0) > td:eq(1)", 0, 10);
         String title = body.text("#gn");
@@ -76,16 +76,25 @@ public class EHentai extends MangaParser {
 //        String cover = body.href("#gdt > .gdtm > div > a");
         String cover = "https://github.com/Haleydu/Cimoc/raw/release-tci/screenshot/icon.png";
         comic.setInfo(title, cover, update, intro, author, true);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         String length = body.textWithSplit("#gdd > table > tbody > tr:eq(5) > td:eq(1)", " ", 0);
         int size = Integer.parseInt(length) % 40 == 0 ? Integer.parseInt(length) / 40 : Integer.parseInt(length) / 40 + 1;
         for (int i = 0; i != size; ++i) {
-            list.add(0, new Chapter("Ch" + i, String.valueOf(i)));
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
+            list.add( new Chapter(id, sourceComic,"Ch" + i, String.valueOf(i)));
         }
         return list;
     }
@@ -123,12 +132,14 @@ public class EHentai extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = new Node(html);
         int count = 0;
         for (Node node : body.list("#gdt > div > div > a")) {
-            list.add(new ImageUrl(++count, node.href(), true));
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + count);
+            list.add(new ImageUrl(id, comicChapter, ++count, node.href(), true));
         }
         return list;
     }

@@ -74,7 +74,7 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.detailTop > div.content > div.info > p.title");
         String cover = body.src("div.detailTop > div.content > img");
@@ -84,17 +84,29 @@ public class CCTuku extends MangaParser {
         String intro = body.text("div.detailContent > p:eq(1)");
         // FIXME 手机版页面好像获取不到状态 电脑板页面太大不想用 暂时先固定为连载吧
         comic.setInfo(title, cover, update, intro, author, false);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
+        int i=0;
         for (Node node : body.list("#chapter > div > div > ul > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text();
 //            String path = StringUtils.split(node.href(), "/", 3);
             String path = node.hrefWithSplit(2);
-            list.add(new Chapter(title, path));
+            //list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -113,14 +125,16 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         // TODO 好像拿不到总页数 GG
         List<ImageUrl> list = new ArrayList<>();
 //        Node body = new Node(html);
 //        int page = Integer.parseInt(body.attr("#hdPageCount", "value"));//max pages unknow...
         int page = 10;
         for (int i = 1; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("http://m.tuku.cc/comic/%s/%s/p%s/", _cid, _path, i), true));
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            list.add(new ImageUrl(id, comicChapter, i, StringUtils.format("http://m.tuku.cc/comic/%s/%s/p%s/", _cid, _path, i), true));
         }
         return list;
     }

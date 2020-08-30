@@ -104,7 +104,7 @@ public class Dmzjv2 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String intro = body.textWithSubstring("p.txtDesc", 3);
         String title = body.text("#comicName");
@@ -113,22 +113,34 @@ public class Dmzjv2 extends MangaParser {
         String update = body.textWithSubstring("div.Introduct_Sub > div.sub_r > p:eq(3) > span.date", 0, 10);
         boolean status = isFinish(body.text("div.sub_r > p:eq(2)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         try {
             String JsonString = StringUtils.match(":(\\[\\{.*?\\}\\])\\}\\]", html, 1);
             String decodeJsonString = UicodeBackslashU.unicodeToCn(JsonString);
             JSONArray JSONArray = new JSONArray(decodeJsonString);
+            int k=0;
             for (int j = 0; j != JSONArray.length(); ++j) {
+                Long sourceComic=null;
+                if (comic.getId() == null) {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                } else {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                }
+                Long id = Long.parseLong(sourceComic+"000"+k);
+
                 JSONObject chapter = JSONArray.getJSONObject(j);
                 String title = chapter.getString("chapter_name");
                 String comic_id = chapter.getString("comic_id");
                 String chapter_id = chapter.getString("id");
                 String path = comic_id + "/" +chapter_id;
-                list.add(new Chapter(title, path));
+
+                list.add(new Chapter(id, sourceComic, title, path));
+                k++;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -143,14 +155,16 @@ public class Dmzjv2 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String jsonString = StringUtils.match("\"page_url\":(\\[.*?\\]),", html, 1);
         if (jsonString != null) {
             try {
                 JSONArray array = new JSONArray(jsonString);
                 for (int i = 0; i != array.length(); ++i) {
-                    list.add(new ImageUrl(i + 1, array.getString(i), false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter, i + 1, array.getString(i), false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

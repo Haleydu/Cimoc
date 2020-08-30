@@ -85,7 +85,7 @@ public class ManHuaDB extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.text("h1.comic-title");
 //        String cover = body.src("div.cover > img"); // 这一个封面可能没有
@@ -99,15 +99,26 @@ public class ManHuaDB extends MangaParser {
             update = body.text("a.comic-pub-date");
         }
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("#comic-book-list > div > ol > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.attr("title");
             String path = node.hrefWithSplit(2);
-            list.add(0, new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -119,7 +130,7 @@ public class ManHuaDB extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new ArrayList<>();
 
         try {
@@ -130,11 +141,13 @@ public class ManHuaDB extends MangaParser {
             final JSONArray imageList = JSON.parseArray(jsonStr);
 
             for(int i = 0; i < imageList.size(); i++ ) {
-                final JSONObject image = imageList.getJSONObject(i);
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
 
+                final JSONObject image = imageList.getJSONObject(i);
                 final String imageUrl = imageHost + imagePre + image.getString("img");
 
-                list.add(new ImageUrl(image.getIntValue("p"), imageUrl, false));
+                list.add(new ImageUrl(id, comicChapter, image.getIntValue("p"), imageUrl, false));
             }
 
         } catch (Exception e) {

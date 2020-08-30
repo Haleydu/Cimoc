@@ -78,7 +78,7 @@ public class TuHao extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String cover = body.src("img.pic");
         String intro = body.text("p#comic-description");
@@ -90,15 +90,25 @@ public class TuHao extends MangaParser {
         // 连载状态
         boolean status = isFinish(body.text("div.cy_xinxi > span:eq(1) > a"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i = 0;
         for (Node node : new Node(html).list("div.cy_plist > ul > li")) {
+            Long sourceComic = null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic + "000" + i);
             String title = node.text();
             String path = node.hrefWithSplit("a", 1);
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -110,14 +120,16 @@ public class TuHao extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
 
         String str = StringUtils.match("\"page_url\":\"(.*?)\",", html, 1);
 
         int i = 0;
-        for(String url : Objects.requireNonNull(str).split("\\|72cms\\|")) {
-            list.add(new ImageUrl(++i, url, false));
+        for (String url : Objects.requireNonNull(str).split("\\|72cms\\|")) {
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            list.add(new ImageUrl(id, comicChapter, ++i, url, false));
         }
 
         return list;

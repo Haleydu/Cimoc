@@ -72,7 +72,7 @@ public class MHLove extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String cover = body.src(".mh-date-bgpic > a > img");
         String intro = body.text("#workint > p");
@@ -82,15 +82,26 @@ public class MHLove extends MangaParser {
         // 连载状态
         boolean status = isFinish(body.text("p.works-info-tc > span:eq(3)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("#mh-chapter-list-ol-0 > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text();
             String path = node.href();
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -102,7 +113,7 @@ public class MHLove extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("qTcms_S_m_murl_e=\"(.*?)\"", html, 1);
         if (str != null) {
@@ -114,7 +125,9 @@ public class MHLove extends MangaParser {
                     preUrl = "http://www.9qv.cn";
                 }
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, preUrl + array[i], false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter, i + 1, preUrl + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

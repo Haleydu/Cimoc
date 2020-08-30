@@ -80,7 +80,7 @@ public class ChuiXue extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.text("div.intro_l > div.title > h1");
         String cover = body.src("div.intro_l > div.info_cover > p.cover > img");
@@ -89,15 +89,27 @@ public class ChuiXue extends MangaParser {
         String intro = body.text("#intro");
         boolean status = isFinish(body.text("div.intro_l > div.info > p:eq(2)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("#play_0 > ul > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.attr("title");
             String path = node.hrefWithSplit(2);
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -115,17 +127,19 @@ public class ChuiXue extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("photosr\\[1\\](.*?)(\n|var)", html, 1);
         if (str != null) {
             try {
                 String[] array = str.split(";");
                 for (int i = 0; i != array.length; ++i) {
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
                     String s_full = array[i].trim();
                     int index = s_full.indexOf("=");
                     String s = s_full.substring(index + 2, s_full.length() - 1);
-                    list.add(new ImageUrl(i + 1, "http://chuixue1.tianshigege.com/" + s, false));
+                    list.add(new ImageUrl(id, comicChapter,i + 1, "http://chuixue1.tianshigege.com/" + s, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

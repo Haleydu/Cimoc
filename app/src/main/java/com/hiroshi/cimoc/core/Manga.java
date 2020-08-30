@@ -1,7 +1,5 @@
 package com.hiroshi.cimoc.core;
 
-import android.util.Log;
-
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.manager.ChapterManager;
 import com.hiroshi.cimoc.manager.SourceManager;
@@ -10,6 +8,8 @@ import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.parser.Parser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.rx.RxBus;
+import com.hiroshi.cimoc.rx.RxEvent;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -82,7 +82,8 @@ public class Manga {
                         comic.setUrl(parser.getUrl(comic.getCid()));
                         Request request = parser.getInfoRequest(comic.getCid());
                         String html = getResponseBody(App.getHttpClient(), request);
-                        parser.parseInfo(html, comic);
+                        Comic newComic = parser.parseInfo(html, comic);
+                        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE_INFO, newComic));
                         request = parser.getChapterRequest(html, comic.getCid());
                         if (request != null) {
                             html = getResponseBody(App.getHttpClient(), request);

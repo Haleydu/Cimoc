@@ -82,7 +82,7 @@ public class Comic18 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         try {
             Node body = new Node(html);
             String intro = body.text("#intro-block > div:eq(6)");
@@ -93,23 +93,35 @@ public class Comic18 extends MangaParser {
             boolean status = isFinish(body.text("#intro-block > div:eq(2) > span"));
             comic.setInfo(title, cover, update, intro, author, status);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
-
-        String startTitle = body.text(".col.btn.btn-primary.dropdown-toggle.reading").trim();
-        String startPath = body.href(".col.btn.btn-primary.dropdown-toggle.reading");
-        list.add(new Chapter(startTitle, startPath));
-
+        int i=0;
         for (Node node : body.list("#episode-block > div > div.episode > ul > a")) {
-            String title = node.text("li").trim();
-            String path = node.href();
-            list.add(new Chapter(title, path));
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
+            if (i==0){
+                String startTitle = body.text(".col.btn.btn-primary.dropdown-toggle.reading").trim();
+                String startPath = body.href(".col.btn.btn-primary.dropdown-toggle.reading");
+                list.add(new Chapter(id, sourceComic, startTitle, startPath));
+            }else {
+                String title = node.text("li").trim();
+                String path = node.href();
+                list.add(new Chapter(id, sourceComic, title, path));
+            }
+            i++;
         }
         return Lists.reverse(list);
     }
@@ -123,26 +135,27 @@ public class Comic18 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new ArrayList<>();
         try {
             int i = 0;
             for (Node node : new Node(html).list("img.lazy_img")) {
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
+
                 String img1 = node.attr("img","src");
                 String img2 = node.attr("img","data-original");
                 String reg[] = imgpath.split("\\/");
                 if (img1.contains(reg[2])){
-                    list.add(new ImageUrl(i++, img1, false));
+                    list.add(new ImageUrl(id, comicChapter, i++, img1, false));
                 }else if (img2.contains(reg[2])){
-                    list.add(new ImageUrl(i++, img2, false));
+                    list.add(new ImageUrl(id, comicChapter, i++, img2, false));
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
-        }finally {
-            return list;
         }
+        return list;
     }
 
 

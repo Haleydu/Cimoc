@@ -84,7 +84,7 @@ public class MH517 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.attr("div#Cover > img", "title");
         String cover = body.src("div#Cover > img");
@@ -93,15 +93,27 @@ public class MH517 extends MangaParser {
         String intro = body.text("p.txtDesc");
         boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("#mh-chapter-list-ol-0 > li")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text("a > span");
             String path = node.hrefWithSplit("a", 2);
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -114,7 +126,7 @@ public class MH517 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new ArrayList<>();
         Matcher pageMatcher = Pattern.compile("qTcms_S_m_murl_e=\"(.*?)\"").matcher(html);
         final String mangaid = StringUtils.match("var qTcms_S_m_id=\"(\\w+?)\";", html, 1);
@@ -124,7 +136,10 @@ public class MH517 extends MangaParser {
             int i = 0;
             for (String item : imgArrStr.split("\\$.*?\\$")) {
                 final String url = "http://m.517manhua.com/statics/pic/?p=" + item + "&wapif=1&picid=" + mangaid + "&m_httpurl=";
-                list.add(new ImageUrl(i++, url, false));
+
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
+                list.add(new ImageUrl(id, comicChapter, i++, url, false));
             }
         } finally {
             return list;

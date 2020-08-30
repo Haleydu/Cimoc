@@ -87,7 +87,7 @@ public class Cartoonmad extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         Matcher mTitle = Pattern.compile("<meta name=\"Keywords\" content=\"(.*?),").matcher(html);
         String title = mTitle.find() ? mTitle.group(1) : "";
@@ -99,16 +99,28 @@ public class Cartoonmad extends MangaParser {
         String intro = mInro.find() ? mInro.group(1) : "";
         boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Matcher mChapter = Pattern.compile("<a href=(.*?) target=_blank>(.*?)<\\/a>&nbsp;").matcher(html);
+        int i=0;
         while (mChapter.find()) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = mChapter.group(2);
             String path = mChapter.group(1);
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return Lists.reverse(list);
     }
@@ -124,13 +136,15 @@ public class Cartoonmad extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html,Chapter chapter) {
         List<ImageUrl> list = new ArrayList<>();
         Matcher pageMatcher = Pattern.compile("<a class=onpage>.*<a class=pages href=(.*)\\d{3}\\.html>(.*?)<\\/a>").matcher(html);
         if (!pageMatcher.find()) return null;
         int page = Integer.parseInt(pageMatcher.group(2));
         for (int i = 1; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("https://www.cartoonmad.com/comic/%s%03d.html", pageMatcher.group(1), i), true));
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            list.add(new ImageUrl(id, comicChapter, i, StringUtils.format("https://www.cartoonmad.com/comic/%s%03d.html", pageMatcher.group(1), i), true));
         }
         return list;
     }

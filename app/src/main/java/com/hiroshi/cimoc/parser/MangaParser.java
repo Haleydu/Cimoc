@@ -39,22 +39,12 @@ public abstract class MangaParser implements Parser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) throws JSONException{
-        return null;
-    }
-
-    @Override
     public List<Chapter> parseChapter(String html) throws JSONException {
         return null;
     }
 
     @Override
     public List<ImageUrl> parseImages(String html) throws Manga.NetworkErrorException, JSONException {
-        return null;
-    }
-
-    @Override
-    public List<ImageUrl> parseImages(String html, Chapter chapter) throws Manga.NetworkErrorException, JSONException {
         return null;
     }
 

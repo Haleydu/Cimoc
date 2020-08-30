@@ -91,7 +91,7 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("div.book-title > h1");
         String cover = body.src("p.hcover > img");
@@ -100,24 +100,35 @@ public class IKanman extends MangaParser {
         String intro = body.text("#intro-cut");
         boolean status = isFinish(body.text("div.chapter-bar > span.fr > span:eq(0)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         String baseText = body.id("__VIEWSTATE").attr("value");
         if (!StringUtils.isEmpty(baseText)) {
             body = new Node(DecryptionUtils.LZ64Decrypt(baseText));
         }
+        int i=0;
         for (Node node : body.list("div.chapter-list")) {
             List<Node> uls = node.list("ul");
             Collections.reverse(uls);
             for (Node ul : uls) {
                 for (Node li : ul.list("li > a")) {
+                    Long sourceComic=null;
+                    if (comic.getId() == null) {
+                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                    } else {
+                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                    }
+                    Long id = Long.parseLong(sourceComic+"000"+i);
+
                     String title = li.attr("title");
                     String path = li.hrefWithSplit(2);
-                    list.add(new Chapter(title, path));
+                    list.add(new Chapter(id, sourceComic, title, path));
+                    i++;
                 }
             }
         }
@@ -136,7 +147,7 @@ public class IKanman extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String packed = StringUtils.match("\\(function\\(p,a,c,k,e,d\\).*?0,\\{\\}\\)\\)", html, 0);
         if (packed != null) {
@@ -156,8 +167,10 @@ public class IKanman extends MangaParser {
                 String m = object.getJSONObject("sl").getString("m");
                 JSONArray array = object.getJSONArray("files");
                 for (int i = 0; i != array.length(); ++i) {
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
                     String url = StringUtils.format("https://i.hamreus.com%s%s?e=%s&m=%s", path, array.getString(i), e, m);
-                    list.add(new ImageUrl(i + 1, url, false));
+                    list.add(new ImageUrl(id, comicChapter, i + 1, url, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

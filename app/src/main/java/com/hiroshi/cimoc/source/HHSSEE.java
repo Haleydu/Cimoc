@@ -71,7 +71,7 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.text("#about_kit > ul > li:eq(0) > h1");
         String cover = body.src("#about_style > img");
@@ -84,20 +84,31 @@ public class HHSSEE extends MangaParser {
         String intro = body.textWithSubstring("#about_kit > ul > li:eq(7)", 3);
         boolean status = isFinish(body.text("#about_kit > ul > li:eq(2)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new ArrayList<>();
         Node body = new Node(html);
         String name = body.text("#about_kit > ul > li:eq(0) > h1");
+        int i=0;
         for (Node node : body.list("#permalink > div.cVolList > ul.cVolUl > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text();
             title = title.replaceFirst(name, "").trim();
             String[] array = StringUtils.match("/page(\\d+).*s=(\\d+)", node.attr("href"), 1, 2);
             //String path = array != null ? array[0].concat(" ").concat(array[1]) : "";
             String path = array != null ? array[0].concat("-").concat(array[1]) : "";
-            list.add(new Chapter(title.trim(), path));
+            list.add(new Chapter(id, sourceComic, title.trim(), path));
+            i++;
         }
         return list;
     }
@@ -110,14 +121,16 @@ public class HHSSEE extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new ArrayList<>();
         Node body = new Node(html);
         int page = Integer.parseInt(body.attr("#hdPageCount", "value"));
         String path = body.attr("#hdVolID", "value");
         String server = body.attr("#hdS", "value");
         for (int i = 1; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("http://www.hhmmoo.com/page%s/%d.html?s=%s", path, i, server), true));
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            list.add(new ImageUrl(id, comicChapter, i, StringUtils.format("http://www.hhmmoo.com/page%s/%d.html?s=%s", path, i, server), true));
         }
         return list;
     }

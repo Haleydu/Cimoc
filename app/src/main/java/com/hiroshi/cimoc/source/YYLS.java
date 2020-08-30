@@ -75,7 +75,7 @@ public class YYLS extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.text("#main > div > div.entry-header.cf > div > h1");
         String cover = body.src("#details > div.entry-content.rich-content > table > tbody > tr:nth-child(1) > td:nth-child(1) > img");
@@ -85,17 +85,27 @@ public class YYLS extends MangaParser {
         Matcher matcher = Pattern.compile("經典完結").matcher(html);
         boolean status = matcher.find();
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("div.entry-content.rich-content a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text();
-//            title = Pattern.compile("[^0-9.]").matcher(title).replaceAll("");
             String path = node.href();
             path = path.substring(17, path.length() - 1);
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         Collections.reverse(list);
         return list;
@@ -109,7 +119,7 @@ public class YYLS extends MangaParser {
 
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         Matcher pageMatcher = Pattern.compile("id=.*?caonima.*?src=\"(.*?)\\d{3}\\.jpg").matcher(html);
         if (!pageMatcher.find()) return null;
@@ -117,7 +127,9 @@ public class YYLS extends MangaParser {
         if (!NumMatcher.find()) return null;
         int page = Integer.parseInt(NumMatcher.group(1));
         for (int i = 1; i <= page; ++i) {
-            list.add(new ImageUrl(i, StringUtils.format("%s//%03d.jpg", pageMatcher.group(1), i), false));
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            list.add(new ImageUrl(id,comicChapter,i, StringUtils.format("%s//%03d.jpg", pageMatcher.group(1), i), false));
         }
         return list;
     }

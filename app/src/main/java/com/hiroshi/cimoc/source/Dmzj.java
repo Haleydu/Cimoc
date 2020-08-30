@@ -94,7 +94,7 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         try {
             JSONObject object = new JSONObject(html);
             String title = object.getString("title");
@@ -113,21 +113,32 @@ public class Dmzj extends MangaParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
         try {
             JSONObject object = new JSONObject(html);
             JSONArray array = object.getJSONArray("chapters");
+            int k=0;
             for (int i = 0; i != array.length(); ++i) {
                 JSONArray data = array.getJSONObject(i).getJSONArray("data");
                 for (int j = 0; j != data.length(); ++j) {
+                    Long sourceComic=null;
+                    if (comic.getId() == null) {
+                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                    } else {
+                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                    }
+                    Long id = Long.parseLong(sourceComic+"000"+k);
+
                     JSONObject chapter = data.getJSONObject(j);
                     String title = chapter.getString("chapter_title");
                     String path = chapter.getString("chapter_id");
-                    list.add(new Chapter(title, path));
+                    list.add(new Chapter(id, sourceComic, title, path));
+                    k++;
                 }
             }
         } catch (Exception e) {
@@ -143,13 +154,15 @@ public class Dmzj extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         try {
             JSONObject object = new JSONObject(html);
             JSONArray array = object.getJSONArray("page_url");
             for (int i = 0; i < array.length(); ++i) {
-                list.add(new ImageUrl(i + 1, array.getString(i), false));
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
+                list.add(new ImageUrl(id, comicChapter, i + 1, array.getString(i), false));
             }
         } catch (Exception e) {
             e.printStackTrace();

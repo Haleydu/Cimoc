@@ -79,7 +79,8 @@ public class WebtoonDongManManHua extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
+        k=0;
         Node body = new Node(html);
         String title = body.text(".detail_header > .info > h1.subj");
         String cover = body.src("ul#_listUl > li:eq(0) > a > span.thmb > img");
@@ -88,20 +89,30 @@ public class WebtoonDongManManHua extends MangaParser {
         String intro = body.text("#_asideDetail > p.summary");
         boolean status = isFinish(body.text("#_asideDetail > p.day_info"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
-    public List<Chapter> parseChapter(Node body){
+    private int k=0;
+    public List<Chapter> parseChapter(Node body, Comic comic){
         List<Chapter> list = new LinkedList<>();
         for (Node node : body.list("ul#_listUl > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+k);
             String title = node.text("span.subj > span")+" "+node.text("span.tx");
             String path = "https:" + node.href();
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            k++;
         }
         return list;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         //下次再优化吧，这样写比较容易但是效率低。
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
@@ -109,7 +120,7 @@ public class WebtoonDongManManHua extends MangaParser {
             String urlPage = nodePage.href();
             String urlPageTag = nodePage.attr("a","class");
             if (urlPage.equals("#") && (urlPageTag==null || urlPageTag.equals(""))){
-                list.addAll(parseChapter(body));
+                list.addAll(parseChapter(body,comic));
             }else if (urlPageTag==null || urlPageTag.equals("")){
                 try {
                     String pageTagUrl = baseUrl + urlPage;
@@ -118,7 +129,7 @@ public class WebtoonDongManManHua extends MangaParser {
                             .addHeader("Referer", "www.dongmanmanhua.cn")
                             .build();
                     String htmlPage = getResponseBody(App.getHttpClient(), request);
-                    list.addAll(parseChapter(new Node(htmlPage)));
+                    list.addAll(parseChapter(new Node(htmlPage),comic));
                 } catch (Manga.NetworkErrorException e) {
                     e.printStackTrace();
                 }
@@ -130,7 +141,7 @@ public class WebtoonDongManManHua extends MangaParser {
                             .addHeader("Referer", "www.dongmanmanhua.cn")
                             .build();
                     String htmlPageNext = getResponseBody(App.getHttpClient(), request);
-                    list.addAll(parseChapter(htmlPageNext));
+                    list.addAll(parseChapter(htmlPageNext,comic));
                 } catch (Manga.NetworkErrorException e) {
                     e.printStackTrace();
                 }
@@ -145,14 +156,16 @@ public class WebtoonDongManManHua extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
 
         Node body = new Node(html);
         int i = 1;
         for (Node node : body.list("div#_imageList > img")) {
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
             String url = node.attr("img", "data-url");
-            list.add(new ImageUrl(i++, url, false));
+            list.add(new ImageUrl(id, comicChapter, i++, url, false));
         }
         if (!list.isEmpty()) return list;
 
@@ -171,7 +184,9 @@ public class WebtoonDongManManHua extends MangaParser {
             while (Json_Iterator.hasNext()) {
                 String key = Json_Iterator.next();
                 if (key.contains("layer")) {
-                    list.add(new ImageUrl(i, motiontoonPath + motiontoonJson.getString(key), false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter, i, motiontoonPath + motiontoonJson.getString(key), false));
                     i++;
                 }
             }

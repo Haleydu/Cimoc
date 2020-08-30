@@ -90,7 +90,7 @@ public class MH160 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String cover = body.src(".mh-date-bgpic > a > img");
         String intro = body.text("#workint > p");
@@ -100,6 +100,7 @@ public class MH160 extends MangaParser {
         boolean status = isFinish(body.text("p.works-info-tc > span:eq(3)"));
 
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
@@ -135,7 +136,7 @@ public class MH160 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html,Chapter chapter) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("qTcms_S_m_murl_e=\"(.*?)\"", html, 1);
         String str_id = StringUtils.match("qTcms_S_p_id=\"(.*?)\"", html, 1);

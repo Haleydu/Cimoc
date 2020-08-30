@@ -1,10 +1,13 @@
 package com.hiroshi.cimoc.source;
 
+import com.hiroshi.cimoc.core.Manga;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+
+import org.json.JSONException;
 
 import java.util.List;
 
@@ -45,11 +48,17 @@ public class Locality extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
+        return comic;
     }
 
     @Override
     public List<Chapter> parseChapter(String html) {
+        return null;
+    }
+
+    @Override
+    public List<Chapter> parseChapter(String html, Comic comic) throws JSONException {
         return null;
     }
 
@@ -60,6 +69,11 @@ public class Locality extends MangaParser {
 
     @Override
     public List<ImageUrl> parseImages(String html) {
+        return null;
+    }
+
+    @Override
+    public List<ImageUrl> parseImages(String html, Chapter chapter) throws Manga.NetworkErrorException, JSONException {
         return null;
     }
 

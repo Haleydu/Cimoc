@@ -107,7 +107,7 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String title = body.textWithSplit("div.banner_detail_form > div.info > p.title", " ", 0);
         String cover = body.src("div.banner_detail_form > div.cover > img");
@@ -140,16 +140,28 @@ public class DM5 extends MangaParser {
         }
         boolean status = isFinish(body.text("div.banner_detail_form > div.info > p.tip > span:eq(0)"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         Set<Chapter> set = new LinkedHashSet<>();
         Node body = new Node(html);
+        int i=0;
         for (Node node : body.list("#chapterlistload > ul  li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = StringUtils.split(node.text(), " ", 0);
             String path = node.hrefWithSplit(0);
-            set.add(new Chapter(title, path));
+
+            set.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return new LinkedList<>(set);
     }
@@ -164,7 +176,7 @@ public class DM5 extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("eval\\(.*\\)", html, 0);
         if (str != null) {
@@ -172,7 +184,9 @@ public class DM5 extends MangaParser {
                 str = DecryptionUtils.evalDecrypt(str, "newImgs");
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, array[i], false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter,i + 1, array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

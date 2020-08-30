@@ -92,7 +92,7 @@ public class MH50 extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String intro = body.text("#full-des");
         String title = body.text("#comicName");
@@ -102,7 +102,7 @@ public class MH50 extends MangaParser {
         String update = body.text(".Introduct_Sub > .sub_r > .txtItme:eq(4)");
         boolean status = isFinish(body.text(".Introduct_Sub > .sub_r > .txtItme:eq(2) > a:eq(3)"));
         comic.setInfo(title, cover, update, intro, author, status);
-        RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_COMIC_UPDATE_INFO, comic));
+        return comic;
     }
 
     @Override

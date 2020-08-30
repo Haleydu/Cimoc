@@ -121,7 +121,7 @@ public class Manhuatai extends MangaParser {
 
     //获取封面等信息（非搜索页）
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.attr("h1#detail-title", "title");
 //        String cover = body.src("#offlinebtn-container > img");//封面链接已改到style属性里了
@@ -133,17 +133,27 @@ public class Manhuatai extends MangaParser {
         String intro = body.text("div#js_comciDesc > p.desc-content");
 //        boolean status = isFinish(body.text("div.jshtml > ul > li:nth-child(2)").substring(3));
         comic.setInfo(title, cover, update, intro, author, false);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("ol#j_chapter_list > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.attr( "title");
-//            String path = node.hrefWithSplit(0);//于2018.3失效
             String path = node.hrefWithSplit(1);
-//            Log.i("Path", path);
-            list.add(new Chapter(title, path));
+
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return Lists.reverse(list);
     }
@@ -159,7 +169,7 @@ public class Manhuatai extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html)  {
+    public List<ImageUrl> parseImages(String html, Chapter chapter)  {
         List<ImageUrl> list = new LinkedList<>();
         try {
             JSONObject object = new JSONObject(html);
@@ -168,20 +178,23 @@ public class Manhuatai extends MangaParser {
             }
 
             JSONArray chapters = object.getJSONObject("data").getJSONArray("comic_chapter");
-            JSONObject chapter = null;
+            JSONObject chapterNew = null;
             for (int i = 0; i < chapters.length(); i++) {
-                chapter = chapters.getJSONObject(i);
-                String a = chapter.getString("chapter_id");
+                chapterNew = chapters.getJSONObject(i);
+                String a = chapterNew.getString("chapter_id");
                 if(a.equals(_path)) {
                     break;
                 }
             }
 
-            String ImagePattern = "http://mhpic." + chapter.getString("chapter_domain") + chapter.getString("rule") + "-mht.low.webp";
+            String ImagePattern = "http://mhpic." + chapterNew.getString("chapter_domain") + chapterNew.getString("rule") + "-mht.low.webp";
 
-            for (int index = chapter.getInt("start_num"); index <= chapter.getInt("end_num"); index++) {
+            for (int index = chapterNew.getInt("start_num"); index <= chapterNew.getInt("end_num"); index++) {
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + index);
+
                 String image = ImagePattern.replaceFirst("\\$\\$", Integer.toString(index));
-                list.add(new ImageUrl(index, image, false));
+                list.add(new ImageUrl(id, comicChapter, index, image, false));
             }
         } catch (JSONException ex) {
             // ignore

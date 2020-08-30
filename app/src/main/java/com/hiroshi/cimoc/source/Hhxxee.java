@@ -108,7 +108,7 @@ public class Hhxxee extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
+    public Comic parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
         String title = body.text(".cTitle");
         String cover = body.src(".cDefaultImg > img");
@@ -117,15 +117,26 @@ public class Hhxxee extends MangaParser {
         String intro = body.text(".cCon");
         boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("#subBookListAct > div")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text("a");
             String path = node.hrefWithSplit("a", 2);
-            list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -141,14 +152,16 @@ public class Hhxxee extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("var sFiles=\"(.*?)\"", html, 1);
         if (str != null) {
             try {
                 String[] array = str.split("\\|");
                 for (int i = 0; i != array.length; ++i) {
-                    list.add(new ImageUrl(i + 1, servers[getPictureServers(array[i])] + array[i], false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id, comicChapter,i + 1, servers[getPictureServers(array[i])] + array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

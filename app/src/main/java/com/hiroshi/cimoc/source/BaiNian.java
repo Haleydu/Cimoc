@@ -89,7 +89,7 @@ public class BaiNian extends MangaParser {
     }
 
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         String cover = body.attr("div.dbox > div.img > mip-img", "src");
         String title = body.text("div.dbox > div.data > h4");
@@ -98,15 +98,28 @@ public class BaiNian extends MangaParser {
         String update = body.text("div.dbox > div.data > p.act").substring(3, 13).trim();
         boolean status = isFinish(body.text("span.list_item"));
         comic.setInfo(title, cover, update, intro, author, status);
+        return comic;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         List<Chapter> list = new LinkedList<>();
+        int i=0;
         for (Node node : new Node(html).list("div.tabs_block > ul > li > a")) {
+            Long sourceComic=null;
+            if (comic.getId() == null) {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+            } else {
+                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            }
+            Long id = Long.parseLong(sourceComic+"000"+i);
+
             String title = node.text();
             String path = node.href();
-            list.add(new Chapter(title, path));
+
+            //list.add(new Chapter(title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
+            i++;
         }
         return list;
     }
@@ -118,7 +131,7 @@ public class BaiNian extends MangaParser {
     }
 
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html,Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         String host = StringUtils.match("src=\"(.*?)\\/upload", html, 1);
         String path_str = StringUtils.match("z_img=\'\\[(.*?)\\]\'", html, 1);
@@ -127,7 +140,9 @@ public class BaiNian extends MangaParser {
                 String[] array = path_str.split(",");
                 for (int i = 0; i != array.length; ++i) {
                     String path = array[i].replace("\"","").replace("\\","");
-                    list.add(new ImageUrl(i + 1, host+"/"+path, false));
+                    Long comicChapter = chapter.getId();
+                    Long id = Long.parseLong(comicChapter + "000" + i);
+                    list.add(new ImageUrl(id,comicChapter,i + 1, host+"/"+path, false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

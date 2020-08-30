@@ -102,7 +102,7 @@ public class Mangakakalot extends MangaParser {
      * @param comic 漫画实体类，需要设置其中的字段
      */
     @Override
-    public void parseInfo(String html, Comic comic) {
+    public Comic parseInfo(String html, Comic comic) {
         Node body = new Node(html);
         if (cidUrl.contains("mangakakalot")){
             String title = body.attr(".manga-info-pic > img","alt");
@@ -121,7 +121,7 @@ public class Mangakakalot extends MangaParser {
             boolean status = isFinish(body.text("table.variations-tableInfo > tbody > tr:eq(2) > td.table-value > a"));
             comic.setInfo(title, cover, update, intro, author, status);
         }
-
+        return comic;
     }
 
     /**
@@ -130,20 +130,40 @@ public class Mangakakalot extends MangaParser {
      * @param html 页面源代码
      */
     @Override
-    public List<Chapter> parseChapter(String html) {
+    public List<Chapter> parseChapter(String html, Comic comic) {
         Set<Chapter> set = new LinkedHashSet<>();
         Node body = new Node(html);
         if (cidUrl.contains("mangakakalot")) {
+            int i=0;
             for (Node node : body.list(".chapter-list > div")) {
+                Long sourceComic=null;
+                if (comic.getId() == null) {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                } else {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                }
+                Long id = Long.parseLong(sourceComic+"000"+i);
+
                 String title = node.text("span > a");
                 String path = node.href("span > a");
-                set.add(new Chapter(title, path));
+                set.add(new Chapter(id, sourceComic, title, path));
+                i++;
             }
         }else if (cidUrl.contains("manganelo")){
+            int i=0;
             for (Node node : body.list(".row-content-chapter > li")) {
+                Long sourceComic=null;
+                if (comic.getId() == null) {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                } else {
+                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                }
+                Long id = Long.parseLong(sourceComic+"000"+i);
+
                 String title = node.text("a");
                 String path = node.href("a");
-                set.add(new Chapter(title, path));
+                set.add(new Chapter(id, sourceComic, title, path));
+                i++;
             }
         }
         return new LinkedList<>(set);
@@ -161,7 +181,7 @@ public class Mangakakalot extends MangaParser {
     }
 
     /**
-     * 解析图片列表，若为惰性加载，则 {@link ImageUrl#lazy} 为 true
+     * 解析图片列表，若为惰性加载，则 {@link ImageUrl lazy} 为 true
      * 惰性加载的情况，一次性不能拿到所有图片链接，例如网站使用了多次异步请求 {@link DM5#parseImages}，或需要跳转到不同页面
      * 才能获取 {@link HHSSEE#parseImages}，这些情况一般可以根据页码构造出相应的请求链接，到阅读时再解析
      * 支持多个链接 ，例如 {@link IKanman#parseImages}
@@ -169,17 +189,21 @@ public class Mangakakalot extends MangaParser {
      * @param html 页面源代码
      */
     @Override
-    public List<ImageUrl> parseImages(String html) {
+    public List<ImageUrl> parseImages(String html, Chapter chapter) {
         List<ImageUrl> list = new LinkedList<>();
         Node body = new Node(html);
         int i = 0;
         if (cidUrl.contains("mangakakalot")){
             for (Node node : body.list("div#vungdoc > img")) {
-                list.add(new ImageUrl(++i, node.src(), false));
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
+                list.add(new ImageUrl(id,comicChapter,++i, node.src(), false));
             }
         }else if (cidUrl.contains("manganelo")){
             for (Node node : body.list("div.container-chapter-reader > img")) {
-                list.add(new ImageUrl(++i, node.src(), false));
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "000" + i);
+                list.add(new ImageUrl(id,comicChapter,++i, node.src(), false));
             }
         }
         return list;
