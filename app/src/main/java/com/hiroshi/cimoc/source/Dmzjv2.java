@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -13,6 +14,7 @@ import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.UicodeBackslashU;
 
@@ -118,30 +120,36 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     public List<Chapter> parseChapter(String html, Comic comic) {
+        LogUtil.iLength("hrd",html);
         List<Chapter> list = new LinkedList<>();
         try {
-            String JsonString = StringUtils.match(":(\\[\\{.*?\\}\\])\\}\\]", html, 1);
-            String decodeJsonString = UicodeBackslashU.unicodeToCn(JsonString);
-            JSONArray JSONArray = new JSONArray(decodeJsonString);
+            String JsonArrayString = StringUtils.match("initIntroData\\((.*)\\);", html, 1);
+            String decodeJsonArrayString = UicodeBackslashU.unicodeToCn(JsonArrayString);
+            JSONArray allJsonArray = new JSONArray(decodeJsonArrayString);
             int k=0;
-            for (int j = 0; j != JSONArray.length(); ++j) {
-                Long sourceComic=null;
-                if (comic.getId() == null) {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-                } else {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+            for (int i=0;i<allJsonArray.length();i++){
+                JSONArray JSONArray = allJsonArray.getJSONObject(i).getJSONArray("data");
+                String tag = allJsonArray.getJSONObject(i).getString("title");
+                for (int j = 0; j != JSONArray.length(); ++j) {
+                    JSONObject chapter = JSONArray.getJSONObject(j);
+                    String title = chapter.getString("chapter_name");
+                    String comic_id = chapter.getString("comic_id");
+                    String chapter_id = chapter.getString("id");
+                    String path = comic_id + "/" +chapter_id;
+
+                    Long sourceComic=null;
+                    if (comic.getId() == null) {
+                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
+                    } else {
+                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
+                    }
+                    Long id = Long.parseLong(sourceComic+"000"+k);
+                    list.add(new Chapter(id, sourceComic, tag+" "+title, path));
+                    k++;
                 }
-                Long id = Long.parseLong(sourceComic+"000"+k);
-
-                JSONObject chapter = JSONArray.getJSONObject(j);
-                String title = chapter.getString("chapter_name");
-                String comic_id = chapter.getString("comic_id");
-                String chapter_id = chapter.getString("id");
-                String path = comic_id + "/" +chapter_id;
-
-                list.add(new Chapter(id, sourceComic, title, path));
-                k++;
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
