@@ -73,6 +73,8 @@ public interface Parser {
     /**
      * 解析章节列表，新增函数
      *
+     *  使用了Lists.reverse(list)后要把TYPE加入interpretationUtils的isReverseOrder函数
+     *
      * @param html 页面源代码
      * @param comic 漫画名
      */

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +39,8 @@ import java.util.List;
 import java.util.Set;
 
 import butterknife.OnClick;
+
+import static com.hiroshi.cimoc.utils.interpretationUtils.isReverseOrder;
 
 /**
  * Created by Hiroshi on 2016/7/2.
@@ -343,7 +344,11 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @Override
     public void onPreLoadSuccess(List<Chapter> list, Comic comic) {
         hideProgressBar();
-        mDetailAdapter.addAll(Lists.reverse(list));
+        if (isReverseOrder(comic)){
+            mDetailAdapter.addAll(Lists.reverse(list));
+        }else {
+            mDetailAdapter.addAll(list);
+        }
         mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
                 comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
 
