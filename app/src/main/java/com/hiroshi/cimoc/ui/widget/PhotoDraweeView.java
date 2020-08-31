@@ -125,7 +125,7 @@ public class PhotoDraweeView extends RetryDraweeView implements OnScaleDragGestu
 
     public void update(Long id) {
         Object tag = getTag();
-        if (tag == null || (int) tag != id) {
+        if (tag == null || !tag.equals(id) ) {
             setTag(id);
             resetMatrix();
         }
