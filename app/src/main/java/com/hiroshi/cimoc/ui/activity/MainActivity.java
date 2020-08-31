@@ -197,10 +197,12 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
             }
             checkUpdate();
         }
+        mPresenter.getSourceBaseUrl();
 
         showAuthorNotice();
         showPermission();
         getMh50KeyIv();
+
     }
 
     @Override

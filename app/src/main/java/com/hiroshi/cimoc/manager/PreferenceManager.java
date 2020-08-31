@@ -142,6 +142,9 @@ public class PreferenceManager {
     public static final String PREFERENCES_MH50_KEY_MSG = "preferences_mh50_key_msg";
     public static final String PREFERENCES_MH50_IV_MSG = "preferences_mh50_iv_msg";
 
+    public static final String PREF_HHAAZZ_BASEURL = "pref_hhaazz_baseurl";
+    public static final String PREF_HHAAZZ_SW = "pref_hhaazz_sw";
+
     private SharedPreferences mSharedPreferences;
 
     public PreferenceManager(Context context) {

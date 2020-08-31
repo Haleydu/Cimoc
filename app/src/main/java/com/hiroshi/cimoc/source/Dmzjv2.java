@@ -120,7 +120,6 @@ public class Dmzjv2 extends MangaParser {
 
     @Override
     public List<Chapter> parseChapter(String html, Comic comic) {
-        LogUtil.iLength("hrd",html);
         List<Chapter> list = new LinkedList<>();
         try {
             String JsonArrayString = StringUtils.match("initIntroData\\((.*)\\);", html, 1);
