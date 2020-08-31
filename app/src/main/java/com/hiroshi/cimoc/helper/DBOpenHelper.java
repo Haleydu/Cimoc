@@ -3,8 +3,10 @@ package com.hiroshi.cimoc.helper;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.hiroshi.cimoc.model.ChapterDao;
 import com.hiroshi.cimoc.model.ComicDao;
 import com.hiroshi.cimoc.model.DaoMaster;
+import com.hiroshi.cimoc.model.ImageUrlDao;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.TagDao;
 import com.hiroshi.cimoc.model.TagRefDao;
@@ -52,6 +54,10 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 updateLocal(db);
             case 9:
                 updateSource(db);
+            case 10:
+                updateIntroAndAuthor(db);
+                ChapterDao.createTable(db, true);
+                ImageUrlDao.createTable(db, true);
         }
     }
 
@@ -64,6 +70,20 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 "\"LAST\",  \"PAGE\", \"CHAPTER\") SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", " +
                 "\"COVER\", \"UPDATE\", \"HIGHLIGHT\", 0, \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", " +
                 "\"LAST\",  \"PAGE\", null FROM \"COMIC2\"");
+        db.execSQL("DROP TABLE \"COMIC2\"");
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    private void updateIntroAndAuthor(Database db) {
+        db.beginTransaction();
+        db.execSQL("ALTER TABLE \"COMIC\" RENAME TO \"COMIC2\"");
+        ComicDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"COMIC\" (\"_id\", \"SOURCE\", \"CID\", \"TITLE\", \"COVER\", " +
+                "\"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", " +
+                "\"LAST\",  \"PAGE\", \"CHAPTER\", \"INTRO\", \"AUTHOR\") SELECT \"_id\", \"SOURCE\", \"CID\", \"TITLE\", " +
+                "\"COVER\", \"UPDATE\", \"HIGHLIGHT\", \"LOCAL\", \"FAVORITE\", \"HISTORY\", \"DOWNLOAD\", " +
+                "\"LAST\",  \"PAGE\", \"CHAPTER\" ,null,null FROM \"COMIC2\"");
         db.execSQL("DROP TABLE \"COMIC2\"");
         db.setTransactionSuccessful();
         db.endTransaction();
