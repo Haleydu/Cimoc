@@ -3,6 +3,7 @@ package com.hiroshi.cimoc.source;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -145,7 +146,7 @@ public class DM5 extends MangaParser {
 
     @Override
     public List<Chapter> parseChapter(String html, Comic comic) {
-        Set<Chapter> set = new LinkedHashSet<>();
+        List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
         for (Node node : body.list("#chapterlistload > ul  li > a")) {
@@ -160,10 +161,10 @@ public class DM5 extends MangaParser {
             String title = StringUtils.split(node.text(), " ", 0);
             String path = node.hrefWithSplit(0);
 
-            set.add(new Chapter(id, sourceComic, title, path));
+            list.add(new Chapter(id, sourceComic, title, path));
             i++;
         }
-        return new LinkedList<>(set);
+        return Lists.reverse(list);
     }
 
     @Override
