@@ -31,6 +31,7 @@ deploy:
   api_key:
     secure: jTKF+LORoR5pXPd5XsVoRgtlx0vqMN8wuvuH680KT/AgrFh2usKIaBCUmM2KYYnwbnxT5lm5eX58lr22mVAn0OzajBGhiilWpQuoDcI3aU0vfki7awFILq/n3tnMvewtz4b89w9dDKPFz/AEdBd1W5gDr/y8A4VLpi6n7n8GPdq/8rk0LHJSxsgKVN9hpzXNBgDCxt2AzH20ZFcUaN7mgVbiL+cQC/9r+zNLkhBqph8TFGU//L+P5mbpVSvd2zJZHwJ27WGeWM5sndgilXEFi2HYVR/mJxqiVLqlnpI9i+e7TzRUoEcuWW8+UcDz4XcCOGMZFjNPgbT1kXwusNKrLU1Dh81qeseeFVZuGgA0DIXczvDTG/U/B4GMT3rIXL6W9eow+J8upZ4WfWkZe6gp57SpBt+FS5bqoiIN/pSp8Bur/NH2hVoCIYpReQ/8l43LF2EfgHSUibiPDiZpsHcihmZ5oZqXb4sxDEy6Rd4pVPr3BD54O46NYcjyATsLoCRI9IU4xEwv1W+Etw4FarMAW80AiS232X4B4MnQ7nm83BZkSI5/YbeqB5yOvK7jCwRoZCdQFUPmOWRC3sVTbNDlRdiY2oJWtE8WoiEIG3GIm/Qy+/9WyGmEuNb7BIy3PGlBEhzTbT//BXh06PJfg9+IkocecJrgTBNXOLkZPYO+BKs=
   file: app/build/outputs/apk/release/Cimoc*.apk
+  file_glob: true
   on:
     repo: Haleydu/Cimoc
     branch: release-tci
