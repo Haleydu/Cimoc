@@ -103,16 +103,13 @@ public class JMTT extends MangaParser {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
+        String startTitle = body.text(".col.btn.btn-primary.dropdown-toggle.reading").trim();
+        String startPath = body.href(".col.btn.btn-primary.dropdown-toggle.reading");
+        list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, startTitle, startPath));
         for (Node node : body.list("#episode-block > div > div.episode > ul > a")) {
-            if (i==0){
-                String startTitle = body.text(".col.btn.btn-primary.dropdown-toggle.reading").trim();
-                String startPath = body.href(".col.btn.btn-primary.dropdown-toggle.reading");
-                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, startTitle, startPath));
-            }else {
-                String title = node.text("li").trim();
-                String path = node.href();
-                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
-            }
+            String title = node.text("li").trim();
+            String path = node.href();
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
         }
         return Lists.reverse(list);
     }
