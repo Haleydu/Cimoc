@@ -119,7 +119,7 @@ public class Dmzjv2 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         try {
             String JsonArrayString = StringUtils.match("initIntroData\\((.*)\\);", html, 1);
@@ -135,16 +135,7 @@ public class Dmzjv2 extends MangaParser {
                     String comic_id = chapter.getString("comic_id");
                     String chapter_id = chapter.getString("id");
                     String path = comic_id + "/" +chapter_id;
-
-                    Long sourceComic=null;
-                    if (comic.getId() == null) {
-                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-                    } else {
-                        sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-                    }
-                    Long id = Long.parseLong(sourceComic+"000"+k);
-                    list.add(new Chapter(id, sourceComic, tag+" "+title, path));
-                    k++;
+                    list.add(new Chapter(Long.parseLong(sourceComic + "000" + k++), sourceComic, tag+" "+title, path));
                 }
             }
 

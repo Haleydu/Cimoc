@@ -119,22 +119,14 @@ public class CopyMH extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) throws JSONException {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) throws JSONException {
         List<Chapter> list = new LinkedList<>();
         JSONObject jsonObject = new JSONObject(html);
         JSONArray array = jsonObject.getJSONObject("results").getJSONArray("list");
         for (int i = 0; i < array.length(); ++i) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
             String title = array.getJSONObject(i).getString("name");
             String path = array.getJSONObject(i).getString("uuid");
-            list.add(new Chapter(id, sourceComic, title, path));
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i), sourceComic, title, path));
         }
         return Lists.reverse(list);
     }

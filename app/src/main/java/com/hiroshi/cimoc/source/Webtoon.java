@@ -97,23 +97,14 @@ public class Webtoon extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
         for (Node node : body.list("#_episodeList > li > a")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
             String title = node.text("div.row > div.info > p.sub_title > span");
             String path = node.hrefWithSubString(30);
-            list.add(new Chapter(id, sourceComic, title, path));
-            i++;
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
         }
         return list;
     }

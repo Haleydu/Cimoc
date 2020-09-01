@@ -109,21 +109,12 @@ public class MiGu extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         Matcher m = Pattern.compile("<a stat='.*?' href=\"(?:.*?)(\\d+)\\.html\" class=\"item ellipsis\" title=\"(.*?)\" data-opusname=\"(?:.*?)\" data-index=\"(?:.*?)\" data-url=\"(?:.*?)\" target=\"_blank\">").matcher(html);
         int i=0;
         while (m.find()) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
-            list.add(new Chapter(id, sourceComic, m.group(2), m.group(1)));
-            i++;
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, m.group(2), m.group(1)));
         }
         return Lists.reverse(list);
     }

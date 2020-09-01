@@ -3,7 +3,7 @@ package com.hiroshi.cimoc.utils;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.source.CCMH;
 import com.hiroshi.cimoc.source.Cartoonmad;
-import com.hiroshi.cimoc.source.Comic18;
+import com.hiroshi.cimoc.source.JMTT;
 import com.hiroshi.cimoc.source.CopyMH;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.GuFeng;
@@ -20,7 +20,7 @@ public class interpretationUtils {
                 type == MiGu.TYPE ||
                 type == CCMH.TYPE ||
                 type == Cartoonmad.TYPE ||
-                type == Comic18.TYPE ||
+                type == JMTT.TYPE ||
                 type == Manhuatai.TYPE ||
                 type == Tencent.TYPE ||
                 type == DM5.TYPE ||

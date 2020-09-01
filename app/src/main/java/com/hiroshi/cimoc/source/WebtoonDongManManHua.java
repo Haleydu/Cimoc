@@ -93,26 +93,18 @@ public class WebtoonDongManManHua extends MangaParser {
     }
 
     private int k=0;
-    public List<Chapter> parseChapter(Node body, Comic comic){
+    public List<Chapter> parseChapter(Node body, Long sourceComic){
         List<Chapter> list = new LinkedList<>();
         for (Node node : body.list("ul#_listUl > li > a")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+k);
             String title = node.text("span.subj > span")+" "+node.text("span.tx");
             String path = "https:" + node.href();
-            list.add(new Chapter(id, sourceComic, title, path));
-            k++;
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + k++), sourceComic, title, path));
         }
         return list;
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         //下次再优化吧，这样写比较容易但是效率低。
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
@@ -120,7 +112,7 @@ public class WebtoonDongManManHua extends MangaParser {
             String urlPage = nodePage.href();
             String urlPageTag = nodePage.attr("a","class");
             if (urlPage.equals("#") && (urlPageTag==null || urlPageTag.equals(""))){
-                list.addAll(parseChapter(body,comic));
+                list.addAll(parseChapter(body, sourceComic));
             }else if (urlPageTag==null || urlPageTag.equals("")){
                 try {
                     String pageTagUrl = baseUrl + urlPage;
@@ -129,7 +121,7 @@ public class WebtoonDongManManHua extends MangaParser {
                             .addHeader("Referer", "www.dongmanmanhua.cn")
                             .build();
                     String htmlPage = getResponseBody(App.getHttpClient(), request);
-                    list.addAll(parseChapter(new Node(htmlPage),comic));
+                    list.addAll(parseChapter(new Node(htmlPage), sourceComic));
                 } catch (Manga.NetworkErrorException e) {
                     e.printStackTrace();
                 }
@@ -141,7 +133,7 @@ public class WebtoonDongManManHua extends MangaParser {
                             .addHeader("Referer", "www.dongmanmanhua.cn")
                             .build();
                     String htmlPageNext = getResponseBody(App.getHttpClient(), request);
-                    list.addAll(parseChapter(htmlPageNext,comic));
+                    list.addAll(parseChapter(htmlPageNext,comic,sourceComic));
                 } catch (Manga.NetworkErrorException e) {
                     e.printStackTrace();
                 }

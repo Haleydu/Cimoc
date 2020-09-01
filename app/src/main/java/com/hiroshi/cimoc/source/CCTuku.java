@@ -88,25 +88,14 @@ public class CCTuku extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
         for (Node node : body.list("#chapter > div > div > ul > li > a")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
             String title = node.text();
-//            String path = StringUtils.split(node.href(), "/", 3);
             String path = node.hrefWithSplit(2);
-            //list.add(new Chapter(title, path));
-            list.add(new Chapter(id, sourceComic, title, path));
-            i++;
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
         }
         return list;
     }

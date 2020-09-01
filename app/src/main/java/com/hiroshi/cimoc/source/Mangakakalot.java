@@ -130,40 +130,22 @@ public class Mangakakalot extends MangaParser {
      * @param html 页面源代码
      */
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         Set<Chapter> set = new LinkedHashSet<>();
         Node body = new Node(html);
         if (cidUrl.contains("mangakakalot")) {
             int i=0;
             for (Node node : body.list(".chapter-list > div")) {
-                Long sourceComic=null;
-                if (comic.getId() == null) {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-                } else {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-                }
-                Long id = Long.parseLong(sourceComic+"000"+i);
-
                 String title = node.text("span > a");
                 String path = node.href("span > a");
-                set.add(new Chapter(id, sourceComic, title, path));
-                i++;
+                set.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
             }
         }else if (cidUrl.contains("manganelo")){
             int i=0;
             for (Node node : body.list(".row-content-chapter > li")) {
-                Long sourceComic=null;
-                if (comic.getId() == null) {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-                } else {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-                }
-                Long id = Long.parseLong(sourceComic+"000"+i);
-
                 String title = node.text("a");
                 String path = node.href("a");
-                set.add(new Chapter(id, sourceComic, title, path));
-                i++;
+                set.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
             }
         }
         return new LinkedList<>(set);
@@ -183,7 +165,7 @@ public class Mangakakalot extends MangaParser {
     /**
      * 解析图片列表，若为惰性加载，则 {@link ImageUrl lazy} 为 true
      * 惰性加载的情况，一次性不能拿到所有图片链接，例如网站使用了多次异步请求 {@link DM5#parseImages}，或需要跳转到不同页面
-     * 才能获取 {@link HHSSEE#parseImages}，这些情况一般可以根据页码构造出相应的请求链接，到阅读时再解析
+     * 才能获取 {@link HHSSEE parseImages}，这些情况一般可以根据页码构造出相应的请求链接，到阅读时再解析
      * 支持多个链接 ，例如 {@link IKanman#parseImages}
      *
      * @param html 页面源代码

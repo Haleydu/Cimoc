@@ -25,7 +25,6 @@ public abstract class MangaParser implements Parser {
     protected String mTitle;
     protected List<UrlFilter> filter = new ArrayList<>();
     private Category mCategory;
-    public static final String sourceToComic= "000";
 
     protected void init(Source source, Category category) {
         mTitle = source.getTitle();

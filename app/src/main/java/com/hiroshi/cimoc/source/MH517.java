@@ -97,23 +97,14 @@ public class MH517 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         int i=0;
         for (Node node : new Node(html).list("#mh-chapter-list-ol-0 > li")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
             String title = node.text("a > span");
             String path = node.hrefWithSplit("a", 2);
 
-            list.add(new Chapter(id, sourceComic, title, path));
-            i++;
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
         }
         return list;
     }

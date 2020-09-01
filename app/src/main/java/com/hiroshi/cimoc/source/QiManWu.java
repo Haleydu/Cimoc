@@ -121,41 +121,21 @@ public class QiManWu extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
-        int k=0;
-        for (Node node : new Node(ChapterHtml).list("div.catalog-list > ul > li")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+k);
-
-            String title = node.text("a");
-            String path = node.attr("li", "data-id");
-
-            list.add(new Chapter(id, sourceComic, title, path));
-            k++;
-        }
         try {
+            int k = 0;
+            for (Node node : new Node(ChapterHtml).list("div.catalog-list > ul > li")) {
+                String title = node.text("a");
+                String path = node.attr("li", "data-id");
+                list.add(new Chapter(Long.parseLong(sourceComic + "000" + k++), sourceComic, title, path));
+            }
             JSONArray array = new JSONArray(html);
             for (int i = 0; i != array.length(); ++i) {
-                Long sourceComic=null;
-                if (comic.getId() == null) {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-                } else {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-                }
-                Long id = Long.parseLong(sourceComic+"000"+k);
-
                 JSONObject chapter = array.getJSONObject(i);
                 String title = chapter.getString("name");
                 String path = chapter.getString("id");
-
-                list.add(new Chapter(id, sourceComic, title, path));
-                k++;
+                list.add(new Chapter(Long.parseLong(sourceComic + "000" + k++), sourceComic, title, path));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -72,25 +72,16 @@ class MangaBZ(source: Source?) : MangaParser() {
         return comic;
     }
 
-    override fun parseChapter(html: String, comic: Comic): List<Chapter> {
+    override fun parseChapter(html: String, comic: Comic, sourceComic: Long): List<Chapter> {
         val list: MutableList<Chapter> = LinkedList()
         var i = 0
         for (node in Node(html).list("#chapterlistload > a")) {
-            var sourceComic: Long?
-            sourceComic = if (comic.id == null) {
-                (comic.source.toString() + sourceToComic + "00").toLong()
-            } else {
-                (comic.source.toString() + sourceToComic + comic.id).toLong()
-            }
-            val id = (sourceComic.toString() + "000" + i).toLong()
-
             var title = node.attr("title")
             if (title == "") title = node.text()
             val path = node.href().trim('/')
 
             //list.add(Chapter(title, path))
-            list.add(Chapter(id, sourceComic, title, path))
-            i++
+            list.add(Chapter((sourceComic.toString() + "000" + i++).toLong(), sourceComic, title, path))
         }
         return list
     }

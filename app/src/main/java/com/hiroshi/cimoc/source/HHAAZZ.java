@@ -110,25 +110,15 @@ public class HHAAZZ extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
         for (Node node : body.list(".cVolList > ul")) {
             for (Node cnode : node.list("li")) {
-                Long sourceComic=null;
-                if (comic.getId() == null) {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-                } else {
-                    sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-                }
-                Long id = Long.parseLong(sourceComic+"000"+i);
-
                 String title = cnode.attr("a", "title").replace(this.title, "").trim();
                 String path = cnode.href("a");
-
-                list.add(new Chapter(id, sourceComic, title, path));
-                i++;
+                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
             }
         }
         return list;

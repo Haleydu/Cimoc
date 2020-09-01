@@ -54,7 +54,7 @@ public class Null extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) throws JSONException {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) throws JSONException {
         return null;
     }
 

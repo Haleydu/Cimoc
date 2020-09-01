@@ -79,7 +79,7 @@ public interface Parser {
      * @param html 页面源代码
      * @param comic 漫画名
      */
-    List<Chapter> parseChapter(String html, Comic comic) throws JSONException;
+    List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) throws JSONException;
 
     /**
      * 图片列表的 HTTP 请求

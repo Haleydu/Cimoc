@@ -92,26 +92,16 @@ public class Animx2 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         int i=0;
         for (Node node : new Node(html).list("div#oneCon2 > ul > li")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
             String title = node.attr("a", "title");
             Matcher mTitle = Pattern.compile("\\d+").matcher(title);
             title = mTitle.find() ? mTitle.group() : title;
             String path = node.hrefWithSplit("a", 0);
 
-            //list.add(new Chapter(title, path));
-            list.add(new Chapter(id, sourceComic, title, path));
-            i++;
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
         }
         return list;
     }

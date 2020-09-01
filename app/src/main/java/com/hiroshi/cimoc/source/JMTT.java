@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import okhttp3.Headers;
 import okhttp3.Request;
 
-public class Comic18 extends MangaParser {
+public class JMTT extends MangaParser {
 
     public static final int TYPE = 72;
     public static final String DEFAULT_TITLE = "禁漫天堂";
@@ -34,7 +34,7 @@ public class Comic18 extends MangaParser {
         return new Source(null, DEFAULT_TITLE, TYPE, false);
     }
 
-    public Comic18(Source source) {
+    public JMTT(Source source) {
         init(source, null);
     }
 
@@ -99,29 +99,20 @@ public class Comic18 extends MangaParser {
     }
 
     @Override
-    public List<Chapter> parseChapter(String html, Comic comic) {
+    public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         Node body = new Node(html);
         int i=0;
         for (Node node : body.list("#episode-block > div > div.episode > ul > a")) {
-            Long sourceComic=null;
-            if (comic.getId() == null) {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + "00");
-            } else {
-                sourceComic = Long.parseLong(comic.getSource() + sourceToComic + comic.getId());
-            }
-            Long id = Long.parseLong(sourceComic+"000"+i);
-
             if (i==0){
                 String startTitle = body.text(".col.btn.btn-primary.dropdown-toggle.reading").trim();
                 String startPath = body.href(".col.btn.btn-primary.dropdown-toggle.reading");
-                list.add(new Chapter(id, sourceComic, startTitle, startPath));
+                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, startTitle, startPath));
             }else {
                 String title = node.text("li").trim();
                 String path = node.href();
-                list.add(new Chapter(id, sourceComic, title, path));
+                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
             }
-            i++;
         }
         return Lists.reverse(list);
     }

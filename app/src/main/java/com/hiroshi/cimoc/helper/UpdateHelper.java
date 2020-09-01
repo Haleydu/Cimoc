@@ -90,7 +90,7 @@ public class UpdateHelper {
         list.add(MHLove.getDefaultSource());
         list.add(GuFeng.getDefaultSource());
         list.add(YYLS.getDefaultSource());
-        list.add(Comic18.getDefaultSource());
+        list.add(JMTT.getDefaultSource());
         list.add(Ohmanhua.getDefaultSource());
         list.add(CopyMH.getDefaultSource());
         list.add(WebtoonDongManManHua.getDefaultSource());

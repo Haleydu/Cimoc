@@ -179,8 +179,8 @@ public class SourceManager {
                 case YYLS.TYPE:
                     parser = new YYLS(source);
                     break;
-                case Comic18.TYPE:
-                    parser = new Comic18(source);
+                case JMTT.TYPE:
+                    parser = new JMTT(source);
                     break;
 
                 //haleydu
