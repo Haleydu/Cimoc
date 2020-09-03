@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
@@ -33,7 +34,7 @@ public class QiManWu extends MangaParser {
 
     public static final int TYPE = 53;
     public static final String DEFAULT_TITLE = "奇漫屋";
-    public static final String baseUrl = "http://qiman5.com";
+    public static final String baseUrl = "http://qiman6.com";
 
     public QiManWu(Source source) {
         init(source, null);
@@ -55,13 +56,14 @@ public class QiManWu extends MangaParser {
                 .url(url)
                 .post(body)
                 .addHeader("Referer", baseUrl)
-                .addHeader("Host", "qiman5.com")
+                .addHeader("Host", "qiman6.com")
                 .build();
     }
 
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
+        LogUtil.iLength("hrd",html);
         return new NodeIterator(body.list(".search-result > .comic-list-item")) {
             @Override
             protected Comic parse(Node node) {
@@ -110,13 +112,13 @@ public class QiManWu extends MangaParser {
 
     @Override
     public Request getChapterRequest(String html, String cid) {
-        String url = "http://qiman5.com/bookchapter/";
+        String url = "http://qiman6.com/bookchapter/";
         String id = Objects.requireNonNull(StringUtils.match(" data: \\{ \"id\":(.*?),", html, 1)).trim();
         String id2 = Objects.requireNonNull(StringUtils.match(", \"id2\":(.*?)\\},", html, 1)).trim();
         RequestBody body = new FormBody.Builder().add("id", id).add("id2", id2).build();
         return new Request.Builder().url(url).post(body)
                 .addHeader("Referer", baseUrl)
-                .addHeader("Host", "qiman5.com")
+                .addHeader("Host", "qiman6.com")
                 .build();
     }
 
@@ -145,7 +147,7 @@ public class QiManWu extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://qiman5.com%s%s.html", cid, path);
+        String url = StringUtils.format("http://qiman6.com%s%s.html", cid, path);
         return new Request.Builder().url(url).build();
     }
 
