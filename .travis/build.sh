@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-MD5=$(md5sum app/build/outputs/apk/release/PlayVideo*.apk)
+MD5=$(md5sum app/build/outputs/apk/release/Cimoc*.apk)
 VERSIONNAME=$(git describe --tags)
 printf "\n"
 printf "{"
