@@ -144,9 +144,14 @@ public class Ohmanhua extends MangaParser {
                 String decryptKey = "fw12558899ertyui";
                 String decodedData  = new String(Base64.decode(encodedData, Base64.DEFAULT));
                 String decryptedData = DecryptionUtils.decryptAES(decodedData, decryptKey);
-                String imgRelativePath = StringUtils.match("imgpath:\"(.+?)\"",decryptedData,1);
+                String imgRelativePath = StringUtils.match("enc_code2:\"(.+?)\"",decryptedData,1);
+                imgRelativePath  = new String(Base64.decode(imgRelativePath, Base64.DEFAULT));
+                imgRelativePath = DecryptionUtils.decryptAES(imgRelativePath, "fw125gjdi9ertyui");
                 String startImg = StringUtils.match("startimg:([0-9]+?),",decryptedData,1);
-                String totalPages = StringUtils.match("totalimg:([0-9]+?),",decryptedData,1);
+                String totalPages = StringUtils.match("enc_code1:\"(.+?)\",",decryptedData,1);
+                totalPages  = new String(Base64.decode(totalPages, Base64.DEFAULT));
+                totalPages = DecryptionUtils.decryptAES(totalPages, decryptKey);
+
                 for (int i = Integer.parseInt(Objects.requireNonNull(startImg));
                      i <= Integer.parseInt(Objects.requireNonNull(totalPages)); ++i) {
                     Long comicChapter = chapter.getId();

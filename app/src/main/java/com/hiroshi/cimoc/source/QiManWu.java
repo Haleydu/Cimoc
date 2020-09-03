@@ -10,7 +10,6 @@ import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
-import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.json.JSONArray;
@@ -63,7 +62,6 @@ public class QiManWu extends MangaParser {
     @Override
     public SearchIterator getSearchIterator(String html, int page) {
         Node body = new Node(html);
-        LogUtil.iLength("hrd",html);
         return new NodeIterator(body.list(".search-result > .comic-list-item")) {
             @Override
             protected Comic parse(Node node) {
