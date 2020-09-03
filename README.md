@@ -65,11 +65,6 @@ Online manga reader based on Android
 - 在 SourceManger 的 getParser() 方法中加入相应分支
 > case 里面无脑添加
 - 在 UpdateHelper 的 initSource() 方法中初始化图源
-> 同上
-- （可选）在BrowserFilter中registUrlListener添加相应type，实现关联浏览器操作
-> 在app\src\main\java\com\hiroshi\cimoc\ui\activity\BrowserFilter.java中
-> 修改后运行app\src\main\GenAndroidManifest.fish，使用自动生成的BrowserFilter-data.xml替换AndroidManifest.xml中相应部分
-
 
 ## cimoc设置
 - 阅读模式－翻页模式

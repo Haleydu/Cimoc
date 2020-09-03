@@ -84,24 +84,6 @@
 
         <service android:name=".service.DownloadService" />
 
-        <activity
-            android:name=".ui.activity.BrowserFilter"
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="cimoc" />
-
-            </intent-filter>
-        </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}"
