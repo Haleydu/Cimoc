@@ -3,10 +3,13 @@ package com.hiroshi.cimoc.misc;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 
 /**
@@ -26,7 +29,10 @@ public class NotificationWrapper {
             mManager.createNotificationChannel(new NotificationChannel(id, id, NotificationManager.IMPORTANCE_MIN));
         }
         mBuilder = new NotificationCompat.Builder(context, id);
-        mBuilder.setContentTitle(title).setSmallIcon(icon).setOngoing(ongoing);
+        mBuilder.setContentTitle(title)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), icon))
+                .setOngoing(ongoing);
         mId = id.hashCode();
     }
 
