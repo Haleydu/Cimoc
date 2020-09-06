@@ -301,6 +301,7 @@ public class Manga {
                             continue;
                         }
                     } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     subscriber.onNext(null);
                 }

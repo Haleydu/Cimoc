@@ -83,9 +83,9 @@
     <string name="comic_info_chapter">最后阅读</string>
     <string name="comic_info_time">阅读时间</string>
 
-    <string name="favorite_check_update_fail">检查更新失败</string>
+    <string name="favorite_check_update_fail">检查漫画更新失败</string>
     <string name="favorite_check_update_confirm">是否检查更新</string>
-    <string name="favorite_check_update_doing">正在检查更新</string>
+    <string name="favorite_check_update_doing">正在检查已收藏漫画更新</string>
     <string name="favorite_check_update_done">检查更新完成</string>
     <string name="favorite_delete">取消收藏</string>
     <string name="favorite_delete_confirm">是否取消收藏</string>
