@@ -84,7 +84,7 @@
     <string name="favorite_check_update_fail">檢查漫畫更新失敗</string>
     <string name="favorite_check_update_confirm">是否檢查更新</string>
     <string name="favorite_check_update_doing">正在檢查已收藏漫畫更新</string>
-    <string name="favorite_check_update_done">檢查更新完成</string>
+    <string name="favorite_check_update_done">檢查漫畫更新完成</string>
     <string name="favorite_delete">取消收藏</string>
     <string name="favorite_delete_confirm">是否取消收藏</string>
 

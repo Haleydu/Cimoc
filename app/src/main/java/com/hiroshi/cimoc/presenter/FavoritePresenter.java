@@ -1,7 +1,15 @@
 package com.hiroshi.cimoc.presenter;
 
+import android.content.Context;
+import android.os.Bundle;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.hiroshi.cimoc.App;
+import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.core.Manga;
+import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.ComicManager;
+import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.manager.TagRefManager;
 import com.hiroshi.cimoc.model.Comic;
@@ -127,11 +135,26 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                     @Override
                     public void onCompleted() {
                         mBaseView.onComicCheckComplete();
+                        if(App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_FIREBASE_EVENT, true)) {
+                            Context context = App.getAppContext();
+                            Bundle bundle = new Bundle();
+                            bundle.putString(FirebaseAnalytics.Param.CONTENT, context.getString(R.string.favorite_check_update_done));
+                            bundle.putBoolean(FirebaseAnalytics.Param.SUCCESS, true);
+                            FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
+                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.BEGIN_CHECKOUT, bundle);
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         mBaseView.onComicCheckFail();
+                        if(App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_FIREBASE_EVENT, true)) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(FirebaseAnalytics.Param.CONTENT, e.toString());
+                            bundle.putBoolean(FirebaseAnalytics.Param.SUCCESS, false);
+                            FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(App.getAppContext());
+                            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.BEGIN_CHECKOUT, bundle);
+                        }
                     }
 
                     @Override
