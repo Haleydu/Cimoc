@@ -47,6 +47,7 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar.OnProgressChangeListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,6 +55,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -140,7 +142,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         super.initTheme();
         mHideNav = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_NAV, false);
         mShowTopbar = mPreference.getBoolean(PreferenceManager.PREF_OTHER_SHOW_TOPBAR, false);
-        if (!mHideNav || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+        if (!mHideNav) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
         if (mPreference.getBoolean(PreferenceManager.PREF_READER_KEEP_BRIGHT, false)) {
@@ -150,7 +152,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_ORIENTATION : PreferenceManager.PREF_READER_STREAM_ORIENTATION;
         orientation = mPreference.getInt(key, PreferenceManager.READER_ORIENTATION_PORTRAIT);
-        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
+        final int[] oArray = {ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED};
         setRequestedOrientation(oArray[orientation]);
     }
 
@@ -181,7 +183,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         mRecyclerView.setItemViewCacheSize(2);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NotNull RecyclerView recyclerView, int dx, int dy) {
                 mLastDx = dx;
                 mLastDy = dy;
             }
@@ -219,7 +221,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     private void initReaderAdapter() {
-        mReaderAdapter = new ReaderAdapter(this, new LinkedList<ImageUrl>());
+        mReaderAdapter = new ReaderAdapter(this, new LinkedList<>());
         mReaderAdapter.setTapGestureListener(this);
         mReaderAdapter.setLazyLoadListener(this);
         mReaderAdapter.setScaleFactor(mPreference.getInt(PreferenceManager.PREF_READER_SCALE_FACTOR, 200) * 0.01f);
@@ -247,7 +249,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
                 ClickEvents.getPageLongClickEventChoice(mPreference) : ClickEvents.getStreamLongClickEventChoice(mPreference);
         long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
         List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
-        mPresenter.loadInit(id, list.toArray(new Chapter[list.size()]));
+        mPresenter.loadInit(id, Objects.requireNonNull(list).toArray(new Chapter[list.size()]));
     }
 
     @Override
@@ -524,18 +526,18 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
             // earliest historical position in the batch
             for (int i = 0; i < historySize; i++) {
                 // Process the event at historical position i
-                processJoystickInput(event, i);
+                processJoystickInput(event);
             }
 
             // Process the current movement sample in the batch (position -1)
-            processJoystickInput(event, -1);
+            processJoystickInput(event);
             return true;
         }
         return super.onGenericMotionEvent(event);
     }
 
-    private boolean JoyLock[] = {false, false};
-    private int JoyEvent[] = {7, 8};
+    private boolean[] JoyLock = {false, false};
+    private int[] JoyEvent = {7, 8};
     private float mControllerTrigThreshold = 0.3f;
 
 
@@ -551,7 +553,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         }
     }
 
-    private void processJoystickInput(MotionEvent event, int historyPos) {
+    private void processJoystickInput(MotionEvent event) {
         checkKey(event.getAxisValue(MotionEvent.AXIS_GAS), ClickEvents.JoyLocks.RT);
         checkKey(event.getAxisValue(MotionEvent.AXIS_BRAKE), ClickEvents.JoyLocks.LT);
     }
@@ -574,7 +576,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
             position = mLayoutManager.findFirstVisibleItemPosition();
         }
         RetryDraweeView draweeView = ((ReaderAdapter.ImageHolder)
-                mRecyclerView.findViewHolderForAdapterPosition(position)).draweeView;
+                Objects.requireNonNull(mRecyclerView.findViewHolderForAdapterPosition(position))).draweeView;
         float limitX = point.x / 3.0f;
         float limitY = point.y / 3.0f;
         if (x < limitX) {
@@ -681,7 +683,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
             String title = mChapterTitle.getText().toString();
             for (String url : urls) {
                 if (url.startsWith("file")) {
-                    mPresenter.savePicture(new FileInputStream(new File(Uri.parse(url).getPath())), url, title, progress);
+                    mPresenter.savePicture(new FileInputStream(new File(Objects.requireNonNull(Uri.parse(url).getPath()))), url, title, progress);
                     return;
                 } else if (url.startsWith("content")) {
                     mPresenter.savePicture(getContentResolver().openInputStream(Uri.parse(url)), url, title, progress);
@@ -723,7 +725,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     }
 
     protected void switchScreen() {
-        final int oArray[] = {ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
+        final int[] oArray = {ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT};
         setRequestedOrientation(oArray[this.getResources().getConfiguration().orientation]);
     }
 

@@ -34,7 +34,7 @@ public class MH160 extends MangaParser {
     private static final String baseUrl = "https://m.mh160.co";
 
     public static Source getDefaultSource() {
-        return new Source(null, DEFAULT_TITLE, TYPE, false);
+        return new Source(null, DEFAULT_TITLE, TYPE, true);
     }
 
     public MH160(Source source) {
