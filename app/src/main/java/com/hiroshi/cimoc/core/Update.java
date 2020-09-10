@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.king.app.dialog.AppDialog;
@@ -122,18 +123,19 @@ public class Update {
 //        return updateJson;
 //    }
 
-    public static Observable<String> checkGitee() {
-        return Observable.create(new Observable.OnSubscribe<String>() {
+    public static Observable<UpdateJson> checkGitee() {
+        return Observable.create(new Observable.OnSubscribe<UpdateJson>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super UpdateJson> subscriber) {
                 OkHttpClient client = App.getHttpClient();
                 Request request = new Request.Builder().url(UPDATE_URL_GITEE).build();
                 Response response = null;
                 try {
                     response = client.newCall(request).execute();
                     if (response.isSuccessful()) {
-                        String json = response.body().string();
-                        subscriber.onNext(json);
+                        assert response.body() != null;
+                        UpdateJson updateJson = new Gson().fromJson(response.body().string(), UpdateJson.class);
+                        subscriber.onNext(updateJson);
                         subscriber.onCompleted();
                     }
                 } catch (Exception e) {

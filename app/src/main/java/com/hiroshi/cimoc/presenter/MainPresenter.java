@@ -1,15 +1,13 @@
 package com.hiroshi.cimoc.presenter;
 
-import android.widget.Toast;
-
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.core.Update;
+import com.hiroshi.cimoc.core.UpdateJson;
 import com.hiroshi.cimoc.manager.ComicManager;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.rx.RxEvent;
-import com.hiroshi.cimoc.ui.activity.MainActivity;
 import com.hiroshi.cimoc.ui.view.MainView;
 
 import org.json.JSONException;
@@ -31,12 +29,6 @@ import rx.schedulers.Schedulers;
 public class MainPresenter extends BasePresenter<MainView> {
 
     private ComicManager mComicManager;
-    private static final String APP_VERSIONNAME = "versionName";
-    private static final String APP_VERSIONCODE = "versionCode";
-    private static final String APP_CONTENT = "content";
-    private static final String APP_MD5 = "md5";
-    private static final String APP_URL= "url";
-
     private static final String SOURCE_URL = "https://raw.githubusercontent.com/Haleydu/update/master/sourceBaseUrl.json";
 
     @Override
@@ -99,24 +91,17 @@ public class MainPresenter extends BasePresenter<MainView> {
     public void checkGiteeUpdate(final int appVersionCode) {
         mCompositeSubscription.add(Update.checkGitee()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<String>() {
+                .subscribe(new Action1<UpdateJson>() {
                     @Override
-                    public void call(String json) {
-                        try {
-                            String versionName = new JSONObject(json).getString(APP_VERSIONNAME);
-                            String versionCodeString = new JSONObject(json).getString(APP_VERSIONCODE);
-                            int ServerAppVersionCode = Integer.parseInt(versionCodeString);
-                            String content = new JSONObject(json).getString(APP_CONTENT);
-                            String md5 = new JSONObject(json).getString(APP_MD5);
-                            String url = new JSONObject(json).getString(APP_URL);
-                            if (appVersionCode < ServerAppVersionCode) {
-                                mBaseView.onUpdateReady(versionName,content,url,ServerAppVersionCode,md5);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    public void call(UpdateJson updateJson) {
+                        if (appVersionCode < updateJson.getVersionCode()) {
+                            mBaseView.onUpdateReady(
+                                    updateJson.getVersionName(),
+                                    updateJson.getContent(),
+                                    updateJson.getUrl(),
+                                    updateJson.getVersionCode(),
+                                    updateJson.getMd5());
                         }
-
-
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -174,5 +159,4 @@ public class MainPresenter extends BasePresenter<MainView> {
                             }
                         }));
     }
-
 }
