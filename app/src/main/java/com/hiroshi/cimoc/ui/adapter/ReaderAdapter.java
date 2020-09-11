@@ -238,10 +238,15 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
      * 假设一定找得到
      */
     public int getPositionByNum(int current, int num, boolean reverse) {
-        while (mDataSet.get(current).getNum() != num) {
-            current = reverse ? current - 1 : current + 1;
+        try {
+            while (mDataSet.get(current).getNum() < num) {
+                current = reverse ? current - 1 : current + 2;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            return current;
         }
-        return current;
     }
 
     public int getPositionById(Long id) {

@@ -135,9 +135,9 @@ public class JMTT extends MangaParser {
                 String img2 = node.attr("img","data-original");
                 String reg[] = imgpath.split("\\/");
                 if (img1.contains(reg[2])){
-                    list.add(new ImageUrl(id, comicChapter, i++, img1, false));
+                    list.add(new ImageUrl(id, comicChapter, ++i, img1, false));
                 }else if (img2.contains(reg[2])){
-                    list.add(new ImageUrl(id, comicChapter, i++, img2, false));
+                    list.add(new ImageUrl(id, comicChapter, ++i, img2, false));
                 }
             }
         } catch (Exception e){

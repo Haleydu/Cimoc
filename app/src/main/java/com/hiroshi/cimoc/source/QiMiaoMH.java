@@ -131,7 +131,7 @@ public class QiMiaoMH extends MangaParser {
             for (int i = 0; i < jsonArray.length(); ++i) {
                 Long comicChapter = chapter.getId();
                 Long id = Long.parseLong(comicChapter + "000" + i);
-                list.add(new ImageUrl(id, comicChapter, i, jsonArray.getString(i), false));
+                list.add(new ImageUrl(id, comicChapter, i + 1, jsonArray.getString(i), false));
             }
         } catch (JSONException e) {
             e.printStackTrace();

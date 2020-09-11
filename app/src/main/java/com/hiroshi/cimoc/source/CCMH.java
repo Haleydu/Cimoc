@@ -156,7 +156,7 @@ public class CCMH extends MangaParser {
         for (int i = 0; i < pageCount; i++) {
             Long comicChapter = chapter.getId();
             Long id = Long.parseLong(comicChapter + "000" + i);
-            list.add(new ImageUrl(id, comicChapter, i, StringUtils.format("http://m.ccmh6.com/manhua/%s/%s.html?p=%d", _cid, _path, i + 1), true));
+            list.add(new ImageUrl(id, comicChapter, i+1, StringUtils.format("http://m.ccmh6.com/manhua/%s/%s.html?p=%d", _cid, _path, i + 1), true));
         }
         return list;
     }

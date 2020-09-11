@@ -178,8 +178,7 @@ public class WebtoonDongManManHua extends MangaParser {
                 if (key.contains("layer")) {
                     Long comicChapter = chapter.getId();
                     Long id = Long.parseLong(comicChapter + "000" + i);
-                    list.add(new ImageUrl(id, comicChapter, i, motiontoonPath + motiontoonJson.getString(key), false));
-                    i++;
+                    list.add(new ImageUrl(id, comicChapter, i++, motiontoonPath + motiontoonJson.getString(key), false));
                 }
             }
         } catch (Manga.NetworkErrorException e) {

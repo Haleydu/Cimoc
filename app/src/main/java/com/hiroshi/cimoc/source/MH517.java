@@ -130,7 +130,7 @@ public class MH517 extends MangaParser {
 
                 Long comicChapter = chapter.getId();
                 Long id = Long.parseLong(comicChapter + "000" + i);
-                list.add(new ImageUrl(id, comicChapter, i++, url, false));
+                list.add(new ImageUrl(id, comicChapter, ++i, url, false));
             }
         } finally {
             return list;
