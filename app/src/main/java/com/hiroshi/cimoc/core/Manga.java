@@ -289,9 +289,9 @@ public class Manga {
                         .readTimeout(1500, TimeUnit.MILLISECONDS)
                         .build();
                 for (Comic comic : list) {
-                    Parser parser = manager.getParser(comic.getSource());
-                    Request request = parser.getCheckRequest(comic.getCid());
                     try {
+                        Parser parser = manager.getParser(comic.getSource());
+                        Request request = parser.getCheckRequest(comic.getCid());
                         String update = parser.parseCheck(getResponseBody(client, request));
                         if (comic.getUpdate() != null && update != null && !comic.getUpdate().equals(update)) {
                             comic.setFavorite(System.currentTimeMillis());
