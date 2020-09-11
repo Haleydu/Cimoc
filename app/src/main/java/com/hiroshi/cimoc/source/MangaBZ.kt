@@ -152,6 +152,15 @@ class MangaBZ(source: Source?) : MangaParser() {
         return image
     }
 
+    override fun getCheckRequest(cid: String?): Request? {
+        return getInfoRequest(cid!!)
+    }
+
+    override fun parseCheck(html: String?): String? {
+        return StringUtils.match("(..月..號 | ....-..-..)",
+                Node(html).text(".detail-list-form-title"), 1)
+    }
+
     override fun getHeader(): Headers {
         return Headers.of("Referer", "http://www.mangabz.com/")
     }
