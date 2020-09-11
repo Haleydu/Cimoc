@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 
+import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.ImageUrl;
 import com.hiroshi.cimoc.saf.DocumentFile;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
@@ -144,7 +145,7 @@ public class Storage {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static List<ImageUrl> buildImageUrlFromDocumentFile(List<DocumentFile> list, String chapter, int max) {
+    public static List<ImageUrl> buildImageUrlFromDocumentFile(List<DocumentFile> list, String chapterStr, int max, Chapter chapter) {
         int count = 0;
         List<ImageUrl> result = new ArrayList<>(list.size());
         for (DocumentFile file : list) {
@@ -156,10 +157,12 @@ public class Storage {
                 if (uri.startsWith("file")) {   // content:// 解码会出错 file:// 中文路径如果不解码 Fresco 读取不了
                     uri = DecryptionUtils.urlDecrypt(uri);
                 }
-                ImageUrl image = new ImageUrl(++count, uri, false);
+                Long comicChapter = chapter.getId();
+                Long id = Long.parseLong(comicChapter + "300" + count);
+                ImageUrl image = new ImageUrl(id, chapter.getSourceComic(),++count, uri, false);
                 image.setHeight(opts.outHeight);
                 image.setWidth(opts.outWidth);
-                image.setChapter(chapter);
+                image.setChapter(chapterStr);
                 result.add(image);
             } catch (Exception e) {
                 e.printStackTrace();

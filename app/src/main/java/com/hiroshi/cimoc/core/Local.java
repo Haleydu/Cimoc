@@ -84,8 +84,7 @@ public class Local {
                         return lhs.getName().compareTo(rhs.getName());
                     }
                 });
-                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter.getTitle(), chapter.getCount());
-
+                List<ImageUrl> list = Storage.buildImageUrlFromDocumentFile(files, chapter.getTitle(), chapter.getCount(), chapter);
                 if (list.size() != 0) {
                     subscriber.onNext(list);
                     subscriber.onCompleted();

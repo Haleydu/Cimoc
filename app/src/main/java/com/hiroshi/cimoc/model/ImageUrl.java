@@ -7,6 +7,8 @@ import org.greenrobot.greendao.annotation.NotNull;
 import org.greenrobot.greendao.converter.PropertyConverter;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.greenrobot.greendao.annotation.Generated;
 
 /**
@@ -18,9 +20,8 @@ public class ImageUrl {
     public static final int STATE_NULL = 0;
     public static final int STATE_PAGE_1 = 1;
     public static final int STATE_PAGE_2 = 2;
-    private static AtomicInteger count = new AtomicInteger(0);
 
-    @Id
+    @Id(autoincrement = true)
     private Long id; // 唯一标识
     @NotNull
     private Long comicChapter;
@@ -36,28 +37,9 @@ public class ImageUrl {
     private boolean success;    // 图片显示成功
     private boolean download;   // 下载的图片
 
-    public ImageUrl(int num, String url, boolean lazy) {
-        this(num, new String[]{url}, lazy);
-    }
-
-    public ImageUrl(int num, String[] urls, boolean lazy) {
-        this(num, urls, STATE_NULL, lazy);
-    }
-
-    public ImageUrl(int num, String[] urls, int state, boolean lazy) {
-        this(num, urls, null, state, lazy);
-    }
-
-    public ImageUrl(int num, String[] urls, String chapter, int state, boolean lazy) {
-        this.num = num;
-        this.urls = urls;
-        this.chapter = chapter;
-        this.state = state;
-        this.height = 0;
-        this.width = 0;
-        this.lazy = lazy;
-        this.loading = false;
-        this.success = false;
+    public ImageUrl(Long id, Long comicChapter, int num, String[] urls, String chapter, int state, boolean lazy) {
+        this(id, comicChapter, num, urls, chapter, state, 0, 0, lazy,
+                false, false,false);
     }
 
     public ImageUrl(Long id,Long comicChapter,int num, String url, boolean lazy) {

@@ -171,7 +171,7 @@ public class Manga {
         }).subscribeOn(Schedulers.io());
     }
 
-    public static List<ImageUrl> getImageUrls(Parser parser, int source, String cid, String path, String title,ChapterManager mChapterManager) throws InterruptedIOException {
+    public static List<ImageUrl> getImageUrls(Parser parser, int source, String cid, String path, String title, ChapterManager mChapterManager) throws InterruptedIOException {
         List<ImageUrl> list = new ArrayList<>();
 //        Mongo mongo = new Mongo();
         Response response = null;
@@ -183,9 +183,9 @@ public class Manga {
             Request request = parser.getImagesRequest(cid, path);
             response = App.getHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
-                Chapter chapter = mChapterManager.getChapter(path,title);
-                if (chapter!=null){
-                    list.addAll(parser.parseImages(response.body().string(),chapter));
+                List<Chapter> chapter = mChapterManager.getChapter(path, title);
+                if (chapter != null && chapter.size() >= 1) {
+                    list.addAll(parser.parseImages(response.body().string(), chapter.get(0)));
                 }
                 if (list.size() == 0) {
                     list.addAll(parser.parseImages(response.body().string()));

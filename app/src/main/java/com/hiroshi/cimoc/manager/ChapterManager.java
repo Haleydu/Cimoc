@@ -54,10 +54,10 @@ public class ChapterManager {
                 .list();
     }
 
-    public Chapter getChapter(String path,String title) {
+    public List<Chapter> getChapter(String path,String title) {
         return mChapterDao.queryBuilder()
                 .where(ChapterDao.Properties.Path.eq(path),ChapterDao.Properties.Title.eq(title))
-                .unique();
+                .list();
     }
 
 
