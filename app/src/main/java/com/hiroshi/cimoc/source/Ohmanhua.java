@@ -29,8 +29,8 @@ public class Ohmanhua extends MangaParser {
 
     public static final int TYPE = 71;
     public static final String DEFAULT_TITLE = "oh漫画";
-    private static final String baseUrl = "https://www.ohmanhua.com";
-    private static final String serverUrl = "https://img.ohmanhua.com/comic/";
+    private static final String baseUrl = "https://www.cocomanhua.com";
+    private static final String serverUrl = "https://img.cocomanhua.com/comic/";
 
     public Ohmanhua(Source source) {
         init(source, null);
@@ -81,7 +81,7 @@ public class Ohmanhua extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("www.ohmanhua.com"));
+        filter.add(new UrlFilter("www.cocomanhua.com"));
     }
 
     @Override
