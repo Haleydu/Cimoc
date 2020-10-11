@@ -13,6 +13,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.view.DraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.listener.BaseRequestListener;
 import com.facebook.imagepipeline.request.ImageRequest;
@@ -138,6 +139,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
                         new ResizeOptions(App.mHeightPixels, App.mWidthPixels);
                 imageRequestBuilder.setResizeOptions(options);
             }*/
+            // thanks for :
+            // https://github.com/zfdang/zSMTH-Android/blob/master/app/src/main/java/com/zfdang/zsmth_android/fresco/WrapContentDraweeView.java:199
+            imageRequestBuilder.setResizeOptions(new ResizeOptions(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE));
             imageRequestBuilder.setRequestListener(new BaseRequestListener() {
                 @Override
                 public void onRequestSuccess(ImageRequest request, String requestId, boolean isPrefetch) {
