@@ -39,24 +39,8 @@ public class Hhxxee extends MangaParser {
         init(source, null);
     }
 
-    private static final String[] servers = {
-            "http://165.94201314.net/dm01/",
-            "http://165.94201314.net/dm02/",
-            "http://165.94201314.net/dm03/",
-            "http://165.94201314.net/dm04/",
-            "http://165.94201314.net/dm05/",
-            "http://165.94201314.net/dm06/",
-            "http://165.94201314.net/dm07/",
-            "http://165.94201314.net/dm08/",
-            "http://165.94201314.net/dm09/",
-            "http://165.94201314.net/dm10/",
-            "http://165.94201314.net/dm11/",
-            "http://165.94201314.net/dm12/",
-            "http://165.94201314.net/dm13/",
-            "http://173.231.57.238/dm14/",
-            "http://165.94201314.net/dm15/",
-            "http://142.4.34.102/dm16/"
-    };
+    private static final String serverstr = "http://20.125084.com/dm01/|http://20.125084.com/dm02/|http://20.125084.com/dm03/|http://20.125084.com/dm04/|http://20.125084.com/dm05/|http://20.125084.com/dm06/|http://20.125084.com/dm07/|http://20.125084.com/dm08/|http://20.125084.com/dm09/|http://20.125084.com/dm10/|http://20.125084.com/dm11/|http://20.125084.com/dm12/|http://20.125084.com/dm13/|http://20.125084.com/dm14/|http://20.125084.com/dm15/|http://20.125084.com/dm16/";
+    private static final String[] servers = serverstr.split("\\|");
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
