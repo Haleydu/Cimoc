@@ -94,7 +94,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .subscribe(new Action1<UpdateJson>() {
                     @Override
                     public void call(UpdateJson updateJson) {
-                        if (appVersionCode < updateJson.getVersionCode()) {
+                        if (appVersionCode < updateJson.getVersionCode() ||
+                                appVersionCode != updateJson.getVersionCode()) {
                             mBaseView.onUpdateReady(
                                     updateJson.getVersionName(),
                                     updateJson.getContent(),
