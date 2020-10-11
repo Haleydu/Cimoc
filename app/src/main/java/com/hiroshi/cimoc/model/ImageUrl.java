@@ -9,13 +9,13 @@ public class ImageUrl {
 
     public static final int STATE_NULL = 0;
     public static final int STATE_PAGE_1 = 1;
-    public static final int STATE_PAGE_2 = 2;
+    //public static final int STATE_PAGE_Finish = 2;
     private static AtomicInteger count = new AtomicInteger(0);
     private int id; // 唯一标识
     private int num;    // 章节的第几页
     private String[] urls;
     private String chapter; // 所属章节
-    private int state;  // 切图时表示状态 这里可以改为编号 比如长图可以切为多张方便加载
+    private int state;  // 切图时表示状态编号 比如长图可以切为多张方便加载
     private int height; // 图片高度
     private int width;  // 图片宽度
     private boolean lazy;   // 懒加载
@@ -82,6 +82,10 @@ public class ImageUrl {
 
     public void setState(int state) {
         this.state = state;
+    }
+
+    public void nextState() {
+        this.state++;
     }
 
     public int getHeight() {

@@ -72,15 +72,17 @@ public class MangaPostprocessor extends BasePostprocessor {
                 mPosX = mImage.getState() == ImageUrl.STATE_PAGE_1 ? 0 : mWidth;
             mPosY = 0;
         } else if (needVerticalPaging()) {
-            mHeight = mHeight / 2;
-            if (mImage.getState() == ImageUrl.STATE_NULL) {
-                mImage.setState(ImageUrl.STATE_PAGE_1);
+            int mBase = mHeight / (mWidth * 2);
+            mHeight = mHeight / mBase;
+            mImage.nextState();
+            if(mImage.getState() < mBase) {
                 RxBus.getInstance().post(new RxEvent(RxEvent.EVENT_PICTURE_PAGING, mImage));
             }
+
             mPosX = 0;
-            mPosY = mImage.getState() == ImageUrl.STATE_PAGE_1 ? 0 : mHeight;
+            mPosY = (mImage.getState()-1) * mHeight;
             if (reverse)
-                mPosY = mImage.getState() == ImageUrl.STATE_PAGE_1 ? mHeight : 0;
+                mPosY = (mBase - mImage.getState()) * mHeight;
         }
     }
 

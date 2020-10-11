@@ -346,7 +346,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     public void onPicturePaging(ImageUrl image) {
         int pos = mReaderAdapter.getPositionById(image.getId());
         mReaderAdapter.add(pos + 1, new ImageUrl(image.getNum(), image.getUrls(),
-                image.getChapter(), ImageUrl.STATE_PAGE_2, false));
+                image.getChapter(), image.getState(), false));
     }
 
     @Override
