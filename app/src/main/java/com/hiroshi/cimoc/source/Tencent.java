@@ -91,11 +91,11 @@ public class Tencent extends MangaParser {
     @Override
     public void parseInfo(String html, Comic comic) throws UnsupportedEncodingException {
         Node body = new Node(html);
-        String title = body.text("li.head-info-title > h1");
-        String cover = body.src("div.head-info-cover > img");
-        String update = body.text("span.comicList-info-time");
-        String author = body.text("li.head-info-author");
-        String intro = body.text("div.detail-summary > p");
+        String title = body.text("div.head-title-tags > h1");
+        String cover = body.src("div.head-banner > img");
+        String update = "";
+        String author = body.text("li.author-wr");
+        String intro = body.text("div.head-info-desc");
         boolean status = isFinish("连载中");//todo: fix here
         comic.setInfo(title, cover, update, intro, author, status);
     }
