@@ -146,7 +146,10 @@ public class QiManWu extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("http://qiman6.com%s%s.html", cid, path);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+                .addHeader("Referer", baseUrl)
+                .addHeader("Host", "qiman6.com")
+                .url(url).build();
     }
 
     @Override
@@ -159,7 +162,7 @@ public class QiManWu extends MangaParser {
             for (int i = 0; i != array.length; ++i) {
                 Long comicChapter = chapter.getId();
                 Long id = Long.parseLong(comicChapter + "000" + i);
-                list.add(new ImageUrl(id,comicChapter,i + 1, array[i], false));
+                list.add(new ImageUrl(id, comicChapter, i + 1, array[i], false));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,6 +187,6 @@ public class QiManWu extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", baseUrl);
+        return Headers.of("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
     }
 }
