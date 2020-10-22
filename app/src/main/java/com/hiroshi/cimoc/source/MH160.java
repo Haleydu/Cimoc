@@ -12,6 +12,7 @@ import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -31,7 +32,7 @@ public class MH160 extends MangaParser {
 
     public static final int TYPE = 28;
     public static final String DEFAULT_TITLE = "漫画160";
-    private static final String baseUrl = "https://m.mh160.co";
+    private static final String baseUrl = "https://www.mh160.xyz";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
@@ -49,7 +50,7 @@ public class MH160 extends MangaParser {
         String url = StringUtils.format(baseUrl+"/statics/search.aspx?key=%s", keyword);
         return new Request.Builder()
                 .addHeader("Referer", baseUrl)
-                .addHeader("Host","www.mh160.co")
+                .addHeader("Host","www.mh160.xyz")
                 .url(url)
                 .build();
     }
@@ -76,7 +77,7 @@ public class MH160 extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.mh160.co"));
+        filter.add(new UrlFilter("www.mh160.xyz"));
     }
 
     @Override
@@ -85,7 +86,7 @@ public class MH160 extends MangaParser {
         return new Request.Builder()
                 .url(url)
                 .addHeader("Referer", baseUrl)
-                .addHeader("Host","www.mh160.co")
+                .addHeader("Host","www.mh160.xyz")
                 .build();
     }
 
@@ -121,7 +122,7 @@ public class MH160 extends MangaParser {
         return new Request.Builder()
                 .url(url)
                 .addHeader("Referer", baseUrl)
-                .addHeader("Host","www.mh160.co")
+                .addHeader("Host","www.mh160.xyz")
                 .build();
     }
 
