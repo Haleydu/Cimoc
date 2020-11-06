@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
+
 import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -130,6 +132,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
         ImageRequest[] request = new ImageRequest[urls.length];
         for (int i = 0; i != urls.length; ++i) {
             final String url = urls[i];
+            if (url==null){
+                continue;
+            }
             ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder
                     .newBuilderWithSource(Uri.parse(url))
                     .setProgressiveRenderingEnabled(true);
@@ -137,7 +142,7 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             // TODO 切图后可能需要修改图片高度和宽度
             MangaPostprocessor processor = new MangaPostprocessor(imageUrl, isPaging, isPagingReverse, isWhiteEdge);
             imageRequestBuilder.setPostprocessor(processor);
-           if (!isCloseAutoResizeImage) {
+            if (!isCloseAutoResizeImage) {
                 ResizeOptions options = isVertical ? new ResizeOptions(App.mWidthPixels, App.mHeightPixels) :
                         new ResizeOptions(App.mHeightPixels, App.mWidthPixels);
                 imageRequestBuilder.setResizeOptions(options);
@@ -242,9 +247,9 @@ public class ReaderAdapter extends BaseAdapter<ImageUrl> {
             while (mDataSet.get(current).getNum() < num) {
                 current = reverse ? current - 1 : current + 2;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             return current;
         }
     }
