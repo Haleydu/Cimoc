@@ -262,15 +262,13 @@ public class MangaPostprocessor extends BasePostprocessor {
     public void decodeJMTTImage(Bitmap sourceBitmap, CloseableReference<Bitmap> reference){
         String url = mImage.getUrl();
         int scramble_id = 220980;
-        String id = null;
         int chapterId = 0;
-        if (url.startsWith("file://")){
-            id =  StringUtils.match("Cimoc/download/(72)/", url, 1);
+        if (url.startsWith("file://Cimoc/download/72/")){
             chapterId = Integer.parseInt(Objects.requireNonNull(StringUtils.match("/-photo-(\\d*)/", url, 1)));
         }
         if((url.contains("media/photos")
                 && Integer.parseInt(url.substring(url.indexOf("photos/") + 7, url.lastIndexOf("/"))) > scramble_id)
-                || (id != null && !id.equals("") && chapterId>scramble_id)){
+                || chapterId > scramble_id) {
             Bitmap resultBitmap = reference.get();
             float rows = 10;
             float chunkHeight = mHeight / rows;
