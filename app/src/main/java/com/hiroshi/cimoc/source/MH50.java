@@ -52,7 +52,7 @@ public class MH50 extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = StringUtils.format("https://m.manhuabei.com/search/?keywords=%s&page=%d", keyword, page);
+            String url = StringUtils.format("https://m.manhuadai.com/search/?keywords=%s&page=%d", keyword, page);
             return HttpUtils.getSimpleMobileRequest(url);
         }
         return null;
@@ -77,17 +77,17 @@ public class MH50 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("https://m.manhuabei.com/manhua/%s/", cid);
+        return StringUtils.format("https://m.manhuadai.com/manhua/%s/", cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.manhuabei.com"));
+        filter.add(new UrlFilter("m.manhuadai.com"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("https://m.manhuabei.com/manhua/%s/", cid);
+        String url = StringUtils.format("https://m.manhuadai.com/manhua/%s/", cid);
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
@@ -121,7 +121,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.manhuabei.com/manhua/%s/%s", cid, path);
+        String url = StringUtils.format("https://m.manhuadai.com/manhua/%s/%s", cid, path);
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
@@ -239,9 +239,9 @@ public class MH50 extends MangaParser {
                     .concat(args[CATEGORY_PROGRESS]).trim();
             String finalPath;
             if (path.isEmpty()) {
-                finalPath = StringUtils.format("https://m.manhuabei.com/list/");
+                finalPath = StringUtils.format("https://m.manhuadai.com/list/");
             } else {
-                finalPath = StringUtils.format("https://m.manhuabei.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
+                finalPath = StringUtils.format("https://m.manhuadai.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
             }
             return finalPath;
         }
