@@ -3,6 +3,8 @@ package com.hiroshi.cimoc.fresco.processor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.util.Log;
 
 import com.facebook.cache.common.CacheKey;
 import com.facebook.cache.common.SimpleCacheKey;
@@ -263,25 +265,31 @@ public class MangaPostprocessor extends BasePostprocessor {
         String url = mImage.getUrl();
         int scramble_id = 220980;
         int chapterId = 0;
-        if (url.startsWith("file://Cimoc/download/72/")){
+        if (url.contains("/Cimoc/download/72/")){
             chapterId = Integer.parseInt(Objects.requireNonNull(StringUtils.match("/-photo-(\\d*)/", url, 1)));
         }
         if((url.contains("media/photos")
                 && Integer.parseInt(url.substring(url.indexOf("photos/") + 7, url.lastIndexOf("/"))) > scramble_id)
                 || chapterId > scramble_id) {
             Bitmap resultBitmap = reference.get();
-            float rows = 10;
-            float chunkHeight = mHeight / rows;
-            Canvas canvas = new Canvas(resultBitmap);
+            int rows = 10;
+            int remainder  = mHeight % rows;
+            //Canvas canvas = new Canvas(resultBitmap);
             for (int x = 0; x < 10; x++) {
-                // 要裁剪的区域
-                Rect crop = new Rect(0, mHeight - (int) (chunkHeight * (x + 1)), mWidth, mHeight - (int) (chunkHeight * x));
-                // 裁剪后应放置到新图片对象的区域
-                Rect splic = new Rect(0, (int) chunkHeight * x, mWidth, (int) chunkHeight * (x + 1));
-                canvas.drawBitmap(sourceBitmap, crop, splic, null);
+                int chunkHeight = (int)Math.floor(mHeight / rows);
+                int py = chunkHeight * (x);
+                int y = mHeight - chunkHeight * (x + 1) - remainder;
+
+                if (x == 0) {
+                    chunkHeight = chunkHeight + remainder;
+                } else {
+                    py = py + remainder;
+                }
+                int[] pixels = new int[(chunkHeight) * mWidth];
+                sourceBitmap.getPixels(pixels, 0, mWidth, 0, y, mWidth, chunkHeight);
+                resultBitmap.setPixels(pixels, 0, mWidth, 0, py, mWidth, chunkHeight);
             }
             jmttIsDone=true;
         }
     }
-
 }
