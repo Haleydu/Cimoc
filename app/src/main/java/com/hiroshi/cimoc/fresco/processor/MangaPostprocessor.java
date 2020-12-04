@@ -64,6 +64,7 @@ public class MangaPostprocessor extends BasePostprocessor {
         try {
             if (isDone) {
                 if (!jmttIsDone) {
+                    reference = bitmapFactory.createBitmap(mWidth, mHeight, Bitmap.Config.RGB_565);
                     processing(sourceBitmap, reference.get());
                 }
                 return CloseableReference.cloneOrNull(reference);
