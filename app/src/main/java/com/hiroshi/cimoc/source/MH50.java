@@ -15,8 +15,6 @@ import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
 import com.hiroshi.cimoc.parser.UrlFilter;
-import com.hiroshi.cimoc.rx.RxBus;
-import com.hiroshi.cimoc.rx.RxEvent;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.HttpUtils;
@@ -40,6 +38,7 @@ public class MH50 extends MangaParser {
 
     public static final int TYPE = 80;
     public static final String DEFAULT_TITLE = "漫画堆";
+    public static final String  baseUrl = "https://m.manhuadai.com";
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, true);
@@ -52,7 +51,7 @@ public class MH50 extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = StringUtils.format("https://m.manhuadai.com/search/?keywords=%s&page=%d", keyword, page);
+            String url = StringUtils.format(baseUrl+"/search/?keywords=%s&page=%d", keyword, page);
             return HttpUtils.getSimpleMobileRequest(url);
         }
         return null;
@@ -77,17 +76,17 @@ public class MH50 extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("https://m.manhuadai.com/manhua/%s/", cid);
+        return StringUtils.format(baseUrl + "/manhua/%s/", cid);
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("m.manhuadai.com"));
+        filter.add(new UrlFilter(baseUrl));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("https://m.manhuadai.com/manhua/%s/", cid);
+        String url = StringUtils.format(baseUrl + "/manhua/%s/", cid);
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
@@ -121,7 +120,7 @@ public class MH50 extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("https://m.manhuadai.com/manhua/%s/%s", cid, path);
+        String url = StringUtils.format(baseUrl + "/manhua/%s/%s", cid, path);
         return HttpUtils.getSimpleMobileRequest(url);
     }
 
@@ -129,7 +128,8 @@ public class MH50 extends MangaParser {
             "https://mhcdn.manhuazj.com",
             "https://manga8.mlxsc.com",
             "https://manga9.mlxsc.com",
-            "https://img01.eshanyao.com"
+            "https://img01.eshanyao.com",
+            "https://imgdm.eshanyao.com/"
     };
 
     @Nullable
@@ -147,7 +147,7 @@ public class MH50 extends MangaParser {
     private String getImageUrlByKey(String key, String domain, String chapter) {
         if (key.startsWith("http://images.dmzj.com")) {
             try {
-                return domain +"/showImage.php?url=" + key;
+                return "https://imgdm.eshanyao.com/showImage.php?url=" + key;
             } catch (Exception e) {
                 return null;
             }
@@ -180,13 +180,12 @@ public class MH50 extends MangaParser {
         int imageListSize = imageList.size();
         for (int i = 0; i != imageListSize; ++i) {
             String key = imageList.getString(i);
-            String imageUrl = getImageUrlByKey(key, server[3], chapterPath);
-            if(imageUrl.contains("images.dmzj.com")) {
+            String imageUrl = getImageUrlByKey(key, server[0], chapterPath);
+            if (imageUrl != null && imageUrl.contains("images.dmzj.com")) {
                 imageUrl = imageUrl.replace("%", "%25");
             }
             Long comicChapter = chapter.getId();
             Long id = Long.parseLong(comicChapter + "000" + i);
-            //list.add(new ImageUrl(i + 1, imageUrl, false));
             list.add(new ImageUrl(id, comicChapter, i + 1, imageUrl, false));
         }
         return list;
@@ -234,9 +233,9 @@ public class MH50 extends MangaParser {
                     .concat(args[CATEGORY_PROGRESS]).trim();
             String finalPath;
             if (path.isEmpty()) {
-                finalPath = StringUtils.format("https://m.manhuadai.com/list/");
+                finalPath = StringUtils.format(baseUrl + "/list/");
             } else {
-                finalPath = StringUtils.format("https://m.manhuadai.com/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
+                finalPath = StringUtils.format(baseUrl + "/list/%s/?page=%%d", path).replaceAll("\\s+", "-");
             }
             return finalPath;
         }
