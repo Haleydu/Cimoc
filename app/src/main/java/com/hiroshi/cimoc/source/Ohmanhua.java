@@ -1,5 +1,6 @@
 package com.hiroshi.cimoc.source;
 
+import android.net.Uri;
 import android.util.Base64;
 
 import com.hiroshi.cimoc.model.Chapter;
@@ -14,6 +15,8 @@ import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.DecryptionUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -134,36 +137,77 @@ public class Ohmanhua extends MangaParser {
         return new Request.Builder().url(url).build();
     }
 
+    String decryptKey1Arr[] = {"fw122587mkertyui", "fw12558899ertyui"};
+    String decryptKey2Arr[] = {"fw125gjdi9ertyui"};
     @Override
     public List<ImageUrl> parseImages(String html, Chapter chapter) {
-
-        List<ImageUrl> list = new LinkedList<>();
         String encodedData = StringUtils.match("C_DATA=\\'(.+?)\\'", html, 1);
         if (encodedData != null) {
             try {
-                String decryptKey = "fw12558899ertyui";
-                String decodedData  = new String(Base64.decode(encodedData, Base64.DEFAULT));
-                String decryptedData = DecryptionUtils.decryptAES(decodedData, decryptKey);
-                String imgRelativePath = StringUtils.match("enc_code2:\"(.+?)\"",decryptedData,1);
-                imgRelativePath  = new String(Base64.decode(imgRelativePath, Base64.DEFAULT));
-                imgRelativePath = DecryptionUtils.decryptAES(imgRelativePath, "fw125gjdi9ertyui");
-                String startImg = StringUtils.match("startimg:([0-9]+?),",decryptedData,1);
-                String totalPages = StringUtils.match("enc_code1:\"(.+?)\",",decryptedData,1);
-                totalPages  = new String(Base64.decode(totalPages, Base64.DEFAULT));
-                totalPages = DecryptionUtils.decryptAES(totalPages, decryptKey);
 
-                for (int i = Integer.parseInt(Objects.requireNonNull(startImg));
-                     i <= Integer.parseInt(Objects.requireNonNull(totalPages)); ++i) {
-                    Long comicChapter = chapter.getId();
-                    Long id = Long.parseLong(comicChapter + "000" + i);
-                    String jpg = StringUtils.format("%04d.jpg", i);
-                    list.add(new ImageUrl(id, comicChapter, i, serverUrl + imgRelativePath + jpg, false));
+                String decryptedData = decodeAndDecrypt("encodedData", encodedData, decryptKey1Arr);
+                String imgType = StringUtils.match( "img_type:\"(.+?)\"",decryptedData,1);
+
+                 if (imgType != null && imgType.isEmpty()) {
+                     return processPagesFromExternal(decryptedData, chapter);
+                } else {
+                     return  processPagesFromInternal(decryptedData, chapter);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        return null;
+    }
+
+    private String decodeAndDecrypt(String decodeName, String value, String[] keyArr)  {
+        String decodedValue = new String(Base64.decode(value, Base64.NO_WRAP));
+        for (int i = 0; i < keyArr.length; i++) {
+            try {
+                return DecryptionUtils.decryptAES(decodedValue, keyArr[i]);
+            } catch (Exception e) {
+
+            }
+        }
+        return "";
+    }
+
+
+    private List<ImageUrl> processPagesFromExternal(String decryptedData, Chapter chapter){
+        List<ImageUrl> list = new LinkedList<>();
+        String encodedUrlsDirect =  StringUtils.match( "urls__direct:\"(.+?)\"", decryptedData,1);
+        String decodedUrlsDirect = new  String(Base64.decode(encodedUrlsDirect, Base64.NO_WRAP));
+        String pageUrlArr[] = decodedUrlsDirect.split("|SEPARATER|");
+
+        for (int i = 1; i <= pageUrlArr.length; ++i) {
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            list.add(new ImageUrl(id, comicChapter, i, pageUrlArr[i-1], false));
+        }
         return list;
+    }
+
+    private List<ImageUrl> processPagesFromInternal(String decryptedData, Chapter chapter){
+        List<ImageUrl> list = new LinkedList<>();
+        String imageServerDomain = StringUtils.match(  "domain:\"(.+?)\"", decryptedData,1);
+        int startImg = Integer.parseInt(StringUtils.match(  "startimg:([0-9]+?),", decryptedData,1));
+        String encodedRelativePath = StringUtils.match(  "enc_code2:\"(.+?)\"", decryptedData,1);
+        String decryptedRelativePath = decodeAndDecrypt("encodedRelativePath", encodedRelativePath, decryptKey2Arr);
+        String encodedTotalPages = StringUtils.match("enc_code1:\"(.+?)\"", decryptedData,1);
+        int decryptedTotalPages = Integer.parseInt(decodeAndDecrypt("encodedTotalPages", encodedTotalPages, decryptKey1Arr));
+        for (int i = startImg; i <= decryptedTotalPages; ++i) {
+            Long comicChapter = chapter.getId();
+            Long id = Long.parseLong(comicChapter + "000" + i);
+            String jpg = StringUtils.format("%04d.jpg", i);
+            String url = "https://" + imageServerDomain+"/comic/"+encodeUri(decryptedRelativePath)+jpg;
+            list.add(new ImageUrl(id, comicChapter, i, url, false));
+        }
+        return list;
+    }
+
+    private String encodeUri(String str){
+        String whitelistChar = "@#&=*+-_.,:!?()/~'%";
+        return Uri.encode(str, whitelistChar);
     }
 
     @Override
@@ -185,7 +229,6 @@ public class Ohmanhua extends MangaParser {
     public Headers getHeader() {
         return Headers.of("Referer", baseUrl);
     }
-
 
 }
 

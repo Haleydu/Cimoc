@@ -18,7 +18,7 @@ else {
     buildVersion = cmdGetCommitNums.execute().text.trim().toInteger()
     cmdGetTagname = 'git describe --abbrev=0'
 
-    buildVersion = 01
+    buildVersion = 157
     version = cmdGetTagname.execute().text.trim()
 }
 
