@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.parser.JsonIterator;
 import com.hiroshi.cimoc.parser.MangaCategory;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.utils.LogUtil;
 import com.hiroshi.cimoc.utils.StringUtils;
 import com.hiroshi.cimoc.utils.UicodeBackslashU;
 
@@ -48,7 +49,7 @@ public class Dmzj extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) {
         if (page == 1) {
-            String url = StringUtils.format("http://s.acg.dmzj.com/comicsum/search.php?s=%s", keyword, page - 1);
+            String url = StringUtils.format("http://s.acg.dmzj1.com/comicsum/search.php?s=%s", keyword, page - 1);
             return getSimpleMobileRequest(url);
         }
         return null;
@@ -84,12 +85,13 @@ public class Dmzj extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
+        return StringUtils.format("http://m.dmzj1.com/info/%s.html", cid);
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = StringUtils.format("http://v2.api.dmzj.com/comic/%s.json", cid);
+        cid = "comic_"+cid+"_android";
+        String url = StringUtils.format("http://v3api.dmzj1.com/comic/%s.json", cid);
         return new Request.Builder().url(url).build();
     }
 
@@ -140,7 +142,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = StringUtils.format("http://v2.api.dmzj.com/chapter/%s/%s.json", cid, path);
+        String url = StringUtils.format("http://v3api.dmzj1.com/chapter/%s/%s.json", cid, path);
         return new Request.Builder().url(url).build();
     }
 
@@ -190,7 +192,7 @@ public class Dmzj extends MangaParser {
                     if (object.optInt("hidden", 1) != 1) {
                         String cid = object.getString("id");
                         String title = object.getString("comic_name");
-                        String cover = "http://images.dmzj.com/".concat(object.getString("comic_cover"));
+                        String cover = "http://images.dmzj1.com/".concat(object.getString("comic_cover"));
                         Long time = object.has("last_updatetime") ? object.getLong("last_updatetime") * 1000 : null;
                         String update = time == null ? null : new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
                         String author = object.optString("comic_author");
@@ -208,7 +210,7 @@ public class Dmzj extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "http://m.dmzj.com/");
+        return Headers.of("Referer", "http://m.dmzj1.com/");
     }
 
     private static class Category extends MangaCategory {
@@ -220,7 +222,7 @@ public class Dmzj extends MangaParser {
 
         @Override
         public String getFormat(String... args) {
-            return StringUtils.format("http://m.dmzj.com/classify/%s-%s-%s-%s-%s-%%d.json",
+            return StringUtils.format("http://m.dmzj1.com/classify/%s-%s-%s-%s-%s-%%d.json",
                     args[CATEGORY_SUBJECT], args[CATEGORY_READER], args[CATEGORY_PROGRESS], args[CATEGORY_AREA], args[CATEGORY_ORDER]);
         }
 
