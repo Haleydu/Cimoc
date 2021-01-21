@@ -29,6 +29,7 @@ public class JMTT extends MangaParser {
 
     public static final int TYPE = 72;
     public static final String DEFAULT_TITLE = "禁漫天堂";
+    public static final String baseUrl = "https://18comic1.one/"; //https://cm365.xyz/7MJX9t
 
     public static Source getDefaultSource() {
         return new Source(null, DEFAULT_TITLE, TYPE, false);
@@ -41,7 +42,7 @@ public class JMTT extends MangaParser {
     @Override
     public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException {
         if (page != 1) return null;
-        String url = StringUtils.format("https://18comic1.biz/search/photos?search_query=%s&main_tag=0", keyword);
+        String url = StringUtils.format(baseUrl + "/search/photos?search_query=%s&main_tag=0", keyword);
         return new Request.Builder().url(url).build();
     }
 
@@ -63,21 +64,22 @@ public class JMTT extends MangaParser {
 
     @Override
     public String getUrl(String cid) {
-        return "https://18comic1.biz" + cid;
+        return baseUrl + cid;
     }
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("18comic1.biz"));
-        filter.add(new UrlFilter("18comic2.biz"));
-        filter.add(new UrlFilter("18comic3.biz"));
-        filter.add(new UrlFilter("18comic.vip"));
+        filter.add(new UrlFilter(baseUrl));
+        filter.add(new UrlFilter("https://18comic1.one/"));
+        filter.add(new UrlFilter("https://18comic2.one/"));
+        filter.add(new UrlFilter("https://18comic.vip"));
         filter.add(new UrlFilter("18comic.org"));
+        filter.add(new UrlFilter("https://cm365.xyz/7MJX9t"));
     }
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://18comic1.biz" + cid;
+        String url = baseUrl + cid;
         return new Request.Builder().url(url).build();
     }
 
@@ -117,7 +119,7 @@ public class JMTT extends MangaParser {
     private String imgpath = "";
     @Override
     public Request getImagesRequest(String cid, String path) {
-        String url = "https://18comic1.biz"+path;
+        String url = baseUrl+path;
         imgpath = path;
         return new Request.Builder().url(url).build();
     }
@@ -159,6 +161,6 @@ public class JMTT extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("Referer", "https://18comic1.biz/");
+        return Headers.of("Referer", baseUrl);
     }
 }
