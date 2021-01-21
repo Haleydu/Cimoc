@@ -87,11 +87,11 @@ public class JMTT extends MangaParser {
     public Comic parseInfo(String html, Comic comic) {
         try {
             Node body = new Node(html);
-            String intro = body.text("#intro-block > div:eq(6)");
+            String intro = body.text("#intro-block > div:eq(0)");
             String title = body.text("div.panel-heading > div");
             String cover = body.attr("img.lazy_img.img-responsive","src").trim();
-            String author = body.text("#intro-block > div:eq(3) > span");
-            String update = body.attr("#intro-block > div:eq(8) > span","content");
+            String author = body.text("#intro-block > div:eq(4) > span");
+            String update = body.attr("#album_photo_cover > div:eq(1) > div:eq(3)","content");
             boolean status = isFinish(body.text("#intro-block > div:eq(2) > span"));
             comic.setInfo(title, cover, update, intro, author, status);
         }catch (Exception e){
