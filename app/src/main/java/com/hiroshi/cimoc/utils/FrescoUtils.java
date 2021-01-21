@@ -22,6 +22,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.cache.CountingMemoryCache;
 import com.facebook.imagepipeline.cache.DefaultCacheKeyFactory;
 import com.facebook.imagepipeline.cache.ImageCacheStatsTracker;
+import com.facebook.imagepipeline.cache.MemoryCache;
 import com.facebook.imagepipeline.common.Priority;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.core.ImagePipeline;
@@ -425,7 +426,7 @@ public class FrescoUtils {
      */
     public static class MyImageCacheStatsTracker implements ImageCacheStatsTracker {
         @Override
-        public void onBitmapCachePut() {
+        public void onBitmapCachePut(CacheKey cacheKey) {
 
         }
 
@@ -435,12 +436,12 @@ public class FrescoUtils {
         }
 
         @Override
-        public void onBitmapCacheMiss() {
+        public void onBitmapCacheMiss(CacheKey cacheKey) {
 
         }
 
         @Override
-        public void onMemoryCachePut() {
+        public void onMemoryCachePut(CacheKey cacheKey) {
 
         }
 
@@ -450,7 +451,7 @@ public class FrescoUtils {
         }
 
         @Override
-        public void onMemoryCacheMiss() {
+        public void onMemoryCacheMiss(CacheKey cacheKey) {
 
         }
 
@@ -460,7 +461,7 @@ public class FrescoUtils {
         }
 
         @Override
-        public void onStagingAreaMiss() {
+        public void onStagingAreaMiss(CacheKey cacheKey) {
 
         }
 
@@ -470,27 +471,30 @@ public class FrescoUtils {
         }
 
         @Override
-        public void onDiskCacheMiss() {
-            //Logger.e("ImageCacheStatsTracker---onDiskCacheMiss");
-        }
-
-        @Override
-        public void onDiskCacheGetFail() {
-            //Logger.e("ImageCacheStatsTracker---onDiskCacheGetFail");
-        }
-
-        @Override
-        public void registerBitmapMemoryCache(CountingMemoryCache<?, ?> countingMemoryCache) {
+        public void onDiskCacheMiss(CacheKey cacheKey) {
 
         }
 
         @Override
-        public void registerEncodedMemoryCache(CountingMemoryCache<?, ?> countingMemoryCache) {
+        public void onDiskCacheGetFail(CacheKey cacheKey) {
+
+        }
+
+        @Override
+        public void onDiskCachePut(CacheKey cacheKey) {
+
+        }
+
+        @Override
+        public void registerBitmapMemoryCache(MemoryCache<?, ?> bitmapMemoryCache) {
+
+        }
+
+        @Override
+        public void registerEncodedMemoryCache(MemoryCache<?, ?> encodedMemoryCache) {
 
         }
     }
-
-
 
     public interface BitmapListener{
         void onSuccess(Bitmap bitmap);
