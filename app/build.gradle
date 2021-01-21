@@ -22,16 +22,16 @@ else {
     version = cmdGetTagname.execute().text.trim()
 }
 
-def app_id = "ca-app-pub-3940256099942544~3347511713"
-def favorite_unit_id = "ca-app-pub-3940256099942544/2247696110"
-def history_unit_id = "ca-app-pub-3940256099942544/2247696110"
-def download_unit_id = "ca-app-pub-3940256099942544/2247696110"
-def local_unit_id = "ca-app-pub-3940256099942544/2247696110"
-def search_unit_id = "ca-app-pub-3940256099942544/2247696110"
-def banners_id = "ca-app-pub-3940256099942544/6300978111"
-def banners_chapter_id = "ca-app-pub-3940256099942544/6300978111"
-def banners_search_id = "ca-app-pub-3940256099942544/6300978111"
-def insert_home_id = "ca-app-pub-3940256099942544/1033173712"
+def app_id = "ca-app-pub-9990256099942544~3347511713"
+def favorite_unit_id = "ca-app-pub-9990256099942544/2247696110"
+def history_unit_id = "ca-app-pub-9990256099942544/2247696110"
+def download_unit_id = "ca-app-pub-9990256099942544/2247696110"
+def local_unit_id = "ca-app-pub-9990256099942544/2247696110"
+def search_unit_id = "ca-app-pub-9990256099942544/2247696110"
+def banners_id = "ca-app-pub-9990256099942544/6300978111"
+def banners_chapter_id = "ca-app-pub-9990256099942544/6300978111"
+def banners_search_id = "ca-app-pub-9990256099942544/6300978111"
+def insert_home_id = "ca-app-pub-9990256099942544/1033173712"
 
 if(System.getenv("TRAVIS_BUILD_NUMBER") != null){
     app_id = System.getenv("ADMOB_APP_ID")
