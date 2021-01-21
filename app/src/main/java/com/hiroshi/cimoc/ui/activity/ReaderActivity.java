@@ -243,13 +243,17 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
 
     @Override
     protected void initData() {
-        mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
-                ClickEvents.getPageClickEventChoice(mPreference) : ClickEvents.getStreamClickEventChoice(mPreference);
-        mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
-                ClickEvents.getPageLongClickEventChoice(mPreference) : ClickEvents.getStreamLongClickEventChoice(mPreference);
-        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
-        mPresenter.loadInit(id, Objects.requireNonNull(list).toArray(new Chapter[list.size()]));
+        try {
+            mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
+                    ClickEvents.getPageClickEventChoice(mPreference) : ClickEvents.getStreamClickEventChoice(mPreference);
+            mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
+                    ClickEvents.getPageLongClickEventChoice(mPreference) : ClickEvents.getStreamLongClickEventChoice(mPreference);
+            long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+            List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
+            mPresenter.loadInit(id, Objects.requireNonNull(list).toArray(new Chapter[list.size()]));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

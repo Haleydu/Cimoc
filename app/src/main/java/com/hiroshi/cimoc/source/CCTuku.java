@@ -95,6 +95,12 @@ public class CCTuku extends MangaParser {
         for (Node node : body.list("#chapter > div > div > ul > li > a")) {
             String title = node.text();
             String path = node.hrefWithSplit(2);
+            if (path == null) {
+                path = "";
+            }
+            if (title == null) {
+                title = "";
+            }
             list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
         }
         return list;

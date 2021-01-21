@@ -89,35 +89,40 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (position == 0) {
-            HeaderHolder headerHolder = (HeaderHolder) holder;
-            AdRequest adRequest = new AdRequest.Builder().build();
-            headerHolder.mAdView.loadAd(adRequest);
-            if (title != null) {
-                if (cover != null) {
-                    headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
+        try {
+            if (position == 0) {
+                HeaderHolder headerHolder = (HeaderHolder) holder;
+                AdRequest adRequest = new AdRequest.Builder().build();
+                headerHolder.mAdView.loadAd(adRequest);
+                if (title != null) {
+                    if (cover != null) {
+                        headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
+                    }
+                    headerHolder.mComicTitle.setText(title);
+                    headerHolder.mComicIntro.setText(intro);
+                    if (finish != null) {
+                        headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
+                    }
+                    if (update != null) {
+                        headerHolder.mComicUpdate.setText("最后更新：".concat(update));
+                    }
+                    headerHolder.mComicAuthor.setText(author);
                 }
-                headerHolder.mComicTitle.setText(title);
-                headerHolder.mComicIntro.setText(intro);
-                if (finish != null) {
-                    headerHolder.mComicStatus.setText(finish ? "完结" : "连载中");
+            } else {
+                Chapter chapter = mDataSet.get(position - 1);
+                ChapterHolder viewHolder = (ChapterHolder) holder;
+                viewHolder.chapterButton.setText(chapter.getTitle());
+                viewHolder.chapterButton.setDownload(chapter.isComplete());
+                if (chapter.getPath() !=null &&chapter.getPath().equals(last)) {
+                    viewHolder.chapterButton.setSelected(true);
+                } else if (viewHolder.chapterButton.isSelected()) {
+                    viewHolder.chapterButton.setSelected(false);
                 }
-                if (update != null) {
-                    headerHolder.mComicUpdate.setText("最后更新：".concat(update));
-                }
-                headerHolder.mComicAuthor.setText(author);
             }
-        } else {
-            Chapter chapter = mDataSet.get(position - 1);
-            ChapterHolder viewHolder = (ChapterHolder) holder;
-            viewHolder.chapterButton.setText(chapter.getTitle());
-            viewHolder.chapterButton.setDownload(chapter.isComplete());
-            if (chapter.getPath().equals(last)) {
-                viewHolder.chapterButton.setSelected(true);
-            } else if (viewHolder.chapterButton.isSelected()) {
-                viewHolder.chapterButton.setSelected(false);
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     @Override
