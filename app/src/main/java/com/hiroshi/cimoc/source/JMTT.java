@@ -156,7 +156,7 @@ public class JMTT extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).attr("#intro-block > div:eq(8) > span","content");
+        return new Node(html).attr("#album_photo_cover > div:eq(1) > div:eq(3)","content");
     }
 
     @Override
