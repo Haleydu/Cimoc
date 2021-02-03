@@ -10,6 +10,8 @@ Online manga reader based on Android
 [![GitHub release](https://img.shields.io/github/release/Haleydu/Cimoc.svg)](https://github.com/Haleydu/Cimoc/releases)
 [![Join the chat at https://gitter.im/Haleydu_Cimoc/community](https://badges.gitter.im/Haleydu_Cimoc/community.svg)](https://gitter.im/Haleydu_Cimoc/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![](https://img.shields.io/github/downloads/Haleydu/cimoc/total.svg)](https://github.com/Haleydu/Cimoc/releases)
+[![https://t.me/cimoc_haleydu_Channel](https://img.shields.io/badge/💬%20Telegram-Channel-blue.svg?style=flat-square)](https://t.me/cimoc_haleydu_Channel)  
+[![https://t.me/cimoc_haleydu](https://img.shields.io/badge/💬%20Telegram-Group-blue.svg?style=flat-square)](https://t.me/cimoc_haleydu)
 
 # 下载
 > 所有release由`travis-ci`编译发布，如果在release界面某个版本没有apk，那么要么是正在编译，要么就是编译失败了
