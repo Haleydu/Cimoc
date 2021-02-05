@@ -153,7 +153,7 @@ public class DmzjFix extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
 
-        String url = StringUtils.format("https://m.dmzj.com/chapinfo/%s.html", path);
+        String url = StringUtils.format("https://m.dmzj.com/chapinfo/%s.html", path.replace("x", ""));
         return new Request.Builder().url(url).build();
     }
 
