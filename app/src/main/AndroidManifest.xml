@@ -80,6 +80,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.PageReaderActivity"
+            android:forceDarkAllowed="false"
+            android:theme="@style/AppThemeNoDark"
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.StreamReaderActivity"
