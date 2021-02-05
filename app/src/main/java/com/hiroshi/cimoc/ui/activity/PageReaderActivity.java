@@ -1,5 +1,7 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.os.Build;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiroshi.cimoc.R;
@@ -32,6 +34,9 @@ public class PageReaderActivity extends ReaderActivity implements OnPageChangedL
             ((RecyclerViewPager) mRecyclerView).setScrollSpeed(0.12f);
         }
         ((RecyclerViewPager) mRecyclerView).setTriggerOffset(0.01f * offset);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mRecyclerView.setForceDarkAllowed(false);
+        }
         ((RecyclerViewPager) mRecyclerView).setOnPageChangedListener(this);
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
