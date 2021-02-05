@@ -28,6 +28,10 @@ public class Node {
         return new Node(element.getElementById(id));
     }
 
+    public Node getParent(String cssQuery) {
+        return new Node(get().select(cssQuery).first().parent());
+    }
+
     public Node getChild(String cssQuery) {
         return new Node(get().select(cssQuery).first());
     }
@@ -71,6 +75,12 @@ public class Node {
 
     public String textWithSubstring(String cssQuery, int start) {
         return textWithSubstring(cssQuery, start, -1);
+    }
+
+    public String hrefWithLastSplit() {
+        String string = href();
+        String[] arr = string.split("/");
+        return arr[arr.length - 1];
     }
 
     public String textWithSplit(String cssQuery, String regex, int index) {
