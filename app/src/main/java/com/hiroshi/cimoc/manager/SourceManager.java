@@ -7,8 +7,47 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.SourceDao.Properties;
 import com.hiroshi.cimoc.parser.Parser;
-import com.hiroshi.cimoc.source.*;
+import com.hiroshi.cimoc.source.Animx2;
+import com.hiroshi.cimoc.source.BaiNian;
+import com.hiroshi.cimoc.source.BuKa;
+import com.hiroshi.cimoc.source.CCMH;
+import com.hiroshi.cimoc.source.CCTuku;
+import com.hiroshi.cimoc.source.Cartoonmad;
+import com.hiroshi.cimoc.source.ChuiXue;
+import com.hiroshi.cimoc.source.CopyMH;
+import com.hiroshi.cimoc.source.DM5;
+import com.hiroshi.cimoc.source.Dmzj;
+import com.hiroshi.cimoc.source.Dmzjv2;
+import com.hiroshi.cimoc.source.EHentai;
+import com.hiroshi.cimoc.source.GuFeng;
+import com.hiroshi.cimoc.source.HHAAZZ;
+import com.hiroshi.cimoc.source.Hhxxee;
+import com.hiroshi.cimoc.source.IKanman;
+import com.hiroshi.cimoc.source.JMTT;
+import com.hiroshi.cimoc.source.Locality;
+import com.hiroshi.cimoc.source.MH160;
+import com.hiroshi.cimoc.source.MH50;
+import com.hiroshi.cimoc.source.MH517;
+import com.hiroshi.cimoc.source.MH57;
+import com.hiroshi.cimoc.source.MHLove;
+import com.hiroshi.cimoc.source.ManHuaDB;
+import com.hiroshi.cimoc.source.MangaBZ;
+import com.hiroshi.cimoc.source.MangaNel;
+import com.hiroshi.cimoc.source.Mangakakalot;
+import com.hiroshi.cimoc.source.Manhuatai;
+import com.hiroshi.cimoc.source.MiGu;
+import com.hiroshi.cimoc.source.Null;
+import com.hiroshi.cimoc.source.Ohmanhua;
+import com.hiroshi.cimoc.source.PuFei;
+import com.hiroshi.cimoc.source.QiManWu;
+import com.hiroshi.cimoc.source.QiMiaoMH;
+import com.hiroshi.cimoc.source.Tencent;
+import com.hiroshi.cimoc.source.TuHao;
+import com.hiroshi.cimoc.source.U17;
+import com.hiroshi.cimoc.source.Webtoon;
 import com.hiroshi.cimoc.source.WebtoonDongManManHua;
+import com.hiroshi.cimoc.source.YKMH;
+import com.hiroshi.cimoc.source.YYLS;
 
 import java.util.List;
 
@@ -204,6 +243,9 @@ public class SourceManager {
                     break;
                 case QiMiaoMH.TYPE:
                     parser = new QiMiaoMH(source);
+                    break;
+                case YKMH.TYPE:
+                    parser = new YKMH(source);
                     break;
                 default:
                     parser = new Null();
