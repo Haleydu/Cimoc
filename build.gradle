@@ -5,6 +5,8 @@ buildscript {
         jcenter()
         mavenCentral()
         google()
+        maven { url 'http://developer.huawei.com/repo/' }
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.1'
@@ -14,6 +16,8 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72"
         classpath 'com.google.gms:google-services:4.3.3'  // Google Services plugin
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.1'
+        classpath 'com.huawei.agconnect:agcp:1.2.1.301'
+
     }
 }
 
@@ -24,6 +28,8 @@ allprojects {
             url "https://maven.google.com"
         }
         google()
+        maven { url "http://mirrors.tools.huawei.com/maven/" }
+        maven { url 'http://developer.huawei.com/repo/' }
     }
 }
 

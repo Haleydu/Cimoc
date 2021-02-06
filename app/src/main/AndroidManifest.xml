@@ -19,6 +19,9 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute">
+        <meta-data
+            android:name="EasyGoClient"
+            android:value="true" />
 
         <activity
             android:name=".ui.activity.MainActivity"
