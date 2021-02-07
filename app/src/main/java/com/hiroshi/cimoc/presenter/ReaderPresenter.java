@@ -91,6 +91,7 @@ public class ReaderPresenter extends BasePresenter<ReaderView> {
 
     public void loadInit(long id, Chapter[] array) {
         mComic = mComicManager.load(id);
+
         for (int i = 0; i != array.length; ++i) {
             if (array[i].getPath().equals(mComic.getLast())) {
                 this.mReaderChapterManger = new ReaderChapterManger(array, i);

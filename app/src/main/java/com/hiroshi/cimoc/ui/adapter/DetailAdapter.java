@@ -33,6 +33,10 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     private String author;
     public String intro;
     private Boolean finish;
+    //漫画源中倒序
+    private Boolean isReverseOrder;
+    //用户手动调整顺序
+    private Boolean Reversed = false;
 
     private String last;
 
@@ -62,6 +66,12 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     }
 
     @Override
+    public void reverse() {
+        this.Reversed = !this.Reversed;
+        super.reverse();
+    }
+
+    @Override
     public int getItemCount() {
         return mDataSet.size() + 1;
     }
@@ -76,7 +86,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         return new ChapterHolder(view);
     }
 
-    public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last) {
+    public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last, Boolean isReverseOrder) {
         this.cover = cover;
         this.title = title;
         this.intro = intro;
@@ -84,6 +94,15 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         this.update = update;
         this.author = author;
         this.last = last;
+        this.isReverseOrder = isReverseOrder;
+    }
+
+    public boolean isReverseOrder() {
+        return isReverseOrder;
+    }
+
+    public boolean isReversed() {
+        return Reversed;
     }
 
     @Override
