@@ -2,8 +2,12 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Base64;
 
+import androidx.arch.core.util.Function;
+
 import com.facebook.common.util.Hex;
+import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
+import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.model.Comic;
 import com.hiroshi.cimoc.model.ImageUrl;
@@ -20,12 +24,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import okhttp3.Headers;
 import okhttp3.Request;
 import taobe.tec.jcc.JChineseConvertor;
+
+import static com.hiroshi.cimoc.core.Manga.getResponseBody;
 
 public class CopyMH extends MangaParser {
     public static final int TYPE = 26;
@@ -90,24 +97,32 @@ public class CopyMH extends MangaParser {
 
     @Override
     public Request getInfoRequest(String cid) {
-        String url = "https://copymanga.com/comic/".concat(cid);
+        String url = "https://api.copymanga.com/api/v3/comic2/".concat(cid);
         return new Request.Builder().url(url).build();
     }
 
     @Override
     public Comic parseInfo(String html, Comic comic) {
-        Node body = new Node(html);
-        String cover = body.attr("div.comicParticulars-left-img.loadingIcon > img", "data-src");
-        String intro = body.text("p.intro");
-        String title = body.text("div.col-9.comicParticulars-title-right > ul > li:nth-child(1) > h6");
-        String update = body.text("div.col-9.comicParticulars-title-right > ul > li:nth-child(5) > span.comicParticulars-right-txt");
-        String author = body.text("div.col-9.comicParticulars-title-right > ul > li:nth-child(3) > span.comicParticulars-right-txt > a");
+        JSONObject body = null;
+        try {
+            JSONObject comicInfo = new JSONObject(html).getJSONObject("results");
+            body = comicInfo.getJSONObject("comic");
+            String cover = body.getString("cover");
+            String intro = body.getString("brief");
+            String title = body.getString("name");
+            String update = body.getString("datetime_updated");
+            String author = ((JSONObject) body.getJSONArray("author").get(0)).getString("name");
+            // 连载状态
+            boolean finish = body.getJSONObject("status").getInt("value") != 0;
+            JSONObject group = comicInfo.getJSONObject("groups");
+            comic.note = group;
 
-        // 连载状态
-        String status = body.text("div.col-9.comicParticulars-title-right > ul > li:nth-child(6) > span.comicParticulars-right-txt");
-        boolean finish = isFinish(status);
 
-        comic.setInfo(title, cover, update, intro, author, finish);
+            comic.setInfo(title, cover, update, intro, author, finish);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         return comic;
     }
@@ -126,8 +141,34 @@ public class CopyMH extends MangaParser {
         for (int i = 0; i < array.length(); ++i) {
             String title = array.getJSONObject(i).getString("name");
             String path = array.getJSONObject(i).getString("uuid");
-            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i), sourceComic, title, path));
+            list.add(new Chapter(Long.parseLong(sourceComic + "000" + i), sourceComic, title, path, "默认"));
         }
+        try {
+            JSONObject groups = (JSONObject) comic.note;
+            Iterator<String> keys = groups.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                if (key.equals("default")) continue;
+                String path_word = groups.getJSONObject(key).getString("path_word");
+                String PathName = groups.getJSONObject(key).getString("name");
+                String url = String.format("https://api.copymanga.com/api/v3/comic/%s/group/%s/chapters?limit=500&offset=0", comic.getCid(), path_word);
+                Request request = new Request.Builder().url(url).build();
+                html = getResponseBody(App.getHttpClient(), request);
+                jsonObject = new JSONObject(html);
+                array = jsonObject.getJSONObject("results").getJSONArray("list");
+                for (int i = 0; i < array.length(); ++i) {
+                    String title = array.getJSONObject(i).getString("name");
+                    String path = array.getJSONObject(i).getString("uuid");
+                    list.add(new Chapter(Long.parseLong(sourceComic + "000" + i), sourceComic, title, path, PathName));
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         return Lists.reverse(list);
     }
 
