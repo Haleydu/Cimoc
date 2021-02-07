@@ -81,14 +81,19 @@ public class DecryptionUtils {
         Context rhino = Context.enter();
         rhino.setOptimizationLevel(-1);
         Scriptable scope = rhino.initSafeStandardObjects();
-        rhino.setClassShutter(new ClassShutter() {
-            //指定在JS中可以调用Java的类，在本漫画爬虫场景中不会与Java交互，请保持返回false以保证安全
-            public boolean visibleToScripts(String className) {
+        Context.ClassShutterSetter setter = rhino.getClassShutterSetter();
+        if (setter != null) {
+            setter.setClassShutter(new ClassShutter() {
+                //指定在JS中可以调用Java的类，在本漫画爬虫场景中不会与Java交互，请保持返回false以保证安全
+                public boolean visibleToScripts(String className) {
 
 
-                return false;
-            }
-        });
+                    return false;
+                }
+            });
+        }
+
+
         try {
             Object object = rhino.evaluateString(scope, jsCode, null, 1, null);
             if (varName == null) {
