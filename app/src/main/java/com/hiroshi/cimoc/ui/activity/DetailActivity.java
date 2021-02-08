@@ -269,7 +269,15 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
         long id = mPresenter.updateLast(path);
         mDetailAdapter.setLast(path);
         int mode = mPreference.getInt(PreferenceManager.PREF_READER_MODE, PreferenceManager.READER_MODE_PAGE);
-        Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, mDetailAdapter.getDateSet(), mode);
+        List<Chapter> c = mDetailAdapter.getDateSet();
+        if (mDetailAdapter.isReverseOrder()) {
+            if (!mDetailAdapter.isReversed()) {
+                c = Lists.reverse(mDetailAdapter.getDateSet());
+            }
+        } else if (mDetailAdapter.isReversed()) {
+            c = Lists.reverse(mDetailAdapter.getDateSet());
+        }
+        Intent intent = ReaderActivity.createIntent(DetailActivity.this, id, c, mode);
         startActivity(intent);
     }
 
@@ -309,7 +317,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
     @Override
     public void onComicLoadSuccess(Comic comic) {
         mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
-                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
+                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast(), isReverseOrder(comic));
 
         if (comic.getTitle() != null && comic.getCover() != null) {
             mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader(), false);
@@ -350,7 +358,7 @@ public class DetailActivity extends CoordinatorActivity implements DetailView {
             mDetailAdapter.addAll(list);
         }
         mDetailAdapter.setInfo(comic.getCover(), comic.getTitle(), comic.getAuthor(),
-                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast());
+                comic.getIntro(), comic.getFinish(), comic.getUpdate(), comic.getLast(), isReverseOrder(comic));
 
         if (comic.getTitle() != null && comic.getCover() != null) {
             mImagePipelineFactory = ImagePipelineFactoryBuilder.build(this, SourceManager.getInstance(this).getParser(comic.getSource()).getHeader(), false);

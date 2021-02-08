@@ -27,6 +27,7 @@ import okhttp3.RequestBody;
 
 /**
  * Created by Haleydu on 2020/8/20.
+ * Committed by lx200916 on 2020/2/6：漫画源很不稳定，会随机抛出`网站升级中...`
  */
 
 public class QiManWu extends MangaParser {
@@ -54,8 +55,7 @@ public class QiManWu extends MangaParser {
         return new Request.Builder()
                 .url(url)
                 .post(body)
-                .addHeader("Referer", baseUrl)
-                .addHeader("Host", "qiman6.com")
+                .addHeader("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1")
                 .build();
     }
 
@@ -146,19 +146,21 @@ public class QiManWu extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("http://qiman6.com%s%s.html", cid, path);
-        return new Request.Builder()
-                .addHeader("Referer", baseUrl)
-                .addHeader("Host", "qiman6.com")
-                .url(url).build();
+        return new Request.Builder().url(url).build();
     }
 
     @Override
     public List<ImageUrl> parseImages(String html, Chapter chapter) {
+
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("eval\\((.*?\\}\\))\\)", html, 0);
         try {
-            str = DecryptionUtils.evalDecrypt(str, "newImgs");
-            String[] array = str.split(",");
+            String str1 = DecryptionUtils.evalDecrypt(str, "newImgs");
+            if (str1.isEmpty()) {
+                str1 = DecryptionUtils.evalDecrypt(str);
+
+            }
+            String[] array = str1.split(",");
             for (int i = 0; i != array.length; ++i) {
                 Long comicChapter = chapter.getId();
                 Long id = Long.parseLong(comicChapter + "000" + i);
@@ -187,6 +189,6 @@ public class QiManWu extends MangaParser {
 
     @Override
     public Headers getHeader() {
-        return Headers.of("User-Agent","Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
+        return Headers.of("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1");
     }
 }

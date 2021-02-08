@@ -1,9 +1,18 @@
 package com.hiroshi.cimoc.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Typeface;
+import android.text.TextPaint;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -33,11 +42,28 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     private String author;
     public String intro;
     private Boolean finish;
+    //漫画源中倒序
+    private Boolean isReverseOrder;
+    //用户手动调整顺序
+    private Boolean Reversed = false;
 
     private String last;
+    Paint textPaint;
+
+    Paint paint;
 
     public DetailAdapter(Context context, List<Chapter> list) {
         super(context, list);
+        textPaint = new TextPaint();
+        textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        textPaint.setFakeBoldText(true);
+        textPaint.setAntiAlias(true);
+        textPaint.setTextSize(40);//文字大小
+        textPaint.setColor(Color.BLACK);//背景颜色
+        textPaint.setTextAlign(Paint.Align.LEFT);
+        paint = new Paint();
+        paint.setColor(ContextCompat.getColor(context, R.color.transparent));
+
     }
 
     @Override
@@ -49,8 +75,45 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 if (position == 0) {
                     outRect.set(0, 0, 0, 10);
                 } else {
-                    int offset = parent.getWidth() / 40;
-                    outRect.set(offset, 0, offset, (int) (offset * 1.5));
+                    if (isFirst(position)) {
+                        int offset = parent.getWidth() / 40;
+
+                        outRect.set(offset, 50, offset, (int) (offset * 1.5));
+
+                    } else {
+                        int offset = parent.getWidth() / 40;
+                        outRect.set(offset, 0, offset, (int) (offset * 1.5));
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                super.onDraw(c, parent, state);
+                if (parent.getAdapter() != null) {
+                    RecyclerView.Adapter adapter = parent.getAdapter();
+                    int count = parent.getChildCount();
+                    for (int i = 1; i < count; i++) {
+                        View view = parent.getChildAt(i);
+                        int position = parent.getChildLayoutPosition(view);
+                        boolean isHeader = isFirst(position);
+
+                        if (isHeader) {
+                            float top = view.getTop() - 60;
+                            float bottom = view.getTop() - 30;
+                            Rect rect = new Rect(parent.getPaddingLeft(), (int) top, parent.getWidth() - parent.getPaddingRight(), (int) bottom);
+                            c.drawRect(rect, paint);
+                            Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
+                            float baseline = (rect.bottom + rect.top - fontMetrics.bottom - fontMetrics.top) / 2;
+                            textPaint.setTextAlign(Paint.Align.CENTER);
+                            c.drawText(getGroupName(position), rect.centerX(), baseline, textPaint);
+
+
+                        }  //                            c.drawRect(0, view.getTop() - 1, parent.getWidth(), view.getTop(), mLinePaint);
+
+                    }
                 }
             }
         };
@@ -59,6 +122,28 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     @Override
     public int getItemViewType(int position) {
         return position == 0 ? 0 : 1;
+    }
+
+    @Override
+    public void reverse() {
+        this.Reversed = !this.Reversed;
+        super.reverse();
+    }
+
+    //判断是否分组且当前是否为第一个元素
+    public boolean isFirst(int position) {
+        position = position - 1;
+        if (mDataSet.get(position).getSourceGroup().isEmpty()) return false;
+        if (position == 0) return true;
+        if (position <= 0) {
+            return false;
+        }
+        return !mDataSet.get(position - 1).getSourceGroup().equals(mDataSet.get(position).getSourceGroup());
+    }
+
+    public String getGroupName(int position) {
+        return mDataSet.get(position - 1).getSourceGroup();
+
     }
 
     @Override
@@ -76,7 +161,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         return new ChapterHolder(view);
     }
 
-    public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last) {
+    public void setInfo(String cover, String title, String author, String intro, Boolean finish, String update, String last, Boolean isReverseOrder) {
         this.cover = cover;
         this.title = title;
         this.intro = intro;
@@ -84,6 +169,15 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         this.update = update;
         this.author = author;
         this.last = last;
+        this.isReverseOrder = isReverseOrder;
+    }
+
+    public boolean isReverseOrder() {
+        return isReverseOrder;
+    }
+
+    public boolean isReversed() {
+        return Reversed;
     }
 
     @Override
@@ -113,7 +207,7 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
                 ChapterHolder viewHolder = (ChapterHolder) holder;
                 viewHolder.chapterButton.setText(chapter.getTitle());
                 viewHolder.chapterButton.setDownload(chapter.isComplete());
-                if (chapter.getPath() !=null &&chapter.getPath().equals(last)) {
+                if (chapter.getPath() != null && chapter.getPath().equals(last)) {
                     viewHolder.chapterButton.setSelected(true);
                 } else if (viewHolder.chapterButton.isSelected()) {
                     viewHolder.chapterButton.setSelected(false);
@@ -132,7 +226,9 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                return position == 0 ? manager.getSpanCount() : 1;
+                if (position == 0 || isFirst(position)) return manager.getSpanCount();
+
+                return 1;
             }
         });
     }

@@ -173,11 +173,14 @@ public class DM5 extends MangaParser {
         if (str != null) {
             try {
                 str = DecryptionUtils.evalDecrypt(str, "newImgs");
+                if (str.equals("")) {
+                    str = DecryptionUtils.evalDecrypt(str);
+                }
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
                     Long comicChapter = chapter.getId();
                     Long id = Long.parseLong(comicChapter + "000" + i);
-                    list.add(new ImageUrl(id, comicChapter,i + 1, array[i], false));
+                    list.add(new ImageUrl(id, comicChapter, i + 1, array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

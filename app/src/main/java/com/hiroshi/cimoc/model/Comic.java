@@ -35,6 +35,8 @@ public class Comic {
     private Integer page;
     private String chapter;
     private String url;
+    @Transient
+    public Object note;
 
 
     private String intro;
@@ -43,7 +45,7 @@ public class Comic {
 
     public Comic(int source, String cid, String title, String cover, String update, String author) {
         this(null, source, cid, title, cover == null ? "" : cover, false, false, update,
-                null, null, null, null, null, null, null, null,null,null);
+                null, null, null, null, null, null, null, null, null, null);
         this.author = author;
     }
 
