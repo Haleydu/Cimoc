@@ -133,8 +133,8 @@ public class DmzjFix extends MangaParser {
                 String comic_id = chapter.getString("comic_id");
                 String chapter_id = chapter.getString("id");
                 String path = comic_id + "/" + chapter_id;
-                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i + 1), sourceComic, title, path));
-                list1.add(new Chapter(Long.parseLong(sourceComic + "001" + i + 1), sourceComic, title.concat(" (备用)"), path + "x"));
+                list.add(new Chapter(Long.parseLong(sourceComic + "000" + i + 1), sourceComic, title, path, "默认线路"));
+                list1.add(new Chapter(Long.parseLong(sourceComic + "001" + i + 1), sourceComic, title.concat(" (备用)"), path + "x", "备用线路"));
 
 
             }
