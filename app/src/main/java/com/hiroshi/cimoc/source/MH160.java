@@ -137,12 +137,12 @@ public class MH160 extends MangaParser {
                 String[] array = str.split("\\$qingtiandy\\$");
                 String preUrl = "";
                 if(Integer.parseInt(str_id)>542724){
-                    preUrl = "https://mhpic5.miyeye.cn:20208";
+                    preUrl = "https://mhpic5.gezhengzhongyi.cn:8443";
                 }else {
                     preUrl = "https://res.gezhengzhongyi.cn:20207";
                 }
                 if (Integer.parseInt(str_id)>884998){
-                    preUrl = "https://mhpic88.miyeye.cn:20207";
+                    preUrl = "https://mhpic88.miyeye.cn:8443";
                 }
 
                 for (int i = 0; i != array.length; ++i) {
