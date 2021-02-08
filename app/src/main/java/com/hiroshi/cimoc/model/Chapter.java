@@ -84,7 +84,7 @@ public class Chapter implements Parcelable {
     }
 
     public String getSourceGroup() {
-        return sourceGroup;
+        return sourceGroup == null ? "" : sourceGroup;
     }
 
     public void setSourceGroup(String sourceGroup) {
