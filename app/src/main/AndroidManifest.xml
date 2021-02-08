@@ -85,6 +85,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity
             android:name=".ui.activity.StreamReaderActivity"
+            android:forceDarkAllowed="false"
+            android:theme="@style/AppThemeNoDark"
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <service android:name=".service.DownloadService" />

@@ -2,6 +2,7 @@ package com.hiroshi.cimoc.helper;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.hiroshi.cimoc.model.ChapterDao;
 import com.hiroshi.cimoc.model.ComicDao;
@@ -11,6 +12,7 @@ import com.hiroshi.cimoc.model.SourceDao;
 import com.hiroshi.cimoc.model.TagDao;
 import com.hiroshi.cimoc.model.TagRefDao;
 import com.hiroshi.cimoc.model.TaskDao;
+import com.hiroshi.cimoc.utils.StringUtils;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -34,6 +36,7 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
 
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
+        Log.d("DB", StringUtils.format("DB V:%d,%d", oldVersion, newVersion));
         switch (oldVersion) {
             case 1:
                 SourceDao.createTable(db, false);
@@ -58,7 +61,23 @@ public class DBOpenHelper extends DaoMaster.OpenHelper {
                 updateIntroAndAuthor(db);
                 ChapterDao.createTable(db, true);
                 ImageUrlDao.createTable(db, true);
+            case 11:
+                updateChapter(db);
+
         }
+    }
+
+    private void updateChapter(Database db) {
+        db.beginTransaction();
+        db.execSQL("ALTER TABLE \"CHAPTER\" RENAME TO \"CHAPTER2\"");
+        ChapterDao.createTable(db, false);
+        db.execSQL("INSERT INTO \"CHAPTER\" (\"_id\", \"SOURCE_COMIC\", \"TITLE\", \"PATH\", \"COUNT\", \"COMPLETE\", \"DOWNLOAD\",  \"TID\" , \"SOURCE_GROUP\")" +
+                " SELECT \"_id\", \"SOURCE_COMIC\", \"TITLE\", \"PATH\", \"COUNT\", \"COMPLETE\", \"DOWNLOAD\", \"TID\",\"\" FROM \"CHAPTER2\"");
+        db.execSQL("DROP TABLE \"CHAPTER2\"");
+        db.setTransactionSuccessful();
+        db.endTransaction();
+
+
     }
 
     private void updateLocal(Database db) {
