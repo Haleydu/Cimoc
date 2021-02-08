@@ -151,10 +151,15 @@ public class QiManWu extends MangaParser {
 
     @Override
     public List<ImageUrl> parseImages(String html, Chapter chapter) {
+
         List<ImageUrl> list = new LinkedList<>();
         String str = StringUtils.match("eval\\((.*?\\}\\))\\)", html, 0);
         try {
             String str1 = DecryptionUtils.evalDecrypt(str, "newImgs");
+            if (str1.isEmpty()) {
+                str1 = DecryptionUtils.evalDecrypt(str);
+
+            }
             String[] array = str1.split(",");
             for (int i = 0; i != array.length; ++i) {
                 Long comicChapter = chapter.getId();
