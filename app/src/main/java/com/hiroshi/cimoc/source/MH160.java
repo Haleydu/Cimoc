@@ -17,6 +17,7 @@ import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,7 +78,9 @@ public class MH160 extends MangaParser {
 
     @Override
     protected void initUrlFilterList() {
-        filter.add(new UrlFilter("www.mh160.xyz"));
+        filter.add(new UrlFilter("www.mh160.xyz", "(//(.+s)//)"));
+        filter.add(new UrlFilter("m.mh160.xyz", "/kanmanhua//(.+s)//"));
+
     }
 
     @Override

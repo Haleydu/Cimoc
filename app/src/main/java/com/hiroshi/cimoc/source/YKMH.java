@@ -10,6 +10,7 @@ import com.hiroshi.cimoc.model.Source;
 import com.hiroshi.cimoc.parser.MangaParser;
 import com.hiroshi.cimoc.parser.NodeIterator;
 import com.hiroshi.cimoc.parser.SearchIterator;
+import com.hiroshi.cimoc.parser.UrlFilter;
 import com.hiroshi.cimoc.soup.Node;
 import com.hiroshi.cimoc.utils.StringUtils;
 
@@ -67,6 +68,12 @@ public class YKMH extends MangaParser {
     @Override
     public String getUrl(String cid) {
         return StringUtils.format("%smanhua/%s", mHost, cid);
+    }
+
+    @Override
+    protected void initUrlFilterList() {
+        filter.add(new UrlFilter("m.ykmh.com", "/manhua/(\\w.+)/"));
+
     }
 
     @Override
