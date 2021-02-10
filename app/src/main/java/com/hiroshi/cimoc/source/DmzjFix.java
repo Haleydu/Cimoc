@@ -29,8 +29,6 @@ import java.util.Locale;
 import okhttp3.Headers;
 import okhttp3.Request;
 
-import static com.hiroshi.cimoc.utils.HttpUtils.getSimpleMobileRequest;
-
 public class DmzjFix extends MangaParser {
     public static final int TYPE = 100;
     public static final String DEFAULT_TITLE = "动漫之家v2Fix";
@@ -50,30 +48,36 @@ public class DmzjFix extends MangaParser {
     }
 
     @Override
-    public Request getSearchRequest(String keyword, int page) {
+    public Request getSearchRequest(String keyword, int page) throws UnsupportedEncodingException, Exception {
         if (page == 1) {
-            String url = StringUtils.format("http://s.acg.dmzj1.com/comicsum/search.php?s=%s", keyword, page - 1);
-            return getSimpleMobileRequest(url);
+            String url = StringUtils.format("https://m.dmzj.com/search/%s.html", keyword);
+            return new Request.Builder().url(url).build();
         }
         return null;
     }
 
     @Override
-    public SearchIterator getSearchIterator(String html, int page) {
-        try {
-            String JsonString = StringUtils.match("var g_search_data = (.*?);", html, 1);
-            String decodeJsonString = UicodeBackslashU.unicodeToCn(JsonString).replace("\\/", "/");
+    public String getUrl(String cid) {
+        return StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
+    }
 
+    @Override
+    public SearchIterator getSearchIterator(String html, int page) throws JSONException {
+        try {
+            String JsonString = StringUtils.match("var serchArry=(\\[\\{.*?\\}\\])", html, 1);
+            String decodeJsonString = UicodeBackslashU.unicodeToCn(JsonString).replace("\\/", "/");
             return new JsonIterator(new JSONArray(decodeJsonString)) {
                 @Override
                 protected Comic parse(JSONObject object) {
                     try {
                         String cid = object.getString("id");
-                        String title = object.getString("comic_name");
-                        String cover = object.getString("comic_cover");
-                        if (cover.startsWith("//")) cover = "https:" + cover;
-                        String author = object.optString("comic_author");
-                        return new Comic(TYPE, cid, title, cover, null, author);
+                        String title = object.getString("name");
+                        String cover = object.getString("cover");
+                        cover = "https://images.dmzj.com/" + cover;
+                        String author = object.optString("authors");
+                        long time = Long.parseLong(object.getString("last_updatetime")) * 1000;
+                        String update = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date(time));
+                        return new Comic(TYPE, cid, title, cover, update, author);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -85,13 +89,6 @@ public class DmzjFix extends MangaParser {
         }
         return null;
     }
-
-
-    @Override
-    public String getUrl(String cid) {
-        return StringUtils.format("http://m.dmzj.com/info/%s.html", cid);
-    }
-
 
     @Override
     public Request getInfoRequest(String cid) {
