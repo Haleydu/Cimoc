@@ -116,7 +116,7 @@ public class BrowserFilter extends BaseActivity {
         //来自分享
         if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
             try {
-                openReader(Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT).replace("https://m.ykmh.com", "https://m.ykmh.com/")));
+                openReader(Uri.parse(intent.getStringExtra(Intent.EXTRA_TEXT).replace("https://m.ykmh.commanhua", "https://m.ykmh.com/manhua")));
             } catch (Exception ex) {
                 Toast.makeText(this, "url不合法", Toast.LENGTH_SHORT);
             }
