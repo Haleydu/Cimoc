@@ -96,8 +96,9 @@ public class Hhxxee extends MangaParser {
         Node body = new Node(html);
         String title = body.text(".cTitle");
         String cover = body.src(".cDefaultImg > img");
-        String update = "";
-        String author = "";
+        String update = body.text(".cInfoTxt  tr:nth-child(5) > td:last-child").trim().split("更新時間:")[1];
+        String author = body.text(".cInfoTxt  tr:nth-child(2) > td:last-child").trim();
+        ;
         String intro = body.text(".cCon");
         boolean status = false;
         comic.setInfo(title, cover, update, intro, author, status);
@@ -108,7 +109,7 @@ public class Hhxxee extends MangaParser {
     public List<Chapter> parseChapter(String html, Comic comic, Long sourceComic) {
         List<Chapter> list = new LinkedList<>();
         int i=0;
-        for (Node node : new Node(html).list("#subBookListAct > div")) {
+        for (Node node : new Node(html).list(".cVolList > div")) {
             String title = node.text("a");
             String path = node.hrefWithSplit("a", 2);
             list.add(new Chapter(Long.parseLong(sourceComic + "000" + i++), sourceComic, title, path));
