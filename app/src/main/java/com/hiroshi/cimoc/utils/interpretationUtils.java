@@ -20,7 +20,7 @@ public class interpretationUtils {
                 type == MiGu.TYPE ||
                 type == CCMH.TYPE ||
                 type == Cartoonmad.TYPE ||
-                type == JMTT.TYPE ||
+                //type == JMTT.TYPE ||
                 type == Manhuatai.TYPE ||
                 type == Tencent.TYPE ||
                 type == DM5.TYPE ||
