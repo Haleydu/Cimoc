@@ -21,11 +21,11 @@ public class interpretationUtils {
                 type == CCMH.TYPE ||
                 type == Cartoonmad.TYPE ||
                 //type == JMTT.TYPE ||
-                type == Manhuatai.TYPE ||
-                type == Tencent.TYPE ||
-                type == DM5.TYPE ||
-                type == GuFeng.TYPE ||
-                type == CopyMH.TYPE;
+                //type == Manhuatai.TYPE ||
+                //type == Tencent.TYPE ||
+                //type == GuFeng.TYPE ||
+                //type == CopyMH.TYPE ||
+                type == DM5.TYPE;
     }
 }
 
