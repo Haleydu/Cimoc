@@ -2,10 +2,7 @@ package com.hiroshi.cimoc.source;
 
 import android.util.Base64;
 
-import androidx.arch.core.util.Function;
-
 import com.facebook.common.util.Hex;
-import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.model.Chapter;
@@ -211,7 +208,14 @@ public class CopyMH extends MangaParser {
 
     @Override
     public String parseCheck(String html) {
-        return new Node(html).text("div.col-9.comicParticulars-title-right > ul > li:nth-child(5) > span.comicParticulars-right-txt");
+        try {
+            JSONObject comicInfo = new JSONObject(html).getJSONObject("results");
+            JSONObject body = comicInfo.getJSONObject("comic");
+            return body.getString("datetime_updated");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
