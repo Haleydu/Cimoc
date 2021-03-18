@@ -22,6 +22,7 @@ import com.hiroshi.cimoc.source.MH57;
 import com.hiroshi.cimoc.source.ManHuaDB;
 import com.hiroshi.cimoc.source.MiGu;
 import com.hiroshi.cimoc.source.PuFei;
+import com.hiroshi.cimoc.source.SixMH;
 import com.hiroshi.cimoc.source.Tencent;
 import com.hiroshi.cimoc.source.TuHao;
 import com.hiroshi.cimoc.source.U17;
@@ -78,7 +79,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(ManHuaDB.TYPE);
         list.add(TuHao.TYPE);
         list.add(YKMH.TYPE);
-
+        list.add(SixMH.TYPE);
         return list;
     }
 

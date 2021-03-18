@@ -81,6 +81,7 @@ public class UpdateHelper {
         list.add(ChuiXue.getDefaultSource());
         list.add(BaiNian.getDefaultSource());
         list.add(TuHao.getDefaultSource());
+        list.add(SixMH.getDefaultSource());
         list.add(MangaBZ.getDefaultSource());
         list.add(ManHuaDB.getDefaultSource());
         list.add(Manhuatai.getDefaultSource());

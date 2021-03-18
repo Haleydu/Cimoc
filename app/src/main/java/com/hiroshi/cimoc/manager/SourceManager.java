@@ -161,6 +161,9 @@ public class SourceManager {
                 case TuHao.TYPE:
                     parser = new TuHao(source);
                     break;
+                case SixMH.TYPE:
+                    parser = new SixMH(source);
+                    break;
                 case ManHuaDB.TYPE:
                     parser = new ManHuaDB(source);
                     break;
