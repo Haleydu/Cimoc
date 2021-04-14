@@ -50,8 +50,11 @@ public class CopyMH extends MangaParser {
         if (page == 1) {
 //            JChineseConvertor jChineseConvertor = JChineseConvertor.getInstance();
 //            keyword = jChineseConvertor.s2t(keyword);
-            url = StringUtils.format("https://copymanga.com/api/kb/web/search/count?offset=0&platform=2&limit=50&q=%s", keyword);
-            return new Request.Builder().url(url).build();
+            url = StringUtils.format("https://api.copymanga.com/api/v3/search/comic?platform=1&limit=30&offset=0&q=%s", keyword);
+            return new Request.Builder()
+                .url(url)
+                .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
+                .build();
         }
         return null;
     }
@@ -70,7 +73,7 @@ public class CopyMH extends MangaParser {
     public SearchIterator getSearchIterator(String html, int page) throws JSONException {
         try {
             JSONObject jsonObject = new JSONObject(html);
-            return new JsonIterator(jsonObject.getJSONObject("results").getJSONObject("comic").getJSONArray("list")) {
+            return new JsonIterator(jsonObject.getJSONObject("results").getJSONArray("list")) {
                 @Override
                 protected Comic parse(JSONObject object) {
                     try {
@@ -95,7 +98,10 @@ public class CopyMH extends MangaParser {
     @Override
     public Request getInfoRequest(String cid) {
         String url = "https://api.copymanga.com/api/v3/comic2/".concat(cid);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+            .url(url)
+            .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
+            .build();
     }
 
     @Override
@@ -127,7 +133,10 @@ public class CopyMH extends MangaParser {
     @Override
     public Request getChapterRequest(String html, String cid) {
         String url = String.format("https://api.copymanga.com/api/v3/comic/%s/group/default/chapters?limit=500&offset=0", cid);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+            .url(url)
+            .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
+            .build();
     }
 
     @Override
@@ -149,7 +158,10 @@ public class CopyMH extends MangaParser {
                 String path_word = groups.getJSONObject(key).getString("path_word");
                 String PathName = groups.getJSONObject(key).getString("name");
                 String url = String.format("https://api.copymanga.com/api/v3/comic/%s/group/%s/chapters?limit=500&offset=0", comic.getCid(), path_word);
-                Request request = new Request.Builder().url(url).build();
+                Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
+                    .build();
                 html = getResponseBody(App.getHttpClient(), request);
                 jsonObject = new JSONObject(html);
                 array = jsonObject.getJSONObject("results").getJSONArray("list");
@@ -172,7 +184,10 @@ public class CopyMH extends MangaParser {
     @Override
     public Request getImagesRequest(String cid, String path) {
         String url = StringUtils.format("https://copymanga.com/comic/%s/chapter/%s", cid, path);
-        return new Request.Builder().url(url).build();
+        return new Request.Builder()
+            .url(url)
+            .addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36")
+            .build();
     }
 
     @Override
