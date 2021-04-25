@@ -151,6 +151,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-ads:19.5.0'
     implementation 'com.king.app:app-updater:1.0.8-androidx'
     implementation 'com.king.app:app-dialog:1.0.8-androidx'
+    implementation 'com.iqiyi.xcrash:xcrash-android-lib:3.0.0'
+
 }
 repositories {
     mavenCentral()
