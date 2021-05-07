@@ -271,6 +271,9 @@
                 <data
                     android:host="www.mh160.xyz"
                     android:scheme="https" />
+                <data
+                    android:host="m.manga2020.com"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
 
