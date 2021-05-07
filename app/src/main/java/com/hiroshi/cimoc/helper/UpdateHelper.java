@@ -94,6 +94,7 @@ public class UpdateHelper {
         list.add(JMTT.getDefaultSource());
         list.add(Ohmanhua.getDefaultSource());
         list.add(CopyMH.getDefaultSource());
+        list.add(HotManga.getDefaultSource());
         list.add(WebtoonDongManManHua.getDefaultSource());
         list.add(MH160.getDefaultSource());
         list.add(QiMiaoMH.getDefaultSource());

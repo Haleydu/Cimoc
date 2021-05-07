@@ -15,6 +15,7 @@ import com.hiroshi.cimoc.source.ChuiXue;
 import com.hiroshi.cimoc.source.DM5;
 import com.hiroshi.cimoc.source.Dmzjv2;
 import com.hiroshi.cimoc.source.Hhxxee;
+import com.hiroshi.cimoc.source.HotManga;
 import com.hiroshi.cimoc.source.IKanman;
 import com.hiroshi.cimoc.source.MH50;
 import com.hiroshi.cimoc.source.MH517;
@@ -80,6 +81,7 @@ public class BrowserFilter extends BaseActivity {
         list.add(TuHao.TYPE);
         list.add(YKMH.TYPE);
         list.add(SixMH.TYPE);
+        list.add(HotManga.TYPE);
         return list;
     }
 
