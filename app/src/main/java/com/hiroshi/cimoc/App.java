@@ -81,7 +81,7 @@ public class App extends MultiDexApplication implements AppGetter, Thread.Uncaug
     @Override
     public void onCreate() {
         super.onCreate();
-        initXCrash();
+        //initXCrash();
         Thread.setDefaultUncaughtExceptionHandler(this);
         mActivityLifecycle = new ActivityLifecycle();
         registerActivityLifecycleCallbacks(mActivityLifecycle);
