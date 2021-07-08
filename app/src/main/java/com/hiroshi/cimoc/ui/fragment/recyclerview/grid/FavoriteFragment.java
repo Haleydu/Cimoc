@@ -4,12 +4,6 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.hiroshi.cimoc.App;
-import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.misc.NotificationWrapper;
@@ -20,7 +14,6 @@ import com.hiroshi.cimoc.ui.fragment.dialog.MessageDialogFragment;
 import com.hiroshi.cimoc.ui.view.FavoriteView;
 import com.hiroshi.cimoc.utils.HintUtils;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -52,10 +45,6 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     protected void initView() {
         super.initView();
         mGridAdapter.setSymbol(true);
-        if(App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_REDUCE_AD, false)) {
-            NUMBER_OF_ADS=1;
-        }
-        loadNativeAds();
     }
 
     @Override
@@ -199,51 +188,5 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
     @Override
     protected String[] getOperationItems() {
         return new String[]{getString(R.string.comic_info), getString(R.string.favorite_delete)};
-    }
-
-    public static int NUMBER_OF_ADS = 3;
-    private AdLoader adLoader;
-    private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
-
-    private void insertAdsInCimocItems() {
-        if (mNativeAds.size() <= 0) {
-            return;
-        }
-        int offset = (mGridAdapter.getDateSet().size() / mNativeAds.size()) + 1;
-        int index = 0;
-        for (UnifiedNativeAd ad : mNativeAds) {
-            mGridAdapter.add(index, ad);
-            index = index + offset;
-            if (mGridAdapter.getItemCount() == 0) return;
-        }
-        mGridAdapter.notifyDataSetChanged();
-    }
-
-    private void loadNativeAds() {
-        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), BuildConfig.ADMOB_NATIVE_FAVORITE_UNIT_ID);
-        adLoader = builder.forUnifiedNativeAd(
-                new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
-                    @Override
-                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                        // A native ad loaded successfully, check if the ad loader has finished loading
-                        // and if so, insert the ads into the list.
-                        mNativeAds.add(unifiedNativeAd);
-                        if (!adLoader.isLoading()) {
-                            insertAdsInCimocItems();
-                        }
-                    }
-                }).withAdListener(
-                new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(int errorCode) {
-                        // A native ad failed to load, check if the ad loader has finished loading
-                        // and if so, insert the ads into the list.
-                        if (!adLoader.isLoading()) {
-                            insertAdsInCimocItems();
-                        }
-                    }
-                }).build();
-
-        adLoader.loadAds(new AdRequest.Builder().build(), NUMBER_OF_ADS);
     }
 }

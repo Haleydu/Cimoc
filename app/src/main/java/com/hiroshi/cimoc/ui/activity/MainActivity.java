@@ -12,11 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -205,13 +200,6 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
 
     }
 
-    @Override
-    protected void initAdMob() {
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {}
-        });
-    }
 
 //    public void getUesrInfo() {
 //        String accessTocken = mPreference.getString(PreferenceManager.PREFERENCES_USER_TOCKEN, null);
@@ -264,20 +252,10 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     private void initNavigation() {
         night = mPreference.getBoolean(PreferenceManager.PREF_NIGHT, false);
         mNavigationView.getMenu().findItem(R.id.drawer_night).setTitle(night ? R.string.drawer_light : R.string.drawer_night);
-//        mNavigationView.getMenu().findItem(R.id.user_info)
-//            .setTitle(
-//                mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "") == "" ?
-//                    getString(R.string.user_login_item) :
-//                    mPreference.getString(PreferenceManager.PREFERENCES_USER_NAME, "User")
-//            );
         mNavigationView.setNavigationItemSelectedListener(this);
         View header = mNavigationView.getHeaderView(0);
         mLastText = header.findViewById(R.id.drawer_last_title);
         mDraweeView = header.findViewById(R.id.drawer_last_cover);
-
-        AdView mAdView = header.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
         mLastText.setOnClickListener(v -> {
             if (mPresenter.checkLocal(mLastId)) {

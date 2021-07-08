@@ -19,8 +19,6 @@ import android.widget.TextView;
 
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilderSupplier;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.model.Chapter;
 import com.hiroshi.cimoc.ui.widget.ChapterButton;
@@ -133,8 +131,12 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
     //判断是否分组且当前是否为第一个元素
     public boolean isFirst(int position) {
         position = position - 1;
-        if (mDataSet.get(position).getSourceGroup().isEmpty()) return false;
-        if (position == 0) return true;
+        if (mDataSet.get(position).getSourceGroup().isEmpty()) {
+            return false;
+        }
+        if (position == 0) {
+            return true;
+        }
         if (position <= 0) {
             return false;
         }
@@ -186,8 +188,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         try {
             if (position == 0) {
                 HeaderHolder headerHolder = (HeaderHolder) holder;
-                AdRequest adRequest = new AdRequest.Builder().build();
-                headerHolder.mAdView.loadAd(adRequest);
                 if (title != null) {
                     if (cover != null) {
                         headerHolder.mComicImage.setController(mControllerSupplier.get().setUri(cover).build());
@@ -226,7 +226,9 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (position == 0 || isFirst(position)) return manager.getSpanCount();
+                if (position == 0 || isFirst(position)) {
+                    return manager.getSpanCount();
+                }
 
                 return 1;
             }
@@ -275,8 +277,6 @@ public class DetailAdapter extends BaseAdapter<Chapter> {
         TextView mComicUpdate;
         @BindView(R.id.item_header_comic_author)
         TextView mComicAuthor;
-        @BindView(R.id.adView_chapter)
-        AdView mAdView;
 
         HeaderHolder(View view) {
             super(view);

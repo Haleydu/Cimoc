@@ -6,17 +6,11 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.hiroshi.cimoc.App;
-import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
 import com.hiroshi.cimoc.manager.SourceManager;

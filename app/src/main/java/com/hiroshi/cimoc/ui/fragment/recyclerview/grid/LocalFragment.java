@@ -8,15 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.hiroshi.cimoc.App;
-import com.hiroshi.cimoc.BuildConfig;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.global.Extra;
-import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.presenter.BasePresenter;
 import com.hiroshi.cimoc.presenter.LocalPresenter;
@@ -29,7 +22,6 @@ import com.hiroshi.cimoc.utils.HintUtils;
 import com.hiroshi.cimoc.utils.StringUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,10 +49,6 @@ public class LocalFragment extends GridFragment implements LocalView {
     @Override
     protected void initData() {
         mPresenter.load();
-        if(!App.getPreferenceManager().getBoolean(PreferenceManager.PREF_OTHER_REDUCE_AD, false)) {
-            loadNativeAds();
-        }
-
     }
 
     @Override
@@ -102,6 +90,8 @@ public class LocalFragment extends GridFragment implements LocalView {
                         }
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -127,11 +117,15 @@ public class LocalFragment extends GridFragment implements LocalView {
                                 R.string.local_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
                         fragment.show(getFragmentManager(), null);
+                    default:
+                        break;
                 }
                 break;
             case DIALOG_REQUEST_DELETE:
                 showProgressDialog();
                 mPresenter.deleteComic(mSavedId);
+                break;
+            default:
                 break;
         }
     }
@@ -164,53 +158,5 @@ public class LocalFragment extends GridFragment implements LocalView {
     protected String[] getOperationItems() {
         return new String[]{getString(R.string.comic_info), getString(R.string.local_delete)};
     }
-
-    public static int NUMBER_OF_ADS = 3;
-    private AdLoader adLoader;
-    private List<UnifiedNativeAd> mNativeAds = new ArrayList<>();
-
-    private void insertAdsInCimocItems() {
-
-        if (mNativeAds.size() <= 0) {
-            return;
-        }
-        int offset = (mGridAdapter.getDateSet().size() / mNativeAds.size()) + 1;
-        int index = 0;
-        for (UnifiedNativeAd ad : mNativeAds) {
-            if (mGridAdapter.getItemCount() == 0) return;
-            mGridAdapter.add(index, ad);
-            index = index + offset;
-        }
-        mGridAdapter.notifyDataSetChanged();
-    }
-
-    private void loadNativeAds() {
-        AdLoader.Builder builder = new AdLoader.Builder(getActivity(), BuildConfig.ADMOB_NATIVE_LOCAL_UNIT_ID);
-        adLoader = builder.forUnifiedNativeAd(
-                new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
-                    @Override
-                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                        // A native ad loaded successfully, check if the ad loader has finished loading
-                        // and if so, insert the ads into the list.
-                        mNativeAds.add(unifiedNativeAd);
-                        if (!adLoader.isLoading()) {
-                            insertAdsInCimocItems();
-                        }
-                    }
-                }).withAdListener(
-                new AdListener() {
-                    @Override
-                    public void onAdFailedToLoad(int errorCode) {
-                        // A native ad failed to load, check if the ad loader has finished loading
-                        // and if so, insert the ads into the list.
-                        if (!adLoader.isLoading()) {
-                            insertAdsInCimocItems();
-                        }
-                    }
-                }).build();
-
-        adLoader.loadAds(new AdRequest.Builder().build(), NUMBER_OF_ADS);
-    }
-
 }
 

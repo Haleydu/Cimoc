@@ -3,23 +3,16 @@ package com.hiroshi.cimoc.ui.adapter;
 import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
+import java.util.List;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
-
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.google.android.gms.ads.formats.MediaView;
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.hiroshi.cimoc.App;
 import com.hiroshi.cimoc.R;
 import com.hiroshi.cimoc.fresco.ControllerBuilderProvider;
@@ -27,11 +20,7 @@ import com.hiroshi.cimoc.manager.PreferenceManager;
 import com.hiroshi.cimoc.manager.SourceManager;
 import com.hiroshi.cimoc.model.MiniComic;
 import com.hiroshi.cimoc.utils.FrescoUtils;
-
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-
 import butterknife.BindView;
 
 /**
@@ -40,7 +29,6 @@ import butterknife.BindView;
 public class GridAdapter extends BaseAdapter<Object> {
 
     public static final int TYPE_GRID = 2016101213;
-    private static final int UNIFIED_NATIVE_AD_VIEW_TYPE_GRID = 2020121201;
 
     private ControllerBuilderProvider mProvider;
     private SourceManager.TitleGetter mTitleGetter;
@@ -52,25 +40,14 @@ public class GridAdapter extends BaseAdapter<Object> {
 
     @Override
     public int getItemViewType(int position) {
-        Object recyclerViewItem = mDataSet.get(position);
-        if (recyclerViewItem instanceof UnifiedNativeAd) {
-            return UNIFIED_NATIVE_AD_VIEW_TYPE_GRID;
-        }
         return TYPE_GRID;
     }
 
     @NotNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case UNIFIED_NATIVE_AD_VIEW_TYPE_GRID:
-                View unifiedNativeLayoutView = mInflater.inflate(R.layout.item_grid_ad, parent, false);
-                return new UnifiedNativeAdViewHolder(unifiedNativeLayoutView);
-            case TYPE_GRID:
-            default:
-                View view = mInflater.inflate(R.layout.item_grid, parent, false);
-                return new GridHolder(view);
-        }
+        View view = mInflater.inflate(R.layout.item_grid, parent, false);
+        return new GridHolder(view);
     }
 
     @Override
@@ -78,13 +55,9 @@ public class GridAdapter extends BaseAdapter<Object> {
         super.onBindViewHolder(holder, position);
         int viewType = getItemViewType(position);
         switch (viewType) {
-            case UNIFIED_NATIVE_AD_VIEW_TYPE_GRID:
-                UnifiedNativeAd nativeAd = (UnifiedNativeAd) mDataSet.get(position);
-                populateNativeAdView(nativeAd, ((UnifiedNativeAdViewHolder) holder).getAdView());
-                break;
             case TYPE_GRID:
             default:
-                MiniComic comic = (MiniComic)mDataSet.get(position);
+                MiniComic comic = (MiniComic) mDataSet.get(position);
                 GridHolder gridHolder = (GridHolder) holder;
                 gridHolder.comicTitle.setText(comic.getTitle());
                 gridHolder.comicSource.setText(mTitleGetter.getTitle(comic.getSource()));
@@ -153,7 +126,8 @@ public class GridAdapter extends BaseAdapter<Object> {
     public RecyclerView.ItemDecoration getItemDecoration() {
         return new RecyclerView.ItemDecoration() {
             @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            public void getItemOffsets(@NotNull Rect outRect, @NotNull View view,
+                                       @NotNull RecyclerView parent, @NotNull RecyclerView.State state) {
                 int offset = parent.getWidth() / 90;
                 outRect.set(offset, 0, offset, (int) (2.8 * offset));
             }
@@ -162,9 +136,6 @@ public class GridAdapter extends BaseAdapter<Object> {
 
     public void removeItemById(long id) {
         for (Object O_comic : mDataSet) {
-            if (O_comic instanceof UnifiedNativeAd){
-                continue;
-            }
             MiniComic comic = (MiniComic) O_comic;
             if (id == comic.getId()) {
                 remove(comic);
@@ -177,9 +148,6 @@ public class GridAdapter extends BaseAdapter<Object> {
         int count = 0;
         if (symbol) {
             for (Object O_comic : mDataSet) {
-                if (O_comic instanceof UnifiedNativeAd){
-                    continue;
-                }
                 MiniComic comic = (MiniComic) O_comic;
                 if (!comic.isHighlight()) {
                     break;
@@ -193,9 +161,6 @@ public class GridAdapter extends BaseAdapter<Object> {
     public void cancelAllHighlight() {
         int count = 0;
         for (Object O_comic : mDataSet) {
-            if (O_comic instanceof UnifiedNativeAd){
-                continue;
-            }
             MiniComic comic = (MiniComic) O_comic;
             if (!comic.isHighlight()) {
                 break;
@@ -225,64 +190,5 @@ public class GridAdapter extends BaseAdapter<Object> {
         GridHolder(View view) {
             super(view);
         }
-    }
-
-    class UnifiedNativeAdViewHolder extends RecyclerView.ViewHolder {
-
-        private UnifiedNativeAdView adView;
-
-        public UnifiedNativeAdView getAdView() {
-            return adView;
-        }
-
-        UnifiedNativeAdViewHolder(View view) {
-            super(view);
-            adView = (UnifiedNativeAdView) view.findViewById(R.id.ad_grid_view);
-
-            adView.setMediaView((MediaView) adView.findViewById(R.id.ad_grid_media));
-            adView.setIconView(adView.findViewById(R.id.ad_grid_app_icon));
-            adView.setHeadlineView(adView.findViewById(R.id.ad_grid_headline));
-            adView.setBodyView(adView.findViewById(R.id.ad_grid_body));
-            adView.setStarRatingView(adView.findViewById(R.id.ad_grid_stars));
-            adView.setAdvertiserView(adView.findViewById(R.id.ad_grid_advertiser));
-        }
-    }
-
-    private void populateNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
-        ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
-        adView.getMediaView().setMediaContent(nativeAd.getMediaContent());
-
-        NativeAd.Image icon = nativeAd.getIcon();
-        if (icon == null) {
-            adView.getIconView().setVisibility(View.INVISIBLE);
-        } else {
-            ((ImageView) adView.getIconView()).setImageDrawable(icon.getDrawable());
-            adView.getIconView().setVisibility(View.VISIBLE);
-        }
-
-        if (nativeAd.getBody() == null) {
-            adView.getBodyView().setVisibility(View.INVISIBLE);
-        } else {
-            adView.getBodyView().setVisibility(View.VISIBLE);
-            ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
-        }
-
-        if (nativeAd.getStarRating() == null) {
-            adView.getStarRatingView().setVisibility(View.INVISIBLE);
-        } else {
-            ((RatingBar) adView.getStarRatingView())
-                    .setRating(nativeAd.getStarRating().floatValue());
-            adView.getStarRatingView().setVisibility(View.VISIBLE);
-        }
-
-        if (nativeAd.getAdvertiser() == null) {
-            adView.getAdvertiserView().setVisibility(View.INVISIBLE);
-        } else {
-            ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
-            adView.getAdvertiserView().setVisibility(View.VISIBLE);
-        }
-
-        // Assign native ad object to the native view.
-        adView.setNativeAd(nativeAd);
     }
 }
