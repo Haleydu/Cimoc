@@ -1,11 +1,13 @@
 package com.hiroshi.cimoc.ui.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
@@ -19,7 +21,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.legacy.app.ActivityCompat;
 
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.MenuItem;
@@ -419,12 +424,18 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                 //showPermission();
                 break;
             case DIALOG_REQUEST_PERMISSION:
-                com.king.app.updater.util.PermissionUtils.verifyReadAndWritePermissions(this, Constants.RE_CODE_STORAGE_PERMISSION);
                 //ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+                com.king.app.updater.util.PermissionUtils.verifyReadAndWritePermissions(this, Constants.RE_CODE_STORAGE_PERMISSION);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    startActivity(intent);
+                }
                 break;
 //            case DIALOG_REQUEST_LOGOUT:
 //                logout();
 //                break;
+            default:
+                break;
         }
     }
 
