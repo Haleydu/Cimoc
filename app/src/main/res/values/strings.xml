@@ -336,4 +336,7 @@
 
     <string name="developing">此功能正在开发中</string>
 
+    <string name="the_public">Cimoc微信公众号</string>
+    <string name="the_public_summary">关注公众号查看最新版本</string>
+
 </resources>

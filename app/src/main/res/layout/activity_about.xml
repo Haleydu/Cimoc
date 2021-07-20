@@ -60,6 +60,37 @@
                 android:paddingTop="15dip">
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/the_public"
+                        android:gravity="center"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
+                        android:gravity="center"
+                        android:text="@string/the_public_summary"
+                        android:textSize="14sp" />
+                    <ImageView
+                        android:id="@+id/reader_back_btn"
+                        android:layout_width="175dp"
+                        android:layout_height="175dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/cimoc" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/home_page_btn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,6 +142,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/about_resource_btn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -136,6 +168,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:id="@+id/about_resource_ori_btn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

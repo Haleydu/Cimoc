@@ -313,4 +313,6 @@
 
     <string name="developing">此功能正在開發中</string>
 
+    <string name="the_public">Cimoc微信公衆號</string>
+    <string name="the_public_summary">關注公衆號查看最新版本</string>
 </resources>
