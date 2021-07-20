@@ -158,7 +158,7 @@ public class TaskActivity extends CoordinatorActivity implements TaskView {
         String[] item = {getString(R.string.task_read), getString(R.string.task_delete)};
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
                 item, DIALOG_REQUEST_OPERATION);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
         return true;
     }
 

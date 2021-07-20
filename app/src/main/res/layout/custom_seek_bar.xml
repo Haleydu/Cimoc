@@ -9,6 +9,7 @@
     android:padding="8dp"
     android:visibility="gone">
 
+
     <com.haleydu.cimoc.ui.widget.ReverseSeekBar
         android:id="@+id/reader_seek_bar"
         android:layout_width="match_parent"

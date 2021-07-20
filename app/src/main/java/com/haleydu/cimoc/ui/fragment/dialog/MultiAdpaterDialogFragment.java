@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.app.DialogFragment;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import androidx.fragment.app.DialogFragment;
 
 import com.haleydu.cimoc.R;
 import com.haleydu.cimoc.component.DialogCaller;

@@ -180,7 +180,7 @@ public class EventSettingsActivity extends BaseActivity implements DialogCaller 
     private void showEventList(int index) {
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
                 ClickEvents.getEventTitleArray(this), mChoiceArray[index], index);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Override

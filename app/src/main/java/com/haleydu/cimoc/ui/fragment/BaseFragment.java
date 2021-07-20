@@ -1,11 +1,12 @@
 package com.haleydu.cimoc.ui.fragment;
 
-import android.app.Fragment;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(getLayoutRes(), container, false);
         unbinder = ButterKnife.bind(this, view);
-        mPreference = ((App) getActivity().getApplication()).getPreferenceManager();
+        mPreference = App.getPreferenceManager();
         mBasePresenter = initPresenter();
         initProgressBar();
         initView();
@@ -58,7 +59,7 @@ public abstract class BaseFragment extends Fragment implements BaseView {
 
     @Override
     public App getAppInstance() {
-        return (App) getActivity().getApplication();
+        return (App) requireActivity().getApplication();
     }
 
     @Override
@@ -67,8 +68,8 @@ public abstract class BaseFragment extends Fragment implements BaseView {
 
     private void initProgressBar() {
         if (mProgressBar != null) {
-            int resId = ThemeUtils.getResourceId(getActivity(), R.attr.colorAccent);
-            mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(getActivity(), resId), PorterDuff.Mode.SRC_ATOP);
+            int resId = ThemeUtils.getResourceId(requireActivity(), R.attr.colorAccent);
+            mProgressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(requireActivity(), resId), PorterDuff.Mode.SRC_ATOP);
         }
     }
 

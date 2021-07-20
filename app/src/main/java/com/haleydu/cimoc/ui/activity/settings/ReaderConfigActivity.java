@@ -33,7 +33,7 @@ public class ReaderConfigActivity extends BackActivity implements DialogCaller {
     protected void initView() {
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.reader_config_page));
         mTabLayout.addTab(mTabLayout.newTab().setText(R.string.reader_config_stream));
-        TabPagerAdapter tabAdapter = new TabPagerAdapter(getFragmentManager(),
+        TabPagerAdapter tabAdapter = new TabPagerAdapter(getSupportFragmentManager(),
                 new BaseFragment[]{new PageConfigFragment(), new StreamConfigFragment()},
                 new String[]{getString(R.string.reader_config_page), getString(R.string.reader_config_stream)});
         mViewPager.setOffscreenPageLimit(1);

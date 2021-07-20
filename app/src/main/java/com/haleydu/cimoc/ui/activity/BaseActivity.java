@@ -140,7 +140,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
     }
 
     public void showProgressDialog() {
-        mProgressDialog.show(getFragmentManager(), null);
+        mProgressDialog.show(getSupportFragmentManager(), null);
     }
 
     public void hideProgressDialog() {

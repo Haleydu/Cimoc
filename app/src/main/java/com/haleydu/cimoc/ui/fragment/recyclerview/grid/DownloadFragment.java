@@ -65,7 +65,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                                 R.string.download_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
-                        fragment.show(getFragmentManager(), null);
+                        fragment.show(requireActivity().getSupportFragmentManager(), null);
                         break;
                     default:
                         break;
@@ -101,7 +101,7 @@ public class DownloadFragment extends GridFragment implements DownloadView {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.download_action_confirm, true, DIALOG_REQUEST_SWITCH);
         fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(requireActivity().getSupportFragmentManager(), null);
     }
 
     @Override

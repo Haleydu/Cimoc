@@ -55,9 +55,9 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
         mReaderInterval.bindPreference(PreferenceManager.PREF_READER_STREAM_INTERVAL, false);
         mReaderLoadPrev.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_PREV, false);
         mReaderLoadNext.bindPreference(PreferenceManager.PREF_READER_STREAM_LOAD_NEXT, true);
-        mReaderOrientation.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_ORIENTATION,
+        mReaderOrientation.bindPreference(requireActivity().getSupportFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_ORIENTATION,
                 PreferenceManager.READER_ORIENTATION_AUTO, R.array.reader_orientation_items, DIALOG_REQUEST_ORIENTATION);
-        mReaderTurn.bindPreference(getFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_TURN,
+        mReaderTurn.bindPreference(requireActivity().getSupportFragmentManager(), this, PreferenceManager.PREF_READER_STREAM_TURN,
                 PreferenceManager.READER_TURN_LTR, R.array.reader_turn_items, DIALOG_REQUEST_TURN);
     }
 
@@ -75,7 +75,7 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
 //        ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
 //                items, DIALOG_REQUEST_OPERATION);
 //        fragment.setTargetFragment(this, 0);
-//        fragment.show(getFragmentManager(), null);
+//        fragment.show(getSupportFragmentManager(), null);
 //    }
 
     private void showEventList(int index) {
@@ -84,7 +84,7 @@ public class StreamConfigFragment extends BaseFragment implements DialogCaller {
             Context context = this.getContext();
             ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(R.string.event_select,
                     ClickEvents.getEventTitleArray(context), mChoiceArray[index], index);
-            fragment.show(getFragmentManager(), null);
+            fragment.show(requireActivity().getSupportFragmentManager(), null);
         }
     }
 

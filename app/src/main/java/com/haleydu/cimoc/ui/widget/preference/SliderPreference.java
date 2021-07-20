@@ -1,12 +1,13 @@
 package com.haleydu.cimoc.ui.widget.preference;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.haleydu.cimoc.App;
 import com.haleydu.cimoc.R;

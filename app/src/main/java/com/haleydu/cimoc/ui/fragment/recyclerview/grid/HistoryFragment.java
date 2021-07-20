@@ -46,7 +46,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.history_clear_confirm, true, DIALOG_REQUEST_CLEAR);
         fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(requireActivity().getSupportFragmentManager(), null);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class HistoryFragment extends GridFragment implements HistoryView {
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                                 R.string.history_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
-                        fragment.show(getFragmentManager(), null);
+                        fragment.show(requireActivity().getSupportFragmentManager(), null);
                     default:
                         break;
                 }

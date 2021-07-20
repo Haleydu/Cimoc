@@ -119,7 +119,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
             mSavedComic = (MiniComic) mGridAdapter.getItem(position);
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                     R.string.part_favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
-            fragment.show(getFragmentManager(), null);
+            fragment.show(getSupportFragmentManager(), null);
             return true;
         }
         return false;
@@ -160,7 +160,7 @@ public class PartFavoriteActivity extends BackActivity implements PartFavoriteVi
         hideProgressDialog();
         MultiDialogFragment fragment = MultiDialogFragment.newInstance(R.string.part_favorite_select,
                 list.toArray(new String[list.size()]), null, DIALOG_REQUEST_ADD);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Override

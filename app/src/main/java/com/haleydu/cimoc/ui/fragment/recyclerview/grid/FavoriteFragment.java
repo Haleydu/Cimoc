@@ -73,7 +73,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
                         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                                 R.string.favorite_delete_confirm, true, DIALOG_REQUEST_DELETE);
                         fragment.setTargetFragment(this, 0);
-                        fragment.show(getFragmentManager(), null);
+                        fragment.show(requireActivity().getSupportFragmentManager(), null);
                         break;
                 }
                 break;
@@ -111,7 +111,7 @@ public class FavoriteFragment extends GridFragment implements FavoriteView {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.favorite_check_update_confirm, true, DIALOG_REQUEST_UPDATE);
         fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(requireActivity().getSupportFragmentManager(), null);
     }
 
     @Override

@@ -154,7 +154,7 @@ public class BackupActivity extends BackActivity implements BackupView {
     private void showChoiceDialog(int title, String[] item, int request) {
         hideProgressDialog();
         ChoiceDialogFragment fragment = ChoiceDialogFragment.newInstance(title, item, -1, request);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class BackupActivity extends BackActivity implements BackupView {
         hideProgressDialog();
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.backup_clear_record,
                 R.string.backup_clear_record_notice_summary, true, DIALOG_REQUEST_RESTORE_CLEAR);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(getSupportFragmentManager(), null);
     }
 
     @Override

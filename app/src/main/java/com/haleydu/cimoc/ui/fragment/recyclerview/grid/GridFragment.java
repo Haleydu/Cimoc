@@ -93,7 +93,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
         ItemDialogFragment fragment = ItemDialogFragment.newInstance(R.string.common_operation_select,
                 getOperationItems(), DIALOG_REQUEST_OPERATION);
         fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(requireActivity().getSupportFragmentManager(), null);
         return true;
     }
 
@@ -123,7 +123,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
             MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.common_execute_fail,
                     R.string.comic_info_not_found, true, request);
             fragment.setTargetFragment(this, 0);
-            fragment.show(getFragmentManager(), null);
+            fragment.show(requireActivity().getSupportFragmentManager(), null);
             return;
         }
         String content =
@@ -143,7 +143,7 @@ public abstract class GridFragment extends RecyclerViewFragment implements GridV
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.comic_info,
                 content, true, request);
         fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(requireActivity().getSupportFragmentManager(), null);
     }
 
     protected abstract void performActionButtonClick();

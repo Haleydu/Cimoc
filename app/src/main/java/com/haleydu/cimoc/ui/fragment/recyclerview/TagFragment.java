@@ -87,7 +87,7 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
             case R.id.tag_add:
                 EditorDialogFragment fragment = EditorDialogFragment.newInstance(R.string.tag_add, null, DIALOG_REQUEST_EDITOR);
                 fragment.setTargetFragment(this, 0);
-                fragment.show(getFragmentManager(), null);
+                fragment.show(requireActivity().getSupportFragmentManager(), null);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -106,7 +106,7 @@ public class TagFragment extends RecyclerViewFragment implements TagView {
         MessageDialogFragment fragment = MessageDialogFragment.newInstance(R.string.dialog_confirm,
                 R.string.tag_delete_confirm, true, DIALOG_REQUEST_DELETE);
         fragment.setTargetFragment(this, 0);
-        fragment.show(getFragmentManager(), null);
+        fragment.show(requireActivity().getSupportFragmentManager(), null);
         return true;
     }
 

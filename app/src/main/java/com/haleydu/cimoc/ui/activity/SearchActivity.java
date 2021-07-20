@@ -130,7 +130,7 @@ public class SearchActivity extends BackActivity implements SearchView, TextView
                     }
                     MultiAdpaterDialogFragment fragment =
                             MultiAdpaterDialogFragment.newInstance(R.string.search_source_select, arr1, arr2, DIALOG_REQUEST_SOURCE);
-                    fragment.show(getFragmentManager(), null);
+                    fragment.show(getSupportFragmentManager(), null);
                     break;
                 }
         }
