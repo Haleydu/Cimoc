@@ -19,7 +19,7 @@ Online manga reader based on Android
 > 安卓apk下载地址[软件下载](https://github.com/Haleydu/Cimoc/releases)
 
 # 关注Cimoc微信公众号获取最新版本
-<img src="https://gitee.com/Haleydu/Cimoc/raw/release-tci/screenshot/qrcode_for_gh_c573e41cd30f_258.jpg" width="250">
+<img src="https://gitee.com/Haleydu/picture/raw/master/qrcode_for_gh_c573e41cd30f_258.jpg" width="250">
 
 # 漫画源
 > 漫画源工作情况可以在[project](https://github.com/Haleydu/Cimoc/projects/1)中进行查看，请尽量不要重复issues
