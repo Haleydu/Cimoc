@@ -11,17 +11,17 @@
         "mode": "1",
         "activityPairs": [
           {
-            "from": "com.hiroshi.cimoc.ui.activity.MainActivity",
+            "from": "com.haleydu.cimoc.ui.activity.MainActivity",
             "to": "*"
           },
           {
-            "from": "com.hiroshi.cimoc.ui.activity.ResultActivity",
-            "to": "com.hiroshi.cimoc.ui.activity.DetailActivity"
+            "from": "com.haleydu.cimoc.ui.activity.ResultActivity",
+            "to": "com.haleydu.cimoc.ui.activity.DetailActivity"
           }
         ],
         "Activities": [
           {
-            "name": "com.hiroshi.cimoc.ui.activity.PageReaderActivity",
+            "name": "com.haleydu.cimoc.ui.activity.PageReaderActivity",
             "defaultFullScreen": "true"
           }
         ],

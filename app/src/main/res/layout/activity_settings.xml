@@ -34,97 +34,97 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
+                <com.haleydu.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_reader_mode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_reader_mode" />
 
-                <com.hiroshi.cimoc.ui.widget.Option
+                <com.haleydu.cimoc.ui.widget.Option
                     android:id="@+id/settings_reader_config"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_config_summary"
                     app:title="@string/settings_reader_config" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_keep_bright"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_keep_bright_summary"
                     app:title="@string/settings_reader_keep_bright" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_show_topbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_show_topbar_summary"
                     app:title="@string/settings_reader_show_topbar" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_hide_info_summary"
                     app:title="@string/settings_reader_hide_info" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_hide_nav"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_hide_nav_summary"
                     app:title="@string/settings_reader_hide_nav" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_ban_double_click"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_ban_double_click_summary"
                     app:title="@string/settings_reader_ban_double_click" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_paging"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_paging_summary"
                     app:title="@string/settings_reader_paging" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_closeautoresizeimage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_closeautoresizeimage_summary"
                     app:title="@string/settings_reader_closeautoresizeimage" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_paging_reverse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_paging_reverse_summary"
                     app:title="@string/settings_reader_paging_reverse" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_white_edge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_white_edge_summary"
                     app:title="@string/settings_reader_white_edge" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_white_background"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_white_background_summary"
                     app:title="@string/settings_reader_white_background" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_reader_volume_key"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_reader_volume_key_controls_summary"
                     app:title="@string/settings_reader_volume_key_controls" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                <com.haleydu.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_reader_scale_factor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -132,7 +132,7 @@
                     app:min="100"
                     app:title="@string/settings_reader_scale_factor" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                <com.haleydu.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_reader_controller_trig_threshold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                <com.haleydu.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_download_thread"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                     app:min="1"
                     app:title="@string/settings_download_thread" />
 
-                <com.hiroshi.cimoc.ui.widget.Option
+                <com.haleydu.cimoc.ui.widget.Option
                     android:id="@+id/settings_download_scan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_search_auto_complete"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -199,42 +199,42 @@
                     android:textColor="?attr/colorPrimary"
                     android:textSize="14sp" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_connect_only_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_other_connect_only_wifi_summary"
                     app:title="@string/settings_other_connect_only_wifi" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_loadcover_only_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_other_loadcover_only_wifi_summary"
                     app:title="@string/settings_other_loadcover_only_wifi" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_check_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_other_check_update_summary"
                     app:title="@string/settings_other_check_update" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_check_update"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_check_update_summary"
                     app:title="@string/settings_check_update" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_firebase_event"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_other_firebase_event_summary"
                     app:title="@string/settings_other_firebase_event" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.CheckBoxPreference
+                <com.haleydu.cimoc.ui.widget.preference.CheckBoxPreference
                     android:id="@+id/settings_other_reduce_ad"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -242,19 +242,19 @@
                     app:title="@string/settings_other_reduce_ad" />
 
 
-                <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
+                <com.haleydu.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_launch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_launch" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.ChoicePreference
+                <com.haleydu.cimoc.ui.widget.preference.ChoicePreference
                     android:id="@+id/settings_other_theme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:title="@string/settings_other_theme" />
 
-                <com.hiroshi.cimoc.ui.widget.preference.SliderPreference
+                <com.haleydu.cimoc.ui.widget.preference.SliderPreference
                     android:id="@+id/settings_other_night_alpha"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -262,14 +262,14 @@
                     app:min="100"
                     app:title="@string/settings_other_night_alpha" />
 
-                <com.hiroshi.cimoc.ui.widget.Option
+                <com.haleydu.cimoc.ui.widget.Option
                     android:id="@+id/settings_other_storage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:summary="@string/settings_other_storage_summary"
                     app:title="@string/settings_other_storage" />
 
-                <com.hiroshi.cimoc.ui.widget.Option
+                <com.haleydu.cimoc.ui.widget.Option
                     android:id="@+id/settings_other_clear_cache"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

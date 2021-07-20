@@ -36,7 +36,7 @@
             android:scaleType="center"
             android:src="@drawable/ic_history_white_18dp"
             android:visibility="invisible"
-            app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior" />
+            app:layout_behavior="com.haleydu.cimoc.ui.widget.ScrollAwareFABBehavior" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/coordinator_action_button"
@@ -45,7 +45,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:visibility="invisible"
-            app:layout_behavior="com.hiroshi.cimoc.ui.widget.ScrollAwareFABBehavior" />
+            app:layout_behavior="com.haleydu.cimoc.ui.widget.ScrollAwareFABBehavior" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <include layout="@layout/custom_night_mask" />
