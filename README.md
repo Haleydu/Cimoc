@@ -18,9 +18,6 @@ Online manga reader based on Android
 > 使用`pre-release`版本会在每次启动时显示检查更新提示。
 > 安卓apk下载地址[软件下载](https://github.com/Haleydu/Cimoc/releases)
 
-# 关注Cimoc微信公众号获取最新版本
-<img src="https://gitee.com/Haleydu/picture/raw/master/qrcode_for_gh_c573e41cd30f_258.jpg" width="250">
-
 # 漫画源
 > 漫画源工作情况可以在[project](https://github.com/Haleydu/Cimoc/projects/1)中进行查看，请尽量不要重复issues
 > 各位大佬们提交漫画源相关issue请按照[模板](https://github.com/Haleydu/Cimoc/issues/new?assignees=&labels=%E6%BC%AB%E7%94%BB%E6%BA%90%E9%97%AE%E9%A2%98&template=comic-source-issues.md&title=%5BCS%5D)填写，方便检查问题。
@@ -32,6 +29,7 @@ Online manga reader based on Android
 - 下载漫画（Download Manga）
 - 本地漫画（Local Reader）
 - 本地备份恢复（Local Backup）
+- webdav云备份功能(WebDav Backup)
 
 # 软件使用说明
 - 安装完成后，直接点击右上角的搜索，即可搜索到漫画
@@ -90,12 +88,16 @@ Online manga reader based on Android
 
 # 软件服务器
 - 由于漫画源经常失效，准备搭建Cimoc专用的服务器通过云端更新漫画源
-- 未来会加入云备份功能，分享个人收藏漫画，导入他人分享收藏漫画功能
+- 分享个人收藏漫画，导入他人分享收藏漫画功能
 - 如果有大佬愿意赞助服务器的，会取消软件内的预置广告。
 
 # 关于淘宝售卖和会员破解
 - 本程序没有任何破解网站VIP的功能，仅仅作为网页浏览器显示网站免费浏览部分，淘宝卖家自行添加的破解或其他功能与本程序无任何关系。
+- 由于本程序每次更新源码发布新版本就被淘宝和拼多多商家二次修改编译，售卖本软件，违背了软件免费的使用的原则，以及将售卖软件后的风险转移到了这里。源码将不定期发布，发布的源码也是已过有效性的源码。
 
 # 免责声明：
 - 如果更新软件的过程中有什么侵权的地方，请在github上留言或者私信我，提供相关版权证明，会马上删除侵权部分的内容。
 - 本软件不以盈利为目的，广告收入全部用于服务器维护和开发。
+
+# 关注Cimoc微信公众号获取最新版本
+<img src="https://gitee.com/Haleydu/picture/raw/master/qrcode_for_gh_c573e41cd30f_258.jpg" width="250">
